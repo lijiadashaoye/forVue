@@ -151,15 +151,8 @@ export default {
             url: `/product/tag/list?type=product_tag`,
         })
     },
-    // 获取页面初始化列表数据
+    // 获取页面初始化列表数据、查询
     get_cunkuanlistData(data) {
-        return data.vm.$axios({
-            method: 'get',
-            url: `/product/deposit/page?${qs.stringify(data.data)}`,
-        })
-    },
-    // 查询
-    search_cunkuanlistData(data) {
         return data.vm.$axios({
             method: 'get',
             url: `/product/deposit/page?${qs.stringify(data.data)}`,

@@ -5,60 +5,33 @@
 
       <div class="treeTop">
         <span>存款系列</span>
-        <el-button
-          size='mini'
-          @click="toAdd_xilie"
-        >新增</el-button>
+        <el-button size="mini" @click="toAdd_xilie">新增</el-button>
       </div>
 
       <div class="forT">
-
         <ul>
-          <li
-            v-for="item of menuTree"
-            :key='item.institutionId'
-          >
-            <p
-              @click="treeShow(item.institutionId)"
-              class="forTtitle"
-            >
+          <li v-for="item of menuTree" :key="item.institutionId">
+            <p @click="treeShow(item.institutionId)" class="forTtitle">
               <i
-                v-show='isShow(item.institutionId)'
+                v-show="isShow(item.institutionId)"
                 style="color:skyblue"
                 :class="`myIcon12px icon-xiasanjiaoxiangxiamianxing`"
               ></i>
               <i
-                v-show='!isShow(item.institutionId)'
+                v-show="!isShow(item.institutionId)"
                 style="color:skyblue"
                 :class="`myIcon12px icon-yousanjiaoxiangyoumianxing`"
               ></i>
-
               {{item.institutionName}}
             </p>
-            <ul
-              ref="forUl"
-              class="forTList"
-              v-show='isShow(item.institutionId)'
-            >
+            <ul ref="forUl" class="forTList" v-show="isShow(item.institutionId)">
               <li>
-                <p
-                  @click="useIt(item,$event)"
-                  style="width:100%;"
-                >无系列</p>
+                <p @click="useIt(item,$event)" style="width:100%;">无系列</p>
               </li>
-              <li
-                v-for="child of item.seriesList"
-                :key='child.id'
-              >
-                <p
-                  @click="useIt(child,$event)"
-                  style="width:100%;"
-                >{{child.name}}</p>
+              <li v-for="child of item.seriesList" :key="child.id">
+                <p @click="useIt(child,$event)" style="width:100%;">{{child.name}}</p>
 
-                <el-dropdown
-                  size="mini"
-                  @command="handleCommand(child,$event)"
-                >
+                <el-dropdown size="mini" @command="handleCommand(child,$event)">
                   <span class="el-dropdown-link">
                     <i class="el-icon-edit el-icon--right"></i>
                   </span>
@@ -69,79 +42,56 @@
                 </el-dropdown>
               </li>
             </ul>
-
           </li>
         </ul>
 
         <el-dialog
-          :close-on-click-modal='false'
+          :close-on-click-modal="false"
           :title="addXiLieForm.title"
           :visible.sync="addXiLieForm.toShow"
-          width="420px"
+          width="450px"
           :before-close="toCloseCunkuanDialog"
         >
-
           <el-form
             :model="addXiLieForm"
             label-width="100px"
-            label-suffix=':'
-            label-position='right'
+            label-suffix=":"
+            label-position="right"
           >
             <el-form-item label="* 机构">
               <el-select
                 v-model="addXiLieForm.jigou"
                 clearable
                 placeholder="请选择"
-                style="width:calc(100% - 60px);margin-right:3px;"
+                style="width:calc(100% - 40px);margin-right:3px;"
               >
                 <el-option
-                  size='mini'
+                  size="mini"
                   v-for="item in dictData.jigou"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
-                >
-                </el-option>
-
+                ></el-option>
               </el-select>
-              <a
-                class="isA"
-                @click="toJiGou"
-              >无机构？</a>
-
+              <a class="isA" @click="toJiGou">无机构？</a>
             </el-form-item>
 
             <el-form-item label="产品系列名称">
-              <el-input
-                v-model="addXiLieForm.xilie"
-                placeholder="请输入产品关键字"
-              ></el-input>
+              <el-input v-model="addXiLieForm.xilie" placeholder="请输入产品关键字"></el-input>
             </el-form-item>
-
           </el-form>
 
-          <div
-            slot="footer"
-            class="dialog-footer"
-          >
-            <el-button
-              @click="addXiLieSave"
-              type="primary"
-            >保 存</el-button>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="addXiLieSave" type="primary">保 存</el-button>
             <el-button @click="toCloseCunkuanDialog">取 消</el-button>
           </div>
         </el-dialog>
-
       </div>
     </div>
 
     <div class="forRight">
       <div style="margin-bottom:5px;">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="addNew()"
-        >新增存款产品</el-button>
+        <el-button size="mini" type="primary" @click="addNew()">新增存款产品</el-button>
         <!-- v-if="tableInputData.data.quanxian.includes('sys_user_add')" -->
         <!-- <el-button
           size="mini"
@@ -152,142 +102,85 @@
           size="mini"
           type="warning"
           @click="inPut(true)"
-        >导入</el-button> -->
-        <el-button
-          size="mini"
-          type="warning"
-          @click="seachClick(true)"
-        >查询</el-button>
-        <el-button
-          size="mini"
-          type="info"
-          @click="seachClick(false)"
-        >重置</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="toDelete('more')"
-        >批量删除</el-button>
+        >导入</el-button>-->
+        <el-button size="mini" type="warning" @click="seachClick('search')">查询</el-button>
+        <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
+        <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       </div>
 
       <el-form
         :inline="true"
         :model="searchForm"
         label-width="80px"
-        label-suffix=':'
-        label-position='right'
-        size='mini'
+        label-suffix=":"
+        label-position="right"
+        size="mini"
         ref="searchForm"
       >
         <el-form-item style="margin-bottom:5px;">
-          <el-input
-            v-model="searchForm.name"
-            placeholder="请输入产品名称"
-          ></el-input>
+          <el-input v-model="searchForm.name" placeholder="请输入产品名称"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="是否上架"
-          style="margin-bottom:5px;"
-        >
-          <el-select
-            v-model="searchForm.shelve"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="是否上架" style="margin-bottom:5px;">
+          <el-select v-model="searchForm.shelve" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in shelveList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-
         </el-form-item>
 
-        <el-form-item
-          label="产品类型"
-          style="margin-bottom:5px;"
-        >
-          <el-select
-            v-model="searchForm.productType"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="产品类型" style="margin-bottom:5px;">
+          <el-select v-model="searchForm.productType" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.deposit_type"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="创建时间"
-          style="margin-bottom:5px;"
-        >
+        <el-form-item label="创建时间" style="margin-bottom:5px;">
           <el-date-picker
-            value-format='yyyy-MM-dd'
+            value-format="yyyy-MM-dd"
             v-model="riqi"
             type="daterange"
             range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size='mini'
+            size="mini"
             style="width:100%"
-          >
-          </el-date-picker>
-
+          ></el-date-picker>
         </el-form-item>
       </el-form>
 
-      <div id='forTable'>
-        <isTable
-          :inputData='tableInputData'
-          @tableEmit='tableEmit'
-        />
-
+      <div id="forTable">
+        <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
       </div>
     </div>
 
     <el-dialog
-      :close-on-click-modal='false'
+      :close-on-click-modal="false"
       title="选择存款类别"
       :visible.sync="cunkuanDialog"
       width="500px"
       :before-close="toCloseCunkuanDialog"
     >
       <div class="addCunkuan">
-        <el-button
-          type="primary"
-          @click="toAdd_Cunkuan('活期')"
-        >活期存款</el-button>
-        <el-button
-          type="primary"
-          @click="toAdd_Cunkuan('定期')"
-        >定期存款</el-button>
-        <el-button
-          type="primary"
-          @click="toAdd_Cunkuan('智能')"
-        >智能存款</el-button>
-        <el-button
-          type="primary"
-          @click="toAdd_Cunkuan('结构')"
-        >结构存款</el-button>
+        <el-button type="primary" @click="toAdd_Cunkuan('活期')">活期存款</el-button>
+        <el-button type="primary" @click="toAdd_Cunkuan('定期')">定期存款</el-button>
+        <el-button type="primary" @click="toAdd_Cunkuan('智能')">智能存款</el-button>
+        <el-button type="primary" @click="toAdd_Cunkuan('结构')">结构存款</el-button>
       </div>
-      <div
-        slot="footer"
-        class="dialog-footer"
-      >
+      <div slot="footer" class="dialog-footer">
         <el-button @click="toCloseCunkuanDialog">取 消</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 <script>
@@ -441,7 +334,7 @@ export default {
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.getUserData();
+          this.seachClick("fenye");
           break;
         case "copy": // 复制按钮
           sessionStorage.setItem(
@@ -799,7 +692,7 @@ export default {
           }
         })
         .then(res => {
-          this.getUserData();
+          this.seachClick("upDown");
         });
     },
     // 删除、批量删除
@@ -815,7 +708,7 @@ export default {
               .then(res => {
                 if (res) {
                   this.$message.success("删除成功！");
-                  this.getUserData();
+                  this.seachClick("delete");
                 }
               });
           })
@@ -877,53 +770,12 @@ export default {
                 }
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
-                  callback: this.getUserData
+                  callback: this.seachClick("delete")
                 });
               });
             })
             .catch(() => {});
         }
-      }
-    },
-    // 搜索框、重置
-    seachClick(type) {
-      if (this.riqi.length > 0) {
-        this.searchForm.createTimeStart = this.riqi[0];
-        this.searchForm.createTimeEnd = this.riqi[1];
-      }
-      if (type) {
-        // 过滤没有数据的查询项
-        let obj = {};
-        Object.keys(this.searchForm).forEach(str => {
-          if (this.searchForm[str]) {
-            obj[str] = this.searchForm[str];
-          }
-        });
-
-        // 查询用户
-        this.$api
-          .search_cunkuanlistData({
-            vm: this,
-            data: obj
-          })
-          .then(res => {
-            if (res) {
-              this.afterGetData(res.data);
-            }
-          });
-      } else {
-        // 重置
-        this.searchForm = {
-          name: "", // 产品关键字
-          shelve: "", // 是否上架
-          productType: "", // 产品类型
-          createTimeStart: "", // 创建时间（开始）
-          createTimeEnd: "" // 创建时间（结束）
-        };
-        this.riqi = [];
-        this.tableInputData.pageSize = 10; // 分页相关
-        this.tableInputData.pageNum = 1;
-        this.getUserData();
       }
     },
     // 新增存款
@@ -1033,15 +885,80 @@ export default {
         this.loadEnd = true;
       });
     },
+    // 搜索框、重置
+    seachClick(type) {
+      // search  // 搜索
+      // reset  // 重置
+      // fenye  // 分页
+      // upDown  // 上下架
+      // delete // 删除
+      let obj = {};
+      switch (type) {
+        case "search":
+          if (this.riqi.length > 0) {
+            this.searchForm.createTimeStart = this.riqi[0];
+            this.searchForm.createTimeEnd = this.riqi[1];
+          }
+          // 过滤没有数据的属性
+          Object.keys(this.searchForm).forEach(str => {
+            if (this.searchForm[str]) {
+              obj[str] = this.searchForm[str];
+            }
+          });
+          this.tableInputData.pageSize = 10;
+          this.tableInputData.pageNum = 1;
+          obj.pageSize = this.tableInputData.pageSize;
+          obj.pageNum = this.tableInputData.pageNum;
+          this.getUserData(obj);
+          break;
+        case "reset":
+          // 重置
+          this.searchForm = {
+            name: "", // 产品关键字
+            shelve: "", // 是否上架
+            productType: "", // 产品类型
+            createTimeStart: "", // 创建时间（开始）
+            createTimeEnd: "" // 创建时间（结束）
+          };
+          this.riqi = [];
+          this.tableInputData.pageSize = 10; // 分页相关
+          this.tableInputData.pageNum = 1;
+          this.getUserData();
+          break;
+        case "fenye":
+        case "upDown":
+        case "delete":
+          if (this.riqi.length > 0) {
+            this.searchForm.createTimeStart = this.riqi[0];
+            this.searchForm.createTimeEnd = this.riqi[1];
+          }
+          // 过滤没有数据的属性
+          Object.keys(this.searchForm).forEach(str => {
+            if (this.searchForm[str]) {
+              obj[str] = this.searchForm[str];
+            }
+          });
+          obj.pageSize = this.tableInputData.pageSize;
+          obj.pageNum = this.tableInputData.pageNum;
+          this.getUserData(obj);
+          break;
+      }
+    },
     // 获取表格数据
-    getUserData() {
+    getUserData(data) {
+      let obj;
+      if (data) {
+        obj = data;
+      } else {
+        obj = {
+          pageSize: this.tableInputData.pageSize,
+          pageNum: this.tableInputData.pageNum
+        };
+      }
       this.$api
         .get_cunkuanlistData({
           vm: this,
-          data: {
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum
-          }
+          data: obj
         })
         .then(res => {
           if (res) {

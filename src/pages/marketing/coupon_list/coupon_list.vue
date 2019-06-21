@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <div class="toCreateBtn">
         <el-button
@@ -9,62 +9,44 @@
           type="warning"
           @click="buttonRowUpdata(true)"
         >创建卡券</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="toDelete('more')"
-        >批量删除</el-button>
+        <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       </div>
       <div>
-
         <!-- 搜索 -->
         <el-form
           :inline="true"
           :model="ruleForm"
           label-width="80px"
-          label-suffix=':'
-          label-position='right'
-          size='mini'
+          label-suffix=":"
+          label-position="right"
+          size="mini"
           ref="ruleForm"
         >
           <el-form-item label="卡券名称">
-            <el-input
-              v-model="ruleForm.name"
-              placeholder="请输入"
-            ></el-input>
+            <el-input v-model="ruleForm.name" placeholder="请输入"></el-input>
           </el-form-item>
 
           <el-form-item label="卡券类别">
-            <el-select
-              v-model="ruleForm.type"
-              clearable
-              placeholder="请选择"
-            >
+            <el-select v-model="ruleForm.type" clearable placeholder="请选择">
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in typeList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item label="状态">
-            <el-select
-              v-model="ruleForm.status"
-              clearable
-              placeholder="请选择"
-            >
+            <el-select v-model="ruleForm.status" clearable placeholder="请选择">
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in statueList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
@@ -75,104 +57,58 @@
               range-separator="~"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              size='mini'
+              size="mini"
               style="width:100%"
               value-format="yyyy-MM-dd HH:mm:ss"
-            >
-            </el-date-picker>
+            ></el-date-picker>
           </el-form-item>
 
           <el-form-item>
-            <el-button
-              size="mini"
-              type="primary"
-              @click="seachClick(true)"
-            >查询</el-button>
-            <el-button
-              size="mini"
-              type="info"
-              @click="seachClick(false)"
-            >重置</el-button>
+            <el-button size="mini" type="primary" @click="seachClick('search')">查询</el-button>
+            <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
           </el-form-item>
         </el-form>
-
       </div>
-
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
     </div>
     <!-- 弹出框 -->
     <el-dialog
-      :close-on-click-modal='false'
+      :close-on-click-modal="false"
       :title="dialog.title"
       :visible.sync="dialog.show"
       width="500px"
       :before-close="dialogClose"
     >
-      <el-form
-        size="small"
-        :model="dialog.data"
-        label-width="110px"
-      >
+      <el-form size="small" :model="dialog.data" label-width="110px">
         <el-form-item label="卡券名称">
-          <el-input
-            readonly
-            v-model="dialog.data.name"
-          ></el-input>
+          <el-input readonly v-model="dialog.data.name"></el-input>
         </el-form-item>
         <el-form-item label="已设定发放总数">
-          <el-input
-            readonly
-            v-model="dialog.data.issueNum"
-          ></el-input>
+          <el-input readonly v-model="dialog.data.issueNum"></el-input>
         </el-form-item>
 
         <el-form-item label="已领取">
-          <el-input
-            readonly
-            v-model="dialog.data.getNum"
-          ></el-input>
+          <el-input readonly v-model="dialog.data.getNum"></el-input>
         </el-form-item>
         <el-form-item label="剩余">
-          <el-input
-            readonly
-            v-model="dialog.data.remain"
-          ></el-input>
+          <el-input readonly v-model="dialog.data.remain"></el-input>
         </el-form-item>
         <el-form-item label="发放">
           <el-input
             class="addDanWei"
-            :placeholder='`只能输入正整数，小于${dialog.data.remain}张`'
+            :placeholder="`只能输入正整数，小于${dialog.data.remain}张`"
             v-model="dialog.data.add"
           ></el-input>
         </el-form-item>
-
       </el-form>
 
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          size="mini"
-          @click="dialogAction(false)"
-        >取 消</el-button>
-        <el-button
-          size="mini"
-          type="primary"
-          @click="dialogAction(true)"
-        >确 定</el-button>
-
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="dialogAction(false)">取 消</el-button>
+        <el-button size="mini" type="primary" @click="dialogAction(true)">确 定</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 <script>
@@ -258,6 +194,7 @@ export default {
     this.getUserData();
   },
   methods: {
+    // 检查数字
     checkNum(value) {
       let reg = /\./;
       if (reg.test(value)) {
@@ -298,7 +235,7 @@ export default {
             .then(res => {
               if (res) {
                 this.$message.success("增发成功！");
-                this.getUserData();
+                this.seachClick("add");
                 this.dialog.show = false;
               }
             });
@@ -316,7 +253,7 @@ export default {
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.getUserData();
+          this.seachClick("fenye");
           break;
         case "edit": // 编辑按钮
           this.buttonRowUpdata(false, data.data);
@@ -352,7 +289,7 @@ export default {
           }
         })
         .then(res => {
-          this.getUserData();
+          this.seachClick("upDown");
         });
     },
     // 删除、批量删除
@@ -368,7 +305,7 @@ export default {
               .then(res => {
                 if (res) {
                   this.$message.success("删除成功！");
-                  this.getUserData();
+                  this.seachClick("delete");
                 }
               });
           })
@@ -428,7 +365,7 @@ export default {
                 }
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
-                  callback: this.getUserData
+                  callback: this.seachClick("delete")
                 });
               });
             })
@@ -436,46 +373,7 @@ export default {
         }
       }
     },
-    // 查询、重置
-    seachClick(type) {
-      if (type) {
-        let obj = {};
-        if (this.ruleForm.name) {
-          obj.name = this.ruleForm.name;
-        }
-        if (this.ruleForm.type) {
-          obj.type = this.ruleForm.type;
-        }
-        if (this.ruleForm.status) {
-          obj.status = this.ruleForm.status;
-        }
 
-        if (this.ruleForm.couponDate) {
-          obj.queryBeginTime = this.ruleForm.couponDate[0];
-          obj.queryEndTime = this.ruleForm.couponDate[1];
-        }
-        this.$api
-          .market_create_getCouponList({
-            vm: this,
-            data: obj
-          })
-          .then(res => {
-            if (res) {
-              this.afterGetData(res.data);
-            }
-          });
-      } else {
-        this.ruleForm = {
-          name: "",
-          type: "",
-          status: "",
-          couponDate: ""
-        };
-        this.tableInputData.pageSize = 10;
-        this.tableInputData.pageNum = 1;
-        this.getUserData();
-      }
-    },
     // 领用详情
     lingyong(data) {
       sessionStorage.setItem("page", "领用详情");
@@ -680,15 +578,99 @@ export default {
         return true;
       });
     },
+    // 查询、重置
+    seachClick(type) {
+      // search  查询
+      // reset  重置
+      // add    增发
+      // fenye  分页
+      // upDown 表格里的switch事件
+      // delete 删除
+      let obj = {};
+      switch (type) {
+        case "search":
+          if (this.ruleForm.name) {
+            obj.name = this.ruleForm.name;
+          }
+          if (this.ruleForm.type) {
+            obj.type = this.ruleForm.type;
+          }
+          if (this.ruleForm.status) {
+            obj.status = this.ruleForm.status;
+          }
+
+          if (this.ruleForm.couponDate) {
+            obj.queryBeginTime = this.ruleForm.couponDate[0];
+            obj.queryEndTime = this.ruleForm.couponDate[1];
+          }
+          this.tableInputData.pageSize = 10;
+          this.tableInputData.pageNum = 1;
+          obj.pageSize = this.tableInputData.pageSize;
+          obj.pageNum = this.tableInputData.pageNum;
+          this.getUserData(obj);
+          break;
+        case "reset":
+          this.ruleForm = {
+            name: "",
+            type: "",
+            status: "",
+            couponDate: ""
+          };
+          this.tableInputData.pageSize = 10;
+          this.tableInputData.pageNum = 1;
+          this.getUserData();
+          break;
+        case "add":
+        case "reset":
+          this.ruleForm = {
+            name: "",
+            type: "",
+            status: "",
+            couponDate: ""
+          };
+          this.tableInputData.pageSize = 10;
+          this.tableInputData.pageNum = 1;
+          this.getUserData(obj);
+          break;
+
+        case "fenye":
+        case "upDown":
+        case "delete":
+          if (this.ruleForm.name) {
+            obj.name = this.ruleForm.name;
+          }
+          if (this.ruleForm.type) {
+            obj.type = this.ruleForm.type;
+          }
+          if (this.ruleForm.status) {
+            obj.status = this.ruleForm.status;
+          }
+
+          if (this.ruleForm.couponDate) {
+            obj.queryBeginTime = this.ruleForm.couponDate[0];
+            obj.queryEndTime = this.ruleForm.couponDate[1];
+          }
+          obj.pageSize = this.tableInputData.pageSize;
+          obj.pageNum = this.tableInputData.pageNum;
+          this.getUserData(obj);
+          break;
+      }
+    },
     // 获取用户表格数据
-    getUserData() {
+    getUserData(data) {
+      let obj;
+      if (data) {
+        obj = data;
+      } else {
+        obj = {
+          pageSize: this.tableInputData.pageSize,
+          pageNum: this.tableInputData.pageNum
+        };
+      }
       this.$api
         .market_create_getCouponList({
           vm: this,
-          data: {
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum
-          }
+          data: obj
         })
         .then(res => {
           if (res) {

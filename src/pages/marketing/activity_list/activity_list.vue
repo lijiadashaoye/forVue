@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <div class="toCreateBtn">
         <el-button
@@ -9,52 +9,36 @@
           type="warning"
           @click="buttonRowUpdata(true)"
         >创建活动</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="toDelete('more')"
-        >批量删除</el-button>
+        <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       </div>
       <div>
-
         <!-- 搜索 -->
         <el-form
           :inline="true"
           :model="ruleForm"
           label-width="80px"
-          label-suffix=':'
-          label-position='right'
-          size='mini'
+          label-suffix=":"
+          label-position="right"
+          size="mini"
           ref="ruleForm"
         >
           <el-form-item label="活动编号">
-            <el-input
-              v-model="ruleForm.activityNo"
-              placeholder="请输入"
-            ></el-input>
+            <el-input v-model="ruleForm.activityNo" placeholder="请输入"></el-input>
           </el-form-item>
 
           <el-form-item label="活动名称">
-            <el-input
-              v-model="ruleForm.activityName"
-              placeholder="请输入"
-            ></el-input>
+            <el-input v-model="ruleForm.activityName" placeholder="请输入"></el-input>
           </el-form-item>
 
           <el-form-item label="活动状态">
-            <el-select
-              v-model="ruleForm.shelfStatus"
-              clearable
-              placeholder="请选择"
-            >
+            <el-select v-model="ruleForm.shelfStatus" clearable placeholder="请选择">
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in searchList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
@@ -65,37 +49,20 @@
               range-separator="~"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              size='mini'
+              size="mini"
               style="width:100%"
-            >
-            </el-date-picker>
+            ></el-date-picker>
           </el-form-item>
 
           <el-form-item>
-            <el-button
-              size="mini"
-              type="primary"
-              @click="seachClick(true)"
-            >查询</el-button>
-            <el-button
-              size="mini"
-              type="info"
-              @click="seachClick(false)"
-            >重置</el-button>
+            <el-button size="mini" type="primary" @click="seachClick('search')">查询</el-button>
+            <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
           </el-form-item>
         </el-form>
-
       </div>
-
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
     </div>
   </div>
 </template>
@@ -162,7 +129,7 @@ export default {
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.getUserData();
+          this.seachClick("fenye");
           break;
         case "edit": // 编辑按钮
           this.buttonRowUpdata(false, data.data);
@@ -200,7 +167,7 @@ export default {
           }
         })
         .then(res => {
-          this.getUserData();
+          this.seachClick("upDown");
         });
     },
     // 删除、批量删除
@@ -216,7 +183,7 @@ export default {
               .then(res => {
                 if (res) {
                   this.$message.success("删除成功！");
-                  this.getUserData();
+                  this.seachClick('delete');
                 }
               });
           })
@@ -276,7 +243,7 @@ export default {
                 }
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
-                  callback: this.getUserData
+                  callback: this.seachClick("delete")
                 });
               });
             })
@@ -284,45 +251,7 @@ export default {
         }
       }
     },
-    // 查询、重置
-    seachClick(type) {
-      if (type) {
-        let obj = {};
-        if (this.ruleForm.activityNo) {
-          obj.activityNo = this.ruleForm.activityNo;
-        }
-        if (this.ruleForm.shelfStatus) {
-          obj.shelfStatus = this.ruleForm.shelfStatus;
-        }
-        if (this.ruleForm.activityName) {
-          obj.activityName = this.ruleForm.activityName;
-        }
-        if (this.ruleForm.actDate) {
-          obj.queryBeginTime = this.ruleForm.actDate[0].getTime();
-          obj.queryEndTime = this.ruleForm.actDate[1].getTime();
-        }
-        this.$api
-          .market_list_getListData({
-            vm: this,
-            data: obj
-          })
-          .then(res => {
-            if (res) {
-              this.afterGetData(res.data);
-            }
-          });
-      } else {
-        this.ruleForm = {
-          actNum: "",
-          actName: "",
-          actState: "",
-          actDate: ""
-        };
-        this.tableInputData.pageSize = 10;
-        this.tableInputData.pageNum = 1;
-        this.getUserData();
-      }
-    },
+
     // 创建活动按钮、表格的编辑按钮
     buttonRowUpdata(type, inData) {
       if (type) {
@@ -455,15 +384,83 @@ export default {
         this.loadEnd = true;
       });
     },
+    // 查询、重置
+    seachClick(type) {
+      // search  // 搜索
+      // reset  // 重置
+      // fenye  // 分页
+      // upDown  // 上下架
+      // delete // 删除
+      let obj = {};
+      switch (type) {
+        case "search":
+          if (this.ruleForm.activityNo) {
+            obj.activityNo = this.ruleForm.activityNo;
+          }
+          if (this.ruleForm.shelfStatus) {
+            obj.shelfStatus = this.ruleForm.shelfStatus;
+          }
+          if (this.ruleForm.activityName) {
+            obj.activityName = this.ruleForm.activityName;
+          }
+          if (this.ruleForm.actDate) {
+            obj.queryBeginTime = this.ruleForm.actDate[0].getTime();
+            obj.queryEndTime = this.ruleForm.actDate[1].getTime();
+          }
+          this.tableInputData.pageSize = 10;
+          this.tableInputData.pageNum = 1;
+          obj.pageSize = this.tableInputData.pageSize;
+          obj.pageNum = this.tableInputData.pageNum;
+          this.getUserData(obj);
+          break;
+        case "reset":
+          this.ruleForm = {
+            actNum: "",
+            actName: "",
+            actState: "",
+            actDate: ""
+          };
+          this.tableInputData.pageSize = 10;
+          this.tableInputData.pageNum = 1;
+          this.getUserData();
+          break;
+        case "fenye":
+        case "upDown":
+        case "delete":
+          if (this.ruleForm.activityNo) {
+            obj.activityNo = this.ruleForm.activityNo;
+          }
+          if (this.ruleForm.shelfStatus) {
+            obj.shelfStatus = this.ruleForm.shelfStatus;
+          }
+          if (this.ruleForm.activityName) {
+            obj.activityName = this.ruleForm.activityName;
+          }
+          if (this.ruleForm.actDate) {
+            obj.queryBeginTime = this.ruleForm.actDate[0].getTime();
+            obj.queryEndTime = this.ruleForm.actDate[1].getTime();
+          }
+          obj.pageSize = this.tableInputData.pageSize;
+          obj.pageNum = this.tableInputData.pageNum;
+          this.getUserData(obj);
+          break;
+      }
+    },
     // 获取用户表格数据
-    getUserData() {
+    getUserData(data) {
+      let obj;
+      if (data) {
+        obj = data;
+      } else {
+        obj = {
+          pageSize: this.tableInputData.pageSize,
+          pageNum: this.tableInputData.pageNum
+        };
+      }
       this.$api
         .market_list_getListData({
           vm: this,
-          data: {
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum
-          }
+          data: obj
         })
         .then(res => {
           if (res) {

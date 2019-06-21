@@ -24,15 +24,6 @@ export default {
             url: "admin/user/" + data.data
         })
     },
-
-    // 查询用户。重置
-    admin_user_searchUser(data) {
-        return data.vm.$axios({
-            method: "get",
-            url: data.data ? `admin/user/userPage?username=${data.data}` : "admin/user/userPage"
-        })
-    },
-
     // 编辑用户
     admin_user_getUser(data) {
         return data.vm.$axios({

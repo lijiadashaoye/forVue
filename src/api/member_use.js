@@ -43,9 +43,10 @@ export default {
     ////////////////////////////////////////////////////////////////
     // 获取标签列表
     member_manager_getMarkLise(data) {
+        console.log(data)
         return data.vm.$axios({
             method: 'get',
-            url: `/member/manager/label?${qs.stringify(data.data)}`,
+            url: `/member/manager/label?${qs.stringify(data.data.search)}`,
         })
     },
 

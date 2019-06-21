@@ -1,78 +1,75 @@
 <template>
-
   <div class="componentWaper">
     <div class="headerName">
       <h3>{{pageName}}</h3>
-      <el-button
-        size="mini"
-        type="warning"
-        @click="back"
-      >返回</el-button>
+      <el-button size="mini" type="warning" @click="back">返回</el-button>
     </div>
 
     <div class="contents">
       <div style="width:100%;">
         <ul>
-          <li v-if="infoData.name"><strong>红包名称：</strong>
+          <li v-if="infoData.name">
+            <strong>红包名称：</strong>
             {{infoData.name}}
           </li>
-          <li v-if="infoData.packetExplain"><strong>红包说明：</strong>
+          <li v-if="infoData.packetExplain">
+            <strong>红包说明：</strong>
             {{infoData.packetExplain}}
           </li>
-          <li v-if="infoData.amountType"><strong>红包类型：</strong>
+          <li v-if="infoData.amountType">
+            <strong>红包类型：</strong>
             {{infoData.amountType}}
           </li>
-          <li v-if="infoData.amountMin"><strong>红包类型-随机-显示最小值：</strong>
+          <li v-if="infoData.amountMin">
+            <strong>红包类型-随机-显示最小值：</strong>
             {{infoData.amountMin}}
           </li>
-          <li v-if="infoData.amountMax"><strong>红包类型-随机 显示最大值：</strong>
+          <li v-if="infoData.amountMax">
+            <strong>红包类型-随机 显示最大值：</strong>
             {{infoData.amountMax}}
           </li>
-          <li v-if="infoData.grantType"><strong>发放类型：</strong>
+          <li v-if="infoData.grantType">
+            <strong>发放类型：</strong>
             {{infoData.grantType}}
           </li>
-          <li v-if="infoData.totalAmount"><strong>红包总金额：</strong>
+          <li v-if="infoData.totalAmount">
+            <strong>红包总金额：</strong>
             {{infoData.totalAmount}}
           </li>
 
-          <li v-if="infoData.totalNum"><strong>红包总个数：</strong>
+          <li v-if="infoData.totalNum">
+            <strong>红包总个数：</strong>
             {{infoData.totalNum}}
           </li>
-          <li v-if="infoData.maxAmount"><strong>上限金额：</strong>
+          <li v-if="infoData.maxAmount">
+            <strong>上限金额：</strong>
             {{infoData.maxAmount}}
           </li>
-          <li v-if="infoData.maxNum"><strong>上限个数：</strong>
+          <li v-if="infoData.maxNum">
+            <strong>上限个数：</strong>
             {{infoData.maxNum}}
           </li>
         </ul>
-        <div
-          id='forTable'
-          style="width:100%;"
-        >
-          <isTable
-            v-if="info_table.show"
-            :inputData='info_table'
-            @tableEmit="tableEmit($event)"
-          />
+        <div id="forTable" style="width:100%;">
+          <isTable v-if="info_table.show" :inputData="info_table" @tableEmit="tableEmit($event)"/>
         </div>
       </div>
-      <div
-        v-if="Actor.length>0"
-        class="actors"
-      >
+      <div v-if="Actor.length>0" class="actors">
         <p>操作人:</p>
-        <div
-          v-for="(tar,index) in Actor"
-          :key='index'
-        >
-          <span v-if="tar.creator">{{'ID：'+tar.creator}}<br></span>
-          <span v-if="tar.creatorName">{{'名字：'+tar.creatorName}}<br></span>
-          <span v-if="tar.gmtCreated"> {{'时间：'+tar.gmtCreated}}</span>
+        <div v-for="(tar,index) in Actor" :key="index">
+          <span v-if="tar.creator">
+            {{'ID：'+tar.creator}}
+            <br>
+          </span>
+          <span v-if="tar.creatorName">
+            {{'名字：'+tar.creatorName}}
+            <br>
+          </span>
+          <span v-if="tar.gmtCreated">{{'时间：'+tar.gmtCreated}}</span>
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -227,5 +224,20 @@ strong {
 }
 .actors > div {
   padding: 10px;
+}
+.headerName {
+  display: flex;
+  justify-content: space-between;
+}
+
+.headerName > span {
+  font-size: 14px;
+  padding-right: 10px;
+  color: rgb(37, 196, 211);
+  cursor: pointer;
+}
+
+.headerName > span:hover {
+  color: rgb(68, 29, 240);
 }
 </style>

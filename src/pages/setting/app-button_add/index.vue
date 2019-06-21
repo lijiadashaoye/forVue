@@ -38,7 +38,9 @@ export default {
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
       if (jurisdiction.indexOf("app_button_add") > -1) {
         app_button_add(data).then(res=>{
-          this.$router.push(`/home/setting/app-button/list`)
+          if(res && res.success) {
+            this.$router.push(`/home/setting/app-button/list`)
+          }
         }).catch(()=> {
           this.$alert(`${res.message}`, '保存失败', {
             confirmButtonText: '确定',

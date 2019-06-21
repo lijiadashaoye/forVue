@@ -482,3 +482,20 @@ export const comment_add = (data)=> {
 export const comment_del = (id) => {
     return AxiosDelete(`/setting/manager/notice/${id}`)
 }
+
+
+//通用地址
+//列表
+export const productUrl_list = (data) => {
+    return AxiosGet(`/setting/manager/confing-url`, data)
+}
+
+//新增
+export const productUrl_add = (data)=> {
+    return AxiosPost(`/setting/manager/confing-url`,data)
+}
+
+//删除
+export const productUrl_delete = (id)=> {
+    return AxiosDelete(`/setting/manager/confing-url/${id}`)
+}

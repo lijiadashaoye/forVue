@@ -23,6 +23,7 @@ import slider from './setting/slider';//侧边栏
 import peroid from './setting/peroid';//首页期限配置
 import notice from './setting/notice';//公告
 import comment from './setting/comment';//评论
+import productUrl from './setting/productUrl';//通用地址
 const store = new Vuex.Store({
     modules: { // 使用状态整合来区分
         for_layout,
@@ -45,7 +46,8 @@ const store = new Vuex.Store({
         slider,
         peroid,
         notice,
-        comment
+        comment,
+        productUrl
     }
 });
 

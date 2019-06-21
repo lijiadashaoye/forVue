@@ -2,74 +2,38 @@
   <div class="pageWaper">
     <div class="formWaper">
       <div class="forms">
-        <el-form
-          size="small"
-          ref="formData"
-          :model="formData"
-          :rules="rules"
-          label-width="121px"
-        >
+        <el-form size="small" ref="formData" :model="formData" :rules="rules" label-width="121px">
           <div style="padding-bottom:10px;">
             <el-radio
               v-model="formData.type"
               label="EXPERIENCE"
               @change="couponType('EXPERIENCE')"
             >体验金券</el-radio>
-            <el-radio
-              v-model="formData.type"
-              label="AWARD"
-              @change="couponType('AWARD')"
-            >奖励金券</el-radio>
+            <el-radio v-model="formData.type" label="AWARD" @change="couponType('AWARD')">奖励金券</el-radio>
           </div>
 
-          <el-form-item
-            :label="formTitle.title"
-            prop="name"
-            placeholder="请输入"
-          >
+          <el-form-item :label="formTitle.title" prop="name" placeholder="请输入">
             <el-input v-model="formData.name"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="卡券说明"
-            prop="description"
-          >
+          <el-form-item label="卡券说明" prop="description">
             <el-input
               placeholder="不显示在App端，可为空"
-              rows='2'
-              type='textarea'
+              rows="2"
+              type="textarea"
               v-model="formData.description"
             ></el-input>
           </el-form-item>
 
-          <el-form-item
-            :label="formTitle.money"
-            prop="money"
-          >
-            <el-input
-              type="number"
-              class='forMoney'
-              placeholder="请输入"
-              v-model="formData.money"
-            ></el-input>
+          <el-form-item :label="formTitle.money" prop="money">
+            <el-input type="number" class="forMoney" placeholder="请输入" v-model="formData.money"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="持续时间"
-            prop="days"
-          >
-            <el-input
-              type="number"
-              class="forDays"
-              placeholder="请输入"
-              v-model="formData.days"
-            ></el-input>
+          <el-form-item label="持续时间" prop="days">
+            <el-input type="number" class="forDays" placeholder="请输入" v-model="formData.days"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="有效期计算方式"
-            prop="useType"
-          >
+          <el-form-item label="有效期计算方式" prop="useType">
             <el-select
               v-model="formData.useType"
               placeholder="请选择有效期计算方式"
@@ -82,16 +46,12 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
           <div v-if="formData.useType==='FIXATION'">
-            <el-form-item
-              label="固定时间"
-              prop='gudingTime'
-            >
+            <el-form-item label="固定时间" prop="gudingTime">
               <el-date-picker
                 style="width:100%;"
                 v-model="formData.gudingTime"
@@ -99,20 +59,12 @@
                 range-separator="~"
                 start-placeholder="开始日期"
                 end-placeholder="结束日期"
-              >
-              </el-date-picker>
+              ></el-date-picker>
             </el-form-item>
-
           </div>
 
-          <div
-            v-if="formData.useType==='GET'"
-            style="display:flex;width:100%;"
-          >
-            <el-form-item
-              label="自领取之后"
-              prop='GET'
-            >
+          <div v-if="formData.useType==='GET'" style="display:flex;width:100%;">
+            <el-form-item label="自领取之后" prop="GET">
               <el-select
                 v-model="formData.afterGet"
                 placeholder="请选择"
@@ -124,16 +76,11 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                >
-                </el-option>
+                ></el-option>
               </el-select>
             </el-form-item>
 
-            <el-form-item
-              prop='afterGetValue'
-              label="有效期"
-              label-width="70px"
-            >
+            <el-form-item prop="afterGetValue" label="有效期" label-width="70px">
               <el-input
                 class="forDays"
                 type="number"
@@ -143,14 +90,8 @@
             </el-form-item>
           </div>
 
-          <div
-            v-if="formData.useType==='USE'"
-            style="display:flex;width:100%;"
-          >
-            <el-form-item
-              label="自使用之后"
-              prop='USE'
-            >
+          <div v-if="formData.useType==='USE'" style="display:flex;width:100%;">
+            <el-form-item label="自使用之后" prop="USE">
               <el-select
                 v-model="formData.afterUse"
                 placeholder="请选择"
@@ -162,16 +103,11 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                >
-                </el-option>
+                ></el-option>
               </el-select>
             </el-form-item>
 
-            <el-form-item
-              label="有效期"
-              prop='afterUseValue'
-              label-width="70px"
-            >
+            <el-form-item label="有效期" prop="afterUseValue" label-width="70px">
               <el-input
                 type="number"
                 class="forDays"
@@ -181,46 +117,24 @@
             </el-form-item>
           </div>
 
-          <el-form-item
-            prop='limit'
-            label="领券限制"
-          >
-            <el-input
-              class="addDanWei"
-              type="number"
-              placeholder="请输入"
-              v-model="formData.limit"
-            ></el-input>
+          <el-form-item prop="limit" label="领券限制">
+            <el-input class="addDanWei" type="number" placeholder="请输入" v-model="formData.limit"></el-input>
             <span>(每个用户领券上限，如不填默认为一张)</span>
           </el-form-item>
 
-          <el-form-item
-            label="使用须知"
-            prop="toKnow"
-          >
+          <el-form-item label="使用须知" prop="toKnow">
             <el-input
-              type='textarea'
+              type="textarea"
               placeholder="填写后，显示于APP端中的活动规则（最多输入800个字符）"
               v-model="formData.toKnow"
             ></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="发放总张数"
-            prop="total"
-          >
-            <el-input
-              class="addDanWei"
-              type="number"
-              placeholder="请输入"
-              v-model="formData.total"
-            ></el-input>
+          <el-form-item label="发放总张数" prop="total">
+            <el-input class="addDanWei" type="number" placeholder="请输入" v-model="formData.total"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="使用条件"
-            prop="how"
-          >
+          <el-form-item label="使用条件" prop="how">
             <el-select
               v-model="formData.how"
               placeholder="请选择"
@@ -233,8 +147,7 @@
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
@@ -250,11 +163,7 @@
                 <span>卡券：</span>
                 <span>{{tar.name}}</span>
               </p>
-              <p
-                v-for="(tars,ind2) in jiangliHongBao"
-                :key="ind2+2"
-                @click="deleteJiangli(tars)"
-              >
+              <p v-for="(tars,ind2) in jiangliHongBao" :key="ind2+2" @click="deleteJiangli(tars)">
                 <span>红包：</span>
                 <span>{{tars.name}}</span>
               </p>
@@ -262,13 +171,10 @@
           </div>
         </el-form>
       </div>
-      <div
-        class="tables"
-        v-if="formData.how==='SHARE'"
-      >
+      <div class="tables" v-if="formData.how==='SHARE'">
         <!-- 卡券 -->
         <div>
-          <div id='forHeader'>
+          <div id="forHeader">
             <el-form
               size="small"
               :model="COUPON_tableSearch"
@@ -276,10 +182,7 @@
               label-width="80px"
               inline
             >
-              <el-form-item
-                style="margin-bottom:2px;"
-                label="持续时间"
-              >
+              <el-form-item style="margin-bottom:2px;" label="持续时间">
                 <el-date-picker
                   style="width:100%;"
                   v-model="COUPON_tableSearch.time"
@@ -287,46 +190,33 @@
                   range-separator="~"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
-                >
-                </el-date-picker>
+                ></el-date-picker>
               </el-form-item>
 
-              <el-form-item
-                style="margin-bottom:2px"
-                label="卡券名称"
-              >
+              <el-form-item style="margin-bottom:2px" label="卡券名称">
                 <el-input v-model="COUPON_tableSearch.name"></el-input>
               </el-form-item>
-              <el-form-item
-                style="margin-bottom:2px;"
-                label="卡券说明"
-              >
+              <el-form-item style="margin-bottom:2px;" label="卡券说明">
                 <el-input v-model="COUPON_tableSearch.couponExplain"></el-input>
               </el-form-item>
 
               <el-form-item style="margin-bottom:2px;">
-                <el-button
-                  size="mini"
-                  type="danger"
-                  @click="toSearch('COUPON')"
-                >查询</el-button>
+                <el-button size="mini" type="danger" @click="toSearch('COUPON')">查询</el-button>
+                <el-button size="mini" type="info" @click="resetSearch('COUPON')">重置</el-button>
               </el-form-item>
             </el-form>
           </div>
-          <div
-            id='forHeader'
-            style="height:240px;"
-          >
+          <div id="forHeader" style="height:240px;">
             <isTable
               v-if="COUPON_table.show"
-              :inputData='COUPON_table'
-              @tableEmit='tableEmit($event,"coupon")'
+              :inputData="COUPON_table"
+              @tableEmit="tableEmit($event,'coupon')"
             />
           </div>
         </div>
         <!-- 红包 -->
         <div>
-          <div id='forHeader'>
+          <div id="forHeader">
             <el-form
               size="small"
               :model="PACKET_tableSearch"
@@ -334,37 +224,23 @@
               label-width="80px"
               inline
             >
-              <el-form-item
-                style="margin-bottom:2px"
-                label="红包名称"
-              >
+              <el-form-item style="margin-bottom:2px" label="红包名称">
                 <el-input v-model="PACKET_tableSearch.name"></el-input>
               </el-form-item>
-              <el-form-item
-                style="margin-bottom:2px;"
-                label="红包说明"
-              >
+              <el-form-item style="margin-bottom:2px;" label="红包说明">
                 <el-input v-model="PACKET_tableSearch.couponExplain"></el-input>
               </el-form-item>
 
               <el-form-item style="margin-bottom:2px;">
-                <el-button
-                  size="mini"
-                  type="danger"
-                  @click="toSearch('PACKET')"
-                >查询</el-button>
+                <el-button size="mini" type="danger" @click="toSearch('PACKET')">查询</el-button>
+                <el-button size="mini" type="info" @click="resetSearch('PACKET')">重置</el-button>
               </el-form-item>
-
             </el-form>
-
           </div>
-          <div
-            id='forHeader'
-            style="height:240px;"
-          >
+          <div id="forHeader" style="height:240px;">
             <isTable
               v-if="PACKET_table.show"
-              :inputData='PACKET_table'
+              :inputData="PACKET_table"
               @tableEmit="tableEmit($event,'packet')"
             />
           </div>
@@ -373,14 +249,8 @@
     </div>
 
     <div class="buttons">
-      <el-button
-        @click="step()"
-        type="primary"
-      >下一步</el-button>
-      <el-button
-        @click="reset"
-        type="info"
-      >重 置</el-button>
+      <el-button @click="step()" type="primary">下一步</el-button>
+      <el-button @click="reset" type="info">重 置</el-button>
     </div>
   </div>
 </template>
@@ -540,12 +410,16 @@ export default {
         name: "",
         couponExplain: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
+        pageSize: 10,
+        pageNum: 1
       },
       // 红包列表的搜索
       PACKET_tableSearch: {
         name: "",
-        couponExplain: ""
+        couponExplain: "",
+        pageSize: 10,
+        pageNum: 1
       },
       //表单验证
       rules: {
@@ -607,9 +481,9 @@ export default {
 
                 sessionStorage.setItem("fromHttp", JSON.stringify(httpData));
                 this.couponType(httpData.type);
-                let obj={};
-                
-                 obj= {
+                let obj = {};
+
+                obj = {
                   id: httpData.id,
                   type: httpData.type,
                   name: httpData.name, // 券名称
@@ -737,7 +611,7 @@ export default {
                     ];
                     break;
                 }
-                this.formData=obj;
+                this.formData = obj;
               }
             });
         } else {
@@ -860,14 +734,66 @@ export default {
         };
       }
     },
-    // 备选表格的查询
-    toSearch(type) {
+
+    resetSearch(type) {
       switch (type) {
         case "COUPON": // 卡券查询
-          this.COUPON_Search(this.COUPON_tableSearch);
+          this.COUPON_tableSearch.pageSize = 10;
+          this.COUPON_tableSearch.pageNum = 1;
+          this.COUPON_tableSearch = {
+            name: "",
+            couponExplain: "",
+            startTime: "",
+            endTime: "",
+            pageSize: 10,
+            pageNum: 1
+          };
+          this.toSearch(type);
           break;
         case "PACKET": // 红包查询
-          this.PACKET_Search(this.PACKET_tableSearch);
+          this.PACKET_tableSearch.pageSize = 10;
+          this.PACKET_tableSearch.pageNum = 1;
+          // 红包列表的搜索
+          this.PACKET_tableSearch = {
+            name: "",
+            couponExplain: "",
+            pageSize: 10,
+            pageNum: 1
+          };
+          this.toSearch(type);
+          break;
+      }
+    },
+    // 备选表格的查询
+    toSearch(type) {
+      this.COUPON_table.pageSize = 10;
+      this.COUPON_table.pageNum = 1;
+      this.PACKET_table.pageSize = 10;
+      this.PACKET_table.pageNum = 1;
+
+      let obj = {};
+      switch (type) {
+        case "COUPON": // 卡券查询
+          this.COUPON_tableSearch.pageSize = 10;
+          this.COUPON_tableSearch.pageNum = 1;
+          // 过滤没有数据的属性
+          Object.keys(this.COUPON_tableSearch).forEach(str => {
+            if (this.COUPON_tableSearch[str]) {
+              obj[str] = this.COUPON_tableSearch[str];
+            }
+          });
+          this.COUPON_Search(obj);
+          break;
+        case "PACKET": // 红包查询
+          this.PACKET_tableSearch.pageSize = 10;
+          this.PACKET_tableSearch.pageNum = 1;
+          // 过滤没有数据的属性
+          Object.keys(this.PACKET_tableSearch).forEach(str => {
+            if (this.PACKET_tableSearch[str]) {
+              obj[str] = this.PACKET_tableSearch[str];
+            }
+          });
+          this.PACKET_Search(obj);
           break;
       }
     },
@@ -876,18 +802,28 @@ export default {
       switch (type.type) {
         case "regetData": // 分页的emit
           if (data === "coupon") {
-            let obj = {
-              pageNum: this.COUPON_table.pageNum,
-              pageSize: this.COUPON_table.pageSize
-            };
-            this.COUPON_Search(obj);
+            let obj_coupon = {};
+            // 过滤没有数据的属性
+            Object.keys(this.COUPON_tableSearch).forEach(str => {
+              if (this.COUPON_tableSearch[str]) {
+                obj_coupon[str] = this.COUPON_tableSearch[str];
+              }
+            });
+            obj_coupon.pageSize = this.COUPON_table.pageSize;
+            obj_coupon.pageNum = this.COUPON_table.pageNum;
+            this.COUPON_Search(obj_coupon);
           }
           if (data === "packet") {
-            let obj = {
-              pageNum: this.PACKET_table.pageNum,
-              pageSize: this.PACKET_table.pageSize
-            };
-            this.PACKET_Search(obj);
+            let obj_packet = {};
+            // 过滤没有数据的属性
+            Object.keys(this.PACKET_tableSearch).forEach(str => {
+              if (this.PACKET_tableSearch[str]) {
+                obj_packet[str] = this.PACKET_tableSearch[str];
+              }
+            });
+            obj_packet.pageSize = this.PACKET_table.pageSize;
+            obj_packet.pageNum = this.PACKET_table.pageNum;
+            this.PACKET_Search(obj_packet);
           }
           break;
         case "toUse": // 添加活动奖励
@@ -1140,12 +1076,16 @@ export default {
           name: "",
           couponExplain: "",
           startTime: "",
-          endTime: ""
+          endTime: "",
+          pageSize: 10,
+          pageNum: 1
         };
         // 红包列表的搜索
         this.PACKET_tableSearch = {
           name: "",
-          couponExplain: ""
+          couponExplain: "",
+          pageSize: 10,
+          pageNum: 1
         };
         this.formData = {
           type: "EXPERIENCE",

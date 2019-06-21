@@ -319,6 +319,12 @@ let setting = [{
     component: resolve => require(['./pages/setting/notice_list'], resolve),
 
 },
+{
+    name: '地址列表',
+    path: '/home/setting/common-address/list',
+    component: resolve => require(['./pages/setting/productUrl_list'], resolve),
+
+},
 ]
 
 // Products_Management 模块路由

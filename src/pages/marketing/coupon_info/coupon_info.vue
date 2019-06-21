@@ -347,4 +347,19 @@ li {
 strong {
   color: black;
 }
+.headerName {
+    display: flex;
+    justify-content: space-between;
+}
+
+.headerName>span {
+    font-size: 14px;
+    padding-right: 10px;
+    color: rgb(37, 196, 211);
+    cursor: pointer;
+}
+
+.headerName>span:hover {
+    color: rgb(68, 29, 240);
+}
 </style>

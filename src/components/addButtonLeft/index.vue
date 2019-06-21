@@ -125,8 +125,8 @@
             <span class="item-text">*是否启用:</span>
             <div class="item-input">
                 <el-radio-group v-model="StartFlag">
-                    <el-radio :label="'true'">启用</el-radio>
-                    <el-radio :label="'false'">未启用</el-radio>
+                    <el-radio :label="'ENABLE'">启用</el-radio>
+                    <el-radio :label="'DISABLE'">未启用</el-radio>
                 </el-radio-group>
             </div>
         </div>
@@ -155,7 +155,7 @@ export default {
             platformCode: '',//平台
             platformName: "",//平台名称
             platformFlag: true,//平台是否可选
-            StartFlag: 'true',//是否启用
+            StartFlag: 'ENABLE',//是否启用
             appChannelCode: "",//app名字标识
             appChannelName: "",//app名称
             AppOpt: [//app下拉列表数据
@@ -207,6 +207,7 @@ export default {
             this.buttonSelectedTextColor = this.opts.buttonSelectedTextColor;
             this.buttonUnselectedTextColor = this.opts.buttonUnselectedTextColor;
             this.buttonText = this.opts.buttonText;
+            this.StartFlag = this.opts.status;
         }
     },
     methods:{
@@ -307,7 +308,8 @@ export default {
                     buttonText: this.buttonText,
                     buttonSelectedTextColor: this.buttonSelectedTextColor,
                     buttonUnselectedTextColor: this.buttonUnselectedTextColor,
-                    sort: this.sort
+                    sort: this.sort,
+                    status: this.StartFlag
                 }
                 this.$emit('send',obj)
             } else {

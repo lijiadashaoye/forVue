@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "development") {
   axios.defaults.baseURL = 'http://gateway.bicai365.com/';
 }
 
-// axios.defaults.baseURL ='https://yiye-gateway.bicai365.com/'
+// axios.defaults.baseURL ='https://yiye-gateway-test4.bicai365.com'
 
 
 //创建一个错误

@@ -405,23 +405,6 @@ export default {
         }
       }
     },
-    // 搜索框、重置
-    seachClick(type) {
-      if (!type) {
-        this.seachInput = "";
-      }
-      // 查询用户
-      this.$api
-        .admin_user_searchUser({
-          vm: this,
-          data: this.seachInput
-        })
-        .then(res => {
-          if (res) {
-            this.afterGetData(res.data);
-          }
-        });
-    },
     // 重设密码复选框切换
     setNewPossword(e) {
       let kk = { ...this.menuData };
@@ -685,9 +668,17 @@ export default {
         this.loadEnd = true;
       });
     },
+    // 搜索框、重置
+    seachClick(type) {
+      if (!type) {
+        this.seachInput = "";
+      }
+      this.tableInputData.pageSize =10;
+      this.tableInputData.pageNum = 1;
+      this.getUserData();
+    },
     // 获取用户表格数据
     getUserData() {
-      console.log(this.seachInput);
       let obj;
       if (this.seachInput) {
         obj = {

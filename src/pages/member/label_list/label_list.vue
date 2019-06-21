@@ -1,70 +1,37 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
-      <el-input
-        size="mini"
-        v-model="seachInput"
-        placeholder=""
-        style="width:180px;"
-      ></el-input>
-      <el-button
-        size="mini"
-        type="primary"
-        style="margin-left:20px"
-        @click="seachClick(true)"
-      >搜索</el-button>
-      <el-button
-        size="mini"
-        type="info"
-        style="margin-left:15px"
-        @click="seachClick(false)"
-      >重置</el-button>
-      <el-button
-        style="margin-left:15px"
-        size="mini"
-        type="danger"
-        @click="toDelete('more')"
-      >批量删除</el-button>
+      <el-input size="mini" v-model="seachInput" placeholder style="width:180px;"></el-input>
+      <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
+      <el-button size="mini" type="info" style="margin-left:15px" @click="seachClick(false)">重置</el-button>
+      <el-button style="margin-left:15px" size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       <el-button
         size="mini"
         type="warning"
         style="margin-left:15px"
         @click="addMark(true)"
-        v-if='tableInputData.data.quanxian.includes("member_label_add")'
+        v-if="tableInputData.data.quanxian.includes('member_label_add')"
       >添加标签</el-button>
     </div>
-    <div id='forTable'>
-      <isTable
-        v-if='loadEnd'
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable">
+      <isTable v-if="loadEnd" :inputData="tableInputData" @tableEmit="tableEmit"/>
     </div>
 
     <el-dialog
-      :close-on-click-modal='false'
+      :close-on-click-modal="false"
       :title="dialogMark.title"
       :visible.sync="dialogMark.show"
       width="500px"
       :before-close="markDialogClose"
     >
-      <el-form
-        :model="dialogMark.markInput"
-        label-width="80px"
-      >
+      <el-form :model="dialogMark.markInput" label-width="80px">
         <el-form-item label="标签名称">
           <el-input v-model="dialogMark.markInput.name"></el-input>
         </el-form-item>
       </el-form>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          size="mini"
-          @click="markDialogAction(false)"
-        >取 消</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="markDialogAction(false)">取 消</el-button>
         <el-button
           :disabled="!dialogMark.markInput.name"
           size="mini"
@@ -73,7 +40,6 @@
         >确 定</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 <script>
@@ -145,24 +111,7 @@ export default {
           break;
       }
     },
-    // 搜索框
-    seachClick(type) {
-      if (type) {
-        this.$api
-          .member_manager_getMarkLise({
-            vm: this,
-            data: { name: this.seachInput }
-          })
-          .then(res => {
-            this.afterGetData(res.data);
-          });
-      } else {
-        this.seachInput = "";
-        this.tableInputData.pageSize = 10;
-        this.tableInputData.pageNum = 1;
-        this.getUserData();
-      }
-    },
+
     // 删除、批量删除标签
     toDelete(type) {
       if (type === "alone") {
@@ -399,15 +348,42 @@ export default {
         this.loadEnd = true;
       });
     },
+    // 搜索框
+    seachClick(type) {
+      if (!type) {
+        this.seachInput = "";
+      }
+      this.tableInputData.pageSize = 10;
+      this.tableInputData.pageNum = 1;
+      this.getUserData();
+    },
     // 获取表格数据
     getUserData() {
-      this.$api
-        .member_manager_getMarkLise({
+      let obj;
+      if (this.seachInput) {
+        obj = {
           vm: this,
-          data: {
+          method: "get",
+          search: {
+            pageSize: this.tableInputData.pageSize,
+            pageNum: this.tableInputData.pageNum,
+            name: this.seachInput
+          }
+        };
+      } else {
+        obj = {
+          vm: this,
+          method: "get",
+          search: {
             pageSize: this.tableInputData.pageSize,
             pageNum: this.tableInputData.pageNum
           }
+        };
+      }
+      this.$api
+        .member_manager_getMarkLise({
+          vm: this,
+          data: obj
         })
         .then(res => {
           if (res) {
