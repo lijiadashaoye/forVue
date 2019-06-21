@@ -1,0 +1,309 @@
+@import '../../assets/fonts/iconfont.css';
+
+.myIcon12px {
+    font-family: "myIcon" !important;
+    font-size: 12px !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-right: 2px;
+}
+
+.myIcon14px {
+    font-family: "myIcon" !important;
+    font-size: 14px !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-right: 2px;
+    color: rgb(190, 190, 200);
+}
+
+.myIcon16px {
+    font-family: "myIcon" !important;
+    font-size: 16px !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-right: 2px;
+    color: rgb(190, 190, 200);
+}
+
+.myIcon18px {
+    font-family: "myIcon" !important;
+    font-size: 18px !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: rgb(190, 190, 200);
+}
+
+.myIcon20px {
+    font-family: "myIcon" !important;
+    font-size: 20px !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-right: 2px;
+    color: rgb(190, 190, 200);
+}
+
+.myIcon22px {
+    font-family: "myIcon" !important;
+    font-size: 22px !important;
+    font-style: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-right: 4px;
+    color: rgb(190, 190, 200);
+}
+
+ul,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+body {
+    padding: 0;
+    margin: 0;
+}
+
+h3 {
+    color: rgb(11, 111, 168);
+    margin-bottom: 5px
+}
+
+div {
+    box-sizing: border-box
+}
+
+button {
+    outline: none;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.home {
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+
+}
+
+/* 组件布局使用 */
+.componentWaper {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100%;
+    background: rgb(241, 240, 240)
+}
+
+#forHeader {
+    padding: 5px;
+    background: rgb(253, 251, 251);
+    box-shadow: 0 0 2px rgb(187, 186, 186) inset;
+}
+
+#forTable {
+    background: rgb(253, 253, 253);
+    overflow-y: auto;
+    box-sizing: border-box;
+    height: 100%;
+    margin: 6px;
+    border-radius: 6px
+}
+
+html,
+body {
+    display: flex;
+    align-items: stretch;
+    height: 100%;
+    width: 100%;
+    min-width: 700px;
+    overflow: hidden;
+}
+
+#app {
+    width: 100%;
+    overflow: auto;
+}
+
+#app ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+#app ::-webkit-scrollbar-thumb {
+    /*滚动条内滑块*/
+    border-radius: 4px;
+    background: rgb(112, 179, 243);
+}
+
+#app ::-webkit-scrollbar-track-piece {
+    /*滚动条滑轨*/
+    border-radius: 4px;
+    background: transparent;
+}
+
+/* 页面头部 */
+.isHeader {
+    width: 100%;
+    height: 60px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+.header {
+    background: linear-gradient(to left, rgb(143, 191, 236), rgb(71, 158, 240));
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.8s;
+
+    .front {
+        height: 42px;
+        min-width: 400px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-end;
+        padding-left: 20px;
+
+        & img {
+            height: 34px;
+            width: 36px;
+        }
+
+        &>span {
+            color: #fff;
+            font-size: 26px;
+            vertical-align: middle;
+            letter-spacing: 4px
+        }
+
+        button {
+            border: none;
+            background: none;
+            color: white;
+            padding: 0px 0 2px 16px;
+            cursor: pointer;
+            transform: scale(.9)
+        }
+    }
+
+    .back {
+        cursor: pointer;
+        margin-right: 20px;
+
+        .el-dropdown-link {
+            color: white;
+            font-size: 14px;
+        }
+    }
+
+    .toHome {
+        color: rgb(246, 246, 246);
+        font-size: 12px;
+        font-weight: bold;
+        padding: 2px 15px;
+    }
+
+    .toHome:hover {
+        color: white;
+    }
+}
+
+/* 导航栏 */
+#isAside {
+    box-sizing: border-box;
+    height: calc(100% - 60px);
+}
+
+#isAside ::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
+.aside1 {
+    width: 210px;
+    transition: 0.8s;
+    box-shadow: 1px 1px 2px 0 rgb(187, 187, 187);
+}
+
+.aside2 {
+    width: 64px;
+    box-shadow: 1px 1px 2px 0 rgb(187, 187, 187);
+}
+
+.setColor {
+    background: #6db3f5 !important;
+}
+
+/* 主要内容显示区域 */
+.isContent1 {
+    width: calc(100% - 210px);
+    height: calc(100% - 60px);
+    transition: 0.8s;
+    overflow: auto;
+    padding-left: 2px;
+}
+
+.isContent2 {
+    width: calc(100% - 64px);
+    height: calc(100% - 60px);
+    transition: 1s;
+    overflow: auto;
+    padding-left: 2px;
+}
+
+/*
+  menu 这类组件的布局设置
+*/
+.menuContent {
+    display: flex;
+    justify-content: flex-start;
+    height: 100%;
+    overflow: hidden;
+}
+
+.treeWap {
+    height: 100%;
+    width: 30%;
+    overflow-y: auto;
+    background: #fff;
+    border: none;
+    margin-right: 5px
+}
+
+.formWap {
+    width: 50%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+    box-shadow: 2px -2px 4px rgb(175, 174, 174);
+    overflow-y: auto;
+    background: rgb(250, 250, 250);
+}
+
+.forTableTitle {
+    display: inline-block;
+
+    &>span {
+        display: inline-block;
+        box-sizing:border-box;
+        margin-left: 10px;
+        vertical-align: bottom;
+        padding: 5px 2px 5px 10px;
+        font-size: 14px;
+        color: rgb(133, 133, 133);
+        border: 1px solid rgb(189, 189, 189);
+        border-radius: 5px 0 0 5px;
+    }
+}

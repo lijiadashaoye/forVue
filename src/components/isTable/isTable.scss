@@ -1,0 +1,53 @@
+$scrollSet: 10px; // 底部滚动条高度
+
+.el-table__row td {
+    padding: 5px 0 !important;
+    font-size: 14px !important;
+}
+
+.el-table__fixed {
+    bottom: $scrollSet !important;
+    box-shadow: none;
+}
+
+.el-table__fixed-right {
+    right: 0 !important;
+    bottom: $scrollSet !important;
+    box-shadow: none;
+}
+
+.el-table ::-webkit-scrollbar {
+    width: 0 !important;
+    height: $scrollSet !important;
+    z-index: 10000;
+    position: relative;
+}
+
+.el-table ::-webkit-scrollbar-thumb {
+    /*滚动条内滑块*/
+    border-radius: 5px !important;
+    background: rgb(112, 179, 243) !important;
+}
+
+.el-table ::-webkit-scrollbar-track-piece {
+    /*滚动条滑轨*/
+    border-radius: 5px !important;
+    background: transparent !important;
+}
+
+#isTable {
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+#isTable div {
+    text-align: center !important
+}
+
+#isFenYe {
+    display: flex;
+    justify-content: flex-end;
+}

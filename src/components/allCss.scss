@@ -1,0 +1,755 @@
+/* 比较全局的 */
+
+.toInline {
+    display: flex;
+    justify-content: flex-start
+}
+
+.buju {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+}
+
+.buju>div:nth-child(1) {
+    width: 43%;
+    min-width: 410px;
+
+}
+
+.buju>div:nth-child(2) {
+    width: 57%;
+}
+
+#baseWaper,
+#simpleWaper,
+#chartWap,
+#jigouWaper {
+    margin: 5px;
+    padding: 10px 5px 0 5px;
+    border-radius: 5px;
+    background: #fff
+}
+
+.isUpTime {
+    color: rgb(149, 149, 149);
+    font-size: 12px;
+    vertical-align: middle;
+    padding-top: 2px;
+}
+
+.isContentWaper {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.isContentWaper>div {
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.isContent {
+    padding: 4px 0;
+    font-size: 12px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.isTitle {
+    font-weight: bold;
+    font-size: 12px;
+    display: inline-block;
+    width: 80px;
+}
+
+.withLink {
+    display: flex;
+    justify-content: space-between
+}
+
+.isContent>p {
+    width: calc(100% - 70px);
+    margin: 0;
+    color: rgb(0, 134, 175);
+}
+
+.isContentLong {
+    padding-top: 3px;
+    font-size: 12px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.isTitleLong {
+    font-weight: bold;
+    font-size: 12px;
+    vertical-align: middle;
+    display: inline-block;
+    width: 110px;
+    vertical-align: middle;
+    flex-shrink: 0
+}
+
+.isContentLong>p {
+    width: calc(100% - 30px);
+    margin: 0;
+    color: rgb(0, 134, 175);
+}
+
+.isHidden {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.guizeTitle {
+    font-size: 14px;
+    font-weight: bold;
+    vertical-align: text-bottom
+}
+
+/* 表单组件使用  */
+.table_top {
+    padding-left: 10px;
+    display: flex;
+    justify-content: space-between;
+    background: rgba(241, 243, 243, 0.6);
+    margin: 0 5px
+}
+
+.table_top1 {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center
+}
+
+.isPoint {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgb(0, 132, 255);
+    margin-right: 5px
+}
+
+.isQuestion {
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.isQuestion:hover {
+    color: rgb(0, 134, 175);
+    ;
+    cursor: pointer;
+}
+
+.formsListWaper {
+    padding-bottom: 5px;
+    position: relative;
+}
+
+/* 图表组件使用 */
+#chartWap {
+    overflow: hidden;
+    position: relative;
+}
+
+.chartWaper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.chartWaper>div:nth-child(1) {
+    width: calc(100% - 90px);
+}
+
+.chartWaper>div:nth-child(2) {
+    width: 70px;
+    height: 120px;
+    margin-top: 50px;
+}
+
+.chartTop {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: -2px;
+    left: 5px;
+    right: 16px;
+}
+
+.showNum1 {
+    display: inline-block;
+    font-size: 12px;
+    left: 30%;
+    position: absolute;
+    top: 32px;
+}
+
+.showNum2 {
+    display: inline-block;
+    font-size: 12px;
+    left: 52%;
+    position: absolute;
+    top: 32px;
+}
+
+.radioGroup {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: space-around;
+}
+
+.isChartTitleDate {
+    font-size: 12px;
+    font-weight: bold;
+    vertical-align: 10px
+}
+
+.setRadioBtn {
+    margin-bottom: 4px;
+}
+
+.setRadioBtn span {
+    width: 100% !important;
+    border-radius: 3px !important;
+    border: 1px solid rgb(230, 228, 228);
+    box-sizing: border-box;
+    padding: 7px 0 !important;
+    ;
+    text-align: center !important;
+}
+
+/* 机构详情页使用*/
+
+.jigouHeader {
+    display: flex;
+    justify-content: flex-start;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.header_one {
+    width: 50px;
+    height: 50px;
+}
+
+.header_one img {
+    width: 100%;
+    height: 100%;
+}
+
+.header_two {
+    padding: 0 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.header_two p {
+    margin: 0;
+}
+
+.header_two p:nth-child(1) {
+    font-weight: bold;
+    color: rgb(0, 134, 175);
+    font-size: 14px
+}
+
+.isLink {
+    text-decoration: underline !important;
+    cursor: pointer;
+}
+
+.show_time {
+    display: flex;
+    justify-content: flex-end;
+    position: absolute;
+    right: 5px;
+    top: 2px;
+}
+
+.show_time2 {
+    text-align: right
+}
+
+.baseHeaderButton {
+    display: flex;
+    justify-content: space-between
+}
+
+.baseHeaderButton>p {
+    margin: 0;
+    font-weight: bold;
+    color: rgb(0, 134, 175);
+    font-size: 14px
+}
+
+.withColor {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 3px;
+    margin: 0 5px 5px 0;
+    color: white;
+}
+
+.shengoutInput {
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 2px 0;
+    box-sizing: border-box;
+}
+
+.shengoutInputYes {
+    border: 1px solid rgb(236, 101, 101);
+    background: transparent;
+    outline: none;
+    padding: 2px 0;
+    box-sizing: border-box;
+}
+
+.hasError {
+    box-sizing: border-box;
+    padding: 1px;
+    border: 1px solid rgb(252, 120, 120);
+    border-radius: 5px;
+}
+
+.isAd::after {
+    position: absolute;
+    display: inline-block;
+    content: '%';
+    font-size: 12px;
+    padding-left: 5px;
+}
+
+.stepsTopsP {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 0 5px;
+    margin: 0
+}
+
+.stepsTops {
+    list-style: none;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.stepsTops span {
+    margin: 0 10px
+}
+
+.demo-form-inline {
+    padding: 15px 0;
+    justify-content: space-between;
+    margin: 0 auto;
+    width: 80%;
+}
+
+.is50 {
+    width: 400px !important;
+    min-width: 300px;
+    margin: 0 0 20px 0 !important;
+}
+
+.isInput {
+    width: calc(100% - 30px) !important;
+}
+
+.isA {
+    display: inline-block;
+    width: 75px;
+    height: 100%;
+    font-size: 12px;
+    text-align: left;
+    position: absolute;
+    z-index: 2;
+    right: -48px;
+    color: rgb(115, 161, 246);
+}
+
+.isA:hover {
+    color: rgb(8, 12, 247);
+    cursor: pointer;
+}
+
+hr {
+    margin: 0 0 30px 70px;
+    border: none;
+    border-bottom: 1px solid rgb(231, 231, 231);
+    width: 100%;
+}
+
+.isForm {
+    margin: 0 auto;
+    width: 90%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    text-align: left;
+    padding-top: 30px;
+}
+
+.isFormLine {
+    margin: 0 auto;
+    width: 50%;
+    min-width: 400px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    text-align: left;
+    padding-top: 30px;
+}
+
+.nextButtons button {
+    display: inline-block;
+    padding: 15px 20px;
+    line-height: 0px
+}
+
+.nextButtons {
+    width: 200px;
+    padding-bottom: 30px;
+    margin: 10px auto;
+    display: flex;
+    justify-content: space-around;
+}
+
+.isRadio {
+    width: 50% !important;
+}
+
+.isRadio input,
+.isRadio span {
+    width: 100%;
+    margin: 0;
+}
+
+.forLogo {
+    width: 367px;
+}
+
+.toFlex {
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
+}
+
+/// 上传logo//////////////////////////////////////////////////// 
+.el-upload {
+    width: 40px;
+    height: 50px;
+    display: inline-block;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    display: inline-block;
+}
+
+.avatar-uploader-icon {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    font-size: 28px !important;
+    color: #8c939d;
+    text-align: center;
+    border: 1px dashed #8c939d;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.form_middle {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.form_middle>p {
+    width: 140px;
+    text-align: right;
+    font-size: 14px;
+    margin: 0;
+    padding-right: 10px;
+    color: #606266;
+
+}
+
+ul {
+    list-style: none;
+}
+
+.isTable {
+    padding: 0;
+    margin: 0;
+}
+
+.isLi,
+.isLi2 {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    position: relative;
+}
+
+.isLi span,
+.isLi2 span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.isLi {
+    line-height: 24px;
+    background: rgb(209, 207, 207);
+    font-weight: bold;
+    font-size: 12px
+}
+
+.isLi2 {
+    padding: 2px 0px;
+    line-height: 30px;
+}
+
+.isOdd {
+    background: rgb(245, 245, 245);
+}
+
+.isLi>span:first-child,
+.isLi>span:last-child {
+    width: 30px;
+    flex-shrink: 0
+}
+
+.isLi>span:nth-last-child(2) {
+    width: 98px;
+    flex-shrink: 0;
+    margin-right: 2px;
+}
+
+.isLi2 span:last-child:hover {
+    color: red;
+    cursor: pointer;
+}
+
+.isLi2 span:last-child {
+    width: 42px !important;
+
+}
+
+.nextPage {
+    text-align: right
+}
+
+.nextPage span {
+    margin: 0 5px;
+    font-size: 12px;
+}
+
+.nextPage span:hover {
+    color: red;
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.toaddlilv {
+    padding-top: 5px;
+}
+
+.toaddlilv>span {
+    font-size: 14px;
+    color: blue;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.toaddlilv>span:hover {
+    color: rgb(0, 140, 255);
+}
+
+.withTree {
+    display: flex;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.forTree {
+    width: 180px;
+    height: 100%;
+    flex-shrink: 0;
+    padding: 5px;
+    background: #fff;
+    box-shadow: 0 1px 5px rgb(187, 186, 186) inset;
+
+}
+
+.forRight {
+    padding: 5px 0 0 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100%;
+}
+
+.treeTop {
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.treeTop>span {
+    font-size: 16px;
+    color: rgb(53, 104, 212);
+    font-weight: bold;
+}
+
+.addCunkuan {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 新建成功的 */
+.successWaper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.isOk {
+    text-align: center;
+}
+
+.setText {
+    font-size: 140px;
+    color: rgb(0, 255, 85);
+    ;
+}
+
+.okText {
+    font-size: 50px;
+    color: rgb(0, 255, 85);
+    text-indent: 40px;
+    margin: 10px 0
+}
+
+.forFenye {
+    font-size: 12px;
+    color: rgb(145, 144, 144);
+    text-align: right;
+}
+
+.forFenye span {
+    margin-right: 10px;
+}
+
+.forFenye span:hover {
+    cursor: pointer;
+    color: rgb(27, 27, 27);
+    font-weight: bold;
+    background: rgb(223, 223, 223)
+}
+
+.forT {
+    height: calc(100% - 80px);
+    overflow-y: auto;
+    font-size: 14px
+}
+
+.forTtitle {
+    cursor: pointer;
+}
+
+.forTList>li {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    margin-bottom: 3px;
+    padding: 4px 10px 2px 25px;
+    box-sizing: border-box;
+    position: relative;
+    cursor: pointer;
+}
+
+.forTList>li:hover::before {
+    content: '>';
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    color: rgb(8, 146, 139);
+    font-weight: bold;
+}
+
+.forTList>li:hover {
+    color: rgb(238, 95, 107);
+}
+
+.headerName {
+    display: flex;
+    justify-content: space-between;
+}
+
+.headerName>span {
+    font-size: 14px;
+    padding-right: 10px;
+    color: rgb(37, 196, 211);
+    cursor: pointer;
+}
+
+.headerName>span:hover {
+    color: rgb(68, 29, 240);
+}
+
+.hasAddTitle {
+    font-size: 14px;
+    color: rgb(100, 123, 253);
+    margin-bottom: 5px;
+    text-indent: 1em;
+}
+
+.hasAddTitleTip {
+    animation: blingbling 2s infinite;
+}
+
+@keyframes blingbling {
+    0% {
+        background: none;
+        color: rgb(100, 123, 253);
+    }
+
+    25% {
+        background: red;
+        color: #fff;
+    }
+
+    50% {
+        background: none;
+        color: rgb(100, 123, 253);
+    }
+
+    75% {
+        background: red;
+        color: #fff;
+    }
+
+    100% {
+        background: none;
+        color: rgb(100, 123, 253);
+    }
+}
