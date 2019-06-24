@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <el-button
         size="mini"
@@ -21,10 +21,7 @@
         v-if="quanxian.includes('sys_menu_del')"
       >删除</el-button>
     </div>
-    <div
-      id='forTable'
-      style="padding-bottom:0;"
-    >
+    <div id="forTable" style="padding-bottom:0;">
       <div class="menuContent">
         <div class="treeWap">
           <el-tree
@@ -39,67 +36,37 @@
         <div class="formWap">
           <el-form
             ref="menuData"
-            size='mini'
+            size="mini"
             :label-position="'right'"
             label-width="80px"
             :model="menuData"
             :rules="rules"
           >
             <el-form-item :label="isAdd?'父级节点':'节点ID'">
-              <el-input
-                v-model="menuData.menuId"
-                :disabled="true"
-              ></el-input>
+              <el-input v-model="menuData.menuId" :disabled="true"></el-input>
             </el-form-item>
-            <el-form-item
-              label="节点ID"
-              v-show="false"
-            >
+            <el-form-item label="节点ID" v-show="false">
               <el-input v-model="menuData.menuId"></el-input>
             </el-form-item>
-            <el-form-item
-              label="标题"
-              prop="name"
-            >
-              <el-input
-                placeholder="请输入标题，最多32字符"
-                v-model="menuData.name"
-                :readonly='toEdit'
-              ></el-input>
+            <el-form-item label="标题" prop="name">
+              <el-input placeholder="请输入标题，最多32字符" v-model="menuData.name" :readonly="toEdit"></el-input>
             </el-form-item>
-            <el-form-item
-              prop="permission"
-              label="权限标识"
-            >
+            <el-form-item prop="permission" label="权限标识">
               <el-input
                 placeholder="请输入权限标识，最多32字符"
                 v-model="menuData.permission"
-                :readonly='toEdit'
+                :readonly="toEdit"
               ></el-input>
             </el-form-item>
             <el-form-item label="图标">
-              <el-input
-                :readonly='toEdit'
-                v-model="menuData.icon"
-                placeholder="请输入图标"
-              ></el-input>
+              <el-input :readonly="toEdit" v-model="menuData.icon" placeholder="请输入图标"></el-input>
             </el-form-item>
-            <el-form-item
-              prop="url"
-              label="资源路径"
-            >
-              <el-input
-                :readonly='toEdit'
-                v-model="menuData.url"
-                placeholder="请输入资源路径"
-              ></el-input>
+            <el-form-item prop="url" label="资源路径">
+              <el-input :readonly="toEdit" v-model="menuData.url" placeholder="请输入资源路径"></el-input>
             </el-form-item>
-            <el-form-item
-              prop="method"
-              label="请求方法"
-            >
+            <el-form-item prop="method" label="请求方法">
               <el-select
-                :disabled='toEdit'
+                :disabled="toEdit"
                 v-model="menuData.method"
                 placeholder="请输入资源请求方法"
                 style="width:100%;"
@@ -110,16 +77,12 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                >
-                </el-option>
+                ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item
-              prop="type"
-              label="类型"
-            >
+            <el-form-item prop="type" label="类型">
               <el-select
-                :disabled='toEdit'
+                :disabled="toEdit"
                 v-model="menuData.type"
                 placeholder="请输入资源请求类型"
                 style="width:100%;"
@@ -130,48 +93,26 @@
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
-                >
-                </el-option>
+                ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item
-              prop="sort"
-              label="排序"
-            >
+            <el-form-item prop="sort" label="排序">
               <el-input
-                type='number'
-                :readonly='toEdit'
+                type="number"
+                :readonly="toEdit"
                 v-model="menuData.sort"
                 placeholder="请输入排序，只能输入正整数，最多32字符"
               ></el-input>
             </el-form-item>
 
             <el-form-item label="前端地址">
-              <el-input
-                :readonly='toEdit'
-                v-model="menuData.path"
-                placeholder="请输入前端地址"
-              ></el-input>
+              <el-input :readonly="toEdit" v-model="menuData.path" placeholder="请输入前端地址"></el-input>
             </el-form-item>
           </el-form>
-          <div v-if='!toEdit'>
-            <el-button
-              size="mini"
-              type="primary"
-              v-if="isAdd"
-              @click="addMenuFn"
-            >保存</el-button>
-            <el-button
-              size="mini"
-              type="warning"
-              v-if="!isAdd"
-              @click="updateMenuFn"
-            >更新</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="clearData"
-            >取消</el-button>
+          <div v-if="!toEdit">
+            <el-button size="mini" type="primary" v-if="isAdd" @click="addMenuFn">保存</el-button>
+            <el-button size="mini" type="warning" v-if="!isAdd" @click="updateMenuFn">更新</el-button>
+            <el-button size="mini" type="danger" @click="clearData">取消</el-button>
           </div>
         </div>
       </div>
@@ -183,6 +124,17 @@
 export default {
   props: {},
   data() {
+    // 验证数字
+    var checkSort = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入排序"));
+      } else if (("" + value).length > 19 || ("" + value).length < 0) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
+
     return {
       hasOpen: [], // 记录已经展开的
       pageName: "", // 当前页面名字
@@ -237,10 +189,7 @@ export default {
         type: [
           { required: true, message: "请输入资源请求类型", trigger: "blur" }
         ],
-        sort: [
-          { required: true, message: "请输入排序", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
-        ],
+        sort: [{ validator: checkSort, trigger: "blur" }],
         permission: [
           { required: true, message: "请输入权限标识", trigger: "blur" },
           { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
