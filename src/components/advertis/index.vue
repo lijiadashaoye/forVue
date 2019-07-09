@@ -55,7 +55,7 @@
                     <el-upload
                         class="upload-demo"
                         auto-upload
-                        action="http://gateway.bicai365.com/setting/manager/image/up"
+                        action="http://gateway.bicai365.com/admin/file/up/setting"
                         :headers="myHeaders"
                         :limit='6'
                         :file-list="fileList"
@@ -101,8 +101,10 @@
                         <el-option
                             v-for="(item,ind) in linkLocationOpt"
                             :key="ind"
-                            :label="item.label"
-                            :value="item.value">
+                            :label="item.linkName"
+                            :value="item.linkUrl">
+                            <span style="float: left">{{ item.linkName }}</span>
+                            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.linkUrl }}</span>
                         </el-option>
                     </el-select>
                 </div>
@@ -111,7 +113,7 @@
             <div class="card-item">
                 <span class="item-text">关联产品:</span>
                 <div class="item-input">
-                   <el-select v-model="productCode" clearable placeholder="请选择">
+                   <el-select v-model="productCode" clearable placeholder="请选择" :disabled="productCodeFlag">
                         <el-option
                             v-for="(item,ind) in productOpt"
                             :key="ind"
@@ -132,7 +134,9 @@
                         :http-request="uploadAdvertis"
                         >
                         <img v-if="flashScreenUrl" :src="flashScreenUrl" class="avatar">
-                        <el-button v-else>选择图片</el-button>
+                        <div v-else>
+                            <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                        </div>
                     </el-upload>
                 </div>
             </div>
@@ -270,7 +274,9 @@
                         :http-request="uploadFrame"
                         >
                         <img v-if="frameUrl" :src="frameUrl" class="avatar">
-                        <el-button v-else>选择图片</el-button>
+                        <div v-else>
+                            <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                        </div>
                     </el-upload>
                 </div>
             </div>
@@ -285,13 +291,16 @@
 </template>
 
 <script>
-import { upLoadImg, adverdis_Page_add } from '../../api/setting_use.js';
+import { upLoadImg, adverdis_Page_add, productUrl_list } from '../../api/setting_use.js';
+import { AxiosGet } from '../../sets/axiosMethods';
+import { mapActions } from 'vuex';
 var token =  localStorage.getItem('token')
 export default {
     props: ['appChannel', 'params'],
     data() {
         return {
             id: '',
+            productCodeFlag: true,
             showTypeFlag: false,
             fileList: [],//开屏列表
             appChannelName: '',//渠道名称
@@ -350,66 +359,8 @@ export default {
                     value: '640_1136'
                 }
             ],
-            linkLocationOpt: [//点击效果连接列表
-                {
-                    value: 'NOCLOCK',
-                    label: '无点击事件'
-                },
-                {
-                    value: 'EXTERNAL_LINK',
-                    label: '外部连接'
-                },
-                {
-                    value: 'CONSULT_PAGE',
-                    label: '咨询页'
-                },
-                {
-                    value: 'LOGIN_PAGE',
-                    label: '登录页'
-                },
-                {
-                    value: 'CURRENCY_FUND',
-                    label: '货币基金'
-                },
-                {
-                    value: 'FINANCING_PRODUCT',
-                    label: '理财产品'
-                },
-                {
-                    value: 'SHARES_FUND',
-                    label: '股票基金'
-                },
-                {
-                    value: 'LOAN',
-                    label: '贷款'
-                },
-                {
-                    value: 'DEPOSIT',
-                    label: '存款产品'
-                },
-                {
-                    value: 'COMPREHENSIVE_PAGE',
-                    label: '综合页'
-                },
-                {
-                    value: 'NAW_PAGE',
-                    label: '新品页'
-                },
-                {
-                    value: 'RECOMMEND_PAGE',
-                    label: '推荐页'
-                },
-                {
-                    value: 'PURE_DEPT_FUND',
-                    label: '纯债产品'
-                }
-            ],
-            productOpt: [//产品列表
-                {
-                    label: '产品1 test',
-                    value: 'PRODUCT'
-                }
-            ],
+            linkLocationOpt: [],//点击效果连接列表,
+            productOpt: [],//产品列表
             associationGroupOpt: [//关联组列表
                 {
                     label: '关联组1 test',
@@ -558,6 +509,7 @@ export default {
         }
     },
     mounted() {
+        this.getChannelData();
         if(this.params) {
             this.showTypeFlag = true;
             this.id = this.params.id;
@@ -607,8 +559,17 @@ export default {
         }
     },
     methods: {
+        ...mapActions({
+            getList: 'productUrl/getList'
+        }),
         cancel() {
             this.$emit('cancel')
+        },
+        //
+        getChannelData() {
+            productUrl_list().then(res=> {
+                this.linkLocationOpt = res.data.list;
+            })
         },
         //点击保存
         save() {
@@ -631,10 +592,10 @@ export default {
                         this.productName = v.label
                     }
                 })
-                if(this.showType === 'OPENSCREEN') {//开屏
+                if(this.showType === "OPENSCREEN") {//开屏
                     if(this.launchAdvertisingDetails.length > 0) {
                         let obj = {
-                            id:this.id,
+                            id:this.id != '' ? this.id : null,
                             advertisName: this.advertisName,
                             appChannelCode: this.appChannelCode,
                             appChannelName: this.appChannelName,
@@ -741,11 +702,16 @@ export default {
         //上传闪屏图片
         uploadAdvertis(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -781,7 +747,7 @@ export default {
                 return false;
             }
             upLoadImg(formData).then(res=> {
-                if(res.success){
+                if(res && res.success){
                     this.videoFlag = false;
                     this.videoUploadPercent = 0;
                     this.videoUrl = this.$ImgBaseUrl + res.data
@@ -800,11 +766,16 @@ export default {
         //上传首帧图片
         uploadFrame(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -892,8 +863,21 @@ export default {
             };
             this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
             this.locationManage = this.params.locationManage;
+        },
+        'linkLocation'() {
+            if(this.linkLocation && this.linkLocation != null && this.linkLocation != 'undefined') {
+                this.productCodeFlag = false;
+                AxiosGet(this.linkLocation).then(res=> {
+                    if(res && res.success) {
+                        console.log(res.data.list)
+                        this.productOpt = res.data.list
+                    }
+                })
+            } else {
+                this.productCodeFlag = true;
+            }
         }
-    }
+    },
 }
 </script>
 
@@ -911,7 +895,7 @@ h4{
 }
 .card-item{
     width:100%;
-    height:60px;
+    // height:60px;
     padding:4px 10px;
     box-sizing:border-box;
     display:flex;

@@ -32,14 +32,14 @@
         <div class="card-item">
             <span class="item-text">*日累计限额:</span>
             <div class="item-input">
-                <el-input v-model="dailyCumulativeLimit" min="0" placeholder="输入每日额度" type="number" :disabled="detailFlag" ></el-input>
+                <el-input v-model="dailyCumulativeLimit" min="0" placeholder="输入每日额度" :disabled="detailFlag" maxlength="10"></el-input>
             </div>
         </div>
 
         <div class="card-item">
             <span class="item-text">*单笔额度:</span>
             <div class="item-input">
-                <el-input v-model="eachQuota" min="0" placeholder="输入单笔额度" type="number" :disabled="detailFlag" ></el-input>
+                <el-input v-model="eachQuota" min="0" placeholder="输入单笔额度" :disabled="detailFlag"  maxlength="10"></el-input>
             </div>
         </div>
 
@@ -141,6 +141,7 @@ export default {
         //编辑  详情传入opts数据  初始化
         if(this.opts){
             this.bankName = this.opts.bankName;
+            this.bankCardId = this.opts.bankCardId;
             this.directName = this.opts.directName;
             this.dailyCumulativeLimit = this.opts.dailyCumulativeLimit;
             this.eachQuota =this.opts.eachQuota;
@@ -149,11 +150,6 @@ export default {
             this.nowBankCard = this.opts.nowBankCard;
         }
     },
-    // computed: {
-    //     'this.list'() {
-    //         return this.$store.state.bankCard.bankCardList.data.list;
-    //     }
-    // },
     methods: {
         //点击保存
         save() {
@@ -161,7 +157,7 @@ export default {
             this.eachQuota && this.bindingCardIsPassword && this.transactionIsPassword &&
             this.nowBankCard){
                 //取bankCardId
-                this.bankOption.forEach(v=> {
+                this.bankOption && this.bankOption.forEach(v=> {
                     if(v.value === this.bankName) {
                         this.bankCardId = v.id
                     }
@@ -202,6 +198,13 @@ export default {
 
         //点击取消
         cancel() {
+            this.bankName = '';
+            this.directName = '';
+            this.dailyCumulativeLimit = '';
+            this.eachQuota = "";
+            this.bindingCardIsPassword = "YES";
+            this.transactionIsPassword = "YES";
+            this.nowBankCard = "YES";
             this.$emit('cancel')
         },
         //点击关闭
@@ -213,6 +216,7 @@ export default {
         'opts.id'() {
             this.bankName = this.opts.bankName;
             this.directName = this.opts.directName;
+            this.bankCardId = this.opts.bankCardId;
             this.dailyCumulativeLimit = this.opts.dailyCumulativeLimit;
             this.eachQuota =this.opts.eachQuota;
             this.bindingCardIsPassword = this.opts.bindingCardIsPassword;
@@ -226,7 +230,7 @@ export default {
 <style scoped="true" lang="scss">
 .card-item{
         width:100%;
-        height:100px;
+        // height:100px;
         padding:10px;
         box-sizing:border-box;
         display:flex;

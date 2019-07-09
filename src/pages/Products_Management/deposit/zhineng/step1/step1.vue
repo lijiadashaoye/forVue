@@ -1,27 +1,19 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <div
-      style="overflow:auto;"
-      id='forTable'
-    >
+    <div style="overflow:auto;" id="forTable">
       <el-form
         ref="ruleForm"
         size="normal"
         :model="ruleForm"
         label-width="150px"
-        label-suffix=':'
+        label-suffix=":"
         class="isForm"
         :rules="rules"
       >
-        <el-form-item
-          prop="institutionId"
-          label="机构名称"
-          style="position:relative"
-          class="is50"
-        >
+        <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
           <el-select
             class="isInput"
             clearable
@@ -30,27 +22,18 @@
             @change="change_xilie(ruleForm.institutionId)"
           >
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.jigou"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
 
-          <a
-            class="isA"
-            @click="toJiGou"
-          >无机构？</a>
-
+          <a class="isAClick" @click="toJiGou">无机构？</a>
         </el-form-item>
 
-        <el-form-item
-          label="产品系列"
-          class="is50"
-        >
-
+        <el-form-item label="产品系列" class="is50">
           <el-select
             class="isInput"
             clearable
@@ -59,78 +42,41 @@
             @change="setXiLie(ruleForm.seriesId)"
           >
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in xilie"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-          <a
-            class="isA"
-            @click="toChanPin"
-          >无产品系列？</a>
+          <a class="isAClick" @click="toXiLie">无产品系列？</a>
         </el-form-item>
 
-        <hr>
+        <hr />
 
-        <el-form-item
-          label="产品名称"
-          prop="name"
-          class="is50"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.name"
-          ></el-input>
+        <el-form-item label="产品名称" prop="name" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.name"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="产品别名"
-          class="is50"
-          prop="typeAlias"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.typeAlias"
-          ></el-input>
-
+        <el-form-item label="产品别名" class="is50" prop="typeAlias">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.typeAlias"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="计息方式"
-          style="position:relative"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.interestMode"
-          >
+        <el-form-item label="计息方式" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.interestMode">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.interest_mode"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="起存金额"
-          class="is50"
-          prop="purchaseAmount"
-        >
+        <el-form-item label="起存金额" class="is50" prop="purchaseAmount">
           <el-input
-            type='number'
+            type="number"
             class="isInput"
             clearable
             v-model="ruleForm.purchaseAmount"
@@ -138,39 +84,25 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="递增金额"
-          class="is50"
-          prop="increaseAmount"
-        >
+        <el-form-item label="递增金额" class="is50" prop="increaseAmount">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.increaseAmount"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="标签"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            v-model="ruleForm.marks"
-            clearable
-            placeholder="请选择"
-            multiple
-          >
+        <el-form-item label="标签" class="is50">
+          <el-select class="isInput" v-model="ruleForm.marks" clearable placeholder="请选择" multiple>
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.marks"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
           <span class="isA">
             <i
@@ -180,53 +112,26 @@
           </span>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="到期是否转存"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.renewal"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="到期是否转存" class="is50">
+          <el-radio-group v-model="ruleForm.renewal" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          label="支取时间"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            v-model="ruleForm.payTime"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="支取时间" class="is50">
+          <el-select class="isInput" v-model="ruleForm.payTime" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.pay_time"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-
         </el-form-item>
 
-        <el-form-item
-          label="利率别名"
-          class="is50"
-          prop="interestRateAlias"
-        >
+        <el-form-item label="利率别名" class="is50" prop="interestRateAlias">
           <el-input
             class="isInput"
             clearable
@@ -236,149 +141,92 @@
         </el-form-item>
 
         <el-form-item label="产品描述">
-          <quill-editor
-            class="isInput"
-            v-model="ruleForm.description"
-          >
-          </quill-editor>
+          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
         </el-form-item>
 
-        <el-form-item
-          style="width:100%;"
-          label="利率"
-        >
+        <el-form-item style="width:100%;" label="利率" required>
           <div class="toaddlilv">
-            <span @click="addNewLilv">新增利率(点击添加)</span>
+            <span @click="addNewLilv">新增利率(点击添加,备注以外全必填)</span>
+            <span
+              style="padding-left:30px;color:red;font-size:14px;"
+              v-if="isHasError"
+            >{{isErrorMessage}}</span>
           </div>
-          <ul class="isTable">
+          <ul :class="{'hasAddTitleTip':isHasError}">
             <li class="isLi">
-              <span
-                v-for="(tit,ind) in addLilvTable.title"
-                :key='ind'
-              >
-                {{tit}}
-              </span>
+              <span v-for="(tit,ind) in addLilvTable.title" :key="ind">{{tit}}</span>
             </li>
             <li
               class="isLi2"
               :class="index%2!==0?'isOdd':''"
               v-for="(data,index) in addLilvTable.datas"
-              :key='index'
+              :key="index"
             >
               <span style="width:150px;">{{index+1}}</span>
               <span>
-                <el-input
-                  type="number"
-                  v-model="data.limit"
-                  size="mini"
-                  placeholder="请输入"
-                ></el-input>
+                <el-input type="number" v-model="data.limit" size="mini" placeholder="请输入"></el-input>
               </span>
               <span>
-                <el-select
-                  size="mini"
-                  placeholder="请选择"
-                  v-model="data.danwei"
-                >
+                <el-select size="mini" placeholder="请选择" v-model="data.danwei">
                   <el-option
-                    size='mini'
+                    size="mini"
                     v-for="item in dictData.deadline_type"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                  >
-                  </el-option>
+                  ></el-option>
                 </el-select>
               </span>
               <span>
-                <el-input
-                  type='number'
-                  v-model="data.lilv"
-                  size="mini"
-                  placeholder="请输入"
-                ></el-input>
+                <el-input type="number" v-model="data.lilv" size="mini" placeholder="请输入"></el-input>
               </span>
 
               <span>
-
-                <el-input
-                  v-model="data.lockinPeriod"
-                  size="mini"
-                  placeholder="请输入"
-                ></el-input>
+                <el-input v-model="data.lockinPeriod" type="number" size="mini" placeholder="请输入"></el-input>
               </span>
 
               <span>
-                <el-input
-                  v-model="data.beizhu"
-                  size="mini"
-                  placeholder="请输入"
-                ></el-input>
+                <el-input v-model="data.beizhu" size="mini" placeholder="请输入"></el-input>
               </span>
 
               <span>
-                <el-select
-                  size="mini"
-                  placeholder="请选择"
-                  v-model="data.showList"
-                >
+                <el-select size="mini" placeholder="请选择" v-model="data.showList">
                   <el-option
-                    size='mini'
+                    size="mini"
                     v-for="item in shelveList"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                  >
-                  </el-option>
+                  ></el-option>
                 </el-select>
               </span>
               <span>
-                <el-select
-                  size="mini"
-                  placeholder="请选择"
-                  v-model="data.lockinShowList"
-                >
+                <el-select size="mini" placeholder="请选择" v-model="data.lockinShowList">
                   <el-option
-                    size='mini'
+                    size="mini"
                     v-for="item in shelveList"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
-                  >
-                  </el-option>
+                  ></el-option>
                 </el-select>
               </span>
 
-              <div
-                style="width:30px;cursor: pointer;flex-shrink: 0"
-                @click="toShowProp(data)"
-              >
-                删除
-              </div>
-
+              <div style="width:30px;cursor: pointer;flex-shrink: 0" @click="toShowProp(data)">删除</div>
             </li>
             <li class="nextPage">
-              <span>总共：{{addLilvTable.total}} </span>
+              <span>总共：{{addLilvTable.total}}</span>
               <span>第{{addLilvTable.pageNum+1}}页</span>
               <span @click="pageStep(true)">上一页</span>
               <span @click="pageStep(false)">下一页</span>
             </li>
           </ul>
         </el-form-item>
-
       </el-form>
 
       <div class="nextButtons">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="next"
-        >下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button
-          size="mini"
-          type="info"
-          @click="back"
-        >取消</el-button>
+        <el-button size="mini" type="primary" @click="next">下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
       </div>
     </div>
   </div>
@@ -391,13 +239,15 @@ export default {
     var checkNum3 = (rule, value, callback) => {
       if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
       } else {
         callback();
       }
     };
     return {
+      isHasError: false, // 利率列表是否有错误
+      isErrorMessage: "", // 利率列表错误提示文字
       xilie: [], // 从服务器返回的产品系列数据
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
@@ -410,7 +260,7 @@ export default {
         purchaseAmount: "", // 起存金额
         increaseAmount: "", // 递增金额
         marks: "", // 标签
-        renewal: "", // 到期是否转存
+        renewal: "否", // 到期是否转存
         payTime: "", // 支取时间
         description: "", // 产品描述
         lilv: [], // 利率表格
@@ -432,10 +282,10 @@ export default {
         total: 0,
         title: [
           "序号",
-          "* 期限",
-          "* 期限单位",
-          "* 利率%",
-          "* 锁定期限",
+          "期限",
+          "期限单位",
+          "利率%",
+          "锁定期限(天)",
           "备注",
           "榜单展示",
           "锁定期榜单展示",
@@ -454,7 +304,7 @@ export default {
           { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
         ],
         name: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" },
+          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" },
           { required: true, message: "请输入产品名称", trigger: "blur" }
         ],
         typeAlias: [
@@ -472,7 +322,7 @@ export default {
     let zhineng_step1 = sessionStorage.getItem("zhineng_step1");
     // 获取选定的机构
     let jigouData = JSON.parse(sessionStorage.getItem("xilie_jigou"));
-    this.change_xilie(jigouData.institutionId);
+      this.change_xilie(jigouData.institutionId);
 
     if (zhineng_step1) {
       this.ruleForm = JSON.parse(zhineng_step1);
@@ -508,32 +358,48 @@ export default {
     /*****************************************************************************************************/
     // 下一步
     next() {
+      let isAllok = false; // 用来判断利率列表是否有负数
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           if (this.addLilvTable.dataTotal.length) {
             let arr = [];
             // 检查利率列表是否必填项已经填写
             this.addLilvTable.dataTotal.forEach(item => {
-              if (item.limit && item.danwei && item.lilv && item.lockinPeriod) {
+              if (
+                item.limit < 0 ||
+                +item.lilv > 100 ||
+                item.lilv < 0 ||
+                item.lockinPeriod < 0
+              ) {
+                isAllok = true;
+              }
+              if (
+                item.limit &&
+                item.danwei &&
+                item.lilv &&
+                item.showList &&
+                item.lockinShowList &&
+                item.lockinPeriod
+              ) {
                 arr.push(item);
               }
             });
 
             if (this.addLilvTable.total != arr.length) {
-              this.$confirm(
-                `利率列表里有些必填项没有数据，将不被保存，是否继续下一步？`
-              )
-                .then(_ => {
-                  this.ruleForm.lilv = arr;
-                  sessionStorage.setItem(
-                    "zhineng_step1",
-                    JSON.stringify(this.ruleForm)
-                  );
-                  this.$router.push({
-                    name: "zhineng_step2"
-                  });
-                })
-                .catch(() => {});
+              this.isErrorMessage =
+                "利率列表里有些必填项没有数据，请填好数据！";
+              this.isHasError = true;
+              setTimeout(() => {
+                this.isHasError = false;
+              }, 5000);
+            } else if (isAllok) {
+              this.isErrorMessage =
+                "利率列表里有为负的数据，或者利率数据大于100了，请正确填写数据！";
+              this.isHasError = true;
+              setTimeout(() => {
+                this.isHasError = false;
+                this.isErrorMessage = "";
+              }, 5000);
             } else {
               this.ruleForm.lilv = arr;
               sessionStorage.setItem(
@@ -646,7 +512,14 @@ export default {
         name: "organizational_step1"
       });
     },
-    toChanPin() {}
+    toXiLie() {
+      this.$router.push({
+        name: "deposit",
+        query: {
+          institutionId: this.ruleForm.institutionId
+        }
+      });
+    }
   }
 };
 </script>

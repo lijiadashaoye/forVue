@@ -27,7 +27,7 @@ const mutations = {
             pageSize: state.peroidList.pageSize,
         }).then(res => {
             if (res) {
-                state.peroidList.data.list = res.data;
+                state.peroidList.data.list = res.data.list;
                 state.peroidList.total = res.data.total;
                 state.peroidList.data.list && state.peroidList.data.list.forEach(v => {
                     if (v.peroidType === 'PETTY') {

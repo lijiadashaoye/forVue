@@ -18,7 +18,7 @@
         <div class="card-item">
             <span class="item-text">*活动编号:</span>
             <div class="item-input">
-                <el-input v-model="activityNumber" placeholder="只能输入数字" type="number"></el-input>
+                <el-input v-model.trim="activityNumber" placeholder="只能输入数字" type="number"></el-input>
             </div>
         </div>
 
@@ -26,7 +26,7 @@
         <div class="card-item">
             <span class="item-text">*活动名称:</span>
             <div class="item-input">
-                <el-select v-model="activityName" placeholder="请选择活动名称">
+                <el-select v-model.trim="activityName" placeholder="请选择活动名称">
                     <el-option
                         v-for="(item,ind) in activityOpt"
                         :key="ind"
@@ -63,7 +63,9 @@
                     :http-request="uploadbuttonImage"
                     >
                     <img v-if="buttonImage" :src="buttonImage" class="avatar">
-                    <el-button v-else>选择图片</el-button>
+                    <div v-else>
+                        <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                    </div>
                 </el-upload>
             </div>
         </div>
@@ -79,7 +81,9 @@
                     :http-request="uploadshrinkImage"
                     >
                     <img v-if="shrinkImage" :src="shrinkImage" class="avatar">
-                    <el-button v-else>选择图片</el-button>
+                    <div v-else>
+                        <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                    </div>
                 </el-upload>
             </div>
         </div>
@@ -95,7 +99,9 @@
                     :http-request="uploadfloatImage"
                     >
                     <img v-if="floatImage" :src="floatImage" class="avatar">
-                    <el-button v-else>选择图片</el-button>
+                    <div v-else>
+                        <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                    </div>
                 </el-upload>
             </div>
         </div>
@@ -111,7 +117,9 @@
                     :http-request="uploadbuttonTitleImage"
                     >
                     <img v-if="buttonTitleImage" :src="buttonTitleImage" class="avatar">
-                    <el-button v-else>选择图片</el-button>
+                    <div v-else>
+                        <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                    </div>
                 </el-upload>
             </div>
         </div>
@@ -131,7 +139,7 @@
         <div class="card-item">
             <span class="item-text">*按钮文字:</span>
             <div class="item-input">
-                <el-input v-model="buttonText" placeholder="请输入按钮名称"></el-input>
+                <el-input v-model.trim="buttonText" placeholder="请输入按钮名称"></el-input>
             </div>
         </div>
 
@@ -151,7 +159,7 @@
         <div class="card-item">
             <span class="item-text">*显示顺序:</span>
             <div class="item-input">
-                <el-input v-model="sort" type="number" placeholder="请输入数字"></el-input>
+                <el-input v-model.trim="sort" type="number" placeholder="请输入数字"></el-input>
             </div>
         </div>
         
@@ -159,7 +167,7 @@
         <div class="card-item">
             <span class="item-text">*活动标题:</span>
             <div class="item-input">
-                <el-input v-model="activityTitle" placeholder="请输入活动标题"></el-input>
+                <el-input v-model.trim="activityTitle" placeholder="请输入活动标题"></el-input>
             </div>
         </div>
 
@@ -168,7 +176,7 @@
             <span class="item-text">*活动说明:</span>
             <div class="item-input">
                 <el-input 
-                    v-model="activityExplain"
+                    v-model.trim="activityExplain"
                     type="textarea"
                     :autosize="{ minRows: 6, maxRows: 6}"
                     placeholder="请输入活动标题">
@@ -180,7 +188,7 @@
         <div class="card-item">
             <span class="item-text">*链接地址:</span>
             <div class="item-input">
-                <el-input v-model="linkUrl" placeholder="请输入链接地址"></el-input>
+                <el-input v-model.trim="linkUrl" placeholder="请输入链接地址"></el-input>
             </div>
         </div>       
         
@@ -246,7 +254,7 @@ export default {
             shrinkImage: "",//选中后后按钮图片
             floatImage: "",//浮动照片 !!!
             buttonTitleImage: "",//按钮标题照片
-            platformCode: "all",//平台标识 !!!
+            platformCode: "",//平台标识 !!!
             platformName: "",//平台名称 !!!...
             buttonText: "",//按钮文字 !!!
             textColor: "#0015ff",//文字颜色 !!!
@@ -289,11 +297,16 @@ export default {
         //上传按钮图片
         uploadbuttonImage(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -305,11 +318,16 @@ export default {
         //上传选中后得按钮图片
         uploadshrinkImage(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -321,11 +339,16 @@ export default {
         //上传浮动照片
         uploadfloatImage(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -337,11 +360,16 @@ export default {
         //上传按钮标题照片
         uploadbuttonTitleImage(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -351,7 +379,27 @@ export default {
             })
         },
         //点击取消
-        cancel() {},
+        cancel() {
+            this.activityName = '';
+            this.activityNumber = '';
+            this.appChannelCode = '';
+            this.showTypeCode = '';
+            this.showTypeName = '';
+            this.buttonImage = '';
+            this.shrinkImage = '';
+            this.floatImage = '';
+            this.buttonTitleImage = '';
+            this.platformCode = '';
+            this.platformName = '';
+            this.buttonText = '';
+            this.textColor = '';
+            this.sort = '';
+            this.activityTitle = '';
+            this.activityExplain = '';
+            this.linkUrl = '';
+            this.lotteryTime = '';
+            this.$emit('cancel')
+        },
         //点击保存
         save() {
             //*必填
@@ -439,7 +487,7 @@ export default {
 <style lang="scss" scoped>
 .card-item{
     width:100%;
-    height:100px;
+    // height:50px;
     padding:10px;
     box-sizing:border-box;
     display:flex;

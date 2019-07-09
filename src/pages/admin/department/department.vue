@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <el-button
         size="mini"
@@ -21,10 +21,7 @@
         v-if="quanxian.includes('sys_dept_del')"
       >删除</el-button>
     </div>
-    <div
-      id='forTable'
-      style="padding-bottom:0;"
-    >
+    <div id="forTable" style="padding-bottom:0;">
       <div class="menuContent">
         <div class="treeWap">
           <el-tree
@@ -38,7 +35,7 @@
         </div>
         <div class="formWap">
           <el-form
-            size='mini'
+            size="mini"
             :label-position="'right'"
             label-width="80px"
             :model="menuData"
@@ -46,59 +43,23 @@
             ref="menuData"
           >
             <el-form-item :label="isAdd?'父级节点':'节点ID'">
-              <el-input
-                v-model="menuData.deptId"
-                :disabled="true"
-              ></el-input>
+              <el-input v-model="menuData.deptId" :disabled="true"></el-input>
             </el-form-item>
-            <el-form-item
-              label="节点ID"
-              v-show="false"
-            >
+            <el-form-item label="节点ID" v-show="false">
               <el-input v-model="menuData.menuId"></el-input>
             </el-form-item>
-            <el-form-item
-              prop="name"
-              label="部门名称"
-            >
-              <el-input
-                placeholder="请输入部门名称，最多32字符"
-                v-model="menuData.name"
-                :readonly='!canChange'
-              ></el-input>
+            <el-form-item prop="name" label="部门名称">
+              <el-input :disabled="!canChange" placeholder="请输入部门名称，最多32字符" v-model="menuData.name"></el-input>
             </el-form-item>
-            <el-form-item
-              prop="code"
-              label="部门编码"
-            >
-              <el-input
-                placeholder="请输入部门编码，最多32字符"
-                v-model="menuData.code"
-                :readonly='!canChange'
-              ></el-input>
+            <el-form-item prop="code" label="部门编码">
+              <el-input :disabled="!canChange" placeholder="请输入部门编码，最多32字符" v-model="menuData.code"></el-input>
             </el-form-item>
           </el-form>
 
-          <div v-if='canChange'>
-            <el-button
-              size="mini"
-              type="primary"
-              v-if="isAdd"
-              @click="addMenuFn"
-              
-            >保存</el-button>
-            <el-button
-              size="mini"
-              type="warning"
-              v-if="!isAdd"
-              @click="updateMenuFn"
-              
-            >更新</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="clearData"
-            >取消</el-button>
+          <div v-if="canChange">
+            <el-button size="mini" type="primary" v-if="isAdd" @click="addMenuFn">保存</el-button>
+            <el-button size="mini" type="warning" v-if="!isAdd" @click="updateMenuFn">更新</el-button>
+            <el-button size="mini" type="danger" @click="clearData">取消</el-button>
           </div>
         </div>
       </div>

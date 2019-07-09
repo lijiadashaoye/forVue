@@ -2,7 +2,7 @@
     <div class="componentWaper">
         <div id="forHeader">
             <h3>{{pageName}}</h3>
-            <div class="explosiveAdd">
+            <div class="search">
                 <el-button
                 type="primary"
                 size="mini"
@@ -10,7 +10,16 @@
                 >
                 新建
                 </el-button>
+                <el-input
+                    placeholder="请输入评论内容"
+                    size="mini"
+                    prefix-icon="el-icon-search"
+                    v-model.trim="content"
+                    @input="search">
+                </el-input>
             </div>
+            <!-- <div>
+            </div> -->
         </div>
 
         <div id="forTable">
@@ -44,12 +53,16 @@ export default {
             dialogFormVisible: false,
             params: '',
             updataFlag: false,
+            content: '',
         }
     },
     mounted() {
         this.pageName = this.$route.name;
         this.userDo();
-        this.getList();
+        this.getList({
+            pageNum:  this.$store.state.comment.commentList.pageNum,
+            pageSize:  this.$store.state.comment.commentList.pageSize,
+        });
         this.getAppChannel();
         this.$store.state.comment.commentList.data.title = [
             {
@@ -86,14 +99,6 @@ export default {
         }),
         //添加
         addPeroid() {
-            // let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
-            // if (jurisdiction.indexOf("comment_add") > -1) {
-            //     this.dialogFormVisible = true;
-            //     this.updataFlag = false;
-            //     this.params = '';
-            // } else {
-            //     //弹出消息提示用户
-            // }
             this.$alert("暂时没有这项功能哦", {
                 confirmButtonText: "确定"
             });
@@ -124,13 +129,23 @@ export default {
             this.params = data;
             this.updataFlag = true;
         },
+        search() {
+            this.getList({
+            pageNum: 1,
+            pageSize:  this.$store.state.comment.commentList.pageSize,
+            content: this.content
+        })
+        },
         //点击保存
         send(data) {
             this.dialogFormVisible = false;
             if(this.updataFlag) {
                 notice_updata(data).then(res=> {
                     if(res.success) {
-                        this.getList()
+                        this.getList({
+                            pageNum:  this.$store.state.comment.commentList.pageNum,
+                            pageSize:  this.$store.state.comment.commentList.pageSize,
+                        })
                     }
                 }).catch(res=> {
                     //弹出消息提示用户
@@ -141,7 +156,10 @@ export default {
                 })
             } else {
                 notice_add(data).then(res => {
-                    this.getList()
+                    this.getList({
+                        pageNum:  this.$store.state.comment.commentList.pageNum,
+                        pageSize:  this.$store.state.comment.commentList.pageSize,
+                    })
                 }).catch(res=> {
                     this.$message({
                         type: 'info',
@@ -154,7 +172,10 @@ export default {
         tableEmit(data) {
             switch (data.type) {
                 case "regetData": // 分页的emit
-                    this.getList();
+                    this.getList({
+                        pageNum:  this.$store.state.comment.commentList.pageNum,
+                        pageSize:  this.$store.state.comment.commentList.pageSize,
+                    });
                 break;
                 case "delete": // 删除按钮
                     this.delete(data.data.id);
@@ -168,6 +189,14 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang='scss' scoped>
+    .search {
+        padding:2px 4px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        .el-input{
+            width:200px;
+        }
+    }
 </style>

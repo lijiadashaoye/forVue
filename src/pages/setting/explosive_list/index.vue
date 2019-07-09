@@ -12,30 +12,40 @@
         >
           新增爆款产品
         </el-button>
-        <el-select
-          v-model="searchVal"
-          filterable
-          clearable
-          remote
-          reserve-keyword
-          placeholder="请输入产品名称"
-          :remote-method="remoteMethod"
-          :loading="loading"
-          @change="search">
-          <el-option
-            v-for="item in searchOpt"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
       </div>
-      <div class="filter">
-          <!-- 暂时没有接口 -->
-        <effectTime
-          :title="'生效时间'"
-          @timeSearch="effectTimeSearch"
-        />
+      <div>
+       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm searchForm">
+          <el-form-item label="产品名称" prop="productName">
+            <!-- <el-select v-model="ruleForm.productName" placeholder="请选择" filterable clearable> -->
+              <!-- <el-option
+                v-for="item in this.$store.state.explosive.explosiveList.productNameList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </!-->
+            <el-input
+              placeholder="请输入产品名称"
+              prefix-icon="el-icon-search"
+              v-model="ruleForm.productName">
+            </el-input>
+          </el-form-item>
+
+          <el-form-item label="生效时间" prop="time">
+            <el-date-picker
+              v-model="ruleForm.time"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="search('ruleForm')">查询</el-button>
+            <el-button @click="resetForm('ruleForm')">清除</el-button>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
     <!-- 列表 -->
@@ -52,7 +62,8 @@
         :productTypeList="productTypeList"
         :productNameList="productNameList"
         :opts="opts"
-        @reqs="reqs"/>
+        @reqs="reqs"
+        @cancel='cancel'/>
     </el-dialog>
   </div>
 </template>
@@ -77,8 +88,13 @@ export default {
       searchVal: "",
       msg:"",
       flag: false,
+      ruleForm: {
+        productName: '',
+        time: [],
+      },
       searchOpt: [],//搜索列表
       list: [],
+      rules: {},
       states: [],
       productTypeList:[{
         value: "货币基金",
@@ -118,26 +134,15 @@ export default {
       effectTimeVal: "",//生效时间
     };
   },
-  created() {
+  mounted() {
+    this.userDo();
     this.getExplosiveListData({
       pageNum: this.$store.state.explosive.explosiveList.pageNum,
       pageSize: this.$store.state.explosive.explosiveList.pageSize,
       dataType:"EXPLOSIVE"
     });
-  },
-  mounted() {
-    this.userDo();
-    this.getExplosiveListData();
+    this.getProNameList();
     this.pageName = this.$route.name;
-    this.productList = this.$store.state.explosive.explosiveList.data.list.length > 0 ? this.$store.state.explosive.explosiveList.data.list : JSON.parse(window.sessionStorage.getItem('explosiveList'));
-    this.productList.forEach(v=> {
-      if(this.states.indexOf(v.productName) === -1){
-        this.states.push(v.productName)
-      }
-    })
-    this.list = this.states.map(item => {
-      return { value: item, label: item };
-    });
     this.$store.state.explosive.explosiveList.data.title = [
       {
         title: "ID",
@@ -183,11 +188,36 @@ export default {
   methods: {
     ...mapMutations({
       getExplosiveListData: "explosive/getExplosiveListData",
+      getProNameList: "explosive/getProNameList",
       userDo: "explosive/userDo",
       deteleList: "explosive/deleteList"
     }),
     ...mapActions({
     }),
+    //查询
+    search(formName) {
+      this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.getExplosiveListData({
+              dataType:"EXPLOSIVE",
+              startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
+              endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
+              productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+              pageNum: 1,
+              pageSize: this.$store.state.explosive.explosiveList.pageSize,
+            })
+          } else {
+            return false;
+          }
+      });
+    },
+    //清除
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    },
+    cancel() {
+      this.flag = false;
+    },
     addExplosive() {
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
       //有权限  跳转到创建页面
@@ -236,11 +266,18 @@ export default {
     },
     reqs(data){
       this.opts = data;
-      this.flag = false;
+      console.log(data);
       explosive_updata(data).then(res=> {
-        if(res.success){
+        if(res && res.success){
           this.flag = false;
-          this.getExplosiveListData();
+          this.getExplosiveListData({
+            dataType:"EXPLOSIVE",
+            startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
+            endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
+            productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+            pageNum: this.$store.state.explosive.explosiveList.pageNum,
+            pageSize: this.$store.state.explosive.explosiveList.pageSize,
+          });
         }
       }).catch(()=>{
         this.$alert(`${res.message}`, '保存失败', {
@@ -257,13 +294,21 @@ export default {
     //点击编辑
     edit(data){
       this.flag = true;
+      data.dataType = 'EXPLOSIVE'
       this.opts = data;
     },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-           this.getExplosiveListData();
+            this.getExplosiveListData({
+              dataType:"EXPLOSIVE",
+              startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
+              endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
+              productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+              pageNum: this.$store.state.explosive.explosiveList.pageNum,
+              pageSize: this.$store.state.explosive.explosiveList.pageSize,
+            });
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);
@@ -274,46 +319,6 @@ export default {
         case "detail": // 详情
           this.open();
           break;
-      }
-    },
-    //搜索
-    search() {
-      this.getExplosiveListData({
-        dataType:"EXPLOSIVE",
-        startTime: timestampToTime(this.effectTimeVal[0]),
-        endTime: timestampToTime(this.effectTimeVal[1]),
-        productName: this.searchVal,
-      })
-    },
-    remoteMethod(query) {
-      if (query !== '') {
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.searchOpt = this.list.filter(item => {
-            return item.label.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1;
-          });
-        }, 200);
-      } else {
-        this.searchOpt = [];
-      }
-    },
-    //时间筛选
-    effectTimeSearch(val) {
-      this.effectTimeVal = val;
-      if(this.effectTimeVal){
-        this.getExplosiveListData({
-          dataType:"EXPLOSIVE",
-          startTime: timestampToTime(this.effectTimeVal[0]),
-          endTime: timestampToTime(this.effectTimeVal[1]),
-          productName: this.searchVal,
-        })
-      } else {
-        this.getExplosiveListData({
-          dataType:"EXPLOSIVE",
-          productName: this.searchVal,
-        })
       }
     },
   }
@@ -339,8 +344,8 @@ export default {
     padding:100px;
     box-sizing:border-box;
   }
-  .filter{
+  .searchForm{
     display:flex;
-    width:100%;
+    flex-wrap: nowrap;
   }
 </style>

@@ -1,7 +1,5 @@
 <template>
     <div class="componentWaper">
-
-
     <div id="forHeader">
       <h3>
         {{pageName}}
@@ -45,7 +43,9 @@ export default {
       //有权限  跳转到创建页面
       if (jurisdiction.indexOf("protocol_private_add") > -1) {
         protocol_add(data).then(res=> {
+          if(res && res.success) {
             this.$router.push('/home/setting/protocol-private/list')
+          }
         }).catch(()=>{
           this.$message(`${res.message}`, '保存失败', {
             confirmButtonText: '确定',

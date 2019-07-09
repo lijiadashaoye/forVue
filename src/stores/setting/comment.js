@@ -21,15 +21,12 @@ const state = {
 }
 const mutations = {
     //获取列表数据
-    getCommentListData(state) {
-        comment_list({
-            pageNum: state.commentList.pageNum,
-            pageSize: state.commentList.pageSize,
-        }).then(res => {
+    getCommentListData(state,data) {
+        comment_list(data).then(res => {
             if (res) {
                 state.commentList.data.list = res.data.list;
                 state.commentList.total = res.data.total;
-                state.commentList.data.list.forEach(v=> {
+                state.commentList.data.list && state.commentList.data.list.forEach(v => {
                     if (v.composeType === 'ADVERT') {
                         v.composeTypeCN = '广告'
                     } else if (v.composeType === 'NEWS') {
@@ -59,15 +56,18 @@ const mutations = {
 const actions = {
     getList({
         commit
-    }) {
-        commit('getCommentListData')
+    },data) {
+        commit('getCommentListData',data)
     },
     deleteList({
         commit
     }, id) {
         comment_del(id).then((res) => {
             if (res.success) {
-                commit('getCommentListData')
+                commit('getCommentListData', {
+                    pageNum: state.commentList.pageNum,
+                    pageSize: state.commentList.pageSize,
+                })
             }
         })
     }

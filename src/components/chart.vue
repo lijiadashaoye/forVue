@@ -162,7 +162,7 @@ export default {
 
     if (this.pageData.page === "manage_money_matters") {
       this.showWhich = true;
-      this.stepsTop = { ...xiangqingDatas.forChart.stepsTop };
+      this.stepsTop = { ...this.pageData.forChart };
     } else {
       this.showWhich = false;
       this.today = new Date().toLocaleDateString();

@@ -13,5 +13,8 @@ export default {
       this.$store.commit("set_path", to.path);
     }
   },
+  mounted() {
+    
+  }
 };
 </script>

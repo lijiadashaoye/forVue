@@ -18,12 +18,9 @@ const state = {
 
 const mutations = {
     //获取黑名单列表
-    getBlackNameListData(state) {
-        black_list({
-            pageNum : state.blackNameList.pageNum,
-            pageSize : state.blackNameList.pageSize
-        }).then(res=> {
-            if(res.success){
+    getBlackNameListData(state,data) {
+        black_list(data).then(res=> {
+            if(res && res.success){
                 state.blackNameList.data.list = res.data.list;
                 state.blackNameList.total = res.data.total;
                 state.blackNameList.data.list.forEach(v=> {

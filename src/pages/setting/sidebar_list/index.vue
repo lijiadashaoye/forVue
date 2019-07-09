@@ -19,11 +19,12 @@
             @tableEmit='tableEmit'/>
         </div>
 
-        <el-dialog :close-on-click-modal='false' title="修改" :visible.sync="dialogFormVisible">
+        <el-dialog :close-on-click-modal='false' title="修改" :visible.sync="dialogFormVisible" :before-close='cancel'>
             <slider
             :appChannel.sync="this.$store.state.protocol.appChannel"
             :params="params"
-            @send='send'/>
+            @send='send'
+            @cancel='cancel'/>
         </el-dialog>
     </div>
 </template>
@@ -49,7 +50,10 @@ export default {
     mounted() {
         this.pageName = this.$route.name;
         this.userDo();
-        this.getList();
+        this.getList({
+            pageNum: this.$store.state.slider.sliderList.pageNum,
+            pageSize: this.$store.state.slider.sliderList.pageSize,
+        });
         this.getAppChannel();
         this.$store.state.slider.sliderList.data.title = [
             {
@@ -111,18 +115,30 @@ export default {
         }),
         //修改保存
         send(data) {
-            this.dialogFormVisible = false
             slider_updata(data).then(res=> {
-                if(res.success) {
-                    this.getList()
+                if(res && res.success) {
+                    this.dialogFormVisible = false;
+                    this.$message({
+                        type: 'success',
+                        message: `保存成功`
+                    })
+                    this.getList({
+                        pageNum: this.$store.state.slider.sliderList.pageNum,
+                        pageSize: this.$store.state.slider.sliderList.pageSize,
+                    })
                 }
             }).catch(res => {
                 //弹出消息提示用户
                 this.$message({
                     type: "info",
-                    message: `action: ${res.message}`
+                    message: `${res.message}`
                 });
             })
+        },
+        //取消
+        cancel() {
+            this.params = {};
+            this.dialogFormVisible = false;
         },
         //修改
         edit(data) {
@@ -133,7 +149,10 @@ export default {
         tableEmit(data) {
             switch (data.type) {
                 case "regetData": // 分页的emit
-                    this.getList();
+                    this.getList({
+                        pageNum: this.$store.state.slider.sliderList.pageNum,
+                        pageSize: this.$store.state.slider.sliderList.pageSize,
+                    });
                 break;
                 case "edit": // 修改
                     this.edit(data.data)

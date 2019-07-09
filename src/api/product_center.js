@@ -1,10 +1,7 @@
 import qs from 'qs';
 export default {
 
-    // "pure_debt_fund", "纯债基金"；
-    // monetary_fund", "货币基金"；
-    // "wmf", "理财产品"；
-    // "deposit", "存款产品"；
+
 
     // 获取字典数据
     get_dict(data) {
@@ -22,7 +19,7 @@ export default {
     },
     //////////////////////////////////////////////////////////////////////////////////
     // 纯债基金管理
-    // 分页列表
+    // 分页列表数据
     get_chunzhaiList(data) {
         return data.vm.$axios({
             method: 'get',
@@ -36,6 +33,7 @@ export default {
             url: data.url,
         })
     },
+
     // 删除纯债基金
     product_chunzhai_delete(data) {
         return data.vm.$axios({
@@ -68,14 +66,14 @@ export default {
     getChunZhaiInfo(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `product/pureDebtFund/detail/${data.id}`
+            url: `product/pureDebtFund/${data.data}`
         })
     },
     //获取纯债基金编辑信息
     getChunZhaiInfoData(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `product/pureDebtFund/info/${data.id}`
+            url: `product/pureDebtFund/detail/${data.data}`
         })
     },
     //编辑纯债基金
@@ -86,9 +84,6 @@ export default {
             data: data.data
         })
     },
-
-
-
     //////////////////////////////////////////////////////////////////////////////////
     // 货币基金
     // 分页列表
@@ -106,6 +101,36 @@ export default {
             data: data.data
         })
     },
+    //获取货币基金编辑信息(复制、编辑)
+    get_huobi_edit_data(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `product/monetaryFund/${data.data}`
+        })
+    },
+    //获取货币基金页面展示信息
+    get_huobi_info_data(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `product/monetaryFund/detail/${data.data}`
+        })
+    },
+    //编辑货币基金
+    putHuoBiEdit(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: `product/monetaryFund`,
+            data: data.data
+        })
+    },
+    // 删除货币基金
+    product_huobi_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/monetaryFund/${data.data}`,
+        })
+    },
+
 
     //////////////////////////////////////////////////////////////////////////////////
     // 理财产品
@@ -114,6 +139,17 @@ export default {
         return data.vm.$axios({
             method: 'get',
             url: `/product/wmp/page?${qs.stringify(data.data)}`,
+        })
+    },
+    // "pure_debt_fund", "纯债基金"；
+    // monetary_fund", "货币基金"；
+    // "wmf", "理财产品"；
+
+    // 获取tree数据
+    get_licaiTree(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/productSeries/tree/wmp`,
         })
     },
     // 新增理财产品
@@ -129,15 +165,44 @@ export default {
     //新增产品系列
     add_productSeries(data) {
         return data.vm.$axios({
-            method: 'post',
+            method: data.httpType,
             url: '/product/productSeries',
             data: data.data
         })
     },
-
+    // 获取理财产品信息
+    getLiCaiInfoData(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/wmp/${data.data}`,
+        })
+    },
+    // 删除理财产品
+    product_licai_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/wmp/${data.data}`,
+        })
+    },
+    // 获取理财产品详情
+    get_licai_info_data(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/wmp/detail/${data.data}`,
+        })
+    },
+    // 编辑理财管理
+    put_LiCai_data(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: `/product/wmp`,
+            data: data.data
+        })
+    },
     //////////////////////////////////////////////////////////////////////////////////
     // 存款管理
     // 存款管理获取tree数据
+    // "deposit", "存款产品"；
     get_treeData(data) {
         return data.vm.$axios({
             method: 'get',
@@ -165,11 +230,11 @@ export default {
             url: `/product/deposit/demand/${data.data}`,
         })
     },
-    // 详情页面里的删除按钮
+    // 详情页面里的存款产品删除按钮
     xiangqing_delete(data) {
         return data.vm.$axios({
             method: 'delete',
-            url: `/product/deposit/${data.type}/${data.data}`,
+            url: `/product/${data.type}/${data.data}`,
         })
     },
     // 存款管理左侧系列的新增、编辑

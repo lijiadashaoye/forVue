@@ -43,7 +43,7 @@ export default {
         //点击保存
         send(data) {
             slider_add(data).then(res=> {
-                if(res.success) {
+                if(res && res.success) {
                     this.$router.push('/home/setting/sidebar/list')
                 }
             }).catch((res)=>{

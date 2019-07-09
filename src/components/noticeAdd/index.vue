@@ -33,23 +33,14 @@
         </div>
 
         <div class="card-item">
-            <span class="item-text">*开始时间:</span>
+            <span class="item-text">*公告时间:</span>
             <div class="item-input">
                 <el-date-picker
-                v-model="startTime"
-                type="datetime"
-                placeholder="选择日期时间">
-                </el-date-picker>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*结束时间:</span>
-            <div class="item-input">
-                <el-date-picker
-                v-model="endTime"
-                type="datetime"
-                placeholder="选择日期时间">
+                    v-model="noticeTime"
+                    type="datetimerange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
                 </el-date-picker>
             </div>
         </div>
@@ -82,8 +73,7 @@ export default {
             appChannelName: '',//app名称
             platformName: '',//app标识
             sort: '',//排序值
-            startTime: '',//开始时间
-            endTime: '',//结束时间
+            noticeTime: [],
         }
     },
     mounted() {
@@ -94,18 +84,30 @@ export default {
             this.appChannelCode = this.params.appChannelCode;
             this.platformCode = this.params.platformCode;
             this.sort = this.params.sort;
-            this.startTime = new Date(this.params.startTime).getTime();
-            this.endTime = new Date(this.params.endTime).getTime();
+            this.noticeTime = [this.params.startTime,this.params.endTime]
+        } else {
+            this.id = '';
+            this.content = '';
+            this.appChannelCode = '';
+            this.platformCode = '';
+            this.sort = '';
+            this.noticeTime = [];
         }
-    },
+    }, 
     methods: {
         //点击取消
         cancel() {
-
+            this.id = '';
+            this.content = '';
+            this.appChannelCode = '';
+            this.platformCode = '';
+            this.sort = '';
+            this.noticeTime = [];
+            this.$emit('cancel')
         },
         //点击保存
         save() {
-            if(this.appChannelCode && this.platformCode && this.sort && this.startTime && this.endTime && this.content) {
+            if(this.appChannelCode && this.platformCode && this.sort && this.noticeTime && this.content) {
                     //  渠道
                 this.appChannel.forEach(v=> {
                     if(this.appChannelCode == v.label){
@@ -125,8 +127,8 @@ export default {
                     platformCode: this.platformCode,
                     appChannelCode: this.appChannelCode,
                     platformName: this.platformName,
-                    startTime: new Date(this.startTime).getTime(),
-                    endTime: new Date(this.endTime).getTime(),
+                    startTime: new Date(this.noticeTime[0]).getTime(),
+                    endTime: new Date(this.noticeTime[1]).getTime(),
                     sort: this.sort
                 }
                 this.$emit('send',obj)
@@ -150,8 +152,7 @@ export default {
             this.appChannelCode = this.params.appChannelCode;
             this.platformCode = this.params.platformCode;
             this.sort = this.params.sort;
-            this.startTime = new Date(this.params.startTime).getTime();
-            this.endTime = new Date(this.params.endTime).getTime();
+            this.noticeTime = [this.params.startTime,this.params.endTime]
         }
     }
 }
@@ -164,7 +165,7 @@ export default {
 }
 .card-item{
     width:100%;
-    height:60px;
+    // height:60px;
     padding:10px;
     box-sizing:border-box;
     display:flex;

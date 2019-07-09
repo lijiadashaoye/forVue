@@ -12,7 +12,7 @@
     <div class="card-item" v-if="flag">
       <span class="item-text">*选择类型：</span>
       <div class="item-input">
-        <el-select v-model="config_type" placeholder="请选择类型">
+        <el-select v-model="configType" placeholder="请选择类型">
           <el-option
             v-for="(item,ind) in options"
             :key="ind"
@@ -65,7 +65,7 @@
           :autosize="{ minRows: 6, maxRows: 6}"
           placeholder="请输入内容"
           :disabled="detailFlag"
-          v-model="config_content"
+          v-model="configContent"
         ></el-input>
       </div>
     </div>
@@ -97,9 +97,9 @@ export default {
       highlight: "", //高亮字体说明
       highlightColor: "", //高亮字体颜色
       markedWords: "", //提示语
-      config_content: "", //服务协议内容
+      configContent: "", //服务协议内容
       appChannelVal: "", //app渠道
-      config_type: "", //类型  服务/隐私
+      configType: "", //类型  服务/隐私
       options: [
         {
           value: "SERVER",
@@ -133,14 +133,15 @@ export default {
       this.highlight = this.opts.highlight;
       this.highlightColor = this.opts.highlightColor;
       this.appChannelVal = this.opts.appChannelCode;
-      this.config_type = this.opts.config_type;
+      this.configType = this.opts.configType;
       this.title = this.opts.title;
+      this.configContent = this.opts.configContent
     }
-    //取markedWords config_content
+    //取markedWords configContent
     if (this.id) {
       protocol_detail(this.id).then(res => {
         this.markedWords = res.data.markedWords;
-        this.config_content = res.data.config_content;
+        this.configContent = res.data.configContent;
       });
     }
   },
@@ -150,10 +151,11 @@ export default {
       if (
         this.appChannelVal &&
         this.title &&
-        this.config_type &&
+        this.configType &&
         this.highlight &&
         this.highlightColor &&
-        this.markedWords
+        this.markedWords &&
+        this.configContent
       ) {
         let appName;
         //取 appName
@@ -167,12 +169,12 @@ export default {
           id: this.id,
           appChannelCode: this.appChannelVal,
           appChannelName: appName,
-          config_type: this.config_type,
+          configType: this.configType,
           title: this.title,
           highlight: this.highlight,
           highlightColor: this.highlightColor,
           markedWords: this.markedWords,
-          config_content: this.config_content
+          configContent: this.configContent
         };
         this.$emit("req", obj);
       } else {
@@ -197,9 +199,9 @@ export default {
         this.highlight = "";
         this.highlightColor = "";
         this.markedWords = "";
-        this.config_content = "";
+        this.configContent = "";
         this.appChannelVal = "";
-        this.config_type = "";
+        this.configType = "";
       }
     },
 
@@ -214,7 +216,7 @@ export default {
       this.id = this.opts.id;
       protocol_detail(this.id).then(res => {
         this.markedWords = res.data.markedWords;
-        this.config_content = res.data.config_content;
+        this.configContent = res.data.configContent;
       });
     },
     "opts.highlight"() {
@@ -226,8 +228,8 @@ export default {
     "opts.appChannelCode"() {
       this.appChannelVal = this.opts.appChannelCode;
     },
-    "opts.config_type"() {
-      this.config_type = this.opts.config_type;
+    "opts.configType"() {
+      this.configType = this.opts.configType;
     },
     "opts.title"() {
       this.title = this.opts.title;

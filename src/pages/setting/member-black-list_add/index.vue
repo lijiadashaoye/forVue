@@ -55,7 +55,7 @@ export default {
           confirmButtonText: "确定"
         });
       }  
-    }
+    },
   }
 };
 </script>

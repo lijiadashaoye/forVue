@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
     <div style="overflow:auto;">
@@ -9,133 +9,69 @@
         size="normal"
         :model="ruleForm"
         label-width="150px"
-        label-suffix=':'
+        label-suffix=":"
         class="isForm"
         :rules="rules"
       >
-        <el-form-item
-          prop="institutionId"
-          label="机构名称"
-          style="position:relative"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.institutionId"
-          >
+        <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.institutionId">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.jigou"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
 
-          <a
-            class="isA"
-            @click="toJiGou"
-          >无机构？</a>
-
+          <a class="isAClick" @click="toJiGou">无机构？</a>
         </el-form-item>
 
-        <el-form-item
-          prop="fundHouseId"
-          label="基金公司"
-          style="position:relative"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.fundHouseId"
-          >
+        <el-form-item prop="fundHouseId" label="基金公司" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.fundHouseId">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.jijin"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-          <a
-            class="isA"
-            @click="toJiJin"
-          >无基金公司？</a>
+          <a class="isAClick" @click="toJiGou">无基金公司？</a>
         </el-form-item>
-        <hr>
-        <el-form-item
-          label="产品名称"
-          prop="name"
-          class="is50"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.name"
-          ></el-input>
+        <hr />
+        <el-form-item label="产品名称" prop="name" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.name"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="基金代码"
-          prop="code"
-          class="is50"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.code"
-          ></el-input>
+        <el-form-item label="基金代码" prop="code" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.code"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="交易状态"
-          prop="status"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.status"
-          >
+        <el-form-item label="交易状态" prop="status" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.status">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.transaction_state "
-              :key="item.id"
+              :key="item.value"
               :label="item.label"
-              :value="item.id"
-            >
-            </el-option>
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="日涨幅"
-          prop="dailyIncrease"
-          class="is50"
-        >
+        <!-- <el-form-item label="日涨幅" prop="dailyIncrease" class="is50">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.dailyIncrease"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
           <span class="isA">%</span>
-        </el-form-item>
+        </el-form-item>-->
 
-        <el-form-item
-          label="单位净值"
-          class="is50"
-        >
+        <el-form-item label="单位净值" class="is50">
           <el-input
             class="isInput"
             type="number"
@@ -145,10 +81,7 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="累计净值"
-          class="is50"
-        >
+        <el-form-item label="累计净值" class="is50">
           <el-input
             type="number"
             class="isInput"
@@ -158,75 +91,54 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="单日涨幅"
-          class="is50"
-        >
+        <el-form-item label="单日涨幅" class="is50">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.performance.oneDayIncrease"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
           <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item
-          label="近三月涨幅"
-          class="is50"
-        >
+        <el-form-item label="近三月涨幅" class="is50">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.performance.threeMonthIncrease"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
           <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item
-          label="近六月涨幅"
-          class="is50"
-        >
+        <el-form-item label="近六月涨幅" class="is50">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.performance.sixMonthIncrease"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
           <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item
-          label="近一年涨幅"
-          class="is50"
-        >
+        <el-form-item label="近一年涨幅" class="is50">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.performance.oneYearIncrease"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
           <span class="isA">%</span>
         </el-form-item>
-
       </el-form>
     </div>
     <div class="nextButtons">
-      <el-button
-        size="mini"
-        type="primary"
-        @click="next"
-      >下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-      <el-button
-        size="mini"
-        type="info"
-        @click="back"
-      >取消</el-button>
+      <el-button size="mini" type="primary" @click="next">下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+      <el-button size="mini" type="info" @click="back">取消</el-button>
     </div>
   </div>
 </template>
@@ -234,6 +146,28 @@
 export default {
   props: {},
   data() {
+    // 验证数字
+    var checkNum3 = (rule, value, callback) => {
+      if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字
+    var checkNum4 = (rule, value, callback) => {
+      if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
     return {
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
@@ -243,7 +177,6 @@ export default {
         name: "", // 产品名称
         code: "", // 代码
         status: "", // 交易状态
-        dailyIncrease: "", // 日涨幅
         netValue: {
           netAssetValue: "", // 单位净值
           netAccumulateValue: "" // 累计净值
@@ -263,14 +196,28 @@ export default {
         fundHouseId: [
           { required: true, message: "请选择基金公司", trigger: "change" }
         ],
-        name: [{ required: true, message: "请输入产品名称", trigger: "blur" }],
-        code: [{ required: true, message: "请输入基金代码", trigger: "blur" }],
+        name: [
+          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" },
+          { required: true, message: "请输入产品名称", trigger: "blur" }
+        ],
+        code: [
+          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" },
+          { required: true, message: "请输入基金代码", trigger: "blur" }
+        ],
         status: [
           { required: true, message: "请选择交易状态", trigger: "change" }
         ],
-        dailyIncrease: [
-          { required: true, message: "请输入日涨幅", trigger: "blur" }
-        ]
+        // dailyIncrease: [
+        //   // { validator: checkNum3, trigger: "blur" },
+        //   { required: true, message: "请输入日涨幅", trigger: "blur" },
+        //   { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" }
+        // ],
+        netAssetValue: [{ validator: checkNum4, trigger: "blur" }],
+        netAccumulateValue: [{ validator: checkNum4, trigger: "blur" }],
+        oneDayIncrease: [{ validator: checkNum3, trigger: "blur" }],
+        threeMonthIncrease: [{ validator: checkNum3, trigger: "blur" }],
+        sixMonthIncrease: [{ validator: checkNum3, trigger: "blur" }],
+        oneYearIncrease: [{ validator: checkNum3, trigger: "blur" }]
       }
     };
   },

@@ -25,11 +25,8 @@ const mutations = {
         })
     },
     //获取列表数据
-    getProtocolListData(state){
-        protocol_list({
-                pageNum: state.protocolList.pageNum,
-                pageSize: state.protocolList.pageSize
-            }).then(res => {
+    getProtocolListData(state,data){
+        protocol_list(data).then(res => {
             state.protocolList.data.list = res.data.list;
             state.protocolList.total = res.data.total;
         })
@@ -38,10 +35,7 @@ const mutations = {
     deleteList(state,id){
         protocol_delete(id).then(res => {
             if(res.success){
-                protocol_list({
-                    pageNum: state.protocolList.pageNum,
-                    pageSize: state.protocolList.pageSize
-                }).then(res=> {
+                protocol_list(data).then(res=> {
                     if(res.success){
                         state.protocolList.data.list = res.data.list;
                         state.protocolList.total = res.data.total;

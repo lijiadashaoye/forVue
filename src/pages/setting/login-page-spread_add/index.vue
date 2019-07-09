@@ -47,7 +47,7 @@ export default {
       //有权限  跳转到创建页面
       if (jurisdiction.indexOf("login_page_spread_add") > -1) {
         loginSpread_add(data).then(res=> {
-          if(res.success){
+          if(res && res.success){
             this.$router.push('/home/setting/login-page-spread/list')
           }
         }).catch(()=> {

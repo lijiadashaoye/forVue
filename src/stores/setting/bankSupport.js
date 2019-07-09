@@ -20,11 +20,8 @@ let state = {
 
 const mutations = {
     //获取银行列表数据
-    getBankSupportListData(state){
-        bank_support_list({
-            pageNum : state.bankSupportList.pageNum,
-            pageSize : state.bankSupportList.pageSize 
-        }).then(res=> {
+    getBankSupportListData(state,data){
+        bank_support_list(data).then(res=> {
             state.bankSupportList.data.list = res.data.list;
             state.bankSupportList.total = res.data.total;
             window.localStorage.setItem('bankSupportList',JSON.stringify(state.bankSupportList.data.list))
@@ -77,13 +74,16 @@ const mutations = {
 }
 
 const actions = {
-    getBankSupportList({ commit }) {
-        commit('getBankSupportListData')
+    getBankSupportList({ commit },data) {
+        commit('getBankSupportListData',data)
     },
     //删除例表数据
-    deleteList({commit},id){
+    deleteList({commit, state},id){
         bank_support_del(id).then(()=> {
-            commit('getBankSupportListData')
+            commit('getBankSupportListData',{
+                pageNum: state.bankSupportList.pageNum,
+                pageSize: state.bankSupportList.pageSize
+            })
         })
     },
 }

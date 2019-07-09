@@ -26,6 +26,22 @@ const mutations = {
             if(res.success){
                 state.tableMenu.data.list = res.data.list;
                 state.tableMenu.total = res.data.total;
+                state.tableMenu.data.list.forEach(v => {
+                    if (v.status == 'ENABLE') {
+                        v.statusCN = '启用';
+                        v.action = '启用'
+                        v.switch = true;
+                    } else if (v.status == 'DISABLE') {
+                        v.statusCN = '停用';
+                        v.action = '停用'
+                        v.switch = false;
+                    }
+                })
+                state.tableMenu.actions.switch = {
+                    label: "停用/启用",
+                    minWidth: 80,
+                    from: "statusCN"
+                }
             }
         })
     },

@@ -186,7 +186,8 @@
                 <el-date-picker
                   style="width:100%;"
                   v-model="COUPON_tableSearch.time"
-                  type="daterange"
+                  type="datetimerange"
+                  value-format="yyyy-MM-dd HH:mm:ss"
                   range-separator="~"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
@@ -228,7 +229,7 @@
                 <el-input v-model="PACKET_tableSearch.name"></el-input>
               </el-form-item>
               <el-form-item style="margin-bottom:2px;" label="红包说明">
-                <el-input v-model="PACKET_tableSearch.couponExplain"></el-input>
+                <el-input v-model="PACKET_tableSearch.packetExplain"></el-input>
               </el-form-item>
 
               <el-form-item style="margin-bottom:2px;">
@@ -264,12 +265,8 @@ export default {
   data() {
     // 验证发放总张数
     var checkTotalMoney = (rule, value, callback) => {
-      let total = +this.formData.total; // 发放总张数
-      let limit = +this.formData.limit; // 领券限制
       let reg = /\./;
-      if (total < limit) {
-        callback(new Error("总张数 >= 领券限制"));
-      } else if (reg.test(value)) {
+      if (reg.test(value)) {
         callback(new Error("请输入整数"));
       } else if (value === "") {
         callback(new Error("请输入数据"));
@@ -417,7 +414,7 @@ export default {
       // 红包列表的搜索
       PACKET_tableSearch: {
         name: "",
-        couponExplain: "",
+        packetExplain: "",
         pageSize: 10,
         pageNum: 1
       },
@@ -450,7 +447,7 @@ export default {
           { validator: checkTotalMoney, trigger: "blur" },
           { required: true, message: "请输入发放总张数", trigger: "blur" }
         ],
-        how: [{ required: true, message: "请输入使用条件", trigger: "change" }]
+        how: [{ required: true, message: "请选择使用条件", trigger: "change" }]
       }
     };
   },
@@ -493,7 +490,8 @@ export default {
                   limit: httpData.getLimit, // 领券限制
                   toKnow: httpData.useNotice, // 使用须知
                   total: httpData.issueNum, // 发放总张数
-                  how: httpData.useConditions // 使用条件
+                  how: httpData.useConditions, // 使用条件
+                  discountsList: [] // 已使用的卡券、红包
                 };
 
                 switch (httpData.expiryType) {
@@ -516,15 +514,11 @@ export default {
                     // 使用条件中与其他共享
                     couponList.forEach(item => {
                       // 添加卡券
-                      let obj = {
+                      obj.discountsList.push({
                         id: item.id,
                         shareType: "COUPON",
                         shareId: item.awardValue
-                      };
-                      if (!obj.discountsList) {
-                        obj.discountsList = [];
-                      }
-                      obj.discountsList.push(obj);
+                      });
                       let obj2 = {
                         // 用来显示已经添加了哪些卡券
                         type: "COUPON",
@@ -538,23 +532,19 @@ export default {
                   if (packetList.length > 0) {
                     // 使用条件中与其他共享
                     packetList.forEach(item => {
-                      // 添加卡券
-                      let obj = {
+                      // 添加红包
+                      obj.discountsList.push({
                         id: item.id,
                         shareType: "PACKET",
                         shareId: item.awardValue
-                      };
-                      if (!obj.discountsList) {
-                        obj.discountsList = [];
-                      }
-                      obj.discountsList.push(obj);
-                      let obj2 = {
+                      });
+                      let obj3 = {
                         // 用来显示已经添加了哪些卡券
                         type: "PACKET",
                         name: item.name,
                         num: item.awardValue
                       };
-                      this.jiangliHongBao.push(obj2);
+                      this.jiangliHongBao.push(obj3);
                     });
                     this.toSearch("PACKET");
                   }
@@ -613,22 +603,28 @@ export default {
                 }
                 this.formData = obj;
               }
+            })
+            .then(() => {
+              // 恢复导航栏
+              if (this.formData.how === "NOSHARE") {
+                this.$store.commit("set_asideState", { data: true });
+              }
             });
         } else {
           // 表示是曾经编辑过的step1
           this.formData = datas;
-          if (sessionStorage.getItem("jiangliHongBao")) {
-            this.jiangliHongBao = JSON.parse(
-              sessionStorage.getItem("jiangliHongBao")
-            );
-            this.toSearch("PACKET");
-            this.$store.commit("set_asideState", { data: false });
-          }
           if (sessionStorage.getItem("jiangliKaQuan")) {
             this.jiangliKaQuan = JSON.parse(
               sessionStorage.getItem("jiangliKaQuan")
             );
             this.toSearch("COUPON");
+            this.$store.commit("set_asideState", { data: false });
+          }
+          if (sessionStorage.getItem("jiangliHongBao")) {
+            this.jiangliHongBao = JSON.parse(
+              sessionStorage.getItem("jiangliHongBao")
+            );
+            this.toSearch("PACKET");
             this.$store.commit("set_asideState", { data: false });
           }
         }
@@ -691,7 +687,7 @@ export default {
       this.formData = obj;
       this.rules = rule;
     },
-
+    // 对数字的验证
     checkNumFN(rule, value, callback) {
       let reg = /\./;
       if (reg.test(value)) {
@@ -734,7 +730,7 @@ export default {
         };
       }
     },
-
+    // 右侧表格重置
     resetSearch(type) {
       switch (type) {
         case "COUPON": // 卡券查询
@@ -756,7 +752,7 @@ export default {
           // 红包列表的搜索
           this.PACKET_tableSearch = {
             name: "",
-            couponExplain: "",
+            packetExplain: "",
             pageSize: 10,
             pageNum: 1
           };
@@ -782,6 +778,11 @@ export default {
               obj[str] = this.COUPON_tableSearch[str];
             }
           });
+          if (obj["time"]) {
+            obj["queryBeginDay"] = obj["time"][0];
+            obj["queryEndDay"] = obj["time"][1];
+            delete obj["time"];
+          }
           this.COUPON_Search(obj);
           break;
         case "PACKET": // 红包查询
@@ -1038,73 +1039,10 @@ export default {
     },
     // 重置
     reset() {
-      let id = this.$route.query["id"];
-
-      new Promise(res => {
-        this.$refs.formData.resetFields();
-        this.jiangliKaQuan = []; // 保存已经添加的卡券奖励
-        this.jiangliHongBao = []; // 保存已经添加的红包奖励
-        this.COUPON_table = {
-          // 卡券
-          // 传给table子组件的数据
-          pageSize: 10, // 分页相关
-          pageNum: 1,
-          total: null,
-          actions: {}, // 记录表格内需要额外添加的点击事件
-          data: {
-            list: [], // 给表格的数据
-            quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
-            title: [], // 给表格表头
-            custom: [] // 给表格按钮数量、类型（编辑、删除等）
-          }
-        };
-        this.PACKET_table = {
-          // 红包
-          // 传给table子组件的数据
-          pageSize: 10, // 分页相关
-          pageNum: 1,
-          total: null,
-          actions: {}, // 记录表格内需要额外添加的点击事件
-          data: {
-            list: [], // 给表格的数据
-            quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
-            title: [], // 给表格表头
-            custom: [] // 给表格按钮数量、类型（编辑、删除等）
-          }
-        };
-        this.COUPON_tableSearch = {
-          name: "",
-          couponExplain: "",
-          startTime: "",
-          endTime: "",
-          pageSize: 10,
-          pageNum: 1
-        };
-        // 红包列表的搜索
-        this.PACKET_tableSearch = {
-          name: "",
-          couponExplain: "",
-          pageSize: 10,
-          pageNum: 1
-        };
-        this.formData = {
-          type: "EXPERIENCE",
-          name: "", // 券名称
-          description: "", // 卡券说明
-          money: "", // 体验金额
-          days: "", // 持续时间
-          useType: "", // 有效期类型
-          limit: "", // 领券限制
-          toKnow: "", // 使用须知
-          total: "", // 发放总张数
-          how: "" // 使用条件
-        };
-        res();
-      }).then(() => {
-        if (id) {
-          this.toInit();
-        }
-      });
+      this.$refs.formData.resetFields();
+      this.jiangliKaQuan = []; // 保存已经添加的卡券奖励
+      this.jiangliHongBao = []; // 保存已经添加的红包奖励
+      this.toInit();
     },
     // 下一步
     step() {

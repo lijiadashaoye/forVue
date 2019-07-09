@@ -21,12 +21,9 @@ const state = {
 }
 const mutations = {
     //获取列表数据
-    getNoticeListData(state) {
-        notice_list({
-            pageNum: state.noticeList.pageNum,
-            pageSize: state.noticeList.pageSize,
-        }).then(res => {
-            if (res) {
+    getNoticeListData(state,data) {
+        notice_list(data).then(res => {
+            if (res && res.success) {
                 state.noticeList.data.list = res.data.list;
                 state.noticeList.total = res.data.total;
                 state.noticeList.data.list.forEach(v=> {
@@ -74,8 +71,8 @@ const mutations = {
 const actions = {
     getList({
         commit
-    }) {
-        commit('getNoticeListData')
+    },data) {
+        commit('getNoticeListData',data)
     },
     deleteList({
         commit

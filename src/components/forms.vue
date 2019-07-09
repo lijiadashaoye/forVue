@@ -1,25 +1,16 @@
 <template>
-  <div id="baseWaper">
+  <div id="formsWap">
     <div class="formsListWaper">
       <!-- 表格头部蓝点 -->
 
-      <div
-        class="table_top1"
-        v-if="tableContent.titleUp"
-      >
-        <span class="isPoint">
-        </span>
-        <span style="font-size:12px;font-weight:bold;">
-          {{tableContent.titleUp.pointName }}
-        </span>
+      <div class="table_top1" v-if="tableContent.titleUp">
+        <span class="isPoint"></span>
+        <span style="font-size:12px;font-weight:bold;">{{tableContent.titleUp.pointName }}</span>
       </div>
       <!-- 显示数据的表格 -->
       <div>
-        <div
-          class="toaddlilv"
-          v-if='tableContent.topClick'
-        >
-          <span @click="toEmit('add',pageData.id) ">新增利率(点击添加)</span>
+        <div class="toaddlilv" v-if="tableContent.topClick">
+          <span @click="toEmit('add',pageData.id) ">新增利率(点击添加,备注以外全必填)</span>
         </div>
         <el-table
           :data="tableContent.datas"
@@ -27,29 +18,28 @@
           height="260"
           max-height="260"
           align="center"
-          size='mini'
+          size="mini"
           :row-class-name="tableRowClassName"
         >
           <el-table-column
             v-for="(title,index) of tableContent.title"
-            :key='index'
+            :key="index"
             :prop="title.prop"
             :label="title.label"
             :width="title.width"
             align="center"
-          >
-          </el-table-column>
+          ></el-table-column>
           <el-table-column
             fixed="right"
             label="操作"
             :width="setWidth"
             align="center"
-            v-if='tableContent.handle.length > 0'
+            v-if="tableContent.handle.length > 0"
           >
             <template slot-scope="scope">
               <el-button
                 v-for="(handle,index) of tableContent.handle"
-                :key='index'
+                :key="index"
                 @click="toEmit(handle.click,scope.row)"
                 type="text"
                 size="small"
@@ -58,29 +48,21 @@
           </el-table-column>
         </el-table>
 
-        <div
-          class="nextPage"
-          v-if="tableContent.fenye"
-        >
-          <span>每页5条，总共 {{tableContent.total}} 页 </span>
+        <div class="nextPage" v-if="tableContent.fenye">
+          <span>每页5条，总共 {{tableContent.total}} 页</span>
           <span>第{{tableContent.pageNum+1}}页</span>
           <span @click="pageStep(true)">上一页</span>
           <span @click="pageStep(false)">下一页</span>
         </div>
       </div>
-
     </div>
-    <div
-      class="show_time2"
-      v-if="type==='lishi'"
-    >
+    <div class="show_time2" v-if="type==='lishi'">
       <span class="isUpTime">
         更新时间：
         {{inputDatas.createTime}}
         &nbsp;
         {{inputDatas.who}}
       </span>
-
     </div>
   </div>
 </template>
@@ -170,9 +152,10 @@ export default {
           );
         }
       } else {
-        let num1 = this.tableContent.dataTotal.length / 5;
+        let num1 = this.tableContent.dataTotal.length;
         let num2 = this.tableContent.pageNum + 1;
-        if (this.tableContent.total > 5 && num1 > num2) {
+
+        if (num1 > 5 && num1 / 5 > num2) {
           this.tableContent.pageNum += 1;
           this.tableContent.datas = this.tableContent.dataTotal.slice(
             this.tableContent.pageNum * 5,

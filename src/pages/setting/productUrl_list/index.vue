@@ -48,17 +48,19 @@
 <script>
 import isTable from '../../../components/isTable/isTable';
 import { mapActions, mapMutations } from 'vuex';
-import { getAppChannel, productUrl_add } from '../../../api/setting_use';
+import { getAppChannel, productUrl_add, productUrl_uopdate } from '../../../api/setting_use';
 export default {
     components: {
         isTable
     },
     data() {
         return {
+            id:'',
             pageName: '',
             linkModelFlag: false,
             dialogFormVisible: false,
             addDialogTitle: 'true',
+            linkName: '',
             rules: {
                 linkModel: [
                     { required: true, message: '请选择产品类型', trigger: 'blur' },
@@ -83,7 +85,7 @@ export default {
         this.$store.state.productUrl.productUrlList.data.title = [
             {
                 title: "产品类型",
-                key: "linkModel",
+                key: "linkName",
                 minWidth: "120"
             },{
                 title: "产品地址",
@@ -134,16 +136,37 @@ export default {
         submitForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    productUrl_add({
-                        linkModel: this.ruleForm.linkModel,
-                        linkUrl: this.ruleForm.linkUrl
-                    }).then(res=> {
-                        if(res && res.success) {
-                            this.dialogFormVisible = false;
-                            this.$refs.ruleForm.resetFields();
-                            this.getList();
+                    this.channelData.forEach(v=> {
+                        if(this.ruleForm.linkModel == v.value){
+                            this.linkName = v.label;
                         }
                     })
+                    if(this.addDialogTitle) {
+                        productUrl_add({
+                            linkModel: this.ruleForm.linkModel,
+                            linkName: this.linkName,
+                            linkUrl: this.ruleForm.linkUrl
+                        }).then(res=> {
+                            if(res && res.success) {
+                                this.dialogFormVisible = false;
+                                this.$refs.ruleForm.resetFields();
+                                this.getList();
+                            }
+                        })
+                    } else {
+                        productUrl_uopdate({
+                            id: this.id,
+                            linkModel: this.ruleForm.linkModel,
+                            linkName: this.linkName,
+                            linkUrl: this.ruleForm.linkUrl
+                        }).then(res=> {
+                            if(res && res.success) {
+                                this.dialogFormVisible = false;
+                                this.$refs.ruleForm.resetFields();
+                                this.getList();
+                            }
+                        })
+                    }
                 } else {
                     return false;
                 }
@@ -170,6 +193,7 @@ export default {
         },
         //修改
         edit(data) {
+            this.id = data.id
             this.dialogFormVisible = true;
             this.addDialogTitle = false;
             this.linkModelFlag = true;

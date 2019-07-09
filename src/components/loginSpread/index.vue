@@ -4,7 +4,7 @@
         <div class="card-item" v-if="flag">
             <span class="item-text">*选择App：</span>
             <div class="item-input">
-                <el-radio-group v-model="appChannelVal">
+                <el-radio-group v-model="appChannelCode">
                     <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
                 </el-radio-group>
             </div>
@@ -26,7 +26,7 @@
         <div class="card-item">
             <span class="item-text">*内容显示字号:</span>
             <div class="item-input">
-                <el-input v-model="fontSize" placeholder="请输入标题" :disabled="detailFlag"></el-input>
+                <el-input type='number' v-model="fontSize" placeholder="请输入标题" :disabled="detailFlag"></el-input>
             </div>
         </div>
 
@@ -82,8 +82,24 @@ export default {
     methods:{
         //点击保存
         save(){
-            if(this.spreadContent && this.fontSize && this.fontColor && this.appChannelVal){
-
+            if(this.spreadContent && this.fontSize && this.fontColor && this.appChannelCode){
+                if(this.fontSize > 10000) {
+                    this.$alert('显示字号不能大于10000', '提交失败', {
+                        confirmButtonText: '确定',
+                        callback: action => {
+                            this.$message({
+                                type: 'info',
+                                message: `action: ${ action }`
+                            });
+                        }
+                    })
+                    return
+                }
+                this.appChannel && this.appChannel.forEach(v=> {
+                    if(this.appChannelCode == v.label) {
+                        this.appChannelVal = v.value;
+                    }
+                })
                 //整理params
                 let obj = {
                     id: this.opts ? this.opts.id : '',
@@ -93,7 +109,7 @@ export default {
                     fontSize: this.fontSize,
                     fontColor: this.fontColor
                 }
-
+                    
                 //向父组件传递params
                 this.$emit('req',obj)
 
@@ -112,6 +128,11 @@ export default {
 
         //点击取消 数据回归初始化
         cancel(flag) {
+            this.spreadContent = '';
+            this.fontSize = '';
+            this.fontColor = '';
+            this.appChannelVal = '';
+            this.appChannelCode = '';
             this.$emit('cancel',flag)
         },
  
@@ -122,10 +143,10 @@ export default {
     },
     watch: {//监听传入的参数变化   data变化
         'opts.id'(){
-            this.spreadContent = this.opts.spreadContent;
+           this.spreadContent = this.opts.spreadContent;
             this.fontSize = this.opts.fontSize;
             this.fontColor = this.opts.fontColor;
-            this.appChannelVal = this.opts.appChannelName;
+            this.appChannelVal = this.opts.appChannelName
             this.appChannelCode = this.opts.appChannelCode
         }
     }

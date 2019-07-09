@@ -22,6 +22,7 @@
         <el-dialog :close-on-click-modal='false' :visible.sync="dialogVisible">
             <activityButton
             @send="send"
+            @cancel="cancel"
             :opts="opts"/>
         </el-dialog>
     </div>
@@ -130,6 +131,10 @@ export default {
                 });
             } 
         },
+        cancel() {
+            this.opts = {};
+            this.dialogVisible = false;
+        },
         //点击删除
         delete(id) {
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
@@ -177,7 +182,7 @@ export default {
             switch (data.type) {
                 case "regetData": // 分页的emit
                 //再次请求列表数据
-                // this.getList();
+                this.getList();
                 break;
                 case "edit": // 编辑按钮
                 this.edit(data.data);

@@ -10,6 +10,13 @@
         >
           创建银行
         </el-button>
+        <el-input
+          placeholder="请输入银行名称"
+          size="mini"
+          prefix-icon="el-icon-search"
+          v-model.trim="bankName"
+          @input="search">
+        </el-input>
       </div>
     </div>
 
@@ -23,7 +30,8 @@
       <addBankDetail
       :detailFlag="detailFlag"
       :opts="opts"
-      @send="send"/>
+      @send="send"
+      @cancel='cancel'/>
     </el-dialog>
   </div>
 </template>
@@ -47,13 +55,17 @@ export default {
       detailFlag: false,
       opts: {
 
-      }
+      },
+      bankName:'',
     };
   },
   mounted() {
     this.pageName = this.$route.name;
     this.userDo();
-    this.getList()
+    this.getList({
+        pageNum: this.$store.state.bank.bankList.pageNum,
+        pageSize: this.$store.state.bank.bankList.pageSize,
+      })
     this.$store.state.bank.bankList.data.title = [
       {
         title: "银行名称",
@@ -101,7 +113,11 @@ export default {
     send(data) {
       this.dialogVisible = false;
       bank_list_upd(data).then((res)=> {
-          this.getList();
+        this.getList({
+          pageNum: this.$store.state.bank.bankList.pageNum,
+          pageSize: this.$store.state.bank.bankList.pageSize,
+          bankName : this.bankName != '' ? this.bankName : null
+        })
       }).catch(() => {
         this.$alert(`${res.message}`, '保存失败', {
           confirmButtonText: '确定',
@@ -114,7 +130,10 @@ export default {
         });
       })
     },
-
+    cancel() {
+      this.opts = {};
+      this.dialogVisible = false;
+    },
     //点击添加
     addbank(){
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
@@ -164,13 +183,23 @@ export default {
       this.detailFlag = false;
       this.opts = data;
     },
-
+    search() {
+      this.getList({
+        pageNum: 1,
+        pageSize: this.$store.state.bank.bankList.pageSize,
+        bankName : this.bankName != '' ? this.bankName : null
+      });
+    },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
            //再次请求列表数据
-          this.getList();
+          this.getList({
+            pageNum: this.$store.state.bank.bankList.pageNum,
+            pageSize: this.$store.state.bank.bankList.pageSize,
+            bankName : this.bankName != '' ? this.bankName : null
+          });
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);
@@ -190,9 +219,13 @@ export default {
 <style scoped='true' lang="scss">
   .explosiveAdd {
     width: 100%;
-    height: 80px;
-    padding: 20px;
+    padding:2px 4px;
     box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    .el-input{
+        width:200px;
+    }
     .el-button--mini{
       height:100%;
     }

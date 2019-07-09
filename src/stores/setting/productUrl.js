@@ -33,7 +33,7 @@ const mutations = {
         })
     },
     userDo() {
-         state.productUrlList.data.custom = [];
+        state.productUrlList.data.custom = [];
         state.productUrlList.data.custom.push({
             text: "修改",
             type: "warning",

@@ -18,11 +18,8 @@ const state = {
 
 const mutations = {
     //获取银行列表数据
-    getBankListData(state){
-        bank_list({
-            pageNum : state.bankList.pageNum,
-            pageSize : state.bankList.pageSize 
-        }).then(res=> {
+    getBankListData(state,data){
+        bank_list(data).then(res=> {
             if(res.success){
                 state.bankList.data.list = res.data.list;
                 state.bankList.total = res.data.total;
@@ -77,8 +74,8 @@ const mutations = {
 }
 
 const actions = {
-    getList({commit}){
-        commit('getBankListData')
+    getList({commit},data){
+        commit('getBankListData',data)
     }
 }
 export default {

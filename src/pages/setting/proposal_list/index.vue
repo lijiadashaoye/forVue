@@ -9,10 +9,10 @@
                 </div>
                 <div class="search">
                     <el-input
-                            placeholder="请输入建议账号"
-                            prefix-icon="el-icon-search"
-                            v-model="keyWords"
-                            @input="search">
+                        placeholder="请输入建议内容"
+                        prefix-icon="el-icon-search"
+                        v-model="keyWords"
+                        @input="search">
                     </el-input>
                 </div>
 
@@ -21,8 +21,8 @@
 
         <div id="forTable">
             <isTable
-                    :inputData='this.$store.state.proposal.proposalList'
-                    @tableEmit='tableEmit'
+                :inputData='this.$store.state.proposal.proposalList'
+                @tableEmit='tableEmit'
             />
         </div>
         <!-- 转发的弹框 -->
@@ -76,7 +76,9 @@
         mounted() {
             this.userDo();
             this.pageName = this.$route.name;
-            this.getList();
+            this.getList({
+                
+            });
             this.$store.state.proposal.proposalList.data.title = [
                 {
                     title: "编号",
@@ -120,7 +122,7 @@
             // 搜索
             search() {
                 this.getList({
-                    keyWords: this.keyWords,
+                    proposalContent: this.keyWords,
                 })
             },
             // 取消

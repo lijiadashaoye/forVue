@@ -1,127 +1,57 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <div
-      v-if="!isOk"
-      id="forTable"
-    >
+    <div v-if="!isOk" id="forTable">
       <el-form
         ref="ruleForm"
         size="normal"
         :model="ruleForm"
         label-width="150px"
-        label-suffix=':'
+        label-suffix=":"
         class="isForm"
         :rules="rules"
       >
-        <el-form-item
-          label="同一产品标识"
-          class="is50"
-          prop="sameProductFlag"
-        >
-          <el-input
-            clearable
-            v-model="ruleForm.sameProductFlag"
-            placeholder="请输入"
-            class="isInput"
-          ></el-input>
-
+        <el-form-item label="同一产品标识" class="is50" prop="sameProductFlag">
+          <el-input clearable v-model="ruleForm.sameProductFlag" placeholder="请输入" class="isInput"></el-input>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否上架"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.shelve"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
-          </el-radio-group>
-
-        </el-form-item>
-
-        <el-form-item
-          size="mini"
-          label="是否面签"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.visaInterview"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否上架" class="is50">
+          <el-radio-group v-model="ruleForm.shelve" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否推荐"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.recommend"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否面签" class="is50">
+          <el-radio-group v-model="ruleForm.visaInterview" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否首页排行"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.homePage"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否推荐" class="is50">
+          <el-radio-group v-model="ruleForm.recommend" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          label="默认存款笔数"
-          class="is50"
-          prop="defaultNum"
-        >
+        <el-form-item size="mini" label="是否首页排行" class="is50">
+          <el-radio-group v-model="ruleForm.homePage" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="默认存款笔数" class="is50" prop="defaultNum">
           <el-input
             clearable
             v-model="ruleForm.defaultNum"
             placeholder="请输入"
             class="isInput"
-            type='number'
+            type="number"
           ></el-input>
           <span class="isA">
             笔
@@ -129,13 +59,9 @@
           </span>
         </el-form-item>
 
-        <el-form-item
-          label="默认存款金额"
-          class="is50"
-          prop="defaultAmount"
-        >
+        <el-form-item label="默认存款金额" class="is50" prop="defaultAmount">
           <el-input
-            type='number'
+            type="number"
             clearable
             v-model="ruleForm.defaultAmount"
             placeholder="请输入"
@@ -147,13 +73,9 @@
           </span>
         </el-form-item>
 
-        <el-form-item
-          label="默认关注数量"
-          class="is50"
-          prop="defaultFlowNum"
-        >
+        <el-form-item label="默认关注数量" class="is50" prop="defaultFlowNum">
           <el-input
-            type='number'
+            type="number"
             clearable
             v-model="ruleForm.defaultFlowNum"
             placeholder="请输入"
@@ -161,56 +83,33 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          prop="listAreaFlag"
-          label="榜单专区标识"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.listAreaFlag"
-          >
+        <el-form-item prop="listAreaFlag" label="榜单专区标识" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.list_area_type"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="合作方式"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.cooperationMode"
-          >
+        <el-form-item label="合作方式" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.cooperation_mode"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="年收费率"
-          class="is50"
-          prop="yearRate"
-        >
+        <el-form-item label="年收费率" class="is50" prop="yearRate">
           <el-input
-            type='number'
+            type="number"
             clearable
             v-model="ruleForm.yearRate"
             placeholder="请输入"
@@ -218,145 +117,58 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="银行对接方式"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.connectionMode"
-          >
+        <el-form-item label="银行对接方式" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.connection_mode"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="自动上架"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.autoShelve"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="自动上架" class="is50">
+          <el-radio-group v-model="ruleForm.autoShelve" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="显示银行过渡页"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.showBankPage"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="显示银行过渡页" class="is50">
+          <el-radio-group v-model="ruleForm.showBankPage" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否实名认证"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.realNameAuth"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否实名认证" class="is50">
+          <el-radio-group v-model="ruleForm.realNameAuth" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否签约"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.signed"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否签约" class="is50">
+          <el-radio-group v-model="ruleForm.signed" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          label="H5链接"
-          style="width:100%;"
-        >
-          <el-input
-            clearable
-            v-model="ruleForm.H5Url"
-            placeholder="请输入"
-            class="isInput"
-          ></el-input>
-
+        <el-form-item label="H5链接" style="width:100%;" prop="H5Url">
+          <el-input clearable v-model="ruleForm.H5Url" placeholder="请输入" class="isInput"></el-input>
         </el-form-item>
-
       </el-form>
       <div class="nextButtons">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="before"
-        >上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button
-          size="mini"
-          type="primary"
-          @click="next"
-          :disabled="isSaveIng"
-        >保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button
-          size="mini"
-          type="info"
-          @click="back"
-        >取消</el-button>
+        <el-button size="mini" type="primary" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="primary" @click="next" :disabled="isSaveIng">保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
       </div>
     </div>
 
-    <div
-      id="forTable"
-      v-if="isOk"
-    >
+    <div id="forTable" v-if="isOk">
       <hasSuccess @isOver="isOver" />
     </div>
   </div>
@@ -373,8 +185,8 @@ export default {
         callback(new Error("请输入整数"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
       } else {
         callback();
       }
@@ -383,8 +195,8 @@ export default {
     var checkNum3 = (rule, value, callback) => {
       if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
       } else {
         callback();
       }
@@ -396,27 +208,30 @@ export default {
       pageName: "", // 当前页面名字
       ruleForm: {
         sameProductFlag: "", // 同一产品标识
-        shelve: "", // 是否上架
-        visaInterview: "", // 是否面签
-        recommend: "", // 是否推荐
-        homePage: "", // 是否首页排行
+        shelve: "否", // 是否上架
+        visaInterview: "否", // 是否面签
+        recommend: "否", // 是否推荐
+        homePage: "否", // 是否首页排行
         defaultNum: "", // 默认购买数量
         defaultAmount: "", // 默认购买金额
         defaultFlowNum: "", // 默认关注数量
         listAreaFlag: "", // 榜单专区标识
         yearRate: "", //  年收费率
-        autoShelve: "", // 自动上架
-        showBankPage: "", //  显示银行过渡页
+        autoShelve: "否", // 自动上架
+        showBankPage: "否", //  显示银行过渡页
         connectionMode: "", //  银行对接方式
         cooperationMode: "", //  合作方式
         H5Url: "", //  H5链接
-        realNameAuth: "", // 实名认证
-        signed: "" // 是否签约
+        realNameAuth: "是", // 实名认证
+        signed: "否" // 是否签约
       },
       //表单验证
       rules: {
         sameProductFlag: [
           { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+        ],
+        H5Url: [
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
         defaultNum: [{ validator: checkNum2, trigger: "blur" }],
         defaultAmount: [{ validator: checkNum3, trigger: "blur" }],

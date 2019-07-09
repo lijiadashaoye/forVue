@@ -24,11 +24,28 @@
 #baseWaper,
 #simpleWaper,
 #chartWap,
+#formsWap,
 #jigouWaper {
-    margin: 5px;
     padding: 10px 5px 0 5px;
-    border-radius: 5px;
+    border-radius: 3px;
     background: #fff
+}
+
+#baseWaper,
+#jigouWaper {
+    margin: 0 5px 5px 0;
+}
+
+#simpleWaper {
+    margin: 0 0 5px 5px;
+}
+
+#formsWap {
+    margin-left: 5px;
+}
+
+#chartWap {
+    margin: 5px 5px 0 0;
 }
 
 .isUpTime {
@@ -64,9 +81,24 @@
     width: 80px;
 }
 
+.forH5 {
+    display: flex;
+    width: calc(100% - 115px) !important;
+}
+
+.forH5 p {
+    width: 100%;
+    word-wrap: wrap;
+    overflow-wrap: break-word;
+    font-size: 14px;
+    color: rgb(41, 126, 151);
+    margin: 0;
+}
+
 .withLink {
     display: flex;
-    justify-content: space-between
+    justify-content: space-between;
+    padding-right: 5px;
 }
 
 .isContent>p {
@@ -257,13 +289,17 @@
 
 .header_two p:nth-child(1) {
     font-weight: bold;
-    color: rgb(0, 134, 175);
+    color: rgb(9, 155, 199);
     font-size: 14px
 }
 
 .isLink {
     text-decoration: underline !important;
     cursor: pointer;
+}
+
+.isLink:hover {
+    color: rgb(252, 48, 48);
 }
 
 .show_time {
@@ -307,18 +343,10 @@
 }
 
 .shengoutInputYes {
-    border: 1px solid rgb(236, 101, 101);
-    background: transparent;
+    background: rgb(194, 224, 245);
     outline: none;
     padding: 2px 0;
-    box-sizing: border-box;
-}
-
-.hasError {
-    box-sizing: border-box;
-    padding: 1px;
-    border: 1px solid rgb(252, 120, 120);
-    border-radius: 5px;
+    border: none;
 }
 
 .isAd::after {
@@ -341,6 +369,7 @@
     text-align: center;
     font-weight: bold;
     font-size: 14px;
+    margin-bottom: 10px;
 }
 
 .stepsTops span {
@@ -364,7 +393,8 @@
     width: calc(100% - 30px) !important;
 }
 
-.isA {
+.isA,
+.isAClick {
     display: inline-block;
     width: 75px;
     height: 100%;
@@ -376,7 +406,11 @@
     color: rgb(115, 161, 246);
 }
 
-.isA:hover {
+.isAClick {
+    text-decoration: underline
+}
+
+.isAClick:hover {
     color: rgb(8, 12, 247);
     cursor: pointer;
 }
@@ -400,8 +434,8 @@ hr {
 
 .isFormLine {
     margin: 0 auto;
-    width: 50%;
-    min-width: 400px;
+    width: 65%;
+    min-width: 500px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -605,6 +639,7 @@ ul {
     box-sizing: border-box;
     overflow: hidden;
     height: 100%;
+    width: 100%;
 }
 
 .treeTop {
@@ -696,8 +731,15 @@ ul {
     font-weight: bold;
 }
 
-.forTList>li:hover {
+.forTList>li:hover,
+.allPro:hover {
     color: rgb(238, 95, 107);
+}
+
+.allPro {
+    padding-left: .3em;
+    font-size: 16px;
+    cursor: pointer;
 }
 
 .headerName {

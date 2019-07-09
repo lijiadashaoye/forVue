@@ -10,7 +10,7 @@
         <div class="card-item">
             <span class="item-text">*会员电话:</span>
             <div class="item-input">
-                <el-input v-model="memberPhone" placeholder="请输入会员电话" :disabled="this.detailFlag"></el-input>
+                <el-input v-model="memberPhone" placeholder="请输入会员电话" :disabled="this.detailFlag" maxlength="11"></el-input>
             </div>
         </div>
 
@@ -50,11 +50,12 @@
                     :autosize="{ minRows: 6, maxRows: 6}"
                     placeholder="请输入原因"
                     :disabled="this.detailFlag"
+                    maxlength="100"
+                    :show-word-limit='true'
                     v-model="reasonDescribe">
                 </el-input>
             </div>
         </div>
-
         <div class="card-footer" v-if="!this.detailFlag">
             <el-button @click="cancel">取消</el-button>
             <el-button type="primary" @click="save">保存</el-button>
@@ -119,6 +120,10 @@ export default {
         save() {
             //判断必传参数
             if( this.memberPhone && this.joinType && this.dealType && this.reasonDescribe) { 
+                if(!(/^1[3456789]\d{9}$/.test(this.memberPhone))){ 
+                    this.$message.error('请填写正确的手机号') 
+                    return false; 
+                } 
                 let obj = {
                     id: this.opts ? this.opts.id : '',
                     memberId:this.memberId,
@@ -143,6 +148,12 @@ export default {
         },
         //点击取消
         cancel() {
+            this.id = "";
+            this.memberId = "";
+            this.memberPhone = "";
+            this.reasonDescribe = "";
+            this.joinType = "";
+            this.dealType = "";
             this.$emit('cancel')
         },
         close() {
@@ -165,7 +176,7 @@ export default {
 <style scoped="true" lang="scss">
     .card-item{
         width:100%;
-        height:100px;
+        // height:100px;
         padding:10px;
         box-sizing:border-box;
         display:flex;

@@ -10,12 +10,24 @@
         >
           新增协议政策
         </el-button>
-        <el-input
-          placeholder="请输入App名称"
-          prefix-icon="el-icon-search"
-          v-model="inputVal"
-          @change="search">
-        </el-input>
+
+        <div>
+          <el-input
+            placeholder="请输入App名称"
+            prefix-icon="el-icon-search"
+            size='mini'
+            v-model="inputVal">
+          </el-input>       
+          <el-button
+            type="primary"
+            size="mini"
+            @click="search"
+            style="marginLeft:10px"
+          >
+            查询
+          </el-button>
+        </div>
+        
       </div>
     </div>
 
@@ -65,7 +77,10 @@ export default {
   mounted() {
     this.pageName = this.$route.name;
     this.userDo();
-    this.getProtocolListData();
+    this.getProtocolListData({
+            pageNum: this.$store.state.protocol.protocolList.pageNum,
+            pageSize: this.$store.state.protocol.protocolList.pageSize
+          });
     this.getAppChannel();
     this.$store.state.protocol.protocolList.data.title = [
       {
@@ -112,8 +127,11 @@ export default {
     req(data){
       this.dialogFormVisible = false;
       protocol_upd(data).then(res=> {
-        if(res.success){
-          this.getProtocolListData()
+        if(res && res.success){
+          this.getProtocolListData({
+            pageNum: this.$store.state.protocol.protocolList.pageNum,
+            pageSize: this.$store.state.protocol.protocolList.pageSize
+          })
         }
       }).catch((res)=>{
         this.$alert(`${res.message}`, '保存失败', {
@@ -174,7 +192,11 @@ export default {
       switch (data.type) {
         case "regetData": // 分页的emit
            //再次请求列表数据
-          this.getProtocolListData();
+          this.getProtocolListData({
+            pageNum: this.$store.state.protocol.protocolList.pageNum,
+            pageSize: this.$store.state.protocol.protocolList.pageSize,
+            appChannelName: this.inputVal ? this.inputVal : null,
+          });
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);
@@ -189,7 +211,9 @@ export default {
     },
     search() {
       this.getProtocolListData({
-        appChannelName : this.inputVal
+        pageNum:1,
+        pageSize:this.$store.state.protocol.protocolList.pageSize,
+        appChannelName: this.inputVal ? this.inputVal : null
       })
     }
   }

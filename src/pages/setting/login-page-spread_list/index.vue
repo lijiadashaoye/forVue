@@ -144,9 +144,9 @@ export default {
     },
     //接受更改后的信息  请求
     req(data) {
-      this.dialogVisible = false;
       loginSpread_updata(data).then((res)=> {
-        if(res.success){
+        if(res && res.success){
+          this.dialogVisible = false;
           this.getLoginSpreadListData();
         }
       }).catch(() => {

@@ -20,6 +20,19 @@ Vue.directive("regText", directive.regText);
 
 Vue.prototype.$api = everyApi;
 Vue.use(everyApi)
+
+//禁止输入特殊字符
+Vue.prototype.validForbid = function (value) {
+    var reg = /[`~!@#$%^&*()_\-+=<>?:"{}|,/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g;
+    if(reg.test(value)) {
+      this.$message({
+        type: 'warning',
+        message: `不能输入特殊字符`
+      })
+      value = value.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|,/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g, '').replace(/\s/g, "");
+    }
+    return value;
+  }
 // 富文本编辑器
 import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'

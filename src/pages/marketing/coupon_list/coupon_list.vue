@@ -98,7 +98,7 @@
         <el-form-item label="发放">
           <el-input
             class="addDanWei"
-            :placeholder="`只能输入正整数，小于${dialog.data.remain}张`"
+            placeholder="请输入正整数！"
             v-model="dialog.data.add"
           ></el-input>
         </el-form-item>
@@ -219,10 +219,8 @@ export default {
     // 弹出框的操作
     dialogAction(type) {
       if (type) {
-        if (this.dialog.data.add > this.dialog.data.remain) {
-          this.$message.error("没有那么多呀！");
-        } else if (this.checkNum(this.dialog.data.add)) {
-          this.$message.error("请输入正确的排序数据（正整数）！");
+        if (this.checkNum(this.dialog.data.add)) {
+          this.$message.error("请输入正确的数据（正整数）！");
         } else {
           this.$api
             .market_coupon_zengFa({

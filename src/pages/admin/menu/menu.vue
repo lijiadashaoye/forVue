@@ -58,7 +58,7 @@
                 :readonly="toEdit"
               ></el-input>
             </el-form-item>
-            <el-form-item label="图标">
+            <el-form-item label="图标" prop="icon">
               <el-input :readonly="toEdit" v-model="menuData.icon" placeholder="请输入图标"></el-input>
             </el-form-item>
             <el-form-item prop="url" label="资源路径">
@@ -105,7 +105,7 @@
               ></el-input>
             </el-form-item>
 
-            <el-form-item label="前端地址">
+            <el-form-item label="前端地址" prop="path">
               <el-input :readonly="toEdit" v-model="menuData.path" placeholder="请输入前端地址"></el-input>
             </el-form-item>
           </el-form>
@@ -128,8 +128,8 @@ export default {
     var checkSort = (rule, value, callback) => {
       if (!value) {
         callback(new Error("请输入排序"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
       } else {
         callback();
       }
@@ -182,7 +182,10 @@ export default {
           { required: true, message: "请输入标题", trigger: "blur" },
           { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
         ],
-        url: [{ required: true, message: "请输入资源路径", trigger: "blur" }],
+        url: [
+          { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" },
+          { required: true, message: "请输入资源路径", trigger: "blur" }
+        ],
         method: [
           { required: true, message: "请输入资源请求方法", trigger: "blur" }
         ],
@@ -193,6 +196,12 @@ export default {
         permission: [
           { required: true, message: "请输入权限标识", trigger: "blur" },
           { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+        ],
+        icon: [
+          { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" }
+        ],
+        path: [
+          { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" }
         ]
       }
     };

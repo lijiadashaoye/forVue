@@ -2,33 +2,26 @@
   <div id="isTable">
     <div v-if="loadEnd">
       <el-table
-        :stripe='true'
+        :stripe="true"
         :data="inputData.data.list"
         :max-height="setMaxHeight"
         :height="setMaxHeight"
         tooltip-effect="dark"
         @selection-change="handleSelectionChange"
         @select="handleSelectionChange"
+        v-loading="inputData.loading"
         size="mini"
       >
         <!-- checkbox -->
         <el-table-column
           v-if="inputData.checkBox"
-          padding='5px'
+          padding="5px"
           type="selection"
           width="30"
           fixed="left"
-        >
-        </el-table-column>
+        ></el-table-column>
 
-        <el-table-column
-          v-if="!inputData.noIndex"
-          label='序号'
-          type="index"
-          width="50"
-          order='2'
-        >
-        </el-table-column>
+        <el-table-column v-if="!inputData.noIndex" label="序号" type="index" width="50" order="2"></el-table-column>
 
         <el-table-column
           v-if="inputData.actions['click']"
@@ -36,10 +29,7 @@
           :min-width="inputData.actions['click'].minWidth"
         >
           <template slot-scope="scope">
-            <el-tooltip
-              content='点击文字查看详情'
-              placement="top"
-            >
+            <el-tooltip :content="`点击查看：${scope.row[inputData.actions['click']['from']]}`" placement="top">
               <el-button
                 @click="caozuo('textClick',scope.row)"
                 type="text"
@@ -53,18 +43,13 @@
         <el-table-column
           v-for="(item,index) in inputData.data.title"
           :key="index"
-          :sortable='item.sortable'
+          :sortable="item.sortable"
           :label="item.title"
-          :minWidth='item.minWidth'
+          :minWidth="item.minWidth"
           :prop="item.key"
         >
-
           <template slot-scope="scope">
-            <img
-              style="width:40px;"
-              v-if="item.isImg"
-              :src='scope.row[item.key]'
-            >
+            <img style="width:40px;" v-if="item.isImg" :src="scope.row[item.key]">
             <span
               :style="{color:item.color?item.color:''}"
               v-if="!item.isImg"
@@ -78,9 +63,9 @@
           :min-width="inputData.actions['setColor'].minWidth"
         >
           <template slot-scope="scope">
-            <p :style="{color:scope.row[inputData.actions['setColor'].with]?'#13ce66':'#ff4949'}">
-              {{scope.row[inputData.actions['setColor']['from']]}}
-            </p>
+            <p
+              :style="{color:scope.row[inputData.actions['setColor'].with]?'#13ce66':'#ff4949'}"
+            >{{scope.row[inputData.actions['setColor']['from']]}}</p>
           </template>
         </el-table-column>
 
@@ -90,17 +75,13 @@
           :min-width="inputData.actions['switch'].minWidth"
         >
           <template slot-scope="scope">
-            <el-tooltip
-              :content='""+scope.row.action'
-              placement="top"
-            >
+            <el-tooltip :content="''+scope.row.action" placement="top">
               <el-switch
                 v-model="scope.row.switch"
                 active-color="#13ce66"
                 inactive-color="#909399"
                 @change="caozuo('switch',scope.row)"
-              >
-              </el-switch>
+              ></el-switch>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -119,19 +100,14 @@
               :disabled="seeWhichButton(scope.row,item)"
               @click.native.prevent="caozuo(item.emit,scope.row)"
               :type="item.type"
-              :plain='seeWhichButton(scope.row,item)'
+              :plain="seeWhichButton(scope.row,item)"
               size="mini"
-            >
-              {{item.text}}
-            </el-button>
+            >{{item.text}}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
-    <div
-      id="isFenYe"
-      v-if="!inputData.fenye"
-    >
+    <div id="isFenYe" v-if="!inputData.fenye">
       <el-pagination
         :pager-count="5"
         @size-change="handleSizeChange"
@@ -142,8 +118,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="inputData.total"
         background
-      >
-      </el-pagination>
+      ></el-pagination>
     </div>
   </div>
 </template>
@@ -166,7 +141,7 @@ export default {
     // 用来判断按钮是否可用
     seeWhichButton(scope, item) {
       let arr = this.inputData.data.custom.map(tar => tar.emit);
-      let seeArr = scope.show;
+      let seeArr = scope.show; // 查看显示数组，定义按钮的可用状态
       if (seeArr) {
         return !seeArr.includes(item.emit);
       } else {
@@ -217,7 +192,7 @@ export default {
           } else {
             t();
           }
-        }, 50);
+        }, 100);
       };
       t();
     }

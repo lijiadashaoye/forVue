@@ -39,7 +39,9 @@
                     :http-request="uploadCheckImg"
                     >
                     <img v-if="buttonSelectedIcon" :src="buttonSelectedIcon" class="avatar">
-                    <el-button v-else>选择图片</el-button>
+                    <div v-else>
+                        <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                    </div>
                 </el-upload>
             </div>
         </div>
@@ -54,7 +56,9 @@
                     :http-request="uploadUnCheckImg"
                     >
                     <img v-if="buttonUnselectedIcon" :src="buttonUnselectedIcon" class="avatar">
-                    <el-button v-else>选择图片</el-button>
+                    <div v-else>
+                        <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                    </div>
                 </el-upload>
             </div>
         </div>
@@ -92,7 +96,6 @@
             <span class="item-text">*平台:</span>
             <div class="item-input">
                 <el-radio-group v-model="platformCode" :disabled="upData">
-                    <el-radio :label="'all'">全部</el-radio>
                     <el-radio :label="'ios'">苹果</el-radio>
                     <el-radio :label="'android'">安卓</el-radio>
                 </el-radio-group>
@@ -117,11 +120,11 @@
         <div class="card-item">
             <span class="item-text">*版本号:</span>
             <div class="item-input">
-                <el-input v-model="versionNo" placeholder="请输入版本号，只能输入数字"></el-input>
+                <el-input v-model="versionNo" placeholder="请输入版本号，只能输入正整数" ></el-input>
             </div>
         </div>
         
-        <div class="card-item">
+        <!-- <div class="card-item">
             <span class="item-text">*是否启用:</span>
             <div class="item-input">
                 <el-radio-group v-model="StartFlag">
@@ -129,7 +132,7 @@
                     <el-radio :label="'DISABLE'">未启用</el-radio>
                 </el-radio-group>
             </div>
-        </div>
+        </div> -->
 
         <div class="card-footer">
             <el-button @click="cancel">取消</el-button>
@@ -222,11 +225,16 @@ export default {
         //上传未选中的照片
         uploadUnCheckImg(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -239,11 +247,16 @@ export default {
         //上传选中的图片
         uploadCheckImg(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -265,15 +278,14 @@ export default {
                     callback: action => {
                     this.sort = "";
                         this.$message({
-                            type: 'info',
-                            message: `action: ${ action }`
+                            type: 'info'
                         });
                     }
                 })
                 return false;
             }
             //*必填项
-            if(this.buttonKey && this.appChannelCode && this.buttonTypeCode &&  this.versionNo && this.buttonSelectedIcon && this.buttonUnselectedIcon && this.buttonText && this.buttonSelectedTextColor && this.buttonUnselectedTextColor && this.sort && this.platformCode){
+            if(this.buttonKey && this.appChannelCode && this.buttonTypeCode &&  this.versionNo && this.buttonSelectedIcon && this.buttonUnselectedIcon && this.buttonText && this.buttonSelectedTextColor && this.buttonUnselectedTextColor && this.sort){
                 //取到选中的appChannelname
                 this.AppOpt.forEach(v=> {
                     if(this.appChannelCode == v.value) {
@@ -286,12 +298,25 @@ export default {
                         this.buttonTypeName = v.label
                     }
                 })
-                if(this.platformCode == "all") {
-                    this.platformName = "全部"
-                } else if(this.platformCode == "ios") {
+                if(this.platformCode == "ios") {
                     this.platformName = "苹果"
                 } else if(this.platformCode == "android") {
                     this.platformName = "安卓"
+                } else {
+                    this.platformCode = '';
+                }
+
+                if(!/^[0-9]*[1-9][0-9]*$/g.test(this.versionNo)) {
+                    this.$alert('提交失败', '提示信息', {
+                        confirmButtonText: '确定',
+                        callback: action => {
+                            this.$message({
+                                type: 'error',
+                                message: `版本号只能填写正整数`
+                            });
+                        }
+                    });
+                    return;
                 }
                 let obj = {
                     id: this.opts ? this.opts.id : "",
@@ -353,7 +378,7 @@ export default {
     }
     .card-item{
         width:100%;
-        height:100px;
+        // height:100px;
         padding:10px;
         box-sizing:border-box;
         display:flex;

@@ -33,8 +33,10 @@ export default {
             let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
             if (jurisdiction.indexOf("activity_button_add") > -1) {
                 activity_button_add(data).then(res=>{
-                    this.$router.push('/home/setting/activity-button/list')
-                }).catch(()=> {
+                    if(res && res.success) {
+                        this.$router.push('/home/setting/activity-button/list')
+                    }
+                }).catch((res)=> {
                     this.$alert(`${res.message}`, '保存失败', {
                         confirmButtonText: '确定',
                         callback: action => {

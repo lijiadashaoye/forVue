@@ -24,8 +24,8 @@ const mutations = {
             pageSize : state.proposalList.pageSize
         }
         if (Object.keys(data).length > 0) {
-            if (data.keyWords) {
-                params.proposalNumber = data.keyWords
+            if (data.proposalContent) {
+                params.proposalContent = data.proposalContent
                 // params.proposalContent = data.keyWords
             }
         }

@@ -43,7 +43,7 @@
           </div>
 
           <div class="product-item">
-            <span class="item-name">图片:</span>
+            <span class="item-name">*图片:</span>
             <div class="item-img">
               <el-upload
                 class="avatar-uploader"
@@ -52,14 +52,16 @@
                 :http-request="upload"
                 >
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <el-button v-else>选择图片</el-button>
+                <div v-else>
+                  <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                </div>
               </el-upload>
             </div>
           </div>
 
           <div class="product-bottom">
             <el-button @click="save">保存</el-button>
-            <el-button >取消</el-button>
+            <el-button @click='cancel'>取消</el-button>
           </div>
         </div>
     </el-card>
@@ -75,6 +77,7 @@ export default {
       flag: true,
       productType: "",
       productName: "",
+      productTypeName: '',
       defaultTime:[],
       pickerOpt: {
       shortcuts: [{
@@ -82,7 +85,7 @@ export default {
         onClick(picker) {
           const end = new Date();
           const start = new Date();
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+          end.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
           picker.$emit('pick', [start, end]);
         }
       }, {
@@ -90,7 +93,7 @@ export default {
         onClick(picker) {
           const end = new Date();
           const start = new Date();
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+          end.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
           picker.$emit('pick', [start, end]);
         }
       }, {
@@ -98,10 +101,13 @@ export default {
         onClick(picker) {
           const end = new Date();
           const start = new Date();
-          start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+          end.setTime(start.getTime() + 3600 * 1000 * 24 * 90);
           picker.$emit('pick', [start, end]);
         }
-      }]
+      }],
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 8.64e7;
+        }
     },
     timeVal: '',
     imageUrl: ''
@@ -112,16 +118,22 @@ export default {
       this.productType = this.opts.productTypeName;
       this.productName = this.opts.productName;
       this.timeVal = [this.opts.startTime,this.opts.endTime];
+      this.imageUrl = this.opts.productImageUrl;
     }
   },
   methods:{
     upload(params) {
       const _file = params.file;
-      const isLt5M = _file.size / 1024 / 1024 < 5;
+      const isLt2M = _file.size / 1024 / 1024 < 2;
+      const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
       var formData = new FormData();
       formData.append("file", _file);
-      if (!isLt5M) {
-          this.$message.error("请上传5M以下的图片");
+      if(!idJPG) {
+          this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+          return false
+      }
+      if (!isLt2M) {
+          this.$message.error("请上传2M以下的图片");
           return false;
       }
       upLoadImg(formData).then(res=> {
@@ -130,8 +142,17 @@ export default {
           }
       })
     },
+    cancel() {
+      this.$emit('cancel')
+      if(!this.opts) {
+        this.productType = '';
+        this.productName = '';
+        this.timeVal = [];
+        this.imageUrl = '';
+      }
+    },
     save(){
-      if(this.productType && this.productName && this.timeVal){
+      if(this.productType && this.productName && this.timeVal && this.imageUrl){
         let id;
         this.productNameList.forEach((v, i)=> {
           if(v.value === this.productName){
@@ -148,7 +169,9 @@ export default {
           productId:id,
           code:"12",
           productTypeName:this.productType,
-          dataType:this.dataType
+          dataType:this.dataType,
+          productImageUrl: this.imageUrl,
+          dataType: this.opts.dataType ?  this.opts.dataType : ''
         }
         //向父组件传递   请求你事需要的参数
         this.$emit('reqs',obj)
@@ -166,15 +189,21 @@ export default {
     },
   },
   watch:{
-    'opts.productTypeName'(){
+    'opts.id'() {
       this.productType = this.opts.productTypeName;
-    },
-    'opts.productName'(){
       this.productName = this.opts.productName;
-    },
-    'opts.startTime'(){
       this.timeVal = [this.opts.startTime,this.opts.endTime];
-    }
+      this.imageUrl = this.opts.productImageUrl;
+    },
+    // 'opts.productTypeName'(){
+    //   this.productType = this.opts.productTypeName;
+    // },
+    // 'opts.productName'(){
+    //   this.productName = this.opts.productName;
+    // },
+    // 'opts.startTime'(){
+    //   this.timeVal = [this.opts.startTime,this.opts.endTime];
+    // }
   },
   computed:{
     changeFlag(){

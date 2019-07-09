@@ -32,8 +32,8 @@
                 </div>
                 <div class="search">
                     <el-input
-                            type="number"
-                            placeholder="请输入版本号"
+                            type="text"
+                            placeholder="请输入版本名称"
                             prefix-icon="el-icon-search"
                             v-model="versionNo"
                             @input="search">
@@ -96,8 +96,10 @@
                             :show-file-list="false"
                             :http-request="uploadLogo"
                             >
-                        <img v-if="ruleForm.backgroundUrl" :src="ruleForm.backgroundUrl" class="avatar">
-                        <el-button v-else>选择图片</el-button>
+                            <img v-if="ruleForm.backgroundUrl" :src="ruleForm.backgroundUrl" class="avatar">
+                            <div v-else>
+                                <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                            </div>
                         </el-upload>
                     </el-form-item>
                     <el-form-item label="是否强制更新" prop="forcedUpdate">
@@ -223,6 +225,10 @@
             });
             this.$store.state.clientVersion.clientVersionList.data.title = [
                 {
+                    title: "App",
+                    key: "appChannelName",
+                    minWidth: "80"
+                },{
                     title: "版本名",
                     key: "versionName",
                     minWidth: "120"
@@ -284,8 +290,10 @@
             // 搜索
             search() {
                 this.getList({
-                    versionNo: this.versionNo,
-                    platformCode: this.platformCode
+                    versionName: this.versionNo,
+                    platformCode: this.platformCode,
+                    pageNum: 1,
+                    pageSize: this.$store.state.clientVersion.clientVersionList.pageSize
                 })
             },
             // 切换客户端
@@ -347,6 +355,7 @@
                         updateVersionPage: ''
                     }, // 安卓表单数据
                         this.dialogVisible = true
+                        this.title = '新增'
                 } else {
                     //弹出消息提示用户
                     this.$alert("您没有这个权限", {
@@ -357,15 +366,20 @@
 
             uploadLogo(params){
                 const _file = params.file;
-                const isLt5M = _file.size / 1024 / 1024 < 5;
+                const isLt2M = _file.size / 1024 / 1024 < 2;
+                const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
                 var formData = new FormData();
                 formData.append("file", _file);
-                if (!isLt5M) {
-                    this.$message.error("请上传5M以下的图片");
+                if (!idJPG) {
+                    this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                    return false;
+                }
+                if (!isLt2M) {
+                    this.$message.error("请上传2M以下的图片");
                     return false;
                 }
                 upLoadImg(formData).then(res=> {
-                    if(res.success){
+                if(res.success){
                         this.ruleForm.backgroundUrl = this.$ImgBaseUrl + res.data
                     }
                 })
@@ -406,10 +420,14 @@
             },
             // 刷新
             refreshFn() {
-                this.getList({
-                    versionNo: this.versionNo,
-                    platformCode: this.platformCode
-                })
+                this.$store.state.clientVersion.clientVersionList.loading = true;
+                setTimeout(()=>{
+                    this.$store.state.clientVersion.clientVersionList.loading = false;
+                    this.getList({
+                        versionNo: this.versionNo,
+                        platformCode: this.platformCode
+                    })
+                },1000)
             },
             // 取消
             cancelFn() {

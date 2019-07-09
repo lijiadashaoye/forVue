@@ -1,49 +1,26 @@
 <template>
-
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
 
-    <div id='forTable'>
-      <div
-        class="formWaper"
-        style="width:70%;margin-bottom:30px"
-        v-if="!isOk"
-      >
-        <el-form
-          size="small"
-          ref="formData"
-          :model="formData"
-          :rules="rules"
-          label-width="80px"
-        >
-          <el-form-item
-            label="红包名称"
-            prop="name"
-          >
-            <el-input
-              placeholder='请输入'
-              v-model="formData.name"
-            ></el-input>
+    <div id="forTable">
+      <div class="formWaper" style="width:70%;margin-bottom:30px" v-if="!isOk">
+        <el-form size="small" ref="formData" :model="formData" :rules="rules" label-width="80px">
+          <el-form-item label="红包名称" prop="name">
+            <el-input placeholder="请输入" v-model="formData.name"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="红包说明"
-            prop="packetExplain"
-          >
+          <el-form-item label="红包说明" prop="packetExplain">
             <el-input
-              placeholder='红包说明，不显示在APP端，可为空'
-              rows='3'
-              type='textarea'
+              placeholder="红包说明，不显示在APP端，可为空"
+              rows="3"
+              type="textarea"
               v-model="formData.packetExplain"
             ></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="红包类型"
-            prop="amountType"
-          >
+          <el-form-item label="红包类型" prop="amountType">
             <el-select
               v-model="formData.amountType"
               clearable
@@ -51,92 +28,80 @@
               @change="howChange"
             >
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in typeList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
+          <el-form-item label="总金额" prop="totalAmount">
+            <el-input
+              type="number"
+              @input="clearNum"
+              placeholder="请输入"
+              v-model="formData.totalAmount"
+            ></el-input>
+          </el-form-item>
+
+          <el-form-item label="总个数" prop="totalNum">
+            <el-input
+              type="number"
+              @input="totalNumFn"
+              class="forDays"
+              placeholder="请输入"
+              v-model="formData.totalNum"
+            ></el-input>
+          </el-form-item>
+
           <div v-if="formData.amountType==='FIXATION'">
-            <el-form-item
-              label="金额设置"
-              prop="amountFixed"
-            >
+            <el-form-item label="金额设置" prop="amountFixed">
               <el-input
+                @input="moneyFn"
                 type="number"
                 class="forMoney"
-                placeholder='请输入'
+                placeholder="请输入"
                 v-model="formData.amountFixed"
               ></el-input>
             </el-form-item>
           </div>
 
-          <div
-            v-if="formData.amountType=== 'RANDOM'"
-            class="setBetween"
-          >
-            <el-form-item
-              label="金额区间"
-              prop="amountMin"
-            >
+          <div v-if="formData.amountType=== 'RANDOM'" class="setBetween">
+            <el-form-item label="金额区间" prop="amountMin">
               <el-input
                 type="number"
                 class="setSize"
-                placeholder='最低金额'
+                placeholder="最低金额"
                 v-model="formData.amountMin"
               ></el-input>
             </el-form-item>
 
-            <el-form-item
-              label-width="0"
-              prop="amountMax"
-            >
+            <el-form-item label-width="0" prop="amountMax">
               <el-input
                 type="number"
-                class='forMoney'
-                placeholder='最高金额'
+                class="forMoney"
+                placeholder="最高金额"
                 v-model="formData.amountMax"
               ></el-input>
             </el-form-item>
           </div>
+
           <div v-if="formData.amountType=== 'RANDOM'">
             <div style="display:flex;">
-              <el-form-item
-                label="用户领取"
-                prop="min"
-              >
-                <el-input
-                  type="number"
-                  class="setGaiLv1"
-                  placeholder='最低金额'
-                  v-model="formData.min"
-                ></el-input>
+              <el-form-item label="用户领取" prop="min">
+                <el-input type="number" class="setGaiLv1" placeholder="最低金额" v-model="formData.min"></el-input>
               </el-form-item>
-              <el-form-item
-                label='-'
-                label-width="30px"
-                prop="max"
-              >
-                <el-input
-                  type="number"
-                  class="setGaiLv"
-                  placeholder='最高金额'
-                  v-model="formData.max"
-                ></el-input>
+              <el-form-item label="-" label-width="30px" prop="max">
+                <el-input type="number" class="setGaiLv" placeholder="最高金额" v-model="formData.max"></el-input>
               </el-form-item>
 
-              <el-form-item
-                label-width="0"
-                prop="amountProb"
-              >
+              <el-form-item label-width="0" prop="amountProb">
                 <el-input
                   type="number"
-                  class='forGaiLv'
-                  placeholder='概率'
+                  class="forGaiLv"
+                  placeholder="概率"
                   v-model="formData.amountProb"
                 ></el-input>
               </el-form-item>
@@ -147,119 +112,58 @@
                 type="danger"
                 title="点击使用"
               >+</el-button>
-
             </div>
-            <p
-              class="hasAddTitle"
-              :class="isAddGL?'hasAddTitleTip':''"
-            >已添加：累计概率为 {{+this.gailv}} %</p>
+            <p class="hasAddTitle" :class="isAddGL?'hasAddTitleTip':''">已添加：累计概率为 {{+this.gailv}} %</p>
           </div>
 
-          <div
-            v-if=" showList.length>0"
-            style="margin-bottom:10px;"
-          >
-
-            <p
-              @click='toDelete(item)'
-              class="hasAdd"
-              v-for="(item,index) in showList"
-              :key="index"
-            >{{index+1}}：用户领取
+          <div v-if=" showList.length>0" style="margin-bottom:10px;">
+            <p @click="toDelete(item)" class="hasAdd" v-for="(item,index) in showList" :key="index">
+              {{index+1}}：用户领取
               {{item.min}} ~
-              {{item.max}}元的概率为：{{item.amountProb}}%</p>
+              {{item.max}}元的概率为：{{item.amountProb}}%
+            </p>
           </div>
 
-          <el-form-item
-            label="发放类型"
-            prop="grantType"
-          >
-            <el-select
-              v-model="formData.grantType"
-              clearable
-              placeholder="请选择"
-            >
+          <el-form-item label="发放类型" prop="grantType">
+            <el-select v-model="formData.grantType" clearable placeholder="请选择">
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in outList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
-          <el-form-item
-            label="总个数"
-            prop="totalNum"
-          >
-            <el-input
-              type="number"
-              class="forDays"
-              placeholder='请输入'
-              v-model="formData.totalNum"
-            ></el-input>
-          </el-form-item>
-
-          <el-form-item
-            label="总金额"
-            prop="totalAmount"
-          >
-            <el-input
-              type="number"
-              placeholder='请输入'
-              v-model="formData.totalAmount"
-            ></el-input>
-          </el-form-item>
-
           <div class="setBetween">
-            <el-form-item
-              prop="maxAmount"
-              label="领取限制"
-            >
+            <el-form-item prop="maxAmount" label="领取限制">
               <el-input
                 type="number"
                 class="setSize1"
-                placeholder='最高金额'
+                placeholder="最高金额"
                 v-model="formData.maxAmount"
               ></el-input>
             </el-form-item>
 
-            <el-form-item
-              label-width="0"
-              prop="maxNum"
-            >
+            <el-form-item label-width="0" prop="maxNum">
               <el-input
                 type="number"
-                class='addDanWei'
-                placeholder='最高金额'
+                class="addDanWei"
+                placeholder="最高金额"
                 v-model="formData.maxNum"
               ></el-input>
               <span>(每个用户领券上限，如不填默认为一张)</span>
             </el-form-item>
           </div>
-
         </el-form>
         <div class="buttons">
-          <el-button
-            @click="step()"
-            type="primary"
-            :disabled="isSaveIng"
-          >保存</el-button>
-          <el-button
-            @click="reset"
-            type="info"
-          >重 置</el-button>
+          <el-button @click="step()" type="primary" :disabled="isSaveIng">保存</el-button>
+          <el-button @click="reset" type="info">重 置</el-button>
         </div>
-
       </div>
-      <hasSuccess
-        @isOver="isOver"
-        v-if="isOk"
-      />
+      <hasSuccess @isOver="isOver" v-if="isOk"/>
     </div>
-
   </div>
 </template>
 <script>
@@ -270,14 +174,7 @@ export default {
   data() {
     // 验证总金额
     var checkTotalMoney = (rule, value, callback) => {
-      let totalAmount = +this.formData.totalAmount;
-      let amountFixed = +this.formData.amountFixed * +this.formData.totalNum;
-      let reg = /\./;
-      if (totalAmount < amountFixed) {
-        callback(new Error("总金额 >= 设置金额 x 总个数"));
-      } else if (reg.test(value)) {
-        callback(new Error("请输入整数"));
-      } else if (value === "") {
+      if (value === "") {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
@@ -387,6 +284,8 @@ export default {
     };
 
     return {
+      inputTarget: false, // 用来确定是那个输入框
+      timer: null, // 计算总个数和总金额
       isAddGL: false, // 如果没有添加概率，执行此项
       isSaveIng: false, // 切换保存按钮的可点击状态
       gailv: 0, // 已使用的累计概率
@@ -443,7 +342,7 @@ export default {
           { required: true, message: "请输入红包类型", trigger: "blur" }
         ],
         grantType: [
-          { required: true, message: "请输入发放类型", trigger: "blur" }
+          { required: true, message: "请输入发放类型", trigger: "change" }
         ],
         amountFixed: [{ validator: checkBelow, trigger: "blur" }], // 金额设置
         amountMin: [{ validator: checkBelow, trigger: "blur" }], // 最低金额
@@ -474,6 +373,45 @@ export default {
     this.toInit();
   },
   methods: {
+    clearNum() {
+      this.$set(this.formData, "amountFixed", "");
+      this.$set(this.formData, "totalNum", "");
+    },
+    // 固定金额，总个数变化后执行
+    totalNumFn() {
+      if (
+        this.formData.amountType === "FIXATION" &&
+        this.formData.totalAmount &&
+        !this.inputTarget
+      ) {
+        this.inputTarget = true;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          let jinE = +this.formData.totalAmount; // 总金额
+          let geshu = +this.formData.totalNum; // 总个数
+          let num = (jinE / geshu).toFixed(2);
+          this.$set(this.formData, "amountFixed", num);
+          this.inputTarget = false;
+        }, 500);
+      }
+    },
+    moneyFn() {
+      if (
+        this.formData.amountType === "FIXATION" &&
+        this.formData.totalAmount &&
+        !this.inputTarget
+      ) {
+        this.inputTarget = true;
+        clearTimeout(this.timer);
+        this.timer = setTimeout(() => {
+          let jinE = +this.formData.totalAmount; // 总金额
+          let totalMoney = +this.formData.amountFixed; // 金额设置
+          let num = Math.floor(jinE / totalMoney);
+          this.$set(this.formData, "totalNum", num);
+          this.inputTarget = false;
+        }, 500);
+      }
+    },
     toInit() {
       this.pageName = sessionStorage.getItem("page");
       let id = this.$route.query["id"];
@@ -579,9 +517,8 @@ export default {
         this.$router.push({ name: `packet_list` });
       } else {
         sessionStorage.setItem("page", "创建红包");
-        this.$router.push({
-          name: "packet_add"
-        });
+        this.reset();
+        this.isOk = false;
       }
     },
     // 金额类型设置
@@ -606,7 +543,7 @@ export default {
         obj.probabilityList = [];
         this.formData = obj;
       }
-      this.showList=[];
+      this.showList = [];
     },
     // 添加概率
     addGailv() {
@@ -677,7 +614,7 @@ export default {
               name: this.formData.name,
               packetExplain: this.formData.packetExplain,
               amountType: this.formData.amountType,
-              amountFixed: this.formData.amountFixed,
+              amountFixed: +this.formData.amountFixed,
               amountMin: this.formData.amountMin
                 ? this.formData.amountMin
                 : null,
@@ -685,10 +622,10 @@ export default {
                 ? this.formData.amountMax
                 : null,
               grantType: this.formData.grantType,
-              totalAmount: this.formData.totalAmount,
-              totalNum: this.formData.totalNum,
-              maxAmount: this.formData.maxAmount,
-              maxNum: this.formData.maxNum
+              totalAmount: +this.formData.totalAmount,
+              totalNum: +this.formData.totalNum,
+              maxAmount: +this.formData.maxAmount,
+              maxNum: +this.formData.maxNum
             };
             if (this.formData.amountType === "FIXATION") {
               delete obj.amountMin;

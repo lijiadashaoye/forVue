@@ -31,9 +31,7 @@ export default {
   },
   created(){
     this.getBankCardList();
-    this.list = this.$store.state.bankCard.bankCardList.data.list.length > 0 ? 
-    this.$store.state.bankCard.bankCardList.data.list : 
-    JSON.parse(window.sessionStorage.getItem('bankCardList'));
+    this.list = this.$store.state.bankCard.bankCardList.data.list.length > 0 ? this.$store.state.bankCard.bankCardList.data.list : JSON.parse(window.sessionStorage.getItem('bankCardList'));
   },
   mounted() {
     this.pageName = this.$route.name;

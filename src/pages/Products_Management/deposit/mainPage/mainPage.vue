@@ -9,9 +9,10 @@
       </div>
 
       <div class="forT">
+        <p class="allPro" @click="getList('all',null)">全部存款产品</p>
         <ul>
           <li v-for="item of menuTree" :key="item.institutionId">
-            <p @click="treeShow(item.institutionId)" class="forTtitle">
+            <p @click="treeShow(item.institutionId);getList('father',item)" class="forTtitle">
               <i
                 v-show="isShow(item.institutionId)"
                 style="color:skyblue"
@@ -26,10 +27,13 @@
             </p>
             <ul ref="forUl" class="forTList" v-show="isShow(item.institutionId)">
               <li>
-                <p @click="useIt(item,$event)" style="width:100%;">无系列</p>
+                <p @click="useIt(item,$event);getList('none',item)" style="width:100%;">无系列</p>
               </li>
               <li v-for="child of item.seriesList" :key="child.id">
-                <p @click="useIt(child,$event)" style="width:100%;">{{child.name}}</p>
+                <p
+                  @click="useIt(child,$event);getList('child',child)"
+                  style="width:100%;"
+                >{{child.name}}</p>
 
                 <el-dropdown size="mini" @command="handleCommand(child,$event)">
                   <span class="el-dropdown-link">
@@ -60,6 +64,7 @@
           >
             <el-form-item label="* 机构">
               <el-select
+                :disabled="addXiLieForm.type=='edit'"
                 v-model="addXiLieForm.jigou"
                 clearable
                 placeholder="请选择"
@@ -73,7 +78,7 @@
                   :value="item.id"
                 ></el-option>
               </el-select>
-              <a class="isA" @click="toJiGou">无机构？</a>
+              <a class="isAClick" @click="toJiGou">无机构？</a>
             </el-form-item>
 
             <el-form-item label="产品系列名称">
@@ -134,7 +139,7 @@
         </el-form-item>
 
         <el-form-item label="产品类型" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.productType" clearable placeholder="请选择">
+          <el-select v-model="searchForm.productSubtype" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.deposit_type"
@@ -160,7 +165,7 @@
       </el-form>
 
       <div id="forTable">
-        <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
+        <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
       </div>
     </div>
 
@@ -175,7 +180,7 @@
         <el-button type="primary" @click="toAdd_Cunkuan('活期')">活期存款</el-button>
         <el-button type="primary" @click="toAdd_Cunkuan('定期')">定期存款</el-button>
         <el-button type="primary" @click="toAdd_Cunkuan('智能')">智能存款</el-button>
-        <el-button type="primary" @click="toAdd_Cunkuan('结构')">结构存款</el-button>
+        <el-button type="primary" @click="toAdd_Cunkuan('结构')">结构性存款</el-button>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="toCloseCunkuanDialog">取 消</el-button>
@@ -209,7 +214,7 @@ export default {
       searchForm: {
         name: "", // 产品关键字
         shelve: "", // 是否上架
-        productType: "", // 产品类型
+        productSubtype: "", // 产品类型
         createTimeStart: "", // 创建时间（开始）
         createTimeEnd: "" // 创建时间（结束）
       }, // 搜索表单
@@ -244,6 +249,12 @@ export default {
     isTable
   },
   mounted() {
+    // step1里点击无系列
+    let kk = this.$route.query.institutionId;
+    if (kk) {
+      this.toAdd_xilie(+kk);
+    }
+
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     // 获取当前页面使用的字典数据
@@ -281,7 +292,7 @@ export default {
         this.addXiLieForm.title = "编辑存款系列";
         this.addXiLieForm.toShow = true;
         this.addXiLieForm.jigou = data.institutionId; // 机构id
-        this.addXiLieForm.xilie = data.institutionName; // 系列名
+        this.addXiLieForm.xilie = data.name; // 系列名
         this.addXiLieForm.target = data; // 原来的系列数据
         this.addXiLieForm.type = "edit";
       }
@@ -620,51 +631,60 @@ export default {
       });
     },
     // 表单左侧 tree 里的新增按钮
-    toAdd_xilie() {
+    toAdd_xilie(id) {
       this.addXiLieForm.title = "新增存款系列";
       this.addXiLieForm.toShow = true;
       this.addXiLieForm.type = "add";
+      if (id && typeof id == "number") {
+        // 通过点击：无产品系列？跳过来的
+        this.addXiLieForm.jigou = id; // 机构id
+      }
     },
     // tree 里的新增弹框保存
     addXiLieSave() {
       let obj = {},
         httpType = ""; // 最终返回的数据
-      if (this.addXiLieForm.jigou != "") {
-        let jigou = this.dictData.jigou.filter(
-          item => item.id == this.addXiLieForm.jigou
-        )[0];
-        if (this.addXiLieForm.type === "edit") {
-          httpType = "put";
-          // 编辑
-          obj = {
-            id: this.addXiLieForm.target.id,
-            institutionId: jigou.institutionId,
-            institutionName: jigou.name,
-            name: this.addXiLieForm.xilie,
-            type: "deposit"
-          };
+      if (this.addXiLieForm.jigou != "" && this.addXiLieForm.xilie != "") {
+        if (this.addXiLieForm.xilie.length < 20) {
+          let jigou = this.dictData.jigou.filter(
+            item => item.id == this.addXiLieForm.jigou
+          )[0];
+          if (this.addXiLieForm.type === "edit") {
+            httpType = "put";
+            // 编辑
+            obj = {
+              id: this.addXiLieForm.target.id,
+              institutionId: jigou.id,
+              institutionName: jigou.name,
+              name: this.addXiLieForm.xilie,
+              type: "deposit"
+            };
+          } else {
+            httpType = "post";
+            // 新增
+            obj = {
+              institutionId: jigou.id,
+              institutionName: jigou.name,
+              name: this.addXiLieForm.xilie,
+              type: "deposit"
+            };
+          }
+
+          this.$api
+            .left_xilie({
+              vm: this,
+              httpType: httpType,
+              data: obj
+            })
+            .then(res => {
+              if (res) {
+                this.treeData();
+                this.toCloseCunkuanDialog();
+              }
+            });
         } else {
-          httpType = "post";
-          // 新增
-          obj = {
-            institutionId: jigou.institutionId,
-            institutionName: jigou.name,
-            name: this.addXiLieForm.xilie,
-            type: "deposit"
-          };
+          this.$message.error("系列名字太长，请输入小于20字符！");
         }
-        this.$api
-          .left_xilie({
-            vm: this,
-            httpType: httpType,
-            data: obj
-          })
-          .then(res => {
-            if (res) {
-              this.treeData();
-              this.toCloseCunkuanDialog();
-            }
-          });
       } else {
         this.$message.error("请填写必填数据！");
       }
@@ -679,6 +699,12 @@ export default {
         title: "",
         type: ""
       };
+      // 清除路由参数
+      if (this.$route.query.institutionId) {
+        this.$router.push({
+          name: "deposit"
+        });
+      }
     },
     //////////////////////////////////////////////////////
     // 表格里的switch事件
@@ -761,9 +787,7 @@ export default {
                     failName += `名称：${item.data[0].name} \n`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
 
                 if (numFail > 0) {
                   str += titleText + failName;
@@ -855,8 +879,13 @@ export default {
           minWidth: 120,
           from: "name" // 记录这个交互操作的原数据属性
         };
-
         this.tableInputData.data.title = [
+          {
+            title: "机构",
+            key: "institutionName",
+            minWidth: "160"
+          },
+
           {
             title: "产品系列",
             key: "seriesName",
@@ -916,7 +945,7 @@ export default {
           this.searchForm = {
             name: "", // 产品关键字
             shelve: "", // 是否上架
-            productType: "", // 产品类型
+            productSubtype: "", // 产品类型
             createTimeStart: "", // 创建时间（开始）
             createTimeEnd: "" // 创建时间（结束）
           };
@@ -940,6 +969,37 @@ export default {
           });
           obj.pageSize = this.tableInputData.pageSize;
           obj.pageNum = this.tableInputData.pageNum;
+          this.getUserData(obj);
+          break;
+      }
+    },
+    // tree被点击时执行
+    getList(type, item) {
+      let obj = {};
+      switch (type) {
+        case "father":
+        case "none":
+          obj = {
+            pageSize: 10,
+            pageNum: 1,
+            institutionId: item.institutionId
+          };
+          this.getUserData(obj);
+          break;
+        case "child":
+          obj = {
+            pageSize: 10,
+            pageNum: 1,
+            seriesId: item.id,
+            institutionId: item.institutionId
+          };
+          this.getUserData(obj);
+          break;
+        case "all":
+          obj = {
+            pageSize: 10,
+            pageNum: 1
+          };
           this.getUserData(obj);
           break;
       }

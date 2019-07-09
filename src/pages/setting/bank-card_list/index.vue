@@ -2,7 +2,7 @@
   <div class="componentWaper">
     <div id="forHeader">
       <h3>{{pageName}}</h3>
-      <div class="explosiveAdd">
+      <div class="search">
         <el-button
           type="primary"
           size="mini"
@@ -10,6 +10,13 @@
         >
           添加银行卡
         </el-button>
+        <el-input
+          placeholder="请输入银行名称"
+          size="mini"
+          prefix-icon="el-icon-search"
+          v-model.trim="bankName"
+          @input="search">
+        </el-input>
       </div>
     </div>
 
@@ -51,11 +58,15 @@ export default {
       opts: {
 
       },
+      bankName: '',
     };
   },
   mounted() {
     this.userDo();
-    this.getBankCardList();
+    this.getBankCardList({
+      pageNum: this.$store.state.bankCard.bankCardList.pageNum,
+      pageSize: this.$store.state.bankCard.bankCardList.pageSize
+    });
     this.getList();
     this.pageName = this.$route.name;
     this.$store.state.bankCard.bankCardList.data.title = [
@@ -134,11 +145,21 @@ export default {
     close() {
       this.dialogVisible = false;
     },
+    search() {
+       this.getBankCardList({
+            pageNum: 1,
+            pageSize: this.$store.state.bankCard.bankCardList.pageSize,
+            bankName: this.bankName
+          });
+    },
     //点击保存
     send(data) {
       this.dialogVisible = false;
       bank_card_upd(data).then(res=> {
-          this.getBankCardList();
+          this.getBankCardList({
+            pageNum: this.$store.state.bankCard.bankCardList.pageNum,
+            pageSize: this.$store.state.bankCard.bankCardList.pageSize
+          });
       }).catch(()=>{
         this.$alert(`${res.message}`, '保存失败', {
           confirmButtonText: '确定',
@@ -190,7 +211,10 @@ export default {
       switch (data.type) {
         case "regetData": // 分页的emit
            //再次请求列表数据
-          this.getBankCardList();
+          this.getBankCardList({
+            pageNum: this.$store.state.bankCard.bankCardList.pageNum,
+            pageSize: this.$store.state.bankCard.bankCardList.pageSize
+          });
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);
@@ -208,4 +232,13 @@ export default {
 </script>
 
 <style scoped='true' lang="scss">
+.search {
+  padding:2px 4px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  .el-input{
+      width:200px;
+  }
+}
 </style>

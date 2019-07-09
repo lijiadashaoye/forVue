@@ -21,6 +21,11 @@ export const getMenuData = (data) => {
     return AxiosGet(`/setting/manager/app-button`, data)
 }
 
+//修改状态
+export const app_button_status = (data) => {
+    return AxiosPut(`/setting/manager/app-button/status`, data)
+}
+
 
 //新增app按钮
 export const app_button_add = (data) => {
@@ -104,6 +109,7 @@ export const commend_add = (obj) => {
 
 //修改新手产品
 export const commend_updata = (obj) => {
+    console.log(obj.dataType)
     return AxiosPut(`setting/manager/explosive`, obj)
 }
 
@@ -423,7 +429,7 @@ export const slider_updata = (data) => {
 
 //列表
 export const peroid_list = (data) => {
-    return AxiosGet(`/setting/manager/index-peroid`,data)
+    return AxiosGet(`/setting/manager/index-peroid/page`,data)
 }
 
 //新增 
@@ -480,7 +486,7 @@ export const comment_add = (data)=> {
 
 //删除
 export const comment_del = (id) => {
-    return AxiosDelete(`/setting/manager/notice/${id}`)
+    return AxiosDelete(`/setting/manager/comment/${id}`)
 }
 
 
@@ -495,7 +501,13 @@ export const productUrl_add = (data)=> {
     return AxiosPost(`/setting/manager/confing-url`,data)
 }
 
+//修改
+export const productUrl_uopdate = (data)=> {
+    return AxiosPut(`/setting/manager/confing-url`, data)
+}
+
 //删除
 export const productUrl_delete = (id)=> {
     return AxiosDelete(`/setting/manager/confing-url/${id}`)
 }
+

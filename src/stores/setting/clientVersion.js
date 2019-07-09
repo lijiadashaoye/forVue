@@ -2,6 +2,7 @@ import { clientVersion_list } from '../../api/setting_use';
 
 const state = {
     clientVersionList : {
+        loading:false,
         checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10,
         pageNum: 1,
@@ -24,11 +25,17 @@ const mutations = {
             pageSize : state.clientVersionList.pageSize
         }
         if (Object.keys(data).length > 0) {
-            if (data.versionNo) {
-                params.versionNo = data.versionNo
+            if (data.versionName) {
+                params.versionName = data.versionName
             }
             if (data.platformCode) {
                 params.platformCode = data.platformCode
+            }
+            if(data.pageNum) {
+                params.pageNum = data.pageNum
+            }
+            if(data.pageSize) {
+                params.pageSize = data.pageSize
             }
         }
         clientVersion_list(params).then(res=> {

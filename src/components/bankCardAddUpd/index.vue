@@ -18,21 +18,23 @@
         <div class="card-item">
             <span class="item-text">*卡长度:</span>
             <div class="item-input">
-                <el-input v-model="cardLength" placeholder="卡长度" :disabled="detailFlag"></el-input>
+                <el-input v-model="cardLength" placeholder="卡长度(最多8位纯数字)" :disabled="detailFlag" maxlength="8"></el-input>
+                <span class="msg" v-if="cardLengthFlag">{{cardLengthMsg}}</span>
             </div>
         </div>
 
         <div class="card-item">
             <span class="item-text">*卡前缀（卡bin）:</span>
             <div class="item-input">
-                <el-input v-model="cardPrefix" placeholder="卡bin" :disabled="detailFlag"></el-input>
+                <el-input v-model="cardPrefix" placeholder="卡bin(1最多10位纯数字）" :disabled="detailFlag" maxlength="10"></el-input>
+                <span class="msg" v-if="cardPrefixFlag">{{cardPrefixMsg}}</span>
             </div>
         </div>
 
         <div class="card-item">
             <span class="item-text">*清算行行号:</span>
             <div class="item-input">
-                <el-input v-model="clearingBankNumber" placeholder="清算行行号（12位）" :disabled="detailFlag"></el-input>
+                <el-input v-model="clearingBankNumber" placeholder="清算行行号（12位纯数字）" :disabled="detailFlag" maxlength="12"></el-input>
                 <span class="msg" v-if="clearingBankNumberFlag">{{clearingBankNumberMsg}}</span>
             </div>
         </div>
@@ -107,6 +109,10 @@ export default {
             bankId: "",//银行id
             clearingBankNumberFlag: false,//清算行行号开关
             clearingBankNumberMsg: "",//清算行行号信息
+            cardPrefixFlag: false,
+            cardPrefixMsg: '',
+            cardLengthFlag: false,
+            cardLengthMsg: "",
             cardTypeData: [{
                 value: 'DEBIT',
                 label: '借记卡'
@@ -138,6 +144,11 @@ export default {
     methods: {
         //点击取消
         cancel() {
+            this.bankName = '';
+            this.cardLength = '';
+            this.cardPrefix = '';
+            this.clearingBankNumber = '';
+            this.cardType = '';
             this.$emit('cancel')
         },
         //点击保存
@@ -150,12 +161,26 @@ export default {
                     }
                 })
                 //验证清算行行号长度
-                if(this.clearingBankNumber.length != 12){
+                if(/^[1-9]\d*$|^0$/.test(this.clearingBankNumber) == false){
                    this.clearingBankNumberFlag = true;
-                   this.clearingBankNumberMsg = '清算行行号必须是12位';
+                   this.clearingBankNumberMsg = '清算行行号必须是12位数字';
                    return false;
                 } else {
                    this.clearingBankNumberFlag = false;
+                }
+                if(/^[1-9]\d*$|^0$/.test(this.cardPrefix) == false){
+                   this.cardPrefixFlag = true;
+                   this.cardPrefixMsg = '卡bin必须是数字';
+                   return false;
+                } else {
+                   this.cardPrefixFlag = false;
+                }
+                if(/^[1-9]\d*$|^0$/.test(this.cardLength) == false){
+                   this.cardLengthFlag = true;
+                   this.cardLengthMsg = '卡长度必须是纯数字';
+                   return false;
+                } else {
+                   this.cardLengthFlag = false;
                 }
                 let obj = {
                     id: this.opts ? this.opts.id : "",
@@ -232,7 +257,7 @@ export default {
 <style scoped="true" lang="scss">
     .card-item{
         width:100%;
-        height:100px;
+        // height:100px;
         padding:10px;
         box-sizing:border-box;
         display:flex;

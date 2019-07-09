@@ -114,7 +114,6 @@ export default {
         callback();
       }
     };
-
     return {
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
@@ -239,31 +238,19 @@ export default {
             }
 
             kk.deptId = +this.menuData.deptId[this.menuData.deptId.length - 1];
-
-            /*获取数字部分：Unicode编码值范围在[48~57]之间即为数字
-             *获取英文字母部分：Unicode编码值范围在[65~90]，以及[97~122]之间即为英文字母
-             *获取中文部分(大于122)
-             */
-            let pass = ("" + kk.password)
-              .split("")
-              .some(tar => tar.charCodeAt() > 122);
-            if (pass) {
-              this.$message.error("请勿使用中文作为密码");
-            } else {
-              this.$api
-                .admin_user_aboutUser({
-                  vm: this,
-                  method: httpType,
-                  data: kk
-                })
-                .then(res => {
-                  if (res) {
-                    this.$message.success(`${this.dialog.title}成功！`);
-                    this.getUserData();
-                    this.dialogClose();
-                  }
-                });
-            }
+            this.$api
+              .admin_user_aboutUser({
+                vm: this,
+                method: httpType,
+                data: kk
+              })
+              .then(res => {
+                if (res) {
+                  this.$message.success(`${this.dialog.title}成功！`);
+                  this.getUserData();
+                  this.dialogClose();
+                }
+              });
           }
         });
       } else {
@@ -405,6 +392,22 @@ export default {
         }
       }
     },
+    /*获取数字部分：Unicode编码值范围在[48~57]之间即为数字
+     *获取英文字母部分：Unicode编码值范围在[65~90]，以及[97~122]之间即为英文字母
+     *获取中文部分(大于122)
+     */
+    checkChinese(rule, value, callback) {
+      let pass = ("" + value).split("").some(tar => tar.charCodeAt() > 122);
+      if (value === "") {
+        callback(new Error("请输入电话号码"));
+      } else if (value.length > 16 || value.length < 6) {
+        callback(new Error("请输入6--19个字符"));
+      } else if (pass) {
+        callback(new Error("请勿使用中文作为密码"));
+      } else {
+        callback();
+      }
+    },
     // 重设密码复选框切换
     setNewPossword(e) {
       let kk = { ...this.menuData };
@@ -412,8 +415,7 @@ export default {
         kk.setPassWord = true;
         kk["password"] = "";
         this.rules["password"] = [
-          { required: true, message: "请输入密码", trigger: "blur" },
-          { min: 6, max: 19, message: "请输入6-19个字符", trigger: "blur" }
+          { required: true, validator: this.checkChinese, trigger: "blur" }
         ];
       } else {
         kk.setPassWord = false;
@@ -489,8 +491,7 @@ export default {
               password: ""
             };
             this.rules["password"] = [
-              { required: true, message: "请输入密码", trigger: "blur" },
-              { min: 6, max: 19, message: "请输入6-19个字符", trigger: "blur" }
+              { required: true, validator: this.checkChinese, trigger: "blur" }
             ];
           } else {
             this.dialog.title = "用户修改";
@@ -673,7 +674,7 @@ export default {
       if (!type) {
         this.seachInput = "";
       }
-      this.tableInputData.pageSize =10;
+      this.tableInputData.pageSize = 10;
       this.tableInputData.pageNum = 1;
       this.getUserData();
     },

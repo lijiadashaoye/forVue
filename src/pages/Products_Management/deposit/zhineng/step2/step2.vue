@@ -216,8 +216,8 @@ export default {
         callback(new Error("请输入整数"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
       } else {
         callback();
       }
@@ -226,8 +226,8 @@ export default {
     var checkNum3 = (rule, value, callback) => {
       if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
       } else {
         callback();
       }
@@ -239,10 +239,10 @@ export default {
       pageName: "", // 当前页面名字
       ruleForm: {
         sameProductFlag: "", // 同一产品标识
-        shelve: "", // 是否上架
-        visaInterview: "", // 是否面签
-        recommend: "", // 是否推荐
-        homePage: "", // 是否首页排行
+        shelve: "否", // 是否上架
+        visaInterview: "否", // 是否面签
+        recommend: "否", // 是否推荐
+        homePage: "否", // 是否首页排行
         defaultNum: "", // 默认购买数量
         defaultAmount: "", // 默认购买金额
         listAreaFlag: "" // 榜单专区标识

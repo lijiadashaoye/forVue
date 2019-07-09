@@ -12,29 +12,40 @@
         >
           新增新手专享
         </el-button>
-        <el-select
-          v-model="searchVal"
-          filterable
-          clearable
-          remote
-          reserve-keyword
-          placeholder="请输入产品名称"
-          :remote-method="remoteMethod"
-          :loading="loading"
-          @change="search">
-          <el-option
-            v-for="item in searchOpt"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
       </div>
-      <div class="filter">
-          <!-- 暂时没有接口 -->
-        <effectTime
-         @timeSearch="effectTimeSearch"
-        :title="'生效时间'"/>
+      <div>
+       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm searchForm">
+          <el-form-item label="产品名称" prop="productName">
+            <!-- <el-select v-model="ruleForm.productName" placeholder="请选择" filterable clearable>
+              <el-option
+                v-for="item in this.$store.state.commend.commendList.productNameList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select> -->
+            <el-input
+              placeholder="请输入产品名称"
+              prefix-icon="el-icon-search"
+              v-model="ruleForm.productName">
+            </el-input>
+          </el-form-item>
+
+          <el-form-item label="生效时间" prop="time">
+            <el-date-picker
+              v-model="ruleForm.time"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="search('ruleForm')">查询</el-button>
+            <el-button @click="resetForm('ruleForm')">清除</el-button>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
     <!-- 列表 -->
@@ -50,7 +61,8 @@
         :productTypeList="productTypeList"
         :productNameList="productNameList"
         :opts="opts"
-        @reqs="reqs"/>
+        @reqs="reqs"
+        @cancel='cancel'/>
     </el-dialog>
   </div>
 </template>
@@ -75,6 +87,11 @@ export default {
       searchVal: "",
       msg:"",
       flag: false,
+      ruleForm: {
+        productName: '',
+        time: [],
+      },
+      rules: {},
       productTypeList:[{
         value: "货币基金",
         label: "货币基金"
@@ -116,25 +133,15 @@ export default {
       effectTimeVal: "",//生效时间
     };
   },
-  created() {
+  mounted() {
     this.getCommendList({
       pageNum: this.$store.state.commend.commendList.pageNum,
       pageSize: this.$store.state.commend.commendList.pageSize,
       dataType:"RECOMMEND"
     });
-  },
-  mounted() {
+    this.getProNameList();
     this.userDo();
     this.pageName = this.$route.name;
-    this.productList = this.$store.state.commend.commendList.data.list.length > 0 ? this.$store.state.commend.commendList.data.list : JSON.parse(window.sessionStorage.getItem('commendList'));
-    this.productList.forEach(v=> {
-      if(this.states.indexOf(v.productName) === -1){
-        this.states.push(v.productName)
-      }
-    })
-    this.list = this.states.map(item => {
-      return { value: item, label: item };
-    });
     this.$store.state.commend.commendList.data.title = [
       {
         title: "ID",
@@ -180,6 +187,7 @@ export default {
   methods: {
     ...mapMutations({
       getCommendList: "commend/getCommendList",
+      getProNameList: "commend/getProNameList",
       userDo: "commend/userDo",
       deteleList: "commend/deleteList"
     }),
@@ -231,13 +239,23 @@ export default {
           });
         });
     },
+    cancel() {
+      this.flag = false;
+    },
     //修改后点击保存
     reqs(data){
       this.opts = data
       commend_updata(data).then(res=> {
-        if(res.success){
+      console.log(data,'data')
+        if(res && res.success){
           this.flag = false;
-          this.getCommendList();
+          this.getCommendList({
+              dataType:"RECOMMEND",
+              startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
+              endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
+              productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+              pageNum: this.$store.state.commend.commendList.pageNum,
+              pageSize: this.$store.state.commend.commendList.pageSize,});
         }
       }).catch(()=>{
         this.$alert(`${res.message}`, '保存失败', {
@@ -254,13 +272,19 @@ export default {
     //点击编辑
     edit(data){
       this.flag = true;
+      data.dataType = "RECOMMEND";
       this.opts = data;
     },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-           this.getCommendList();;
+           this.getCommendList({dataType:"RECOMMEND",
+              startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
+              endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
+              productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+              pageNum: this.$store.state.commend.commendList.pageNum,
+              pageSize: this.$store.state.commend.commendList.pageSize,});
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);
@@ -273,45 +297,26 @@ export default {
           break;
       }
     },
-   //搜索
-    search() {
-      this.getCommendList({
-        dataType:"RECOMMEND",
-        startTime: timestampToTime(this.effectTimeVal[0]),
-        endTime: timestampToTime(this.effectTimeVal[1]),
-        productName: this.searchVal,
-      })
+   search(formName) {
+      this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.getCommendList({
+              dataType:"RECOMMEND",
+              startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
+              endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
+              productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+              pageNum: 1,
+              pageSize: this.$store.state.commend.commendList.pageSize,
+            })
+          } else {
+            return false;
+          }
+      });
     },
-    remoteMethod(query) {
-      if (query !== '') {
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.searchOpt = this.list.filter(item => {
-            return item.label.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1;
-          });
-        }, 200);
-      } else {
-        this.searchOpt = [];
-      }
+    //清除
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     },
-    effectTimeSearch(val) {
-      this.effectTimeVal = val;
-      if(this.effectTimeVal){
-        this.getCommendList({
-          dataType:"RECOMMEND",
-          startTime: timestampToTime(this.effectTimeVal[0]),
-          endTime: timestampToTime(this.effectTimeVal[1]),
-          productName: this.searchVal,
-        })
-      } else {
-        this.getCommendList({
-          dataType:"RECOMMEND",
-          productName: this.searchVal,
-        })
-      }
-    }
   }
 };
 </script>
@@ -335,7 +340,8 @@ export default {
   padding:100px;
   box-sizing:border-box;
 }
-.filter{
+.searchForm{
   display:flex;
+  flex-wrap: nowrap;
 }
 </style>

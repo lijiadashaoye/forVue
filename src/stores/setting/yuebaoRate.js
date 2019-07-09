@@ -27,10 +27,10 @@ const mutations = {
     //删除数据
     deteleList(state,id){
         yuebao_delete(id).then(res => {
-            if(res.success){
+            if(res && res.success){
                 yuebao_list({
                     pageNum: state.yuebaoRateList.pageNum,
-                    pageSize: state.yuebaoRateList.pageSize,
+                    pageSize: state.yuebaoRateList.pageSize
                 }).then(res => {
                     state.yuebaoRateList.data.list = res.data.list;
                     state.yuebaoRateList.total = res.data.total;
@@ -42,14 +42,14 @@ const mutations = {
     userDo(state) {
         state.yuebaoRateList.data.custom = [];
         let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
-        if(jurisdiction.indexOf('yuebao_rate_detail') > -1){
-            state.yuebaoRateList.data.custom.push({
-                text: "详情",
-                type: "danger",
-                size: "mini",
-                emit: "detail"
-            });
-        }
+        // if(jurisdiction.indexOf('yuebao_rate_detail') > -1){
+        //     state.yuebaoRateList.data.custom.push({
+        //         text: "详情",
+        //         type: "danger",
+        //         size: "mini",
+        //         emit: "detail"
+        //     });
+        // }
         if(jurisdiction.indexOf('yuebao_rate_upd') > -1){
             state.yuebaoRateList.data.quanxian.push('ok')
             state.yuebaoRateList.data.custom.push({
@@ -59,14 +59,14 @@ const mutations = {
                 emit: "edit"
             });
         }
-        if(jurisdiction.indexOf('yuebao_rate_del') > -1){
-            state.yuebaoRateList.data.custom.push({
-                text: "删除",
-                type: "danger",
-                size: "mini",
-                emit: "delete"
-            });
-        }
+        // if(jurisdiction.indexOf('yuebao_rate_del') > -1){
+        //     state.yuebaoRateList.data.custom.push({
+        //         text: "删除",
+        //         type: "danger",
+        //         size: "mini",
+        //         emit: "delete"
+        //     });
+        // }
     },
 }
 

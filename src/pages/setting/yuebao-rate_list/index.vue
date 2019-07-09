@@ -38,6 +38,7 @@
       center>
       <yuebaoAddorUpt
       @reqest="reqest"
+      @cancel="cancel"
       :options="obj"/>
     </el-dialog>
 
@@ -127,6 +128,9 @@ export default {
         });
       }
     },
+    cancel() {
+      this.centerDialogVisible = false;
+    },
     //点击详情
     open() {
       this.$alert("您好，此项暂未开启", "产品详情", {
@@ -146,12 +150,8 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(() => {
+        .then((res) => {
           // window.location.reload();
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
           this.deteleList(id);
         })
         .catch(() => {
@@ -175,6 +175,7 @@ export default {
           this.getYebaoRateListData({
             pageNum: this.$store.state.yuebaoRate.yuebaoRateList.pageNum,
             pageSize: this.$store.state.yuebaoRate.yuebaoRateList.pageSize,
+            rateStartTime:this.searchVal != '' ? timestampToTime(this.searchVal) : null
         });
         }
       }).catch(()=> {
@@ -196,6 +197,7 @@ export default {
           this.getYebaoRateListData({
             pageNum: this.$store.state.yuebaoRate.yuebaoRateList.pageNum,
             pageSize: this.$store.state.yuebaoRate.yuebaoRateList.pageSize,
+            rateStartTime:this.searchVal != '' ? timestampToTime(this.searchVal) : null
         });
           break;
         case "edit": // 编辑按钮
@@ -211,7 +213,9 @@ export default {
     },
     search() {
       this.getYebaoRateListData({
-        rateStartTime:timestampToTime(this.searchVal)
+        pageNum: this.$store.state.yuebaoRate.yuebaoRateList.pageNum,
+        pageSize: this.$store.state.yuebaoRate.yuebaoRateList.pageSize,
+        rateStartTime:this.searchVal != '' ? timestampToTime(this.searchVal) : null
       })
     }
   },

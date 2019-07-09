@@ -2,7 +2,7 @@
   <div class="componentWaper">
     <div id="forHeader">
       <h3>{{pageName}}</h3>
-      <el-input size="mini" v-model="seachInput" placeholder style="width:180px;"></el-input>
+      <el-input size="mini" v-model="seachInput" placeholder="请输入标签名称" style="width:180px;"></el-input>
       <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
       <el-button size="mini" type="info" style="margin-left:15px" @click="seachClick(false)">重置</el-button>
       <el-button style="margin-left:15px" size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
@@ -15,7 +15,7 @@
       >添加标签</el-button>
     </div>
     <div id="forTable">
-      <isTable v-if="loadEnd" :inputData="tableInputData" @tableEmit="tableEmit"/>
+      <isTable v-if="loadEnd" :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
 
     <el-dialog
@@ -25,15 +25,16 @@
       width="500px"
       :before-close="markDialogClose"
     >
-      <el-form :model="dialogMark.markInput" label-width="80px">
-        <el-form-item label="标签名称">
-          <el-input v-model="dialogMark.markInput.name"></el-input>
+      <el-form :model="markInput" label-width="80px" :rules="rules" ref="markInput">
+        <el-form-item label="标签名称" prop="name">
+          <el-input v-model="markInput.name"></el-input>
         </el-form-item>
       </el-form>
+
       <span slot="footer" class="dialog-footer">
         <el-button size="mini" @click="markDialogAction(false)">取 消</el-button>
         <el-button
-          :disabled="!dialogMark.markInput.name"
+          :disabled="markInput.name==''"
           size="mini"
           type="primary"
           @click="markDialogAction(true)"
@@ -52,6 +53,9 @@ export default {
 
   data() {
     return {
+      rules: {
+        name: [{ min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }]
+      },
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
       pageName: "", // 当前页面名字
@@ -75,9 +79,9 @@ export default {
       dialogMark: {
         show: false,
         title: "",
-        type: "",
-        markInput: { name: "" }
-      }
+        type: ""
+      },
+      markInput: { name: "" }
     };
   },
   created() {
@@ -179,9 +183,7 @@ export default {
                     failName += `名称：${item.data[0].name} \n`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
 
                 if (numFail > 0) {
                   str += titleText + failName;
@@ -204,8 +206,8 @@ export default {
         this.dialogMark.show = true;
         this.dialogMark.type = "post";
       } else {
-        this.dialogMark.markInput.id = data.id;
-        this.dialogMark.markInput.name = data.name;
+        this.markInput.id = data.id;
+        this.markInput.name = data.name;
         this.dialogMark.title = "修改标签";
         this.dialogMark.show = true;
         this.dialogMark.type = "put";
@@ -214,14 +216,14 @@ export default {
     // 标签弹出框的取消、确定按钮
     markDialogAction(type) {
       if (type) {
-        if (this.dialogMark.markInput.name.length > 20) {
+        if (this.markInput.name.length > 20) {
           this.$message.error("最大支持20位字符！");
         } else {
           this.$api
             .member_labelList_upLabelData({
               vm: this,
               method: this.dialogMark.type,
-              data: this.dialogMark.markInput
+              data: this.markInput
             })
             .then(res => {
               if (res) {
@@ -240,9 +242,10 @@ export default {
       this.dialogMark = {
         show: false,
         title: "",
-        type: "",
-        markInput: { name: "" }
+        type: ""
       };
+      this.markInput = { name: "" };
+      this.$refs["markInput"].resetFields();
     },
     // 表格里的switch事件,启用、停用
     switchAction(data) {

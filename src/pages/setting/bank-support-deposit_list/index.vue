@@ -10,7 +10,18 @@
         >
           添加开户银行
         </el-button>
+        <div>
+          <el-input
+            placeholder="请输直销银行名称"
+            prefix-icon="el-icon-search"
+            v-model.trim="directName"
+            size='mini'
+            @input='search'>
+          </el-input>
+        </div>
+        
       </div>
+
     </div>
 
     <div id="forTable">
@@ -50,13 +61,17 @@ export default {
       detailFlag: false,//详情开关
       opts: {//需要传递的数据
 
-      }
+      },
+      directName: ''
     };
   },
   mounted() {
     this.userDo();
     this.pageName = this.$route.name;
-    this.getBankSupportList();
+    this.getBankSupportList({
+            pageNum : this.$store.state.bankSupport.bankSupportList.pageNum,
+            pageSize : this.$store.state.bankSupport.bankSupportList.pageSize 
+        });
     this.getBankCardList();
     this.$store.state.bankSupport.bankSupportList.data.title = [
       {
@@ -134,6 +149,14 @@ export default {
         });
       }
     },
+    //搜索
+    search() {
+      this.getBankSupportList({
+            pageNum : 1,
+            pageSize : this.$store.state.bankSupport.bankSupportList.pageSize,
+            directName : this.directName
+        })
+    },
     //点击关闭
     close() {
       this.dialogVisible = false;
@@ -180,8 +203,11 @@ export default {
     //点击保存
     send(data) {
       this.dialogVisible = false;
-      bank_support_upd(data).then(()=>{
-        this.getBankSupportList()
+      bank_support_upd(data).then((res)=>{
+        this.getBankSupportList({
+            pageNum : this.$store.state.bankSupport.bankSupportList.pageNum,
+            pageSize : this.$store.state.bankSupport.bankSupportList.pageSize 
+        })
       }).catch(()=> {
         this.$alert(`${res.message}`, '保存失败', {
           confirmButtonText: '确定',
@@ -200,7 +226,10 @@ export default {
       switch (data.type) {
         case "regetData": // 分页的emit
            //再次请求列表数据
-          this.getBankSupportList();
+          this.getBankSupportList({
+            pageNum : this.$store.state.bankSupport.bankSupportList.pageNum,
+            pageSize : this.$store.state.bankSupport.bankSupportList.pageSize 
+        });
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);
@@ -218,5 +247,11 @@ export default {
 </script>
 
 <style scoped='true' lang="scss">
-
+.explosiveAdd{
+  width:100%;
+  padding:2px 4px;
+  box-sizing: border-box;
+  display:flex;
+  justify-content: space-between;
+}
 </style>

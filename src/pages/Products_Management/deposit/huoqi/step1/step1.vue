@@ -1,27 +1,19 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <div
-      style="overflow:auto;"
-      id='forTable'
-    >
+    <div style="overflow:auto;" id="forTable">
       <el-form
         ref="ruleForm"
         size="normal"
         :model="ruleForm"
         label-width="150px"
-        label-suffix=':'
+        label-suffix=":"
         class="isForm"
         :rules="rules"
       >
-        <el-form-item
-          prop="institutionId"
-          label="机构名称"
-          style="position:relative"
-          class="is50"
-        >
+        <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
           <el-select
             class="isInput"
             clearable
@@ -30,27 +22,18 @@
             @change="change_xilie(ruleForm.institutionId)"
           >
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.jigou"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
 
-          <a
-            class="isA"
-            @click="toJiGou"
-          >无机构？</a>
-
+          <a class="isAClick" @click="toJiGou">无机构？</a>
         </el-form-item>
 
-        <el-form-item
-          label="产品系列"
-          class="is50"
-        >
-
+        <el-form-item label="产品系列" class="is50">
           <el-select
             class="isInput"
             clearable
@@ -59,53 +42,30 @@
             @change="setXiLie(ruleForm.seriesId)"
           >
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in xilie"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
+          <a class="isAClick" @click="toXiLie">无产品系列？</a>
         </el-form-item>
 
-        <hr>
+        <hr />
 
-        <el-form-item
-          label="产品名称"
-          prop="name"
-          class="is50"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.name"
-          ></el-input>
+        <el-form-item label="产品名称" prop="name" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.name"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="产品别名"
-          class="is50"
-          prop="typeAlias"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.typeAlias"
-          ></el-input>
-
+        <el-form-item label="产品别名" class="is50" prop="typeAlias">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.typeAlias"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="利率"
-          prop="interestRate"
-          class="is50"
-        >
+        <el-form-item label="利率" prop="interestRate" class="is50">
           <el-input
             class="isInput"
-            type='number'
+            type="number"
             clearable
             placeholder="请输入"
             v-model="ruleForm.interestRate"
@@ -113,11 +73,7 @@
           <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item
-          label="利率别名"
-          class="is50"
-          prop="interestRateAlias"
-        >
+        <el-form-item label="利率别名" class="is50" prop="interestRateAlias">
           <el-input
             class="isInput"
             clearable
@@ -126,13 +82,9 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="起存金额(元)"
-          prop="minAmount"
-          class="is50"
-        >
+        <el-form-item label="起存金额(元)" prop="minAmount" class="is50">
           <el-input
-            type='number'
+            type="number"
             class="isInput"
             clearable
             v-model="ruleForm.minAmount"
@@ -140,54 +92,29 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="递增金额(元)"
-          prop="increaseAmount"
-          class="is50"
-        >
+        <el-form-item label="递增金额(元)" prop="increaseAmount" class="is50">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.increaseAmount"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
-
         </el-form-item>
 
-        <el-form-item
-          label="期限别名"
-          class="is50"
-          prop="deadlineAlias"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.deadlineAlias"
-          ></el-input>
-
+        <el-form-item label="期限别名" class="is50" prop="deadlineAlias">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.deadlineAlias"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="标签"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            v-model="ruleForm.marks"
-            clearable
-            placeholder="请选择"
-            multiple
-          >
+        <el-form-item label="标签" class="is50">
+          <el-select class="isInput" v-model="ruleForm.marks" clearable placeholder="请选择" multiple>
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.marks"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
           <span class="isA">
             <i
@@ -198,25 +125,12 @@
         </el-form-item>
 
         <el-form-item label="产品描述">
-          <quill-editor
-            class="isInput"
-            v-model="ruleForm.description"
-          >
-          </quill-editor>
+          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
         </el-form-item>
-
       </el-form>
       <div class="nextButtons">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="next"
-        >下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button
-          size="mini"
-          type="info"
-          @click="back"
-        >取消</el-button>
+        <el-button size="mini" type="primary" @click="next">下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
       </div>
     </div>
   </div>
@@ -229,12 +143,23 @@ export default {
     var checkNum3 = (rule, value, callback) => {
       if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
       } else {
         callback();
       }
     };
+    // 验证利率
+    var checkNumLilv = (rule, value, callback) => {
+      if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (+value >= 100) {
+        callback(new Error("利率不能大于或等于100"));
+      } else {
+        callback();
+      }
+    };
+
     return {
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
@@ -259,7 +184,7 @@ export default {
         ],
         name: [
           { required: true, message: "请输入产品名称", trigger: "blur" },
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" }
         ],
         typeAlias: [
           { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
@@ -271,7 +196,7 @@ export default {
           { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
         ],
         interestRate: [
-          { validator: checkNum3, trigger: "blur" },
+          { validator: checkNumLilv, trigger: "blur" },
           { required: true, message: "请输入利率", trigger: "blur" }
         ],
         minAmount: [
@@ -342,6 +267,14 @@ export default {
       sessionStorage.setItem("page", "机构管理");
       this.$router.push({
         name: "organizational_step1"
+      });
+    },
+    toXiLie() {
+      this.$router.push({
+        name: "deposit",
+        query: {
+          institutionId: this.ruleForm.institutionId
+        }
       });
     }
   }

@@ -35,7 +35,7 @@
 <script>
 import isTable from '../../../components/isTable/isTable';
 import addButtonLeft from '../../../components/addButtonLeft';
-import { app_button_upd } from '../../../api/setting_use.js';
+import { app_button_upd, app_button_status } from '../../../api/setting_use.js';
 import { mapActions, mapMutations } from 'vuex';
 export default {
   props: {},
@@ -55,7 +55,7 @@ export default {
       upData: false
     };
   },
-  mounted() {
+  created() {
     this.canDoWhat()
     //请求表格数据
     this.getTableMenudata()
@@ -96,6 +96,10 @@ export default {
         title:"创建人",
         key:"modifier",
         minWidth:"100"
+      },{
+        title: "状态",
+        key: "statusCN",
+        minWidth: "100"
       }
     ]
   },
@@ -140,9 +144,9 @@ export default {
     },
     //编辑后  保存
     send(data){
-      this.dialogVisible = false;
       app_button_upd(data).then(()=> {
-          this.getTableMenudata();
+        this.dialogVisible = false;
+        this.getTableMenudata();
       }).catch((res) => {
         this.$alert(`${res.message}`, '保存失败', {
           confirmButtonText: '确定',
@@ -174,18 +178,39 @@ export default {
           });
       });
     },
+    //修改状态
+    switchAction(data) {
+      if(data.switch) {
+          app_button_status({
+              id: data.id,
+              status: 'ENABLE'
+          }).then(res => {
+              this.getTableMenudata()
+          })
+      } else {
+          app_button_status({
+              id: data.id,
+              status: 'DISABLE'
+          }).then(res=> {
+              this.getTableMenudata()
+          })
+      }
+    },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.getTableMenudata();
+            this.getTableMenudata();
           break;
         case "edit": // 编辑按钮
-          this.edit(data.data)
+            this.edit(data.data)
           break;
         case "delete": // 单独删除按钮
-          this.delete(data.data.id)
+            this.delete(data.data.id)
           break;
+        case "switch": // switch 变换
+            this.switchAction(data.data);
+        break;
       }
     }
   }

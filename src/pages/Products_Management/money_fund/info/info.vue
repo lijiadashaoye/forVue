@@ -23,7 +23,7 @@ export default {
       pageData: {}
     };
   },
-  mounted() {
+  created() {
     this.pageName =
       sessionStorage.getItem("page") +
       ` > ${this.$route.query["institutionName"]}详情`; // 获取页面名称

@@ -662,12 +662,12 @@ export default {
     // 用户权限判定
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
-      this.tableInputData.data.custom.push({
-        text: "复制",
-        type: "primary",
-        size: "mini",
-        emit: "copy"
-      });
+      // this.tableInputData.data.custom.push({
+      //   text: "复制",
+      //   type: "primary",
+      //   size: "mini",
+      //   emit: "copy"
+      // });
       this.tableInputData.data.custom.push({
         text: "删除",
         type: "danger",

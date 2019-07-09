@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
     <div style="overflow:auto;">
@@ -9,201 +9,153 @@
         size="normal"
         :model="ruleForm"
         label-width="150px"
-        label-suffix=':'
+        label-suffix=":"
         class="isForm"
         :rules="rules"
       >
-        <el-form-item
-          prop="institutionName"
-          label="机构名称"
-          style="position:relative"
-          class="is50"
-        >
+        <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
+          <el-select
+            class="isInput"
+            @change="change_xilie(ruleForm.institutionId)"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.institutionId"
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.jigou"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+
+          <a class="isAClick" @click="toJiGou">无机构？</a>
+        </el-form-item>
+
+        <el-form-item label="产品系列" class="is50">
           <el-select
             class="isInput"
             clearable
             placeholder="请选择"
-            v-model="ruleForm.institutionName"
+            v-model="ruleForm.seriesId"
+            @change="setXiLie(ruleForm.seriesId)"
           >
             <el-option
-              size='mini'
-              v-for="item in dictData.jigou"
+              size="mini"
+              v-for="item in xilie"
               :key="item.id"
               :label="item.name"
-              :value="item.name"
-            >
-            </el-option>
+              :value="item.id"
+            ></el-option>
           </el-select>
-
-          <a
-            class="isA"
-            @click="toJiGou"
-          >无机构？</a>
-
+          <a class="isAClick" @click="toXiLie">无产品系列？</a>
         </el-form-item>
 
-        <el-form-item label="产品系列" class="is50">
-          <el-cascader
-            class="isInput"
-            v-model="ruleForm.seriesId"
-            :options="options"
-            change-on-select
-          ></el-cascader>
-          <a
-            class="isA"
-            @click="toChanPin"
-          >无产品系列？</a>
+        <hr />
+
+        <el-form-item label="产品名称" prop="name" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.name"></el-input>
         </el-form-item>
 
-        <hr>
-
-        <el-form-item
-          label="产品名称"
-          prop="name"
-          class="is50"
-        >
-          <el-input
-            class="isInput"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.name"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item
-          label="递增金额"
-          prop="increaseAmount"
-          class="is50"
-        >
+        <el-form-item label="递增金额" prop="increaseAmount" class="is50">
           <el-input
             class="isInput"
             clearable
             v-model="ruleForm.increaseAmount"
             placeholder="请输入"
-            type='number'
+            type="number"
           ></el-input>
-
         </el-form-item>
-        <el-form-item class="is50"
-          label="预期年化收益率"
-          prop="expectAnnualisedReturn"
-        >
+        <el-form-item class="is50" label="预期年化收益率" prop="interestRate">
           <el-input
             class="isInput"
-            type='number'
+            type="number"
             clearable
-            v-model="ruleForm.expectAnnualisedReturn"
+            v-model="ruleForm.interestRate"
             placeholder="请输入"
           ></el-input>
           <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item
-          label="风险等级"
-          prop="riskLevel"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.riskLevel"
-          >
+        <el-form-item label="风险等级" class="is50" prop="riskLevel">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.riskLevel">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.risk_level"
-              :key="item.id"
+              :key="item.value"
               :label="item.label"
-              :value="item.id"
-            >
-            </el-option>
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="剩余额度"
-          prop="surplusQuota"
-          class="is50"
-        >
-          <el-input
-            class="isInput"
-            type='number'
-            clearable
-            v-model="ruleForm.surplusQuota"
-            placeholder="请输入"
-          ></el-input>
-          <span class="isA"></span>
+        <el-form-item label="剩余额度" prop="surplusQuota" class="is50">
+          <el-select class="isInput" v-model="ruleForm.surplusQuota" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item in dictData.surplus_quota"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
-        <el-form-item
-          label="期限"
-          prop="timeLimit"
-          class="is50"
-        >
+
+        <el-form-item label="期限" prop="timeLimit" class="is50">
           <el-input
             class="isInput"
+            type="number"
             clearable
             v-model="ruleForm.timeLimit"
             placeholder="请输入"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="起息日期" class="is50">
+        <el-form-item label="起息日期" class="is50" prop="valueDate">
           <el-date-picker
+            type="datetime"
+            value-format="yyyy-MM-dd HH:mm:ss"
             class="isInput"
             v-model="ruleForm.valueDate"
-            type="date"
             placeholder="选择日期"
-          >
-          </el-date-picker>
+          ></el-date-picker>
         </el-form-item>
 
-        <el-form-item label="理财日期">
+        <el-form-item label="理财日期" prop="managementDate">
           <el-date-picker
+            value-format="yyyy-MM-dd HH:mm:ss"
             class="isInput"
             v-model="ruleForm.managementDate"
-            type="daterange"
+            type="datetimerange"
             range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size='mini'
-          >
-          </el-date-picker>
+            size="mini"
+          ></el-date-picker>
         </el-form-item>
 
-        <el-form-item label="募集日期">
+        <el-form-item label="募集日期" prop="raiseDate">
           <el-date-picker
+            value-format="yyyy-MM-dd HH:mm:ss"
             v-model="ruleForm.raiseDate"
-            type="daterange"
+            type="datetimerange"
             range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size='mini'
+            size="mini"
             class="isInput"
-          >
-          </el-date-picker>
+          ></el-date-picker>
         </el-form-item>
 
         <el-form-item label="产品描述">
-          <quill-editor
-            class="isInput"
-            v-model="ruleForm.description"
-          >
-          </quill-editor>
+          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
         </el-form-item>
-
       </el-form>
-    </div>
-    <div class="nextButtons">
-      <el-button
-        size="mini"
-        type="primary"
-        @click="next"
-      >下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-      <el-button
-        size="mini"
-        type="info"
-        @click="back"
-      >取消</el-button>
+      <div class="nextButtons">
+        <el-button size="mini" type="primary" @click="next">下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
+      </div>
     </div>
   </div>
 </template>
@@ -211,15 +163,35 @@
 export default {
   props: {},
   data() {
+    // 验证数字
+    var checkNum3 = (rule, value, callback) => {
+      if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证利率
+    var checkNumLilv = (rule, value, callback) => {
+      if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (+value >= 100) {
+        callback(new Error("不能大于或等于100"));
+      } else {
+        callback();
+      }
+    };
     return {
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
       ruleForm: {
-        institutionName: "", // 机构名称
-        seriesId: [], // 产品系列ID
+        institutionId: "", // 机构名称
+        seriesId: "", // 产品系列ID
         name: "", // 产品名称
         increaseAmount: "", // 递增金额
-        expectAnnualisedReturn: "", // 预期年化收益率
+        interestRate: "", // 预期年化收益率
         riskLevel: "", // 风险等级
         surplusQuota: "", // 剩余额度
         valueDate: "", // 起息日
@@ -228,322 +200,105 @@ export default {
         raiseDate: "", // 募集日期
         description: "" //  产品描述
       },
-      shelveList: [
-        {
-          label: "上架中",
-          value: "YES"
-        },
-        {
-          label: "已下架",
-          value: "NO"
-        }
-      ],
+      xilie: [], // 从服务器返回的产品系列数据
       //表单验证
       rules: {
-        institutionName: [
+        institutionId: [
           { required: true, message: "请选择机构名称", trigger: "blur" }
         ],
+        valueDate: [
+          { required: true, message: "请输入起息日期", trigger: "blur" }
+        ],
+        managementDate: [
+          { required: true, message: "请输入理财日期", trigger: "blur" }
+        ],
+        raiseDate: [
+          { required: true, message: "请输入募集日期", trigger: "blur" }
+        ],
         name: [
-          { required: true, message: "请输入产品名称", trigger: "blur" }
-          // { min: 1, max: 800, message: "最多输入800个字", trigger: "blur" }
+          { required: true, message: "请输入产品名称", trigger: "blur" },
+          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
         ],
         increaseAmount: [
+          { validator: checkNum3, trigger: "blur" },
           { required: true, message: "请输入递增金额", trigger: "blur" }
         ],
-        expectAnnualisedReturn: [
+        interestRate: [
+          { validator: checkNumLilv, trigger: "blur" },
           { required: true, message: "请输入预期年化收益率", trigger: "blur" }
         ],
-        riskLevel: [
-          { required: true, message: "请选择风险等级", trigger: "blur" }
-        ],
+
         surplusQuota: [
-          { required: true, message: "请输入剩余额度", trigger: "blur" }
+          { required: true, message: "请选择剩余额度", trigger: "change" }
         ],
-        timeLimit: [{ required: true, message: "请输入期限", trigger: "blur" }]
-      },
-      options: [
-        // 所属省市级联数据
-        {
-          value: "zhinan",
-          label: "指南",
-          children: [
-            {
-              value: "shejiyuanze",
-              label: "设计原则",
-              children: [
-                {
-                  value: "yizhi",
-                  label: "一致"
-                },
-                {
-                  value: "fankui",
-                  label: "反馈"
-                },
-                {
-                  value: "xiaolv",
-                  label: "效率"
-                },
-                {
-                  value: "kekong",
-                  label: "可控"
-                }
-              ]
-            },
-            {
-              value: "daohang",
-              label: "导航",
-              children: [
-                {
-                  value: "cexiangdaohang",
-                  label: "侧向导航"
-                },
-                {
-                  value: "dingbudaohang",
-                  label: "顶部导航"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "zujian",
-          label: "组件",
-          children: [
-            {
-              value: "basic",
-              label: "Basic",
-              children: [
-                {
-                  value: "layout",
-                  label: "Layout 布局"
-                },
-                {
-                  value: "color",
-                  label: "Color 色彩"
-                },
-                {
-                  value: "typography",
-                  label: "Typography 字体"
-                },
-                {
-                  value: "icon",
-                  label: "Icon 图标"
-                },
-                {
-                  value: "button",
-                  label: "Button 按钮"
-                }
-              ]
-            },
-            {
-              value: "form",
-              label: "Form",
-              children: [
-                {
-                  value: "radio",
-                  label: "Radio 单选框"
-                },
-                {
-                  value: "checkbox",
-                  label: "Checkbox 多选框"
-                },
-                {
-                  value: "input",
-                  label: "Input 输入框"
-                },
-                {
-                  value: "input-number",
-                  label: "InputNumber 计数器"
-                },
-                {
-                  value: "select",
-                  label: "Select 选择器"
-                },
-                {
-                  value: "cascader",
-                  label: "Cascader 级联选择器"
-                },
-                {
-                  value: "switch",
-                  label: "Switch 开关"
-                },
-                {
-                  value: "slider",
-                  label: "Slider 滑块"
-                },
-                {
-                  value: "time-picker",
-                  label: "TimePicker 时间选择器"
-                },
-                {
-                  value: "date-picker",
-                  label: "DatePicker 日期选择器"
-                },
-                {
-                  value: "datetime-picker",
-                  label: "DateTimePicker 日期时间选择器"
-                },
-                {
-                  value: "upload",
-                  label: "Upload 上传"
-                },
-                {
-                  value: "rate",
-                  label: "Rate 评分"
-                },
-                {
-                  value: "form",
-                  label: "Form 表单"
-                }
-              ]
-            },
-            {
-              value: "data",
-              label: "Data",
-              children: [
-                {
-                  value: "table",
-                  label: "Table 表格"
-                },
-                {
-                  value: "tag",
-                  label: "Tag 标签"
-                },
-                {
-                  value: "progress",
-                  label: "Progress 进度条"
-                },
-                {
-                  value: "tree",
-                  label: "Tree 树形控件"
-                },
-                {
-                  value: "pagination",
-                  label: "Pagination 分页"
-                },
-                {
-                  value: "badge",
-                  label: "Badge 标记"
-                }
-              ]
-            },
-            {
-              value: "notice",
-              label: "Notice",
-              children: [
-                {
-                  value: "alert",
-                  label: "Alert 警告"
-                },
-                {
-                  value: "loading",
-                  label: "Loading 加载"
-                },
-                {
-                  value: "message",
-                  label: "Message 消息提示"
-                },
-                {
-                  value: "message-box",
-                  label: "MessageBox 弹框"
-                },
-                {
-                  value: "notification",
-                  label: "Notification 通知"
-                }
-              ]
-            },
-            {
-              value: "navigation",
-              label: "Navigation",
-              children: [
-                {
-                  value: "menu",
-                  label: "NavMenu 导航菜单"
-                },
-                {
-                  value: "tabs",
-                  label: "Tabs 标签页"
-                },
-                {
-                  value: "breadcrumb",
-                  label: "Breadcrumb 面包屑"
-                },
-                {
-                  value: "dropdown",
-                  label: "Dropdown 下拉菜单"
-                },
-                {
-                  value: "steps",
-                  label: "Steps 步骤条"
-                }
-              ]
-            },
-            {
-              value: "others",
-              label: "Others",
-              children: [
-                {
-                  value: "dialog",
-                  label: "Dialog 对话框"
-                },
-                {
-                  value: "tooltip",
-                  label: "Tooltip 文字提示"
-                },
-                {
-                  value: "popover",
-                  label: "Popover 弹出框"
-                },
-                {
-                  value: "card",
-                  label: "Card 卡片"
-                },
-                {
-                  value: "carousel",
-                  label: "Carousel 走马灯"
-                },
-                {
-                  value: "collapse",
-                  label: "Collapse 折叠面板"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "ziyuan",
-          label: "资源",
-          children: [
-            {
-              value: "axure",
-              label: "Axure Components"
-            },
-            {
-              value: "sketch",
-              label: "Sketch Templates"
-            },
-            {
-              value: "jiaohu",
-              label: "组件交互文档"
-            }
-          ]
-        }
-      ]
+        timeLimit: [
+          { validator: checkNum3, trigger: "blur" },
+          { required: true, message: "请输入期限", trigger: "blur" }
+        ],
+        riskLevel: [
+          { required: true, message: "请选择风险等级", trigger: "change" }
+        ]
+      }
     };
   },
   mounted() {
     this.pageName = sessionStorage.getItem("page") + " > 新增理财产品第一步"; // 获取页面名称
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
+
+    // 获取选定的机构
+    let xilieData = JSON.parse(sessionStorage.getItem("xilie_licai"));
+    this.change_xilie(xilieData.institutionId);
     if (sessionStorage.getItem("licai_step1")) {
       this.ruleForm = JSON.parse(sessionStorage.getItem("licai_step1"));
+    } else {
+      this.ruleForm.institutionId = xilieData.institutionId;
+      if (xilieData.id) {
+        this.ruleForm.seriesId = xilieData.id;
+      }
     }
   },
 
   methods: {
+    // 变更产品系列后，要保存选择的系列，等回到当前页面后数据能对应上
+    setXiLie(data) {
+      let tar = this.xilie.filter(item => item.id === data);
+      sessionStorage.setItem("xilie_licai", JSON.stringify(tar[0]));
+    },
+    // 变更机构后，要对应调整系列
+    change_xilie(id) {
+      // 根据机构id，获取对应的产品系列
+      let xilieData = JSON.parse(sessionStorage.getItem("xilie_data"));
+      this.xilie = xilieData.filter(
+        item => item.institutionId === id
+      )[0].seriesList;
+      if (this.ruleForm.seriesId != "") {
+        this.ruleForm.seriesId = "";
+      }
+    },
     next() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
+          // 时间越早，数值越小
+          // 起息日期
+          let valueDate = new Date(this.ruleForm.valueDate);
+          // 理财日期
+          let managementDate1 = new Date(this.ruleForm.managementDate[0]);
+          let managementDate2 = new Date(this.ruleForm.managementDate[1]);
+          // 募集日期
+          let raiseDate2 = new Date(this.ruleForm.raiseDate[1]);
+
+          if (valueDate < managementDate1 || valueDate > managementDate2) {
+            this.$message.error("起息日期应介于理财日期之间！");
+            return;
+          }
+          if (valueDate < raiseDate2) {
+            this.$message.error("起息日期应晚于募集日期！");
+            return;
+          }
+          if (raiseDate2 > managementDate1) {
+            this.$message.error("募集日期应早于理财日期！");
+            return;
+          }
           sessionStorage.setItem("licai_step1", JSON.stringify(this.ruleForm));
           this.$router.push({
             name: "manage_money_matters_step2"
@@ -563,7 +318,14 @@ export default {
         name: "organizational_step1"
       });
     },
-    toChanPin() {}
+    toXiLie() {
+      this.$router.push({
+        name: "manage_money_matters_mainPage",
+        query: {
+          institutionId: this.ruleForm.institutionId
+        }
+      });
+    }
   }
 };
 </script>

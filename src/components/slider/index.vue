@@ -13,14 +13,14 @@
         <div class="card-item">
             <span class="item-text">*栏目标题:</span>
             <div class="item-input">
-                <el-input v-model="title" placeholder="请输入标题"></el-input>
+                <el-input v-model.trim="title" placeholder="请输入标题"></el-input>
             </div>
         </div> 
 
         <div class="card-item">
             <span class="item-text">*栏目key:</span>
             <div class="item-input">
-                <el-input v-model="columnKey" placeholder="请输入唯一key"></el-input>
+                <el-input v-model.trim="columnKey" placeholder="请输入唯一key" @input="e => columnKey = validForbid(columnKey)"></el-input>
             </div>
         </div> 
 
@@ -34,7 +34,9 @@
                     :http-request="uploadColumnImage"
                     >
                     <img v-if="columnImage" :src="columnImage" class="avatar">
-                    <el-button v-else>选择图片</el-button>
+                    <div v-else>
+                        <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+                    </div>
                 </el-upload>
             </div>
         </div>
@@ -77,7 +79,7 @@
         <div class="card-item">
             <span class="item-text">文字说明:</span>
             <div class="item-input">
-                <el-input v-model="textExplain" placeholder="请输入说明"></el-input>
+                <el-input v-model.trim="textExplain" placeholder="请输入说明"></el-input>
             </div>
         </div>
 
@@ -95,21 +97,21 @@
         <div class="card-item">
             <span class="item-text">*排序值:</span>
             <div class="item-input">
-                <el-input v-model="sort" type="number" placeholder="只允许填入数字"></el-input>
+                <el-input v-model.trim="sort" type="number" placeholder="只允许填入数字"></el-input>
             </div>
         </div>
 
         <div class="card-item">
             <span class="item-text">链接地址:</span>
             <div class="item-input">
-                <el-input v-model="linkUrl" placeholder="请输入链接地址"></el-input>
+                <el-input v-model.trim="linkUrl" placeholder="请输入链接地址"></el-input>
             </div>
         </div>
 
         <div class="card-item">
             <span class="item-text">打点编号:</span>
             <div class="item-input">
-                <el-input v-model="dotNumber" placeholder="请输入打点编号"></el-input>
+                <el-input v-model.trim="dotNumber" placeholder="请输入打点编号" @input="e => dotNumber = validForbid(dotNumber)"></el-input>
             </div>
         </div>
 
@@ -120,7 +122,7 @@
                 type="textarea"
                 :autosize="{ minRows: 4, maxRows: 5}"
                 placeholder="请输入内容"
-                v-model="remark"
+                v-model.trim="remark"
                 ></el-input>
             </div>
         </div>
@@ -138,7 +140,7 @@
         <div class="card-item">
             <span class="item-text">*版本号:</span>
             <div class="item-input">
-                <el-input v-model="versionNo" placeholder="只允许填入数字"></el-input>
+                <el-input v-model.trim="versionNo" placeholder="只允许填入数字" @input="e => versionNo = validForbid(versionNo)"></el-input>
             </div>
         </div>
 
@@ -213,7 +215,26 @@ export default {
     methods: {
         //取消
         cancel() {
-
+            this.id = '';
+            this.appChannelCode = '';
+            this.appChannelName = '';
+            this.buttonTypeCode = '';
+            this.buttonTypeName = '';
+            this.platformCode = '';
+            this.platformName = '';
+            this.versionNo = '';
+            this.title = '';
+            this.columnKey = '';
+            this.columnImage = '';
+            this.isShow = '';
+            this.columnColor = '';
+            this.textExplain = '';
+            this.textExplainColor = '';
+            this.sort = '';
+            this.linkUrl = '';
+            this.dotNumber = '';
+            this.remark = '';
+            this.$emit('cancel')
         },
 
         //保存
@@ -275,11 +296,16 @@ export default {
         //上传图片
         uploadColumnImage(params) {
             const _file = params.file;
-            const isLt5M = _file.size / 1024 / 1024 < 5;
+            const isLt2M = _file.size / 1024 / 1024 < 2;
+            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
-            if (!isLt5M) {
-                this.$message.error("请上传5M以下的图片");
+            if(!idJPG) {
+                this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+                return false
+            }
+            if (!isLt2M) {
+                this.$message.error("请上传2M以下的图片");
                 return false;
             }
             upLoadImg(formData).then(res=> {
@@ -322,7 +348,7 @@ export default {
 }
 .card-item{
     width:100%;
-    height:60px;
+    // height:60px;
     padding:10px;
     box-sizing:border-box;
     display:flex;

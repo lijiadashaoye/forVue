@@ -45,6 +45,13 @@ const mutations = {
             }).then(res=> {
                 state.loginSpreadList.data.list = res.data.list;
                 state.loginSpreadList.total = res.data.total;
+                state.loginSpreadList.data.list.forEach((v) => {
+                    if (v.status === 'ENABLE') {
+                        v.status = '启 用'
+                    } else {
+                        v.status = '停 用'
+                    }
+                })
             })
         })
     },

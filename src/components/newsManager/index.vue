@@ -28,7 +28,9 @@
             :http-request="upload"
           >
             <img v-if="newsImageUrl" :src="newsImageUrl" class="avatar">
-            <el-button v-else>选择图片</el-button>
+            <div v-else>
+              <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+            </div>
           </el-upload>
         </div>
       </div>
@@ -304,12 +306,17 @@ export default {
     //图片上传
     upload(params) {
       const _file = params.file;
-      const isLt5M = _file.size / 1024 / 1024 < 5;
+      const isLt2M = _file.size / 1024 / 1024 < 2;
+      const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
       var formData = new FormData();
       formData.append("file", _file);
-      if (!isLt5M) {
-        this.$message.error("请上传5M以下的图片");
-        return false;
+      if(!idJPG) {
+          this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+          return false
+      }
+      if (!isLt2M) {
+          this.$message.error("请上传2M以下的图片");
+          return false;
       }
       upLoadImg(formData).then(res => {
         if (res.success) {

@@ -371,17 +371,17 @@ export default {
                   obj["switch"] = false;
                   obj["action"] = "待发放";
                   // 添加部分操作按钮不可用
-                  obj.show = ["edit", "delete", "see"];
+                  obj.show = ["edit", "delete"];
                   break;
                 case "GRANTING":
                   obj["switch"] = true;
                   obj["action"] = "发放中";
-                  obj.show = ["edit", "delete"];
+                  obj.show = ["edit", "delete", "see"];
                   break;
                 case "STOPGRANT":
                   obj["switch"] = false;
                   obj["action"] = "已停止";
-                  obj.show = ["edit", "delete"];
+                  obj.show = ["edit", "delete", "see"];
                   break;
               }
             }

@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <el-button
         size="mini"
@@ -8,42 +8,21 @@
         @click="buttonRowUpdata(true)"
         v-if="tableInputData.data.quanxian.includes('member_level_add')"
       >新增会员等级</el-button>
-      <el-button
-        size="mini"
-        type="danger"
-        @click="toDelete('more')"
-      >批量删除</el-button>
+      <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
     </div>
 
     <el-dialog
-      :close-on-click-modal='false'
+      :close-on-click-modal="false"
       :title="dialog.title"
       :visible.sync="dialog.show"
       width="500px"
       :before-close="dialogClose"
     >
-
-      <el-form
-        :model="menuData"
-        label-width="100px"
-        :rules="rules"
-        size="mini"
-        ref="menuData"
-      >
-
-        <el-form-item
-          label="等级图标"
-          required
-        >
+      <el-form :model="menuData" label-width="100px" :rules="rules" size="mini" ref="menuData">
+        <el-form-item label="等级图标" required>
           <div class="upimg">
             <imgUpload
               v-if="dialog.show"
@@ -51,100 +30,50 @@
                   url:'admin/file/up/member',
                   imgUrl:menuData.icon
                 }"
-              @selectImg='sharePageImg($event)'
+              @selectImg="sharePageImg($event)"
             />
           </div>
         </el-form-item>
 
-        <el-form-item
-          label="等级名称"
-          prop="name"
-        >
+        <el-form-item label="等级名称" prop="name">
           <el-input v-model="menuData.name"></el-input>
         </el-form-item>
 
         <div style="display:flex;">
-          <el-form-item
-            label="成长值范围"
-            prop="growthStart"
-          >
-            <el-input
-              type="number"
-              v-model="menuData.growthStart"
-            ></el-input>
+          <el-form-item label="成长值范围" prop="growthStart">
+            <el-input type="number" v-model="menuData.growthStart"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="-"
-            prop="growthEnd"
-            label-width="30px"
-          >
-            <el-input
-              type="number"
-              v-model="menuData.growthEnd"
-            ></el-input>
+          <el-form-item label="-" prop="growthEnd" label-width="30px">
+            <el-input type="number" v-model="menuData.growthEnd"></el-input>
           </el-form-item>
         </div>
-        <el-form-item
-          label="积分类型"
-          prop="expireType"
-        >
-          <el-select
-            v-model="menuData.expireType"
-            placeholder="请选择"
-            @change="selectExpireType"
-          >
+        <el-form-item label="积分类型" prop="expireType">
+          <el-select v-model="menuData.expireType" placeholder="请选择" @change="selectExpireType">
             <el-option
               v-for="item in options"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          v-if="menuData.expireType==='LATERMONTH'"
-          prop="resetMonth"
-          label="月数"
-        >
-          每<el-input
-            type='number'
-            style="width:100px;margin:0 5px;"
-            v-model="menuData.resetMonth"
-          ></el-input>月重置
+        <el-form-item v-if="menuData.expireType==='LATERMONTH'" prop="resetMonth" label="月数">
+          每
+          <el-input type="number" style="width:150px;margin:0 5px;" v-model="menuData.resetMonth"></el-input>月重置
         </el-form-item>
 
-        <el-form-item
-          v-if="menuData.expireType==='LATERDAY'"
-          label="天数"
-          prop="effectiveDay"
-        >
-          发卡/升降级<el-input
-            type='number'
-            style="width:100px;margin:0 5px;"
-            v-model="menuData.effectiveDay"
-          ></el-input>天
+        <el-form-item v-if="menuData.expireType==='LATERDAY'" label="天数" prop="effectiveDay">
+          发卡/升降级
+          <el-input type="number" style="width:150px;margin:0 5px;" v-model="menuData.effectiveDay"></el-input>天
         </el-form-item>
-
       </el-form>
-      <span
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          size="mini"
-          @click="markDialogAction(false)"
-        >取 消</el-button>
-        <el-button
-          size="mini"
-          type="primary"
-          @click="markDialogAction(true)"
-        >确 定</el-button>
+      <span slot="footer" class="dialog-footer">
+        <el-button size="mini" @click="markDialogAction(false)">取 消</el-button>
+        <el-button size="mini" type="primary" @click="markDialogAction(true)">确 定</el-button>
       </span>
     </el-dialog>
-
   </div>
 </template>
 <script>
@@ -167,8 +96,8 @@ export default {
       }
     };
     var retLength = function(rule, value, callBack) {
-      if (("" + value).length > 19 || ("" + value).length < 0) {
-        callBack(new Error("请输入1-19个字符"));
+      if (("" + value).length > 10 || ("" + value).length < 0) {
+        callBack(new Error("请输入1-10个字符"));
       } else {
         callBack();
       }
@@ -246,12 +175,12 @@ export default {
         ],
         resetMonth: [
           { required: true, message: "请输入数值", trigger: "blur" },
-          { min: 1, max: 19, message: "标签名为1-19个字符", trigger: "blur" },
+          { min: 1, max: 10, message: "请输入1-10个字符", trigger: "blur" },
           { validator: checkNum, trigger: "blur" }
         ],
         effectiveDay: [
           { required: true, message: "请输入天数", trigger: "blur" },
-          { min: 1, max: 19, message: "标签名为1-19个字符", trigger: "blur" },
+          { min: 1, max: 10, message: "请输入1-10个字符", trigger: "blur" },
           { validator: checkNum, trigger: "blur" }
         ]
       }

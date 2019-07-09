@@ -1,35 +1,15 @@
 <template>
   <div class="upImgWaper">
-    <span
-      class="uping"
-      v-if="uping"
-    >上传中...</span>
-    <span
-      @click="deleteImg"
-      title='删除图片'
-      class="myIcon20px icon-49shurushanchu-1 toDelete"
-    ></span>
-    <div
-      class="showImg"
-      @click="upImg"
-      title='添加图片'
-    >
-      <img
-        v-if="imgSrc"
-        :src="imgSrc"
-        class="isImg"
-      >
+    <span class="uping" v-if="uping">上传中...</span>
+    <span @click="deleteImg" title="删除图片" class="myIcon20px icon-49shurushanchu-1 toDelete"></span>
+    <div class="showImg" @click="upImg" title="添加图片">
+      <img v-if="imgSrc" :src="imgSrc" class="isImg">
       <div v-else>
-        <p
-          style="text-align:center"
-          class="myIcon20px icon-add isIcon"
-        >
-        </p>
+        <p style="text-align:center" class="myIcon20px icon-add isIcon"></p>
         <p>选择图片</p>
-        <p>小于2M</p>
+        <p>小于2M png/jpeg/jpg/gif</p>
       </div>
     </div>
-
   </div>
 </template>
 <script>
@@ -62,11 +42,19 @@ export default {
       inputs.click();
       inputs.onchange = event => {
         let data = event.path[0].files[0];
-        if (data.type.split("/")[0] === "image") {
+        let type1 = String(data.type.split("/")[0]).toLowerCase();
+        let type2 = String(data.type.split("/")[1]).toLowerCase();
+
+        if (type1 === "image") {
           let isLt2M = data.size / 1024 / 1024 > 2;
           if (isLt2M) {
             this.$message.error("图片不能大于 2M");
-          } else {
+          } else if (
+            type2 == "png" ||
+            type2 == "jpeg" ||
+            type2 == "jpg" ||
+            type2 == "gif"
+          ) {
             this.uping = true;
             let formData = new FormData();
             formData.append("file", data);
@@ -102,6 +90,8 @@ export default {
                   this.uping = false;
                 }
               });
+          } else {
+            this.$message.error("请使用 png/jpeg/jpg/gif 类型图片！");
           }
         } else {
           this.$message.error("请选择图片类型文件！");

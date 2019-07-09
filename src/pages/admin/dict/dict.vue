@@ -2,7 +2,8 @@
   <div class="componentWaper">
     <div id="forHeader">
       <h3>{{pageName}}</h3>
-      <el-input size="mini" v-model="seachInput" placeholder="输入类型" style="width:180px;"></el-input>
+      <el-input size="mini" v-model="seachInput" placeholder="输入类型" style="width:180px;"></el-input>&nbsp;&nbsp;
+      <el-input size="mini" v-model="labelInput" placeholder="输入字典标签" style="width:180px;"></el-input>
       <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
       <el-button size="mini" type="info" @click="seachClick(false)">重置</el-button>
       <el-button
@@ -84,6 +85,7 @@ export default {
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
       pageName: "", // 当前页面名字
       seachInput: "", // 搜索框输入的内容
+      labelInput: "", // 标签搜索输入
       tableInputData: {
         // 传给table子组件的数据
         checkBox: true, // 判断需要不需要添加选择框
@@ -117,28 +119,25 @@ export default {
       rules: {
         value: [
           { required: true, message: "请输入字典值", trigger: "blur" },
-          { min: 1, max: 19, message: "字典值为1-19个字符", trigger: "blur" }
+          { min: 1, max: 10, message: "字典值为1-10个字符", trigger: "blur" }
         ],
         label: [
           { required: true, message: "请输入字典标签", trigger: "blur" },
-          { min: 1, max: 19, message: "标签名为1-19个字符", trigger: "blur" }
+          { min: 1, max: 10, message: "标签名为1-10个字符", trigger: "blur" }
         ],
         type: [
           { required: true, message: "请输入类型", trigger: "blur" },
-          { min: 1, max: 19, message: "类型为1-19个字符", trigger: "blur" }
+          { min: 1, max: 10, message: "类型为1-10个字符", trigger: "blur" }
         ],
         description: [
           { required: true, message: "请输入描述", trigger: "blur" },
-          { min: 0, max: 200, message: "描述最多为200个字符", trigger: "blur" }
+          { min: 0, max: 100, message: "描述最多为100个字符", trigger: "blur" }
         ],
         remarks: [
           { required: true, message: "请输入备注", trigger: "blur" },
-          { min: 0, max: 200, message: "备注最多为200个字符", trigger: "blur" }
+          { min: 0, max: 100, message: "备注最多为100个字符", trigger: "blur" }
         ],
-        sort: [
-          { required: true, validator: checkNum, trigger: "blur" },
-          { min: 1, max: 19, message: "排序为1-19个字符", trigger: "blur" }
-        ]
+        sort: [{ required: true, validator: checkNum, trigger: "blur" }]
       }
     };
   },
@@ -307,6 +306,7 @@ export default {
       this.tableInputData.pageNum = 1;
       if (!type) {
         this.seachInput = "";
+        this.labelInput = "";
       }
       this.getUserData();
     },
@@ -410,26 +410,19 @@ export default {
     // 获取用户表格数据
     getUserData() {
       this.loadEnd = false;
-      let obj;
+      let obj = {
+        vm: this,
+        method: "get",
+        search: {
+          pageSize: this.tableInputData.pageSize,
+          pageNum: this.tableInputData.pageNum
+        }
+      };
       if (this.seachInput) {
-        obj = {
-          vm: this,
-          method: "get",
-          search: {
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum,
-            type: this.seachInput
-          }
-        };
-      } else {
-        obj = {
-          vm: this,
-          method: "get",
-          search: {
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum
-          }
-        };
+        obj.search.type = this.seachInput;
+      }
+      if (this.labelInput) {
+        obj.search.label = this.labelInput;
       }
       this.$api.admin_dict_getTableData(obj).then(res => {
         if (res) {

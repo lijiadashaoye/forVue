@@ -809,6 +809,7 @@ export default {
     },
     // 获取用户表格数据
     getUserData() {
+      console.log(9)
       this.$api
         .member_manager_getListData({
           vm: this,

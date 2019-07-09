@@ -2,7 +2,7 @@
     <div class="componentWaper">
         <div id="forHeader">
             <h3>{{pageName}}</h3>
-            <div class="explosiveAdd">
+            <div class="searchHeader">
                 <el-button
                 type="primary"
                 size="mini"
@@ -10,6 +10,13 @@
                 >
                 新建
                 </el-button>
+                <el-input
+                    placeholder="请输入公告关键字"
+                    prefix-icon="el-icon-search"
+                    size='mini'
+                    v-model="content"
+                    @input='search'>
+                </el-input>
             </div>
         </div>
 
@@ -19,12 +26,13 @@
             @tableEmit='tableEmit'/>
         </div>
 
-        <el-dialog title="修改" :visible.sync="dialogFormVisible" :close-on-click-modal='false'>
+        <el-dialog :title=title :visible.sync="dialogFormVisible" :close-on-click-modal='false'>
             <noticeAdd
             :params="params"
             :updata="updataFlag"
             :appChannel.sync="this.$store.state.protocol.appChannel"
-            @send='send'/>
+            @send='send'
+            @cancel='cancel'/>
         </el-dialog>
     </div>
 </template>
@@ -46,12 +54,17 @@ export default {
             dialogFormVisible: false,
             params: '',
             updataFlag: false,
+            title: '',
+            content: '',
         }
     },
     mounted() {
         this.pageName = this.$route.name;
         this.userDo();
-        this.getList();
+        this.getList({
+            pageNum: this.$store.state.notice.noticeList.pageNum,
+            pageSize: this.$store.state.notice.noticeList.pageSize,
+        });
         this.getAppChannel();
         this.$store.state.notice.noticeList.data.title = [
             {
@@ -90,10 +103,23 @@ export default {
             userDo: 'notice/userDo',
             getAppChannel:'protocol/getAppChannel'
         }),
+        cancel() {
+            this.dialogFormVisible = false;
+        },
+
+        //查询
+        search() {
+            this.getList({
+                pageNum: this.$store.state.notice.noticeList.pageNum,
+                pageSize: this.$store.state.notice.noticeList.pageSize,
+                content: this.content != '' ? this.content : null
+            })
+        },
         //添加
         addPeroid() {
             let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
             if (jurisdiction.indexOf("notice_add") > -1) {
+                this.title = '添加'
                 this.dialogFormVisible = true;
                 this.updataFlag = false;
                 this.params = '';
@@ -129,6 +155,7 @@ export default {
             this.dialogFormVisible = true;
             this.params = data;
             this.updataFlag = true;
+            this.title = '修改';
         },
         switchAction(data) {
             if(data.switch) {
@@ -136,14 +163,22 @@ export default {
                     id: data.id,
                     status: 'ENABLE'
                 }).then(res => {
-                    this.getList()
+                    this.getList({
+                        pageNum: this.$store.state.notice.noticeList.pageNum,
+                        pageSize: this.$store.state.notice.noticeList.pageSize,
+                        content: this.content != '' ? this.content : null
+                    })
                 })
             } else {
                 notice_list_status({
                     id: data.id,
                     status: 'DISABLE'
                 }).then(res=> {
-                    this.getList()
+                    this.getList({
+                pageNum: this.$store.state.notice.noticeList.pageNum,
+                pageSize: this.$store.state.notice.noticeList.pageSize,
+                content: this.content != '' ? this.content : null
+            })
                 })
             }
         },
@@ -152,8 +187,12 @@ export default {
             this.dialogFormVisible = false;
             if(this.updataFlag) {
                 notice_updata(data).then(res=> {
-                    if(res.success) {
-                        this.getList()
+                    if( res && res.success) {
+                        this.getList({
+                            pageNum: this.$store.state.notice.noticeList.pageNum,
+                            pageSize: this.$store.state.notice.noticeList.pageSize,
+                            content: this.content != '' ? this.content : null
+                        })
                     }
                 }).catch(res=> {
                     //弹出消息提示用户
@@ -164,7 +203,11 @@ export default {
                 })
             } else {
                 notice_add(data).then(res => {
-                    this.getList()
+                    this.getList({
+                        pageNum: this.$store.state.notice.noticeList.pageNum,
+                        pageSize: this.$store.state.notice.noticeList.pageSize,
+                        content: this.content != '' ? this.content : null
+                    })
                 }).catch(res=> {
                     this.$message({
                         type: 'info',
@@ -177,7 +220,11 @@ export default {
         tableEmit(data) {
             switch (data.type) {
                 case "regetData": // 分页的emit
-                    this.getList();
+                    this.getList({
+                        pageNum: this.$store.state.notice.noticeList.pageNum,
+                        pageSize: this.$store.state.notice.noticeList.pageSize,
+                        content: this.content != '' ? this.content : null
+                    });
                 break;
                 case "delete": // 删除按钮
                     this.delete(data.data.id);
@@ -194,6 +241,15 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang='scss'>
+    .searchHeader{
+        display:flex;
+        width:100%;
+        justify-content: space-between;
+        padding:5px;
+        box-sizing: border-box;
+        .el-input{
+            width:220px;
+        }
+    }
 </style>

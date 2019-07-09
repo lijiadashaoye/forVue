@@ -7,6 +7,7 @@ const state = {
         pageNum: 1,
         total: null,
         actions: {},
+        productNameList: [],
         data: {
             list: [],
             quanxian: [],
@@ -22,7 +23,21 @@ const mutations = {
         commend_list(data).then(res => {
             state.commendList.data.list = res.data.list;
             state.commendList.total = res.data.total;
-            window.sessionStorage.setItem('commendList',JSON.stringify(state.commendList.data.list))
+        })
+    },
+    getProNameList(state) {
+        state.commendList.productNameList = [];
+        commend_list({
+            dataType: "RECOMMEND"
+        }).then(res => {
+            if (res && res.success) {
+                res.data.list && res.data.list.forEach(v => {
+                    state.commendList.productNameList.push({
+                        label: v.productName,
+                        value: v.productName
+                    })
+                })
+            }
         })
     },
     //删除数据

@@ -20,6 +20,7 @@
 
 <script>
 import advertis from '../../../components/advertis';
+import { adverdis_Page_add } from '../../../api/setting_use';
 import { mapMutations } from 'vuex';
 export default {
     components: {
@@ -41,7 +42,7 @@ export default {
         //点击保存
         send(data) {
             adverdis_Page_add(data).then(res=> {
-                if(res.success) {
+                if(res && res.success) {
                     this.$router.push('/home/setting/advertis/list')
                 }
             }).catch((res)=>{

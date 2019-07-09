@@ -20,12 +20,9 @@ const state = {
 }
 const mutations = {
     //获取列表数据
-    getSliderListData(state) {
-        slider_list({
-            pageNum: state.sliderList.pageNum,
-            pageSize: state.sliderList.pageSize,
-        }).then(res => {
-            if (res) {
+    getSliderListData(state,data) {
+        slider_list(data).then(res => {
+            if (res && res.success) {
                 state.sliderList.data.list = res.data.list;
                 state.sliderList.total = res.data.total;
                 state.sliderList.data.list.forEach(v=> {
@@ -56,8 +53,8 @@ const mutations = {
 const actions = {
     getList({
         commit
-    }) {
-        commit('getSliderListData')
+    },data) {
+        commit('getSliderListData',data)
     },
     // deleteList({
     //     commit

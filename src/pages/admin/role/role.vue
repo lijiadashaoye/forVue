@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <el-button
         size="mini"
@@ -8,23 +8,13 @@
         @click="buttonRowUpdata('add')"
         v-if="tableInputData.data.quanxian.includes('sys_role_add')"
       >添加</el-button>
-      <el-button
-        size="mini"
-        type="danger"
-        @click="toDelete('more')"
-      >批量删除</el-button>
+      <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
       <!-- 编辑、添加 -->
       <el-dialog
-        :close-on-click-modal='false'
+        :close-on-click-modal="false"
         :title="dialog.title"
         :visible.sync="dialog.show"
         width="500px"
@@ -37,62 +27,37 @@
           :rules="rules"
           label-width="80px"
         >
-          <el-form-item
-            label="角色名称"
-            prop="roleName"
-          >
+          <el-form-item label="角色名称" prop="roleName">
             <el-input v-model="updataUser.roleName"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="角色标识"
-            prop="roleCode"
-          >
+          <el-form-item label="角色标识" prop="roleCode">
             <el-input v-model="updataUser.roleCode"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="角色描述"
-            prop="roleDesc"
-          >
+          <el-form-item label="角色描述" prop="roleDesc">
             <el-input v-model="updataUser.roleDesc"></el-input>
           </el-form-item>
 
-          <el-form-item
-            prop="roleDeptId"
-            label="所属部门"
-          >
+          <el-form-item prop="roleDeptId" label="所属部门">
             <el-cascader
               style="width:100%;"
               v-model="updataUser.roleDeptId"
               :options="deptdata"
               change-on-select
             ></el-cascader>
-
           </el-form-item>
-
         </el-form>
 
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="dialogAction(false)"
-          >取 消</el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="dialogAction(true)"
-          >确 定</el-button>
-
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="dialogAction(false)">取 消</el-button>
+          <el-button size="mini" type="primary" @click="dialogAction(true)">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 权限 -->
       <el-dialog
-        :close-on-click-modal='false'
+        :close-on-click-modal="false"
         :title="dialog.title"
         :visible.sync="dialog.show1"
         width="750px"
@@ -100,14 +65,8 @@
         show-checkbox
         ref="tree1"
       >
-        <div
-          style="display:flex;justify-content:space-between;"
-          v-show="dialog.show1"
-        >
-          <div
-            v-for="(item,index) in getMenuAllTree"
-            :key="index"
-          >
+        <div style="display:flex;justify-content:space-between;" v-show="dialog.show1">
+          <div v-for="(item,index) in getMenuAllTree" :key="index">
             <el-tree
               :data="item"
               show-checkbox
@@ -117,25 +76,17 @@
               :ref="`tree${index+1}`"
               highlight-current
               :props="defaultProps"
-              :check-strictly='false'
+              :check-strictly="false"
               check-on-click-node
-            >
-            </el-tree>
+            ></el-tree>
           </div>
         </div>
 
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
+        <span slot="footer" class="dialog-footer">
           <el-button @click="roleclear">取 消</el-button>
-          <el-button
-            type="primary"
-            @click="updateRoleFN"
-          >确 定</el-button>
+          <el-button type="primary" @click="updateRoleFN">确 定</el-button>
         </span>
       </el-dialog>
-
     </div>
   </div>
 </template>
@@ -211,7 +162,7 @@ export default {
   components: {
     isTable
   },
-  mounted() {
+  created() {
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
@@ -614,7 +565,6 @@ export default {
       this.tableInputData.pageNum = null;
       this.tableInputData.data.list = [];
       this.tableInputData.data.title = [];
-
       new Promise(resolve => {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
@@ -667,7 +617,6 @@ export default {
           pageSize: this.tableInputData.pageSize,
           pageNum: this.tableInputData.pageNum
         })
-
         .then(res => {
           if (res) {
             this.afterGetData(res.data);

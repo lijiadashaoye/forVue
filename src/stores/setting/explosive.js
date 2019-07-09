@@ -7,6 +7,7 @@ const state = {
         pageNum: 1,
         total: null,
         actions: {},
+        productNameList: [],
         data: {
             list: [],
             quanxian: [],
@@ -22,7 +23,21 @@ const mutations = {
         explosive_list(data).then(res => {
             state.explosiveList.data.list = res.data.list;
             state.explosiveList.total = res.data.total;
-            window.sessionStorage.setItem('explosiveList',JSON.stringify(state.explosiveList.data.list))
+        })
+    },
+    getProNameList(state) {
+        state.explosiveList.productNameList = [];
+        explosive_list({
+                dataType: "EXPLOSIVE"
+            }).then(res => {
+            if(res && res.success) {
+                res.data.list && res.data.list.forEach(v=> {
+                    state.explosiveList.productNameList.push({
+                        label: v.productName,
+                        value: v.productName
+                    })
+                })
+            }
         })
     },
     //删除数据
@@ -36,7 +51,7 @@ const mutations = {
                 }).then(data => {
                     if(res.success){
                         state.explosiveList.data.list = data.data.list;
-                        window.sessionStorage.setItem('explosiveList',JSON.stringify(state.explosiveList.data.list))
+                        // window.sessionStorage.setItem('explosiveList',JSON.stringify(state.explosiveList.data.list))
                     }
                 })
             }
