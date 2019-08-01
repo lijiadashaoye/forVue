@@ -217,7 +217,7 @@ export default {
         ],
         name: [
           { required: true, message: "请输入产品名称", trigger: "blur" },
-          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         increaseAmount: [
           { validator: checkNum3, trigger: "blur" },

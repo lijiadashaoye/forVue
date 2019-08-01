@@ -52,7 +52,7 @@
           :visible.sync="addXiLieForm.toShow"
           width="400px"
           :before-close="toCloseCunkuanDialog"
-        >
+         >
           <el-form
             :model="addXiLieForm"
             label-width="110px"
@@ -79,7 +79,7 @@
               <a class="isAClick" @click="toJiGou">无机构？</a>
             </el-form-item>
 
-            <el-form-item label="产品系列名称">
+            <el-form-item label="* 产品系列名称">
               <el-input v-model="addXiLieForm.xilie" placeholder="请输入产品关键字"></el-input>
             </el-form-item>
           </el-form>
@@ -609,7 +609,7 @@ export default {
     outPut() {},
     // 导入
     inPut() {},
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       // this.tableInputData.data.custom.push({

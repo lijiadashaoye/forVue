@@ -23,6 +23,7 @@
             <peroid
             :appChannel.sync="this.$store.state.protocol.appChannel"
             :params="params"
+            @cancel="cancel"
             @send="send"
             />
         </el-dialog>
@@ -33,7 +34,7 @@
 import isTable from '../../../components/isTable/isTable';
 import { mapActions, mapMutations } from 'vuex';
 import peroid from '../../../components/peroid';
-import { peroid_updata } from '../../../api/setting_use.js';
+import { peroid_updata, peroid_delete } from '../../../api/setting_use.js';
 
 export default {
     components: {
@@ -50,7 +51,10 @@ export default {
     mounted() {
         this.pageName = this.$route.name;
         this.userDo();
-        this.getList();
+        this.getList({
+            pageNum: 1,
+            pageSize: this.$store.state.peroid.peroidList.pageSize
+        });
         this.getAppChannel();
         this.$store.state.peroid.peroidList.data.title = [
             {
@@ -99,12 +103,15 @@ export default {
     methods: {
         ...mapActions({
             getList: 'peroid/getList',
-            deleteList: 'peroid/deleteList'
         }),
         ...mapMutations({
             userDo: 'peroid/userDo',
             getAppChannel:'protocol/getAppChannel'
         }),
+        cancel() {
+            this.dialogFormVisible = false;
+            this.params = {};
+        },
         addPeroid() {
             let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
             if (jurisdiction.indexOf("index_peroid_add") > -1) {
@@ -125,11 +132,19 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning"
             }).then(() => {
-                this.$message({
-                    type: "success",
-                    message: "删除成功!"
-                });
-                this.deleteList(data);
+                peroid_delete(data).then(res=> {
+                    if(res && res.success) {
+                        this.getList({
+                            pageNum: this.$store.state.peroid.peroidList.pageNum,
+                            pageSize: this.$store.state.peroid.peroidList.pageSize
+                        })
+                        this.$message({
+                            type: "success",
+                            message: "删除成功!"
+                        });
+                    }
+                })
+                
             })
             .catch(() => {
                 this.$message({
@@ -148,7 +163,10 @@ export default {
             this.dialogFormVisible = false;
             peroid_updata(data).then(res=> {
                 if(res.success) {
-                    this.getList()
+                    this.getList({
+                        pageNum: this.$store.state.peroid.peroidList.pageNum,
+                        pageSize: this.$store.state.peroid.peroidList.pageSize
+                    })
                 }
             }).catch(res=> {
                 //弹出消息提示用户
@@ -162,7 +180,10 @@ export default {
         tableEmit(data) {
             switch (data.type) {
                 case "regetData": // 分页的emit
-                    this.getList();
+                    this.getList({
+                        pageNum: this.$store.state.peroid.peroidList.pageNum,
+                        pageSize: this.$store.state.peroid.peroidList.pageSize
+                    });
                 break;
                 case "delete": // 删除按钮
                     this.delete(data.data.id);

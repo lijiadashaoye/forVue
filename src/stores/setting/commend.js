@@ -55,7 +55,7 @@ const mutations = {
             }
         });
     },
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.commendList.data.custom = [];
         let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));

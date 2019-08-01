@@ -85,8 +85,8 @@ $font_color1:rgb(246, 246, 246);
 
 .setBk1 {
     .isCard {
-        top: 30%;
-        left: 33%;
+        top: 37.8%;
+        right: 36.5%;
     }
 
     // 左上侧
@@ -110,7 +110,7 @@ $font_color1:rgb(246, 246, 246);
 .setBk2 {
     .isCard {
         top: 50%;
-        left: 2%;
+        right: 76%;
     }
 
     // 左上侧
@@ -188,8 +188,8 @@ $font_color1:rgb(246, 246, 246);
 
 .setBk6 {
     .isCard {
-        bottom: 8%;
-        left: .5%;
+        top: 50%;
+        left: 1%;
     }
 
     // 左上侧
@@ -208,7 +208,7 @@ $font_color1:rgb(246, 246, 246);
 .setBk7 {
     .isCard {
         top: 25%;
-        left: .5%;
+        left: 1%;
     }
 
     // 左上侧
@@ -245,7 +245,7 @@ $font_color1:rgb(246, 246, 246);
 
 .setBk9 {
     .isCard {
-        top: 40%;
+        top: 30%;
         left: 3%;
     }
 
@@ -300,6 +300,7 @@ $font_color1:rgb(246, 246, 246);
         background-size: 45px 45px;
 
     }
+
     .login_isFooter {
         left: 30px;
     }
@@ -351,9 +352,8 @@ $font_color1:rgb(246, 246, 246);
 
 .setBk14 {
     .isCard {
-
         top: 20%;
-        left: 1%;
+        left: 2%;
     }
 
     // 左上侧
@@ -371,7 +371,6 @@ $font_color1:rgb(246, 246, 246);
 
 .setBk15 {
     .isCard {
-
         top: 25%;
         left: 10%;
     }
@@ -413,7 +412,7 @@ $font_color1:rgb(246, 246, 246);
 
 .setBk17 {
     .isCard {
-        top: 39%;
+        top: 40%;
         left: 1%;
     }
 
@@ -454,8 +453,8 @@ $font_color1:rgb(246, 246, 246);
 
 .setBk19 {
     .isCard {
-        top: 25%;
-        right: 24%;
+        top: 30%;
+        left: 54%;
     }
 
     // 左上侧
@@ -508,7 +507,8 @@ $font_color1:rgb(246, 246, 246);
         color: $font_color
     }
 }
-.setBk22{
+
+.setBk22 {
     .isCard {
         top: 40%;
         left: 15%;
@@ -531,6 +531,7 @@ $font_color1:rgb(246, 246, 246);
         text-align: left
     }
 }
+
 .setBk23 {
     .isCard {
         top: 20%;
@@ -543,6 +544,83 @@ $font_color1:rgb(246, 246, 246);
         background: url("../../assets/logo1.png") no-repeat;
         background-size: 45px 45px;
 
+    }
+
+    .login_isFooter p {
+        color: $font_color
+    }
+}
+
+.setBk24 {
+    .isCard {
+        top: 20%;
+        left: 16%;
+    }
+
+    // 左上侧
+    .login_isLogo {
+        color: $font_color;
+        background: url("../../assets/logo1.png") no-repeat;
+        background-size: 45px 45px;
+    }
+
+    .login_isFooter p {
+        color: $font_color
+    }
+}
+
+.setBk25 {
+    .isCard {
+        top: 43%;
+        left: 44.5%;
+    }
+
+    // 左上侧
+    .login_isLogo {
+        color: $font_color;
+        background: url("../../assets/logo1.png") no-repeat;
+        background-size: 45px 45px;
+    }
+
+    .login_isFooter p {
+        color: $font_color
+    }
+}
+
+.setBk26 {
+    .isCard {
+        top: 53%;
+        left: 4%;
+    }
+
+    // 左上侧
+    .login_isLogo {
+        color: $font_color;
+        background: url("../../assets/logo1.png") no-repeat;
+        background-size: 45px 45px;
+    }
+
+    .login_isFooter {
+        left: 30px;
+    }
+
+    .login_isFooter p {
+        color: $font_color;
+        text-align: left
+    }
+}
+
+.setBk27 {
+    .isCard {
+        top: 45%;
+        left: 5%;
+    }
+
+    // 左上侧
+    .login_isLogo {
+        color: $font_color;
+        background: url("../../assets/logo1.png") no-repeat;
+        background-size: 45px 45px;
     }
 
     .login_isFooter p {

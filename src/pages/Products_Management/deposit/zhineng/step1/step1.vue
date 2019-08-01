@@ -140,7 +140,7 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="产品描述">
+        <el-form-item label="产品描述" prop="description">
           <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
         </el-form-item>
 
@@ -301,17 +301,20 @@ export default {
           { required: true, message: "请选择机构名称", trigger: "blur" }
         ],
         interestRateAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         name: [
-          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" },
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" },
           { required: true, message: "请输入产品名称", trigger: "blur" }
         ],
         typeAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
         ],
         purchaseAmount: [{ validator: checkNum3, trigger: "blur" }],
-        increaseAmount: [{ validator: checkNum3, trigger: "blur" }]
+        increaseAmount: [{ validator: checkNum3, trigger: "blur" }],
+        description: [
+          { min: 1, max: 140, message: "最多输入140个字", trigger: "blur" }
+        ]
       }
     };
   },
@@ -322,7 +325,7 @@ export default {
     let zhineng_step1 = sessionStorage.getItem("zhineng_step1");
     // 获取选定的机构
     let jigouData = JSON.parse(sessionStorage.getItem("xilie_jigou"));
-      this.change_xilie(jigouData.institutionId);
+    this.change_xilie(jigouData.institutionId);
 
     if (zhineng_step1) {
       this.ruleForm = JSON.parse(zhineng_step1);

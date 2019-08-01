@@ -61,6 +61,7 @@ export default {
   },
   mounted() {
     this.pageName = this.$route.name;
+    this.$store.state.bank.bankList.pageNum = 1;
     this.userDo();
     this.getList({
         pageNum: this.$store.state.bank.bankList.pageNum,
@@ -68,6 +69,11 @@ export default {
       })
     this.$store.state.bank.bankList.data.title = [
       {
+        title: "编号",
+        key: "productBankId",
+        minWidth: "100",
+        sortable: true
+      },{
         title: "银行名称",
         key: "bankName",
         minWidth: "120",
@@ -114,7 +120,7 @@ export default {
       this.dialogVisible = false;
       bank_list_upd(data).then((res)=> {
         this.getList({
-          pageNum: this.$store.state.bank.bankList.pageNum,
+          pageNum: 1,
           pageSize: this.$store.state.bank.bankList.pageSize,
           bankName : this.bankName != '' ? this.bankName : null
         })

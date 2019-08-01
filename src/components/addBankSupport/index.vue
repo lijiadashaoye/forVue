@@ -123,7 +123,7 @@ export default {
     },
     mounted() {
         //获取开户银行列表
-        this.list.forEach((v)=>{
+        this.list && this.list.forEach((v)=>{
             this.states.push({
                 id:v.id,
                 bankName:v.bankName,

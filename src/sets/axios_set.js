@@ -20,7 +20,6 @@ if (process.env.NODE_ENV === "development") {
 
 // axios.defaults.baseURL ='http://gateway.bicai365.com/';
 
-
 //创建一个错误
 function errorCreat(msg) {
   const err = new Error(msg)
@@ -63,44 +62,43 @@ axios.interceptors.response.use(
     if (dataAxios.success) { // 页面请求的
       return dataAxios;
     } else
-      if (dataAxios.access_token) { // 登录的
-        return dataAxios;
-      } else
-        if (dataAxios instanceof ArrayBuffer || dataAxios instanceof Blob) { // 图片上传的
-          return dataAxios
-        } else {
-          let token = localStorage.getItem('token');
-          if (token) {
-            // 如果token无效，则跳转到登录页
-            if (dataAxios.code === "B_INVALID_TOKEN") {
-              Message({
-                message: `${dataAxios.message}，请重新登录！`,
-                type: 'error',
-                duration: 2 * 1000
-              });
-              setTimeout(() => {
-                isApp.$router.push({
-                  name: 'login'
-                })
-              }, 1000)
-            } else {
-              Message({
-                message: `${dataAxios.message}！`,
-                type: 'error',
-                duration: 2 * 1000
-              });
-            }
-          }
-          else {
-
-            Message({
-              message: `${dataAxios.message}`,
-              type: 'warning',
-              duration: 3 * 1000
+    if (dataAxios.access_token) { // 登录的
+      return dataAxios;
+    } else
+    if (dataAxios instanceof ArrayBuffer || dataAxios instanceof Blob) { // 图片上传的
+      return dataAxios
+    } else {
+      let token = localStorage.getItem('token');
+      if (token) {
+        // 如果token无效，则跳转到登录页
+        if (dataAxios.code === "B_INVALID_TOKEN") {
+          Message({
+            message: `${dataAxios.message}，请重新登录！`,
+            type: 'error',
+            duration: 2 * 1000
+          });
+          setTimeout(() => {
+            isApp.$router.push({
+              name: 'login'
             })
-          }
-          return null
+          }, 1000)
+        } else {
+          Message({
+            message: `${dataAxios.message}！`,
+            type: 'error',
+            duration: 2 * 1000
+          });
         }
+      } else {
+
+        Message({
+          message: `${dataAxios.message}`,
+          type: 'warning',
+          duration: 3 * 1000
+        })
+      }
+      return null
+    }
   },
   error => {
     if (error && error.response) {

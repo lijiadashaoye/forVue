@@ -17,6 +17,7 @@ Vue.prototype.$axios = axios;
 // 绑定自定义指令
 import directive from './directive.js';
 Vue.directive("regText", directive.regText);
+Vue.directive("loadmore", directive.loadmore);
 
 Vue.prototype.$api = everyApi;
 Vue.use(everyApi)
@@ -44,9 +45,10 @@ Vue.use(VueQuillEditor)
 if (process.env.NODE_ENV == "development") {
   Vue.prototype.$ImgBaseUrl =
     "https://bicai-architecture-test.oss-cn-beijing.aliyuncs.com/";
-} else {
-  Vue.prototype.$ImgBaseUrl =
-    "https://bicai-architecture.oss-cn-beijing.aliyuncs.com/";
+  } else {
+    Vue.prototype.$ImgBaseUrl =
+    "https://bicai-architecture-test.oss-cn-beijing.aliyuncs.com/";
+    // "https://bicai-architecture.oss-cn-beijing.aliyuncs.com/";
 }
 
 let isApp = new Vue({

@@ -35,7 +35,7 @@
 <script>
 import isTable from '../../../components/isTable/isTable';
 import addButtonLeft from '../../../components/addButtonLeft';
-import { app_button_upd, app_button_status } from '../../../api/setting_use.js';
+import { app_button_upd, app_button_status, app_button_del } from '../../../api/setting_use.js';
 import { mapActions, mapMutations } from 'vuex';
 export default {
   props: {},
@@ -56,9 +56,13 @@ export default {
     };
   },
   created() {
+    this.$store.state.app_button_add.tableMenu.pageNum = 1;
     this.canDoWhat()
     //请求表格数据
-    this.getTableMenudata()
+    this.getTableMenudata({
+      pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
+      pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+    })
     this.pageName = this.$route.name;
     this.$store.state.app_button_add.tableMenu.data.title = [
       {
@@ -108,9 +112,6 @@ export default {
       getTableMenudata:'app_button_add/getTableMenudata',
       canDoWhat: 'app_button_add/canDoWhat'
     }),
-    ...mapActions({
-      deleteList: 'app_button_add/deleteList'
-    }),
     //点击  跳转 
     addButton(){
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
@@ -141,12 +142,16 @@ export default {
     cancel() {
       this.dialogVisible = false;
       this.upData = false;
+      this.opts= {};
     },
     //编辑后  保存
     send(data){
-      app_button_upd(data).then(()=> {
+      app_button_upd(data).then((res)=> {
         this.dialogVisible = false;
-        this.getTableMenudata();
+        this.getTableMenudata({
+          pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
+          pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+        });
       }).catch((res) => {
         this.$alert(`${res.message}`, '保存失败', {
           confirmButtonText: '确定',
@@ -166,17 +171,24 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
+        app_button_del(id).then(res=> {
+          if(res && res.success) {
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+            this.getTableMenudata({
+              pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
+              pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+            });
+          }
+        }).catch(res => {
           this.$message({
-            type: "success",
-            message: "删除成功!"
+            type: "error",
+            message: `res.message`
           });
-          this.deleteList(id);
-        }).catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-      });
+        })
+      })
     },
     //修改状态
     switchAction(data) {
@@ -185,14 +197,20 @@ export default {
               id: data.id,
               status: 'ENABLE'
           }).then(res => {
-              this.getTableMenudata()
+            this.getTableMenudata({
+              pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
+              pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+            })
           })
       } else {
           app_button_status({
               id: data.id,
               status: 'DISABLE'
           }).then(res=> {
-              this.getTableMenudata()
+              this.getTableMenudata({
+                pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
+                pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+              })
           })
       }
     },
@@ -200,7 +218,10 @@ export default {
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-            this.getTableMenudata();
+            this.getTableMenudata({
+              pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
+              pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+            });
           break;
         case "edit": // 编辑按钮
             this.edit(data.data)

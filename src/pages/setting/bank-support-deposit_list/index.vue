@@ -69,7 +69,7 @@ export default {
     this.userDo();
     this.pageName = this.$route.name;
     this.getBankSupportList({
-            pageNum : this.$store.state.bankSupport.bankSupportList.pageNum,
+            pageNum : 1,
             pageSize : this.$store.state.bankSupport.bankSupportList.pageSize 
         });
     this.getBankCardList();

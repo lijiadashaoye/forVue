@@ -73,7 +73,7 @@ export default {
     this.userDo();
     this.pageName = this.$route.name;
     this.getYebaoRateListData({
-            pageNum: this.$store.state.yuebaoRate.yuebaoRateList.pageNum,
+            pageNum: 1,
             pageSize: this.$store.state.yuebaoRate.yuebaoRateList.pageSize,
         });
     this.$store.state.yuebaoRate.yuebaoRateList.data.title = [

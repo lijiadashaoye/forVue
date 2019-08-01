@@ -47,7 +47,7 @@ export default {
         });
       }
       let str = this.$route.name.substr(-1);
-      this.pageName = kk + ` > 第 ${str} 步`;
+      this.pageName = kk;
     }
   },
   methods: {
@@ -66,7 +66,7 @@ export default {
         resolve();
       }).then(() => {
         let str = this.$route.name.substr(-1);
-        this.pageName = sessionStorage.getItem("page") + ` > 第 ${str} 步`;
+        this.pageName = sessionStorage.getItem("page");
       });
     }
   }

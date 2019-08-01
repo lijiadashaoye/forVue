@@ -183,11 +183,8 @@ export default {
                     label: "底部菜单显示",
                     value: "bottom"
                 },{
-                    label: "居中显示",
-                    value: "center"
-                },{
-                    label: "仅浮动和底部显示",
-                    value: "float_bottom"
+                    label: "知道ICON按钮",
+                    value: "know"
                 }
             ],
             versionNo: "",//版本号
@@ -284,8 +281,11 @@ export default {
                 })
                 return false;
             }
+            if(this.appChannelCode == 'pincaiwx') {
+                this.platformCode = 'pincaiwx'
+            }
             //*必填项
-            if(this.buttonKey && this.appChannelCode && this.buttonTypeCode &&  this.versionNo && this.buttonSelectedIcon && this.buttonUnselectedIcon && this.buttonText && this.buttonSelectedTextColor && this.buttonUnselectedTextColor && this.sort){
+            if(this.buttonKey && this.appChannelCode && this.buttonTypeCode &&  this.versionNo && this.buttonSelectedIcon && this.buttonUnselectedIcon && this.buttonText && this.buttonSelectedTextColor && this.buttonUnselectedTextColor && this.sort && this.platformCode){
                 //取到选中的appChannelname
                 this.AppOpt.forEach(v=> {
                     if(this.appChannelCode == v.value) {
@@ -303,11 +303,11 @@ export default {
                 } else if(this.platformCode == "android") {
                     this.platformName = "安卓"
                 } else {
-                    this.platformCode = '';
+                    this.platformCode = 'pincaiwx';
                 }
 
                 if(!/^[0-9]*[1-9][0-9]*$/g.test(this.versionNo)) {
-                    this.$alert('提交失败', '提示信息', {
+                    this.$alert('版本号只能填写正整数,提交失败', '提示信息', {
                         confirmButtonText: '确定',
                         callback: action => {
                             this.$message({

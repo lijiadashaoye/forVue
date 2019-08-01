@@ -186,7 +186,7 @@ export default {
         ],
         name: [
           { required: true, message: "请输入产品名称", trigger: "blur" },
-          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         purchaseAmount: [{ validator: checkNum3, trigger: "blur" }],
         redemptionDate: [{ validator: checkNum3, trigger: "blur" }],
@@ -197,10 +197,10 @@ export default {
         onThe7thOfTheYearYield: [{ validator: checkNum4, trigger: "blur" }],
         thousandsOfYearsYields: [{ validator: checkNum4, trigger: "blur" }],
         description: [
-          { min: 1, max: 150, message: "最多输入140个字", trigger: "blur" }
+          { min: 1, max: 140, message: "最多输入140个字", trigger: "blur" }
         ],
         yieldRule: [
-          { min: 1, max: 150, message: "最多输入140个字", trigger: "blur" }
+          { min: 1, max: 500, message: "最多输入140个字", trigger: "blur" }
         ]
       }
     };

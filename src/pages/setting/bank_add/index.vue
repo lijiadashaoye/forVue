@@ -39,14 +39,16 @@ export default {
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
       if (jurisdiction.indexOf("bank_add") > -1) {
         bank_add(data).then(res=>{
-          this.$router.push(`/home/setting/bank/list`)
-        }).catch(()=> {
+          if(res && res.success) {
+            this.$router.push(`/home/setting/bank/list`)
+          }
+        }).catch((res)=> {
           this.$alert(`${res.message}`, '保存失败', {
             confirmButtonText: '确定',
             callback: action => {
               this.$message({
-                type: 'info',
-                message: `action: ${ action }`
+                type: 'error',
+                message: `action: ${ res.message }`
               });
             }
           });

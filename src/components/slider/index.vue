@@ -97,7 +97,7 @@
         <div class="card-item">
             <span class="item-text">*排序值:</span>
             <div class="item-input">
-                <el-input v-model.trim="sort" type="number" placeholder="只允许填入数字"></el-input>
+                <el-input v-model.trim="sort" type="number" placeholder="只允许填入数字" @input="e => sort = validForbid(sort)"></el-input>
             </div>
         </div>
 

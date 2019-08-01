@@ -184,16 +184,16 @@ export default {
         ],
         name: [
           { required: true, message: "请输入产品名称", trigger: "blur" },
-          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         typeAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
         ],
         interestRateAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
         ],
         deadlineAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         interestRate: [
           { validator: checkNumLilv, trigger: "blur" },

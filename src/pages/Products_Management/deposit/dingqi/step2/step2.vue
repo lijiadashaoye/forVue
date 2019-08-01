@@ -228,7 +228,7 @@ export default {
       //表单验证
       rules: {
         sameProductFlag: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
         H5Url: [
           { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }

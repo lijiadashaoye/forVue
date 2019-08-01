@@ -1,6 +1,5 @@
 import {
     peroid_list,
-    peroid_delete
 } from '../../api/setting_use'
 const state = {
     peroidList: {
@@ -21,11 +20,8 @@ const state = {
 }
 const mutations = {
     //获取列表数据
-    getPeroidListData(state) {
-        peroid_list({
-            pageNum: state.peroidList.pageNum,
-            pageSize: state.peroidList.pageSize,
-        }).then(res => {
+    getPeroidListData(state,data) {
+        peroid_list(data).then(res => {
             if (res) {
                 state.peroidList.data.list = res.data.list;
                 state.peroidList.total = res.data.total;
@@ -75,18 +71,10 @@ const mutations = {
 const actions = {
     getList({
         commit
-    }) {
-        commit('getPeroidListData')
+    },data) {
+        // console.log(data)
+        commit('getPeroidListData',data)
     },
-    deleteList({
-        commit
-    }, id) {
-        peroid_delete(id).then((res) => {
-            if (res.success) {
-                commit('getPeroidListData')
-            }
-        })
-    }
 }
 
 export default {

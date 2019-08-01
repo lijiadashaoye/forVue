@@ -19,10 +19,11 @@
             @tableEmit='tableEmit'/>
         </div>
 
-        <el-dialog :close-on-click-modal='false' title="修改启动页" :visible.sync="dialogFormVisible">
+        <el-dialog :close-on-click-modal='false' title="修改启动页" :visible.sync="dialogFormVisible" :show-close='false'>
             <advertis
-            :params="params"
+            :params.sync="params"
             :appChannel.sync="this.$store.state.protocol.appChannel"
+            @cancel="cancel"
             @send='send'/>
         </el-dialog>
     </div>
@@ -32,7 +33,7 @@
 import { mapActions, mapMutations } from 'vuex';
 import isTable from '../../../components/isTable/isTable';
 import advertis from '../../../components/advertis';
-import { adverdis_list_status, adverdis_list_upData } from '../../../api/setting_use.js';
+import { adverdis_list_status, adverdis_list_upData, adverdis_Page_del } from '../../../api/setting_use.js';
 
 export default {
     components: {
@@ -47,15 +48,22 @@ export default {
         }
     },
     mounted() {
+        this.$store.state.advertis.advertisList.pageNum = 1;
+        this.getList({
+            pageNum: this.$store.state.advertis.advertisList.pageNum,
+            pageSize: this.$store.state.advertis.advertisList.pageSize,
+        });
         this.pageName = this.$route.name;
-        this.userDo();
-        this.getList();
         this.getAppChannel();
         this.$store.state.advertis.advertisList.data.title = [
             {
+                title: "APP",
+                key: "appChannelName",
+                minWidth: "120"
+            },{
                 title: "名称",
                 key: "advertisName",
-                minWidth: "100"
+                minWidth: "140"
             },{
                 title: "类型",
                 key: "showTypeCN",
@@ -69,35 +77,47 @@ export default {
                 key: "statusCN",
                 minWidth: "100"
             },{
-                title: "使用版本",
+                title: "适用平台",
                 key: "platformName",
-                minWidth: "100"
+                minWidth: "120"
             },{
                 title: "创建者",
                 key: "creatorName",
-                minWidth: "100"
+                minWidth: "120"
             }
         ]
+        this.userDo();
     },
     methods: {
         ...mapActions({
             getList: 'advertis/getList',
-            deleteList: 'advertis/deleteList'
         }),
         ...mapMutations({
             userDo: 'advertis/userDo',
             getAppChannel: 'protocol/getAppChannel',
         }),
-        send(data) {
+        cancel() {
+            this.params = null
             this.dialogFormVisible = false;
+        },
+        send(data) {
             adverdis_list_upData(data).then(res=> {
-                if(res.success) {
-                    this.getList();
+                if(res && res.success) {
+                    this.dialogFormVisible = false;
+                    this.getList({
+                        pageNum: this.$store.state.advertis.advertisList.pageNum,
+                        pageSize: this.$store.state.advertis.advertisList.pageSize,
+                    });
+                    this.$message({
+                        type: "success",
+                        message: `修改成功`
+                    });
+                    this.params = {};
                 }
             }).catch((res)=> {
                 this.$message({
-                    type: "info",
-                    message: res.message
+                    type: "error",
+                    message: `${res.message}`
                 });
             })
         },
@@ -108,14 +128,20 @@ export default {
                     id: data.id,
                     status: 'ENABLE'
                 }).then(res => {
-                    this.getList()
+                    this.getList({
+                        pageNum: this.$store.state.advertis.advertisList.pageNum,
+                        pageSize: this.$store.state.advertis.advertisList.pageSize,
+                    })
                 })
             } else {
                 adverdis_list_status({
                     id: data.id,
                     status: 'DISABLE'
                 }).then(res=> {
-                    this.getList()
+                    this.getList({
+                        pageNum: this.$store.state.advertis.advertisList.pageNum,
+                        pageSize: this.$store.state.advertis.advertisList.pageSize,
+                    })
                 })
             }
         },
@@ -126,11 +152,21 @@ export default {
                 cancelButtonText: "取消",
                 type: "warning"
             }).then(() => {
-                this.$message({
-                    type: "success",
-                    message: "删除成功!"
+                adverdis_Page_del(id).then(res=> {
+                    this.getList({
+                        pageNum: this.$store.state.advertis.advertisList.pageNum,
+                        pageSize: this.$store.state.advertis.advertisList.pageSize,
+                    })
+                    this.$message({
+                        type: "success",
+                        message: "删除成功!"
+                    });
+                }).catch(res=> {
+                    this.$message({
+                    type: "error",
+                    message: `${res.message}`
                 });
-                this.deleteList(id);
+                })
             }).catch(() => {
                 this.$message({
                     type: "info",
@@ -140,14 +176,17 @@ export default {
         },
         //修改
         edit(data) {
-            this.params = data
+            this.params = data;
             this.dialogFormVisible = true;
         },
         // 监听表格的操作
         tableEmit(data) {
             switch (data.type) {
                 case "regetData": // 分页的emit
-                    this.getList();
+                    this.getList({
+                        pageNum: this.$store.state.advertis.advertisList.pageNum,
+                        pageSize: this.$store.state.advertis.advertisList.pageSize,
+                    });
                 break;
                 case "delete": // 单独删除按钮
                     this.delete(data.data.id)

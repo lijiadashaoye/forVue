@@ -2,69 +2,335 @@
   <div class="componentWaper">
     <div id="forHeader">
       <h3>{{pageName}}</h3>
-
-      <el-form label-width="80px" label-position="right" size="mini">
-        <el-form-item label="活动编号 :" style="margin-bottom:5px;">
-          <el-select placeholder="请选择" v-model="value">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>&nbsp;
-          <el-button size="mini" type="primary" @click="addbutton">添加</el-button>
-          <el-button size="mini" type="warning" @click="editbutton">预览</el-button>
-        </el-form-item>
-      </el-form>
+      <span>活动编号：</span>
+      <el-select size="mini" v-model="actNO" clearable placeholder="请选择">
+        <el-option
+          v-for="item in searchList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>&nbsp;&nbsp;&nbsp;
+      <el-button size="mini" type="primary" @click="buttonRowUpdata(null)">添加</el-button>
+      <!-- <el-button size="mini" type="warning" @click="toSee()">概览</el-button> -->
+      <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
-    <div id="forTable">
-      <!-- <isTable  :inputData="tableInputData" @tableEmit="tableEmit"/> -->
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
   </div>
 </template>
-
 <script>
-// import isTable from "../../../components/isTable/isTable.vue";
+import isTable from "../../../components/isTable/isTable.vue";
+import imgUpload from "../../../components/upImg.vue";
+
 export default {
-  // components: {
-  //   isTable
-  // },
+  props: {},
+  components: {
+    isTable,
+    imgUpload
+  },
   data() {
     return {
-      pageName: "配置管理", // 当前页面名字
-      options: [
+      pageName: "", // 当前页面名字
+      loadEnd: false,
+      deleteData: [], // 储存需要删除的数据
+      aloneDeleteData: [], // 储存需要单独删除的数据
+      actNO: "", // 活动编号
+      tableInputData: {
+        // 传给table子组件的数据
+        checkBox: true, // 判断需要不需要添加选择框
+        pageSize: 10, // 分页相关
+        pageNum: 1,
+        total: null,
+        actions: {},
+        data: {
+          list: [], // 给表格的数据
+          quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
+          title: [], // 给表格表头
+          custom: [] // 给表格按钮数量、类型（编辑、删除等）
+        }
+      },
+
+      searchList: [
         {
-          value: "选项1",
-          label: "侧边栏-left"
+          label: "侧边栏-left",
+          value: "left"
         },
         {
-          value: "选项5",
-          label: "侧边栏-bottom"
+          label: "侧边栏-bottom",
+          value: "bottom"
         }
-      ],
-      // value: "",
-      // tableInputData: {
-      //   data: {
-      //   title: [],// 给表格表头
-      //   list: [], // 给表格的数据
-      // },
-      // },
-      
-     
+      ]
     };
   },
-  created() {},
-  mounted() {},
+  mounted() {
+    this.pageName = sessionStorage.getItem("page");
+    this.canDoWhat();
+    this.getUserData();
+  },
+
   methods: {
-    addbutton() {
-      // console.log(addbutton);
+    // 概览
+    toSee() {
+      console.log("概览");
     },
-    // editbutton() {
-    //   // 跳转到scyl.vue页面,name为scyl.vue页面路由配置里的的name属性
-    //   // this.$router.push({ name: "scyl", query: { scylId: this.scylId } });
-    // },
-    // tableEmit() {}
+    // 监听表格的操作
+    tableEmit(data) {
+      switch (data.type) {
+        case "regetData": // 分页的emit
+          this.getUserData();
+          break;
+        case "switch": // switch 变换
+          this.switchAction(data.data);
+          break;
+        case "edit": // 编辑按钮
+          this.buttonRowUpdata(data);
+          break;
+        case "delete": // 单独删除按钮
+          this.aloneDeleteData = [];
+          this.aloneDeleteData.push(data.data);
+          this.toDelete("alone");
+          break;
+        case "moreDelete": // 批量删除按钮
+          var arr = data.data.map(item => item);
+          this.deleteData = arr;
+          break;
+      }
+    },
+    // 表格里的switch事件
+    switchAction(data) {
+      this.$api
+        .member_level_UpDown({
+          vm: this,
+          data: {
+            id: data.id,
+            status: data.switch ? "ENABLE" : "DISABLE"
+          }
+        })
+        .then(res => {
+          this.getUserData();
+        });
+    },
+    // 图片上传
+    sharePageImg(data) {
+      this.menuData.img = data.url;
+    },
+    // 添加按钮、编辑按钮
+    buttonRowUpdata(data) {
+      sessionStorage.setItem("page", "素材编辑");
+      if (data) {
+        // 编辑
+        this.$router.push({
+          name: "scbj",
+          query: {
+            id: data.data.id
+          }
+        });
+      } else {
+        // 添加
+        this.$router.push({
+          name: "scbj"
+        });
+      }
+    },
+    //////////////////////////////////////////////////////////////
+    // 删除、批量删除
+    toDelete(type) {
+      if (type === "alone") {
+        this.$confirm("确认删除吗？")
+          .then(() => {
+            if (this.aloneDeleteData[0].switch) {
+              this.$message.error("启用状态，不可删除");
+            } else {
+              this.$api
+                .member_level_deleteLevel({
+                  vm: this,
+                  data: this.aloneDeleteData[0].id
+                })
+                .then(res => {
+                  if (res) {
+                    this.$message.success("删除成功！");
+                    this.getUserData();
+                  }
+                });
+            }
+          })
+          .catch(() => {});
+      }
+      if (type == "more") {
+        if (this.deleteData.length == 0) {
+          this.$message.warning("请选择要删除的！");
+        } else {
+          this.$confirm("确认删除吗？")
+            .then(() => {
+              let promiseArr = [];
+              let tableData = this.tableInputData.data.list; // 获取表格的数据
+              let arr = this.deleteData.map(item => item.switch);
+              if (arr.includes(true)) {
+                this.$message.error("启用状态的不可删除，请勿勾选正在启用的！");
+              } else {
+                this.deleteData.forEach(item => {
+                  let del = this.$api
+                    .member_level_deleteLevel({
+                      vm: this,
+                      data: item.id
+                    })
+                    .then(res => {
+                      let obj;
+                      if (res) {
+                        obj = {
+                          ok: true,
+                          data: item
+                        };
+                      } else {
+                        obj = {
+                          ok: false,
+                          data: tableData.filter(tar => tar.id == item)
+                        };
+                      }
+                      return obj;
+                    });
+                  promiseArr.push(del);
+                });
+                Promise.all(promiseArr).then(arr => {
+                  this.deleteData = [];
+                  // 拼接删除结果
+                  let numSucces = 0;
+                  let numFail = 0;
+                  let failName = "";
+                  let titleText = `失败的数据为：\n `;
+                  arr.forEach(item => {
+                    if (item.ok) {
+                      numSucces++;
+                    } else {
+                      numFail++;
+                      failName += `名称：${item.data[0].name} \n`;
+                    }
+                  });
+                  let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                  if (numFail > 0) {
+                    str += titleText + failName;
+                  }
+                  this.$alert(str, "操作结果提示", {
+                    confirmButtonText: "确定",
+                    callback: this.getUserData
+                  });
+                });
+              }
+            })
+            .catch(() => {});
+        }
+      }
+    },
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
+    canDoWhat() {
+      this.tableInputData.data.custom.push({
+        text: "修改",
+        type: "primary",
+        size: "small",
+        emit: "edit"
+      });
+      this.tableInputData.data.custom.push({
+        text: "删除",
+        type: "danger",
+        size: "small",
+        emit: "delete"
+      });
+    },
+    // 获取数据后的处理
+    afterGetData(data) {
+      new Promise(resolve => {
+        this.tableInputData.total = data.total;
+        this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
+        this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
+        this.tableInputData.data.list = data.list.map(item => {
+          let obj = {},
+            arr = Object.keys(item);
+          arr.forEach(str => {
+            obj[str] = item[str];
+            if (str === "status") {
+              delete obj[str];
+              // 会员状态(ENABLE:启用 DISABLE:冻结)
+              switch (item[str]) {
+                case "ENABLE":
+                  obj["switch"] = true;
+                  obj["action"] = "启用";
+                  break;
+                case "DISABLE":
+                  obj["switch"] = false;
+                  obj["action"] = "冻结";
+                  break;
+              }
+            }
+            // 活动管理配置管理设置素材，属性名： sucai
+            obj.sucai = [
+              {
+                text: "素材1",
+                img:
+                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
+              },
+              {
+                text: "素材2",
+                img:
+                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
+              },
+              {
+                text: "素材3",
+                img:
+                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
+              }
+            ];
+          });
+          return obj;
+        });
+        this.tableInputData.data.title = [
+          {
+            title: "活动名称",
+            key: "name",
+            minWidth: "100"
+          },
+          {
+            title: "素材预览",
+            key: "sucai",
+            minWidth: "200",
+            imgArr: true // 展示图片数组
+          }
+        ];
+        this.tableInputData.actions.setColor = {
+          label: "状态",
+          minWidth: 70,
+          from: "action",
+          with: "switch"
+        };
+        // 设置需要的额外switch事件
+        this.tableInputData.actions.switch = {
+          label: "启用/冻结",
+          minWidth: 80,
+          from: "status" // 记录这个交互操作的原数据属性
+        };
+        resolve();
+      }).then(() => {
+        this.loadEnd = true;
+      });
+    },
+    // 获取表格数据
+    getUserData() {
+      this.$api
+        .member_level_getList({
+          vm: this,
+          data: {
+            levelId: this.seachInput,
+            pageSize: this.tableInputData.pageSize,
+            pageNum: this.tableInputData.pageNum
+          }
+        })
+        .then(res => {
+          if (res) {
+            this.afterGetData(res.data);
+          }
+        });
+    }
   }
 };
 </script>

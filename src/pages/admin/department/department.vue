@@ -87,11 +87,11 @@ export default {
       rules: {
         name: [
           { required: true, message: "部门名称必须填写", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 50, message: "请输入1-50个字符", trigger: "blur" }
         ],
         code: [
           { required: true, message: "部门编码必须填写", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 20, message: "请输入1-20个字符", trigger: "blur" }
         ]
       }
     };
@@ -102,7 +102,7 @@ export default {
     this.getAllTree();
   },
   methods: {
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let sys_dept_add = quanxian.includes("sys_dept_add");

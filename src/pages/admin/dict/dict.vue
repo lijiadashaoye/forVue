@@ -15,7 +15,7 @@
       <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
     <div id="forTable" v-if="loadEnd">
-      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
       <!-- 弹出框 -->
       <el-dialog
         :close-on-click-modal="false"
@@ -75,6 +75,8 @@ export default {
         callback(new Error("请输入排序"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
+      } else if (("" + value).length > 11) {
+        callback(new Error("最多输入11个字符"));
       } else {
         callback();
       }
@@ -119,15 +121,15 @@ export default {
       rules: {
         value: [
           { required: true, message: "请输入字典值", trigger: "blur" },
-          { min: 1, max: 10, message: "字典值为1-10个字符", trigger: "blur" }
+          { min: 1, max: 100, message: "字典值为1-100个字符", trigger: "blur" }
         ],
         label: [
           { required: true, message: "请输入字典标签", trigger: "blur" },
-          { min: 1, max: 10, message: "标签名为1-10个字符", trigger: "blur" }
+          { min: 1, max: 100, message: "标签名为1-100个字符", trigger: "blur" }
         ],
         type: [
           { required: true, message: "请输入类型", trigger: "blur" },
-          { min: 1, max: 10, message: "类型为1-10个字符", trigger: "blur" }
+          { min: 1, max: 100, message: "类型为1-100个字符", trigger: "blur" }
         ],
         description: [
           { required: true, message: "请输入描述", trigger: "blur" },
@@ -135,7 +137,7 @@ export default {
         ],
         remarks: [
           { required: true, message: "请输入备注", trigger: "blur" },
-          { min: 0, max: 100, message: "备注最多为100个字符", trigger: "blur" }
+          { min: 0, max: 255, message: "备注最多为255个字符", trigger: "blur" }
         ],
         sort: [{ required: true, validator: checkNum, trigger: "blur" }]
       }
@@ -282,9 +284,7 @@ export default {
                     failName += `字典值为：${item.data[0].value} \n`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
 
                 if (numFail > 0) {
                   str += titleText + failName;
@@ -328,7 +328,7 @@ export default {
       }
       this.dialog.show = true;
     },
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let sys_dict_edit = quanxian.includes("sys_dict_edit");

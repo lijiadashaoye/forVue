@@ -9,8 +9,8 @@
           <el-form-item
             label="app标识"
             :rules="[
-                              { required: true, message: '请选择app标识', trigger: 'change' }
-                             ]"
+              { required: true, message: '请选择app标识', trigger: 'change' }
+            ]"
           >
             <el-select v-model="ruleForm.appChannelCode">
               <el-option
@@ -25,8 +25,8 @@
             label="广告标题"
             prop="advertisTitle"
             :rules="[
-                              { required: true, message: '请输入广告标题', trigger: 'blur' }
-                             ]"
+            { required: true, message: '请输入广告标题', trigger: 'blur' }
+            ]"
           >
             <el-input placeholder="请输入" v-model="ruleForm.advertisTitle"></el-input>
           </el-form-item>
@@ -48,28 +48,13 @@
           >
             <el-input placeholder="请输入" v-model="ruleForm.sort"></el-input>
           </el-form-item>
-          <el-form-item
-            label="广告显示类型"
-            prop="showType"
-            :rules="[
-                              { required: true, message: '请选择广告显示类型', trigger: 'change' },
-                             ]"
-          >
-            <template>
-              <el-radio v-model="ruleForm.showType" label="BANNER">横幅</el-radio>
-              <el-radio
-                :disabled="isAdvertisType"
-                v-model="ruleForm.showType"
-                label="INFORMATION"
-              >信息流</el-radio>
-            </template>
-          </el-form-item>
+    
           <el-form-item
             label="广告可见类型"
             prop="visualType"
             :rules="[
-                              { required: true, message: '请选择广告可见类型', trigger: 'change' },
-                             ]"
+            { required: true, message: '请选择广告可见类型', trigger: 'change' },
+            ]"
           >
             <template>
               <el-radio-group v-model="ruleForm.visualType">
@@ -83,8 +68,8 @@
             label="广告位置"
             prop="advertisLocation"
             :rules="[
-                              { required: true, message: '请选择广告位置', trigger: 'change' }
-                             ]"
+            { required: true, message: '请选择广告位置', trigger: 'change' }
+            ]"
           >
             <el-select v-model="ruleForm.advertisLocation" placeholder="请选择">
               <el-option
@@ -95,62 +80,78 @@
               ></el-option>
             </el-select>
           </el-form-item>
+
+           <el-form-item
+            label="广告显示类型"
+            prop="showType"
+            :rules="[
+            { required: true, message: '请选择广告显示类型', trigger: 'change' },
+            ]"
+          >
+            <template>
+              <el-radio v-model="ruleForm.showType" label="BANNER">横幅</el-radio>
+              <el-radio
+                :disabled="isAdvertisType"
+                v-model="ruleForm.showType"
+                label="INFORMATION"
+              >信息流</el-radio>
+            </template>
+          </el-form-item>
+
           <el-form-item
             label="广告类型"
             prop="advertisType"
             :rules="[
-                              { required: true, message: '请选择广告类型', trigger: 'change' }
-                             ]"
+            { required: true, message: '请选择广告类型', trigger: 'change' }
+            ]"
           >
-            <el-select v-model="ruleForm.advertisType" placeholder="请选择">
+            <el-select v-model="ruleForm.advertisType" clearable placeholder="请选择广告类型"  @change="typeSelect(ruleForm.advertisType)">
               <el-option
-                v-for="item in advertisTypeList"
-                :key="item.key"
-                :label="item.value"
-                :value="item.key"
-              ></el-option>
+                v-for="(item,ind) in advertisTypeList"
+                :key="ind"
+                :label="item.linkName"
+                :value="item.linkModel">
+                <span style="float: left">{{ item.linkName }}</span>
+              </el-option>
             </el-select>
           </el-form-item>
+
           <el-form-item
-            v-if="ruleForm.advertisType == 'CURRENCY_FUND' || ruleForm.advertisType == 'FINANCING_PRODUCT' || ruleForm.advertisType == 'PURE_DEPT_FUND' || ruleForm.advertisType == 'DEPOSIT'"
-            label="关联产品"
-            prop="associatedProducts"
-            :rules="[
-                              { required: true, message: '请输入关联资讯', trigger: 'change' }
-                             ]"
-          >
-            <el-autocomplete
-              v-model="ruleForm.associatedProducts"
-              :fetch-suggestions="querySearchAsync"
-              placeholder="请输入内容"
-              @select="handleSelect"
-            ></el-autocomplete>
-          </el-form-item>
-          <el-form-item
-            v-if="ruleForm.advertisType == 'CONSULT_PAGE'"
-            label="关联资讯"
-            prop="relatedInformation"
-            :rules="[
-                              { required: true, message: '请输入关联资讯', trigger: 'change' }
-                             ]"
-          >
-            <el-autocomplete
-              v-model="ruleForm.relatedInformation"
-              :fetch-suggestions="querySearchAsync"
-              placeholder="请输入内容"
-              @select="handleSelect"
-            ></el-autocomplete>
-          </el-form-item>
-          <el-form-item
-            v-if="ruleForm.advertisType == 'EXTERNAL_LINK'"
+            v-if="inputFlag"
             label="链接地址"
             prop="advertisUrl"
             :rules="[
-                              { required: true, message: '请输入链接地址', trigger: 'blur' }
-                             ]"
+            { required: true, message: '请输入链接地址', trigger: 'blur' }
+            ]"
           >
-            <el-input placeholder="请输入" v-model="ruleForm.advertisUrl"></el-input>
+            <el-input v-model="ruleForm.advertisUrl" placeholder="请输入链接地址"></el-input>
           </el-form-item>
+
+          <el-form-item
+            v-else
+            label="关联产品"
+            prop="associatedProducts"
+          >
+            <el-select
+              v-model="ruleForm.associatedProducts"
+              v-loadmore='loadmore'
+              filterable
+              clearable
+              remote
+              reserve-keyword
+              :remote-method="fuzzySearch"
+              placeholder="请选择关联产品">
+              <el-option
+                  v-for="(item,ind) in associatedProductsList"
+                  :key="ind"
+                  :label="item.name"
+                  :value="item.id">
+                  <span style="float: left">{{ item.institutionName }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          
           <el-form-item
             prop="advertisImageUrl"
             label="广告图片"
@@ -174,12 +175,13 @@
               </div>
             </el-upload>
           </el-form-item>
+
           <el-form-item
             label="广告开始时间"
             prop="stratTime"
             :rules="[
-                              { required: true, message: '请输入广告开始时间', trigger: 'change' }
-                             ]"
+            { required: true, message: '请输入广告开始时间', trigger: 'change' }
+            ]"
           >
             <el-date-picker v-model="ruleForm.stratTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
           </el-form-item>
@@ -187,8 +189,8 @@
             label="广告结束时间"
             prop="endTime"
             :rules="[
-                              { required: true, message: '请输入广告结束时间', trigger: 'change' }
-                             ]"
+            { required: true, message: '请输入广告结束时间', trigger: 'change' }
+            ]"
           >
             <el-date-picker v-model="ruleForm.endTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
           </el-form-item>
@@ -220,8 +222,8 @@
               <el-option
                 v-for="item in spreadLocationList"
                 :key="item.id"
-                :label="item.name"
-                :value="item.id"
+                :label="item.label"
+                :value="item.value"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -250,7 +252,9 @@ import {
   adverdis_add,
   adverdis_detail,
   adverdis_edit,
-  upLoadImg
+  upLoadImg,
+  productUrl_list,
+  productList
 } from "../../../api/setting_use";
 export default {
   props: {},
@@ -262,37 +266,158 @@ export default {
         { code: "比财", name: "比财" },
         { code: "安财", name: "安财" }
       ],
+      productId: '',//产品对象id
+      inputFlag: false,
       timeout: null, // 关联延时
-      relatedInformationList: [], // 关联资讯假数据
-      associatedProductsList: [], // 关联产品假数据
-      isAdvertisType: false, // 控制广告类型选择
+      associatedProductsList: [], // 关联产品
+      isAdvertisType: true, // 控制广告类型选择
       tagsList: [],
       pageName: "", // 当前页面名字
       list: [],
       spreadLocationList: [
         // 地区假数据
-        { id: "0", name: "北京" },
-        { id: "1", name: "上海" },
-        { id: "2", name: "山西" }
+        {
+            label: '北京',
+            value: '北京'
+        },
+        {
+            label: '天津',
+            value: '天津'
+        },
+        {
+            label: '上海',
+            value: '上海'
+        },
+        {
+            label: '重庆',
+            value: '重庆'
+        },
+        {
+            label: '河北',
+            value: '河北'
+        },
+        {
+            label: '山西',
+            value: '山西'
+        },
+        {
+            label: '辽宁',
+            value: '辽宁'
+        },
+        {
+            label: '吉林',
+            value: '吉林'
+        },
+        {
+            label: '黑龙江',
+            value: '黑龙江'
+        },
+        {
+            label: '江苏',
+            value: '江苏'
+        },
+        {
+            label: '浙江',
+            value: '浙江'
+        },
+        {
+            label: '安徽',
+            value: '安徽'
+        },
+        {
+            label: '福建',
+            value: '福建'
+        },
+        {
+            label: '江西',
+            value: '江西'
+        },
+        {
+            label: '山东',
+            value: '山东'
+        },
+        {
+            label: '河南',
+            value: '河南'
+        },
+        {
+            label: '湖北',
+            value: '湖北'
+        },
+        {
+            label: '湖南',
+            value: '湖南'
+        },
+        {
+            label: '广东',
+            value: '广东'
+        },
+        {
+            label: '海南',
+            value: '海南'
+        },
+        {
+            label: '四川',
+            value: '四川'
+        },
+        {
+            label: '贵州',
+            value: '贵州'
+        },
+        {
+            label: '云南',
+            value: '云南'
+        },
+        {
+            label: '陕西',
+            value: '陕西'
+        },
+        {
+            label: '甘肃',
+            value: '甘肃'
+        },
+        {
+            label: '青海',
+            value: '青海'
+        },
+        {
+            label: '内蒙古',
+            value: '内蒙古'
+        },
+        {
+            label: '广西',
+            value: '广西'
+        },
+        {
+            label: '西藏',
+            value: '西藏'
+        },
+        {
+            label: '宁夏',
+            value: '宁夏'
+        },
+        {
+            label: '新疆维吾尔自治区',
+            value: '新疆维吾尔自治区'
+        },
+        {
+            label: '香港',
+            value: '香港'
+        },
+        {
+            label: '澳门',
+            value: '澳门'
+        },
+        {
+            label: '台湾',
+            value: '台湾'
+        }
       ], // 省份
       linkGroupList: [
         // 关联组list
         { key: 0, name: "暂无" }
       ],
-      advertisTypeList: [
-        { key: "NOCLOCK", value: "无点击事件" },
-        { key: "EXTERNAL_LINK", value: "外部连接" },
-        { key: "CONSULT_PAGE", value: "咨询页" },
-        { key: "LOGIN_PAGE", value: "登录页" },
-        { key: "CURRENCY_FUND", value: "货币基金" },
-        { key: "FINANCING_PRODUCT", value: "理财产品" },
-        { key: "SHARES_FUND", value: "股票基金" },
-        { key: "LOAN", value: "贷款" },
-        { key: "COMPREHENSIVE_PAGE", value: "综合页" },
-        { key: "NAW_PAGE", value: "新品页" },
-        { key: "RECOMMEND_PAGE", value: "推荐页" },
-        { key: "PURE_DEPT_FUND", value: "纯债产品" }
-      ], // 广告类型list
+      advertisTypeList: [], // 广告类型list
       advertisLocationList: [
         { key: "BANNER", value: "发现横幅广告" },
         { key: "FIND_FINANCING", value: "发现理财圈广告" },
@@ -315,7 +440,6 @@ export default {
         visualType: "NO_LIMIT", // 广告可见类型
         showType: "BANNER", // 广告显示类型
         advertisUrl: "", // 广告跳转链接url
-        relatedInformation: "", // 缺 关联资讯
         associatedProducts: "", // 缺 关联产品
         spreadUser: "TOTAL", // 推广用户(TOTAL:全部用户 PORTION:部分用户)
         promoteArea: "", // 推广地区选择
@@ -324,14 +448,19 @@ export default {
         advertisImageUrl: "", // 广告图片地址
         stratTime: "", // 广告开始时间
         endTime: "" // 广告结束时间
-      }
+      },
+      productForm: {
+          pageSize: 200,
+          pageNum: 1,
+          linkLocationEnum: '',
+          name: null
+      },
     };
   },
-  created() {},
   watch: {
     ruleForm: {
       handler() {
-        if (this.ruleForm.advertisLocation == "ADD_FINANCING") {
+        if (this.ruleForm.advertisLocation != null && this.ruleForm.advertisLocation == "ADD_FINANCING") {
           this.isAdvertisType = false;
         } else {
           this.isAdvertisType = true;
@@ -344,11 +473,11 @@ export default {
           for (let i = 0; i < this.spreadLocationList.length; i++) {
             for (let j = 0; j < this.ruleForm.spreadLocation.length; j++) {
               if (
-                this.spreadLocationList[i].id == this.ruleForm.spreadLocation[j]
+                this.spreadLocationList[i].value == this.ruleForm.spreadLocation[j]
               ) {
                 let obj = {
-                  id: this.spreadLocationList[i].id,
-                  name: this.spreadLocationList[i].name
+                  id: this.spreadLocationList[i].value,
+                  name: this.spreadLocationList[i].label
                 };
                 this.tagsList.push(obj);
               }
@@ -360,14 +489,17 @@ export default {
     }
   },
   mounted() {
+    productUrl_list().then(res=> {
+      if(res && res.success) {
+        this.advertisTypeList = res.data.list
+      }
+    })
     if (this.$route.query.id) {
       this.pageName = "编辑广告";
       this.infoFn();
     } else {
       this.pageName = "创建广告";
     }
-    this.relatedInformationList = this.loadAll();
-    this.associatedProductsList = this.loadAll();
   },
   methods: {
     // 关闭tag
@@ -378,59 +510,58 @@ export default {
         }
       });
     },
-    // 关联资讯数据
-    loadAll() {
-      return [
-        { value: "三全鲜食（北新泾店）", address: "长宁区新渔路144号" },
-        {
-          value: "Hot honey 首尔炸鸡（仙霞路）",
-          address: "上海市长宁区淞虹路661号"
-        },
-        {
-          value: "新旺角茶餐厅",
-          address: "上海市普陀区真北路988号创邑金沙谷6号楼113"
-        },
-        { value: "泷千家(天山西路店)", address: "天山西路438号" },
-        {
-          value: "胖仙女纸杯蛋糕（上海凌空店）",
-          address: "上海市长宁区金钟路968号1幢18号楼一层商铺18-101"
-        },
-        { value: "贡茶", address: "上海市长宁区金钟路633号" },
-        {
-          value: "豪大大香鸡排超级奶爸",
-          address: "上海市嘉定区曹安公路曹安路1685号"
-        },
-        {
-          value: "茶芝兰（奶茶，手抓饼）",
-          address: "上海市普陀区同普路1435号"
-        },
-        { value: "十二泷町", address: "上海市北翟路1444弄81号B幢-107" },
-        { value: "星移浓缩咖啡", address: "上海市嘉定区新郁路817号" },
-        { value: "阿姨奶茶/豪大大", address: "嘉定区曹安路1611号" }
-      ];
+    loadmore() {
+      if(this.productForm.pageNum < this.productPageCount) {
+          this.productForm.pageNum++;
+          this.getproList(this.productForm);
+      }
     },
-    // 异步查询 过滤
-    querySearchAsync(queryString, cb) {
-      var restaurants = this.relatedInformationList;
-      var results = queryString
-        ? restaurants.filter(this.createStateFilter(queryString))
-        : restaurants;
+    getproList(form) {
+      productList(form).then(res=> {
+          if(res && res.success) {
+              this.productPageCount = res.data && Math.ceil(res.data.total/this.productForm.pageSize)
+              if(res.data && res.data.list != null && res.data.list != []) {
+                  const _res = res.data.list
+                  this.associatedProductsList = [...this.associatedProductsList,..._res]
+              }
+          }
+      }).catch(res=> {
+          this.$message.error(`${res.message}`)
+      })
+    },
+    fuzzySearch(query) {
+      if(query!= '' && this.ruleForm.advertisType != '') {
+          this.associatedProductsList = [];
+          this.productForm.name = query;
+          this.productForm.linkLocationEnum = this.ruleForm.advertisType;
+          this.getproList(this.productForm)
+      } else {
+          this.associatedProductsList = [];
+          this.productForm.name = null;
+          this.productForm.linkLocationEnum = this.ruleForm.advertisType;
+          this.getproList(this.productForm)
+      }
+    },
+    //选中产品类型
+    typeSelect(val) {
+      this.ruleForm.associatedProducts = '';
+      this.productForm = {
+        pageSize: 200,
+        pageNum: 1,
+        linkLocationEnum: '',
+        name: null
+      }
+      if(val == 'EXTERNAL_LINK') {
+        this.inputFlag = true;
+      } else {
+        this.inputFlag = false;
+        this.associatedProductsList = [];
 
-      clearTimeout(this.timeout);
-      this.timeout = setTimeout(() => {
-        cb(results);
-      }, 3000 * Math.random());
-    },
-    createStateFilter(queryString) {
-      return state => {
-        return (
-          state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
-        );
-      };
-    },
-    // 选中资讯
-    handleSelect(item) {
-      console.log(item);
+        if(val != '' && val != null){
+          this.productForm.linkLocationEnum = val;
+          this.getproList(this.productForm)
+        }
+      }
     },
     //图片上传
     upload(params) {
@@ -464,19 +595,30 @@ export default {
       };
       adverdis_detail(params).then(res => {
         if (res.success) {
+          var val = res.data.productRelationDetailsVo.productType;
+          if(val == 'EXTERNAL_LINK') {
+            this.inputFlag = true;
+          } else {
+            this.inputFlag = false;
+            this.associatedProductsList = [];
+            if(val != '' && val != null){
+              this.productForm.linkLocationEnum = val;
+              this.getproList(this.productForm)
+            }
+          }
           this.ruleForm.multilingual = res.data.multilingual; // 多语言
           this.ruleForm.advertisTitle = res.data.advertisTitle; // 标题
           this.ruleForm.advertisViceTitle = res.data.advertisViceTitle; // 付标题
           this.ruleForm.advertisLocation = res.data.advertisLocation; // 广告位置
           this.ruleForm.appChannelCode = res.data.appChannelCode; // 应用渠道code
-          this.ruleForm.appChannelName = res.data.appChannelCode; // 应用渠道name
-          this.ruleForm.advertisType = res.data.advertisType; // 广告类型
+          this.ruleForm.appChannelName = res.data.appChannelName; // 应用渠道name
+          this.ruleForm.advertisType = res.data.productRelationDetailsVo.productType; // 广告类型
+          this.ruleForm.advertisUrl = res.data.productRelationDetailsVo.linkUrl; // 广告类型
+          this.ruleForm.associatedProducts = res.data.productRelationDetailsVo.linkId; // 广告类型
+          this.productId = res.data.productRelationDetailsVo.id != '' && res.data.productRelationDetailsVo.id != null ? res.data.productRelationDetailsVo.id : null;
           this.ruleForm.sort = res.data.sort; // 广告排序
           this.ruleForm.visualType = res.data.visualType; // 广告可见类型
           this.ruleForm.showType = res.data.showType; // 广告显示类型
-          this.ruleForm.advertisUrl = res.data.advertisUrl; // 广告跳转链接url
-          this.ruleForm.relatedInformation = res.data.relatedInformation; // 关联资讯
-          this.ruleForm.associatedProducts = res.data.associatedProducts; // 关联产品
           this.ruleForm.spreadUser = res.data.spreadUser; // 推广用户(TOTAL:全部用户 PORTION:部分用户)
           this.ruleForm.promoteArea = res.data.promoteArea; // 推广地区
           this.ruleForm.spreadLocation = res.data.spreadLocation; // 推广地区
@@ -496,13 +638,24 @@ export default {
     saveFn(ruleForm) {
       this.$refs[ruleForm].validate(valid => {
         if (valid) {
+          this.appChannelCodeList.forEach(v=> {
+            if(this.appChannelCode == v.code) {
+              this.appChannelName = v.name;
+            }
+          })
           var params = {
             multilingual: this.ruleForm.multilingual, // 多语言
             advertisTitle: this.ruleForm.advertisTitle, // 标题
             advertisViceTitle: this.ruleForm.advertisViceTitle, // 付标题
             appChannelCode: this.ruleForm.appChannelCode, // 应用渠道code
             appChannelName: this.ruleForm.appChannelCode, // 应用渠道name
-            advertisType: this.ruleForm.advertisType, // 广告类型
+            productRelationDetailsVo: {
+              modelType: 'ADVERMANAGE',
+              modelId: this.productId != '' && this.productId != null ? this.productId : null,
+              productType: this.ruleForm.advertisType != '' && this.ruleForm.advertisType != null ? this.ruleForm.advertisType : null,
+              linkUrl: this.ruleForm.advertisUrl != '' && this.ruleForm.advertisUrl != null ? this.ruleForm.advertisUrl : null,
+              linkId: this.ruleForm.associatedProducts != '' && this.ruleForm.advertisUrl != null ? this.ruleForm.associatedProducts : null,
+            },
             sort: this.ruleForm.sort, // 广告排序
             visualType: this.ruleForm.visualType, // 广告可见类型
             advertisLocation: this.ruleForm.advertisLocation, // 广告位置
@@ -511,18 +664,6 @@ export default {
             stratTime: new Date(this.ruleForm.stratTime).getTime(), // 广告开始时间
             endTime: new Date(this.ruleForm.endTime).getTime()
           };
-          if (this.ruleForm.advertisType == "EXTERNAL_LINK") {
-            params.advertisUrl = this.ruleForm.advertisUrl; // 广告跳转链接url
-          } else if (this.ruleForm.advertisType == "CONSULT_PAGE") {
-            params.relatedInformation = this.ruleForm.relatedInformation; // 关联咨询页
-          } else if (
-            this.ruleForm.advertisType == "CURRENCY_FUND" ||
-            this.ruleForm.advertisType == "FINANCING_PRODUCT" ||
-            this.ruleForm.advertisType == "PURE_DEPT_FUND" ||
-            this.ruleForm.advertisType == "DEPOSIT"
-          ) {
-            params.associatedProducts = this.ruleForm.associatedProducts; // 关联产品
-          }
           if (this.ruleForm.spreadUser != "TOTAL") {
             params.linkGroup = this.ruleForm.linkGroup; // 关联组
             params.promoteArea = this.ruleForm.promoteArea; // 推广地区选择
@@ -536,22 +677,23 @@ export default {
           if (this.$route.query.id) {
             params.id = this.$route.query.id;
             adverdis_edit(params).then(res => {
-              if (res.success) {
+              if (res && res.success) {
                 this.$message.success("编辑成功");
-                this.$router.back();
+                this.$router.push(`/home/setting/advertis-manage/list`);
               } else {
                 this.$message.error("编辑失败");
               }
             });
           } else {
+            console.log(params,'add')
             adverdis_add(params).then(res => {
-              if (res.success) {
+              if (res && res.success) {
                 this.$message.success("新增成功");
-                this.$router.back();
-              } else {
-                this.$message.error("新增失败");
+                this.$router.push(`/home/setting/advertis-manage/list`);
               }
-            });
+            }).catch(res=>{
+              this.$$message.error(`${res.message}`)
+            })
           }
         } else {
           this.$message.error("有未填的必填项*");

@@ -1,174 +1,95 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <div id='forTable'>
+    <div id="forTable">
       <el-form
         ref="ruleForm"
         size="normal"
         :model="ruleForm"
         label-width="150px"
-        label-suffix=':'
+        label-suffix=":"
         class="isForm"
         :rules="rules"
       >
-        <el-form-item
-          prop="name"
-          label="机构名称"
-          style="position:relative"
-          class="isWith"
-        >
-          <el-input
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.name"
-          ></el-input>
+        <el-form-item prop="name" label="机构名称" style="position:relative" class="isWith">
+          <el-input clearable placeholder="请输入" v-model="ruleForm.name"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="所属省市"
-          style="margin-bottom:5px;"
-        >
-          <el-select
-            v-model="ruleForm.locationId"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="所属省市" style="margin-bottom:5px;">
+          <el-select v-model="ruleForm.locationId" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.institution_star"
               :key="item.id"
               :label="item.label"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-
         </el-form-item>
 
-        <el-form-item
-          prop="type"
-          label="机构类型"
-          style="position:relative"
-          class="isWith"
-        >
-          <el-select
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.type"
-          >
+        <el-form-item prop="type" label="机构类型" style="position:relative" class="isWith">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.type">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.institution_type"
               :key="item.id"
               :label="item.label"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="资产规模(亿)">
-          <el-input
-            type="number"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.aum"
-          ></el-input>
+        <el-form-item label="资产规模(亿)" prop="aum">
+          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.aum"></el-input>
         </el-form-item>
 
-        <el-form-item
-          prop="parentId"
-          label="隶属机构"
-          style="position:relative"
-          class="isWith"
-        >
-          <el-select
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.parentId"
-          >
+        <el-form-item prop="parentId" label="隶属机构" style="position:relative" class="isWith">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.parentId">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.paren"
               :key="item.id"
               :label="item.name"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item label="热线电话">
-          <el-input
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.hotLine"
-          ></el-input>
+        <el-form-item label="热线电话" prop="hotLine">
+          <el-input clearable placeholder="请输入" v-model="ruleForm.hotLine"></el-input>
         </el-form-item>
 
-        <el-form-item
-          label="银行logo"
-          class="forLogo"
-          v-if='this.hasImg'
-        >
+        <el-form-item label="银行logo" class="forLogo" v-if="this.hasImg">
           <div style="width:100px;">
-            <imgUpload
-              :datas="hasImg"
-              @selectImg='getImg("actImg",$event)'
-            />
+            <imgUpload :datas="hasImg" @selectImg="getImg('actImg',$event)" />
           </div>
         </el-form-item>
 
-        <el-form-item
-          label="银行星级"
-          style="margin-bottom:5px;"
-        >
-          <el-select
-            v-model="ruleForm.star"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="银行星级" style="margin-bottom:5px;">
+          <el-select v-model="ruleForm.star" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.institution_star"
               :key="item.id"
               :label="item.label"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-
         </el-form-item>
 
-        <el-form-item
-          label="星级评定描述"
-          style="text-align:left;"
-        >
-          <quill-editor v-model="ruleForm.starRatingDesc">
-          </quill-editor>
+        <el-form-item label="星级评定描述" style="text-align:left;" prop="starRatingDesc">
+          <quill-editor v-model="ruleForm.starRatingDesc"></quill-editor>
         </el-form-item>
 
-        <el-form-item
-          label="银行描述"
-          style="text-align:left;"
-        >
-          <quill-editor v-model="ruleForm.description">
-          </quill-editor>
+        <el-form-item label="银行描述" style="text-align:left;" prop="description">
+          <quill-editor v-model="ruleForm.description"></quill-editor>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="next"
-        >下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button
-          size="mini"
-          type="info"
-          @click="back"
-        >取消</el-button>
+        <el-button size="mini" type="primary" @click="next">下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
       </div>
     </div>
   </div>
@@ -179,6 +100,16 @@ import imgUpload from "../../../../components/upImg.vue";
 export default {
   components: { imgUpload },
   data() {
+    // 验证资产规模
+    var checkNum = (rule, value, callback) => {
+      if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19 || ("" + value).length < 0) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
     return {
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
@@ -476,7 +407,20 @@ export default {
       ],
       //表单验证
       rules: {
-        name: [{ required: true, message: "请选择机构名称", trigger: "blur" }],
+        name: [
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" },
+          { required: true, message: "请选择机构名称", trigger: "blur" }
+        ],
+        hotLine: [
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
+        ],
+        starRatingDesc: [
+          { min: 1, max: 2000, message: "最多输入2000个字", trigger: "blur" }
+        ],
+        description: [
+          { min: 1, max: 2000, message: "最多输入2000个字", trigger: "blur" }
+        ],
+        aum: [{ validator: checkNum, trigger: "blur" }],
         locationId: [
           { required: true, message: "请选择所属省市", trigger: "blur" }
         ],

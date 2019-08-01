@@ -79,20 +79,14 @@ let marketing = [{
         path: '/home/marketing/activity/create',
         component: resolve => require(['./pages/marketing/activity_create/activity_create.vue'], resolve),
         children: [{
-                name: 'activity_create_step1',
-                path: '/home/marketing/activity/create/step1',
-                component: resolve => require(['./pages/marketing/activity_create/step1/step1.vue'], resolve)
-            }, {
-                name: 'activity_create_step2',
-                path: '/home/marketing/activity/create/step2',
-                component: resolve => require(['./pages/marketing/activity_create/step2/step2.vue'], resolve)
-            },
-            {
-                name: 'activity_create_step3',
-                path: '/home/marketing/activity/create/step3',
-                component: resolve => require(['./pages/marketing/activity_create/step3/step3.vue'], resolve)
-            }
-        ]
+            name: 'activity_create_step1',
+            path: '/home/marketing/activity/create/step1',
+            component: resolve => require(['./pages/marketing/activity_create/step1/step1.vue'], resolve)
+        }, {
+            name: 'activity_create_step2',
+            path: '/home/marketing/activity/create/step2',
+            component: resolve => require(['./pages/marketing/activity_create/step2/step2.vue'], resolve)
+        }]
     }, {
         name: 'activity_list', // 活动列表
         path: '/home/marketing/activity/list',
@@ -106,10 +100,6 @@ let marketing = [{
             name: 'coupon_add_step1',
             path: '/home/marketing/coupon/add/step1',
             component: resolve => require(['./pages/marketing/coupon_add/step1/step1.vue'], resolve)
-        }, {
-            name: 'coupon_add_step2',
-            path: '/home/marketing/coupon/add/step2',
-            component: resolve => require(['./pages/marketing/coupon_add/step2/step2.vue'], resolve)
         }]
     },
     {
@@ -201,18 +191,16 @@ let setting = [{
         name: '余额宝收益列表', // 余额宝新手专享列表
         path: '/home/setting/yuebao-rate/list',
         component: resolve => require(['./pages/setting/yuebao-rate_list'], resolve),
-
     },
     {
-        name: '创建银行',
+        name: '创建银行图片',
         path: '/home/setting/bank/add',
         component: resolve => require(['./pages/setting/bank_add'], resolve)
     },
     {
-        name: '银行列表',
+        name: '银行图片列表',
         path: '/home/setting/bank/list',
         component: resolve => require(['./pages/setting/bank_list'], resolve),
-
     },
     {
         name: '添加银行卡',
@@ -259,12 +247,12 @@ let setting = [{
 
     },
     {
-        name: '创建协议政策',
+        name: '创建通用配置',
         path: '/home/setting/protocol-private/add',
         component: resolve => require(['./pages/setting/protocol-private_add'], resolve),
     },
     {
-        name: '协议政策列表',
+        name: '通用配置列表',
         path: '/home/setting/protocol-private/list',
         component: resolve => require(['./pages/setting/protocol-private_list'], resolve),
     },
@@ -631,8 +619,25 @@ let member = [{
         name: 'badgewall_info',
         path: '/home/member/badgewall_info',
         component: resolve => require(['./pages/member/badgewall_info/badgewall_info.vue'], resolve),
+    },
+    {
+        name: '提现管理',
+        path: '/home/member/cash-out',
+        component: resolve => require(['./pages/member/cash_out'],resolve),
     }
-
+]
+// 设备定位列表，点位列表
+let log = [
+    {
+        name: '设备定位列表',
+        path: '/log/device/list',
+        component: resolve => require(['./pages/log/equipmentPositioning/equipmentPositioningList.vue'], resolve),
+    },
+    {
+        name: '点位列表',
+        path: '/log/point/list',
+        component: resolve => require(['./pages/log/point/pointList.vue'], resolve),
+    }
 ]
 // 主框架路由
 let router = new Router({
@@ -689,6 +694,12 @@ let router = new Router({
                     component: resolve => require(['./pages/channel/channel.vue'], resolve),
                     children: [...channel]
                 },
+                {
+                    name: 'log',
+                    path: '/log',
+                    component: resolve => require(['./pages/log/log.vue'], resolve),
+                    children: [...log]
+                }
             ]
 
         },

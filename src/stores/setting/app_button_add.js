@@ -18,11 +18,8 @@ const state = {
 }
 const mutations = {
     //获取列表数据
-    getTableMenudata(state){
-        getMenuData({
-            pageNum: state.tableMenu.pageNum,
-            pageSize: state.tableMenu.pageSize,
-        }).then(res => {
+    getTableMenudata(state,data){
+        getMenuData(data).then(res => {
             if(res.success){
                 state.tableMenu.data.list = res.data.list;
                 state.tableMenu.total = res.data.total;
@@ -68,18 +65,8 @@ const mutations = {
     },
 }
 
-const actions = {
-    //删除列表数据
-    deleteList({ commit }, id) {
-        app_button_del(id).then(()=> {
-            commit('getTableMenudata')
-        })
-    },
-}
-
 export default {
     namespaced: true,
     state,
-    mutations,
-    actions
+    mutations
 }

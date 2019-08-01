@@ -37,7 +37,7 @@
             <div class="item-input">
                 <el-date-picker
                     v-model="noticeTime"
-                    type="datetimerange"
+                    type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期">
@@ -62,7 +62,7 @@
 
 <script>
 export default {
-    props: ['updata', 'params', 'appChannel'],
+    props: ['updata', 'params', 'appChannel', 'overFlag'],
     data() {
         return {
             pageName: '',
@@ -107,7 +107,7 @@ export default {
         },
         //点击保存
         save() {
-            if(this.appChannelCode && this.platformCode && this.sort && this.noticeTime && this.content) {
+            if(this.appChannelCode && this.platformCode && this.sort && this.noticeTime.length > 0 && this.content) {
                     //  渠道
                 this.appChannel.forEach(v=> {
                     if(this.appChannelCode == v.label){
@@ -153,6 +153,17 @@ export default {
             this.platformCode = this.params.platformCode;
             this.sort = this.params.sort;
             this.noticeTime = [this.params.startTime,this.params.endTime]
+        },
+        'overFlag' (){
+            console.log(this.overFlag)
+            if(this.overFlag) {
+                this.id = '';
+                this.content = '';
+                this.appChannelCode = '';
+                this.platformCode = '';
+                this.sort = '';
+                this.noticeTime = [];
+            }
         }
     }
 }

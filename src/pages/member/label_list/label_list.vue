@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       rules: {
-        name: [{ min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }]
+        name: [{ min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }]
       },
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
@@ -262,7 +262,7 @@ export default {
         });
     },
     ////////////////////////////////////////
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
 

@@ -63,6 +63,7 @@ export default {
   },
   mounted() {
     this.userDo();
+    this.$store.state.bankCard.bankCardList.pageNum = 1;
     this.getBankCardList({
       pageNum: this.$store.state.bankCard.bankCardList.pageNum,
       pageSize: this.$store.state.bankCard.bankCardList.pageSize
@@ -149,7 +150,7 @@ export default {
        this.getBankCardList({
             pageNum: 1,
             pageSize: this.$store.state.bankCard.bankCardList.pageSize,
-            bankName: this.bankName
+            bankName: this.bankName != '' && this.bankName != null ? this.bankName : null
           });
     },
     //点击保存
@@ -179,12 +180,25 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-          this.$message({
-            type: "success",
-            message: "删除成功!"
-          });
-          this.deleteList(id);
-        }).catch(() => {
+        bank_card_del(id).then(res=> {
+          if(res && res.success){
+            this.getBankCardList({
+              pageNum: this.$store.state.bankCard.bankCardList.pageNum,
+              pageSize: this.$store.state.bankCard.bankCardList.pageSize,
+              bankName: this.bankName != '' && this.bankName != null ? this.bankName : null
+            });
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          }
+        }).catch(res=> {
+            this.$message({
+              type: "error",
+              message: `${res.message}`
+            });
+        })
+      }).catch(() => {
           this.$message({
             type: "info",
             message: "已取消删除"
@@ -213,7 +227,8 @@ export default {
            //再次请求列表数据
           this.getBankCardList({
             pageNum: this.$store.state.bankCard.bankCardList.pageNum,
-            pageSize: this.$store.state.bankCard.bankCardList.pageSize
+            pageSize: this.$store.state.bankCard.bankCardList.pageSize,
+            bankName: this.bankName != '' && this.bankName != null ? this.bankName : null
           });
           break;
         case "edit": // 编辑按钮

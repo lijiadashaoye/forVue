@@ -22,7 +22,7 @@
         >导入</el-button> -->
         <el-button
           size="mini"
-          type="primary"
+          type="warning"
           @click="seachClick(true)"
         >查询</el-button>
         <el-button
@@ -593,7 +593,7 @@ export default {
     outPut() {},
     // 导入
     inPut() {},
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       // if (sys_user_upd) {

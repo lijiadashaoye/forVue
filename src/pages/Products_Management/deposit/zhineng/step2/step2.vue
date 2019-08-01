@@ -1,127 +1,57 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <div
-      v-if="!isOk"
-      id='forTable'
-    >
+    <div v-if="!isOk" id="forTable">
       <el-form
         ref="ruleForm"
         size="normal"
         :model="ruleForm"
         label-width="150px"
-        label-suffix=':'
+        label-suffix=":"
         class="isForm"
         :rules="rules"
       >
-        <el-form-item
-          label="同一产品标识"
-          class="is50"
-          prop="sameProductFlag"
-        >
-          <el-input
-            clearable
-            v-model="ruleForm.sameProductFlag"
-            placeholder="请输入"
-            class="isInput"
-          ></el-input>
-
+        <el-form-item label="同一产品标识" class="is50" prop="sameProductFlag">
+          <el-input clearable v-model="ruleForm.sameProductFlag" placeholder="请输入" class="isInput"></el-input>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否上架"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.shelve"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
-          </el-radio-group>
-
-        </el-form-item>
-
-        <el-form-item
-          size="mini"
-          label="是否面签"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.visaInterview"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否上架" class="is50">
+          <el-radio-group v-model="ruleForm.shelve" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否推荐"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.recommend"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否面签" class="is50">
+          <el-radio-group v-model="ruleForm.visaInterview" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          size="mini"
-          label="是否首页排行"
-          class="is50"
-        >
-          <el-radio-group
-            v-model="ruleForm.homePage"
-            class="isInput"
-          >
-            <el-radio-button
-              label="是"
-              class="isRadio"
-            ></el-radio-button>
-            <el-radio-button
-              label="否"
-              class="isRadio"
-            ></el-radio-button>
+        <el-form-item size="mini" label="是否推荐" class="is50">
+          <el-radio-group v-model="ruleForm.recommend" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item
-          label="默认存款笔数"
-          class="is50"
-          prop="defaultNum"
-        >
+        <el-form-item size="mini" label="是否首页排行" class="is50">
+          <el-radio-group v-model="ruleForm.homePage" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="默认存款笔数" class="is50" prop="defaultNum">
           <el-input
             clearable
             v-model="ruleForm.defaultNum"
             placeholder="请输入"
             class="isInput"
-            type='number'
+            type="number"
           ></el-input>
           <span class="isA">
             笔
@@ -129,13 +59,9 @@
           </span>
         </el-form-item>
 
-        <el-form-item
-          label="默认存款金额"
-          class="is50"
-          prop="defaultAmount"
-        >
+        <el-form-item label="默认存款金额" class="is50" prop="defaultAmount">
           <el-input
-            type='number'
+            type="number"
             clearable
             v-model="ruleForm.defaultAmount"
             placeholder="请输入"
@@ -147,59 +73,28 @@
           </span>
         </el-form-item>
 
-        <el-form-item
-          prop="listAreaFlag"
-          label="榜单专区标识"
-          class="is50"
-        >
-          <el-select
-            class="isInput"
-            clearable
-            placeholder="请选择"
-            v-model="ruleForm.listAreaFlag"
-          >
+        <el-form-item prop="listAreaFlag" label="榜单专区标识" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.list_area_type"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label=""
-          class="is50"
-        >
-        </el-form-item>
+        <el-form-item label class="is50"></el-form-item>
       </el-form>
 
       <div class="nextButtons">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="before"
-        >上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button
-          size="mini"
-          type="primary"
-          @click="next"
-          :disabled="isSaveIng"
-        >保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button
-          size="mini"
-          type="info"
-          @click="back"
-        >取消</el-button>
+        <el-button size="mini" type="primary" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="primary" @click="next" :disabled="isSaveIng">保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
       </div>
-
     </div>
-    <div
-      id='forTable'
-      v-if="isOk"
-    >
+    <div id="forTable" v-if="isOk">
       <hasSuccess @isOver="isOver" />
     </div>
   </div>
@@ -250,7 +145,7 @@ export default {
       //表单验证
       rules: {
         sameProductFlag: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
         defaultNum: [{ validator: checkNum2, trigger: "blur" }],
         defaultAmount: [{ validator: checkNum3, trigger: "blur" }]

@@ -63,6 +63,7 @@
         :productNameList="productNameList"
         :opts="opts"
         @reqs="reqs"
+        :dataType="type"
         @cancel='cancel'/>
     </el-dialog>
   </div>
@@ -73,7 +74,7 @@ import { mapActions, mapMutations } from "vuex";
 import isTable from "../../../components/isTable/isTable";
 import SettingExplosiveCommend from "../../../components/SettingExplosiveCommend";
 import datePicker from '../../../components/datePicker';
-import { explosive_updata } from '../../../api/setting_use.js';
+import { explosive_updata, explosive_delete } from '../../../api/setting_use.js';
 import { timestampToTime } from '../../../sets/timeFormat.js';
 export default {
   props: {},
@@ -88,6 +89,7 @@ export default {
       searchVal: "",
       msg:"",
       flag: false,
+      type: 'EXPLOSIVE',
       ruleForm: {
         productName: '',
         time: [],
@@ -137,7 +139,7 @@ export default {
   mounted() {
     this.userDo();
     this.getExplosiveListData({
-      pageNum: this.$store.state.explosive.explosiveList.pageNum,
+      pageNum: 1,
       pageSize: this.$store.state.explosive.explosiveList.pageSize,
       dataType:"EXPLOSIVE"
     });
@@ -190,7 +192,6 @@ export default {
       getExplosiveListData: "explosive/getExplosiveListData",
       getProNameList: "explosive/getProNameList",
       userDo: "explosive/userDo",
-      deteleList: "explosive/deleteList"
     }),
     ...mapActions({
     }),
@@ -217,6 +218,7 @@ export default {
     },
     cancel() {
       this.flag = false;
+      this.opts = {};
     },
     addExplosive() {
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
@@ -251,22 +253,32 @@ export default {
       })
         .then(() => {
           // window.location.reload();
-          this.$message({
-            type: "success",
-            message: "删除成功!"
+          explosive_delete(id).then(res=> {
+            if(res && res.success) {
+              this.$message({
+                type: "success",
+                message: "删除成功!"
+              });
+              this.getExplosiveListData({
+                dataType:"EXPLOSIVE",
+                startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
+                endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
+                productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+                pageNum: this.$store.state.explosive.explosiveList.pageNum,
+                pageSize: this.$store.state.explosive.explosiveList.pageSize,
+              })
+            }
+          })
+          .catch((res) => {
+            this.$message({
+              type: "error",
+              message: `${res.massage}`
+            });
           });
-          this.deteleList(id);
         })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
     },
     reqs(data){
       this.opts = data;
-      console.log(data);
       explosive_updata(data).then(res=> {
         if(res && res.success){
           this.flag = false;

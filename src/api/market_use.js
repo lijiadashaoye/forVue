@@ -16,8 +16,6 @@ export default {
             data: data.data
         })
     },
-
-
     // 活动列表里的删除
     market_create_deleteData(data) {
         return data.vm.$axios({
@@ -33,13 +31,7 @@ export default {
             url: `/marketing/manager/activity/${data.data}`,
         })
     },
-    // 卡券列表查询
-    market_create_getCouponList(data) {
-        return data.vm.$axios({
-            method: 'get',
-            url: `marketing/manager/welfare-coupon?${qs.stringify(data.data)}`,
-        })
-    },
+
     // 红包列表查询
     market_create_getPacketList(data) {
         return data.vm.$axios({
@@ -65,19 +57,35 @@ export default {
         })
     },
     /////////////////////////////////////////////////////////////////////
-
-    // 卡券列表里修改
-    market_coupon_getInfo(data) {
+    // 卡券列表查询
+    market_create_getCouponList(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `marketing/manager/coupon/details`,
+            data: data.data
+        })
+    },
+    // 获取卡券关联的银行、产品
+    get_guanlian(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `/marketing/manager/welfare-coupon/${data.data}`,
+            url: `marketing/manager/coupon/bankprd/${data.data}`
+        })
+    },
+    // 修改关联
+    put_guanlian(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: `marketing/manager/coupon/bankprd`,
+            data: data.data
         })
     },
     // 卡券列表里领用详情
     market_coupon_getInfoXianQing(data) {
         return data.vm.$axios({
-            method: 'get',
-            url: `marketing/manager/welfare-coupon/receive-select?${qs.stringify(data.data)}`
+            method: 'post',
+            url: `marketing/manager/coupon/receive_record`,
+            data: data.data
         })
     },
 
@@ -88,12 +96,12 @@ export default {
             url: `/marketing/manager/welfare-coupon/${data.data}`,
         })
     },
-
+    // kaquan_zengfa
     // 卡券列表里的增发
     market_coupon_zengFa(data) {
         return data.vm.$axios({
             method: 'put',
-            url: `/marketing/manager/welfare-coupon/add-num`,
+            url: `/marketing/manager/coupon/stock`,
             data: data.data
         })
     },
@@ -101,41 +109,58 @@ export default {
     market_coupon_UpDown(data) {
         return data.vm.$axios({
             method: 'put',
-            url: `/marketing/manager/welfare-coupon/status`,
+            url: `/marketing/manager/coupon/status`,
             data: data.data
         })
     },
-    // 卡券列表里查询产品列表
-    market_coupon_getProdutList(data) {
-        return data.vm.$axios({
-            method: 'get',
-            url: `/marketing/finsuit/product?${qs.stringify(data.data)}`,
-        })
-    },
-
     // 更新、新建卡券
     market_coupon_upCoupon(data) {
         return data.vm.$axios({
-            method: data.data.httpType,
-            url: `/marketing/manager/welfare-coupon`,
-            data: data.data.data
+            method: data.httpType,
+            url: `/marketing/manager/coupon`,
+            data: data.data
         })
     },
     // 导出
     market_coupon_downLoad(data) {
         return data.vm.$axios({
             method: 'get',
-            responseType: 'blob',
-            url: `/marketing/manager/welfare-coupon/receive-export?${qs.stringify(data.data)}`,
+            responseType: 'blob', 
+            url: `/marketing/manager/coupon/receive/excel?${qs.stringify(data.data)}`,
         })
     },
+    // 卡券列表里编辑卡券类型详细设置
+    market_change_type(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: `/marketing/manager/coupon/type`,
+            data: data.data
+        })
+    },
+    // 查询卡券补仓记录列表
+    get_bucang(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/marketing/manager/coupon/stock/${data.id}?${qs.stringify(data.data)}`,
+        })
+    },
+
+    // 查询卡券操作记录列表
+    get_caozuo(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/marketing/manager/coupon/operation/${data.id}?${qs.stringify(data.data)}`,
+        })
+    },
+
+
     ///////////////////////////////////////////////////////////////////////
 
     // 获取红包列表
     market_packet_getListData(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `/marketing/manager/welfare-packet?${qs.stringify(data.data)}`,
+            url: `/marketing/manager/welfare-packet?${qs.stringify(data.data)}`
         })
     },
 
@@ -166,7 +191,7 @@ export default {
 
     // 更新、新建红包
     market_packet_upPacket(data) {
-     
+
         return data.vm.$axios({
             method: data.method,
             url: `/marketing/manager/welfare-packet`,

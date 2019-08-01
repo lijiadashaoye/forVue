@@ -1,16 +1,7 @@
 <template>
-  <div
-    class="loginPage"
-    :class="toaddClass?setBk:''"
-  >
-    <img
-      :src="imgSrc"
-      class="isImg"
-    >
-    <div
-      class="layer"
-      id="login"
-    >
+  <div class="loginPage" :class="toaddClass?setBk:''">
+    <img :src="imgSrc" class="isImg" />
+    <div class="layer" id="login">
       <div class="login_isLogo">
         <span>比财数据科技</span>
       </div>
@@ -20,12 +11,7 @@
       </div>
 
       <div class="isCard">
-        <el-form
-          ref="loginForm"
-          label-position="top"
-          :rules="rules"
-          :model="formLogin"
-        >
+        <el-form ref="loginForm" label-position="top" :rules="rules" :model="formLogin">
           <el-form-item prop="username">
             <el-input
               type="text"
@@ -33,10 +19,7 @@
               placeholder="用户名"
               @keyup.enter.native="submit"
             >
-              <i
-                slot="prepend"
-                class="myIcon12px icon-yonghu"
-              ></i>
+              <i slot="prepend" class="myIcon12px icon-yonghu"></i>
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
@@ -46,20 +29,12 @@
               placeholder="密码"
               @keyup.enter.native="submit"
             >
-              <i
-                slot="prepend"
-                class="myIcon12px icon-jianpan"
-              ></i>
+              <i slot="prepend" class="myIcon12px icon-jianpan"></i>
             </el-input>
           </el-form-item>
-          <el-button
-            @click="submit"
-            type="primary"
-            class="button-login"
-          >登录</el-button>
+          <el-button @click="submit" type="primary" class="button-login">登录</el-button>
         </el-form>
       </div>
-
     </div>
   </div>
 </template>
@@ -92,7 +67,7 @@ export default {
     this.$store.dispatch("clearToken");
     // 动态设置登录背景
     setTimeout(() => {
-      let num = Math.ceil(Math.random() * 23);
+      let num = Math.ceil(Math.random() * 27);
       this.setBk = `setBk${num}`;
       this.imgSrc = require(`../../assets/forbg/${num}.png`);
       this.toaddClass = true;

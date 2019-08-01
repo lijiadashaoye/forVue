@@ -3,13 +3,6 @@
         <div id="forHeader">
             <h3>{{pageName}}</h3>
             <div class="search">
-                <el-button
-                type="primary"
-                size="mini"
-                @click="addPeroid"
-                >
-                新建
-                </el-button>
                 <el-input
                     placeholder="请输入评论内容"
                     size="mini"
@@ -60,7 +53,7 @@ export default {
         this.pageName = this.$route.name;
         this.userDo();
         this.getList({
-            pageNum:  this.$store.state.comment.commentList.pageNum,
+            pageNum: 1,
             pageSize:  this.$store.state.comment.commentList.pageSize,
         });
         this.getAppChannel();
@@ -82,6 +75,10 @@ export default {
                 key: "content",
                 minWidth: "180"
             },{
+                title: "评论者",
+                key: "creatorName",
+                minWidth: "120"
+            },{
                 title: "创建时间",
                 key: "gmtCreated",
                 minWidth: "120"
@@ -98,11 +95,11 @@ export default {
             getAppChannel:'protocol/getAppChannel'
         }),
         //添加
-        addPeroid() {
-            this.$alert("暂时没有这项功能哦", {
-                confirmButtonText: "确定"
-            });
-        },
+        // addPeroid() {
+        //     this.$alert("暂时没有这项功能哦", {
+        //         confirmButtonText: "确定"
+        //     });
+        // },
         //删除
         delete(data) {
             this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {

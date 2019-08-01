@@ -41,23 +41,7 @@ const mutations = {
         })
     },
     //删除数据
-    deleteList(state,id){
-        explosive_delete(id).then(res => {
-            if(res.success){
-                explosive_list({
-                    pageNum: state.explosiveList.pageNum,
-                    pageSize: state.explosiveList.pageSize,
-                    dataType:"EXPLOSIVE"
-                }).then(data => {
-                    if(res.success){
-                        state.explosiveList.data.list = data.data.list;
-                        // window.sessionStorage.setItem('explosiveList',JSON.stringify(state.explosiveList.data.list))
-                    }
-                })
-            }
-        });
-    },
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.explosiveList.data.custom = [];
         let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));

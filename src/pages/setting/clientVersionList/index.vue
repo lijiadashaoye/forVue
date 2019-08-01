@@ -155,8 +155,8 @@
                     }
                 ], // 客户端列表
                 appChannelCodeList: [ // app 标识
-                    { code: '比财', name: '比财' },
-                    { code: '安财', name: '安财' }
+                    { code: 'bicai', name: '比财' },
+                    { code: 'ancai', name: '安财' }
                 ],
                 id: '', // 保存id
                 dialogVisible: false, // 新增和编辑弹框
@@ -164,7 +164,7 @@
                 versionNo: '', // 版本号
                 ruleForm: {
                     updateVersionPage: '',//更新版本页面
-                    appChannelCode: '比财',
+                    appChannelCode: 'bicai',
                     appChannelName: '',
                     platformCode: 'android',
                     platformName: '',
@@ -320,7 +320,7 @@
                 this.ruleForm.platformCode = row.platformCode
                 this.ruleForm.platformName = row.platformCode
                 this.ruleForm.appChannelCode = row.appChannelCode
-                this.ruleForm.appChannelName = row.appChannelCode
+                this.ruleForm.appChannelName = row.appChannelName
                 this.ruleForm.versionNo = row.versionNo
                 this.ruleForm.versionName = row.versionName
                 this.ruleForm.installChannel = row.installChannel
@@ -341,7 +341,7 @@
                     this.ruleForm = {
                         multilingual: 'CN',
                         platformCode: 'android',
-                        appChannelCode: '比财',
+                        appChannelCode: 'bicai',
                         versionNo: '',
                         versionName: '',
                         installChannel: '',
@@ -434,7 +434,7 @@
                 this.id = ''
                 this.ruleForm = {
                     updateVersionPage: '',//更新版本页面
-                    appChannelCode: '比财',
+                    appChannelCode: 'bicai',
                     appChannelName: '',
                     platformCode: 'android',
                     platformName: '',
@@ -459,7 +459,7 @@
                             platformCode: this.ruleForm.platformCode,
                             platformName: this.ruleForm.platformCode == 'android' ? '安卓' : '苹果',
                             appChannelCode: this.ruleForm.appChannelCode,
-                            appChannelName: this.ruleForm.appChannelCode,
+                            appChannelName: this.ruleForm.appChannelCode == 'bicai' ? '比财' : '安财',
                             versionNo: this.ruleForm.versionNo,
                             versionName: this.ruleForm.versionName,
                             updateInstructions: this.ruleForm.updateInstructions,

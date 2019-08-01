@@ -18,27 +18,33 @@ const state = {
 
 const mutations = {
     //获取银行列表数据
-    getnewsMangerList(state){
-        news_manager_list({
-            pageNum : state.newsMangerList.pageNum,
-            pageSize : state.newsMangerList.pageSize
-        }).then(res=> {
-            state.newsMangerList.data.list = res.data.list;
-            state.newsMangerList.total = res.data.total;
-            state.newsMangerList.data.list.forEach(v=> {
-                if(v.newsType == 'ORDINARY_NEWS') { 
-                    v.newsTypeCN = '普通新闻'
-                } else if(v.newsType == 'SOFT_NEWS') {
-                    v.newsTypeCN = '软广告新闻'
-                }
-                if(v.sign == 'FINANCING' ) {
-                    v.signCN = '理财知道'
-                } else if(v.sign == 'BICAITREASURE') {
-                    v.signCN = '比财宝典'
-                } else if(v.sign == 'BICAISKILL') {
-                    v.signCN = '比财技巧'
-                }
-            })
+    getnewsMangerList(state,data){
+        news_manager_list(data).then(res=> {
+            if(res && res.success) {
+                state.newsMangerList.data.list = res.data.list;
+                state.newsMangerList.total = res.data.total;
+                state.newsMangerList.data.list.forEach(v=> {
+                    if(v.newsType == 'ORDINARY_NEWS') { 
+                        v.newsTypeCN = '普通新闻'
+                    } else if(v.newsType == 'SOFT_NEWS') {
+                        v.newsTypeCN = '软广告新闻'
+                    }
+                    if(v.sign == 'FINANCING' ) {
+                        v.signCN = '理财知道'
+                    } else if(v.sign == 'BICAITREASURE') {
+                        v.signCN = '比财宝典'
+                    } else if(v.sign == 'BICAISKILL') {
+                        v.signCN = '比财技巧'
+                    } else if(v.sign == 'ALL') {
+                        v.signCN = '全部'
+                    }
+                    if(v.isTop == 'TOP') {
+                        v.isTopCN = 'YES'
+                    } else if (v.isTop == 'NOTOP') {
+                        v.isTopCN = 'NO'
+                    }
+                })
+            }
         })
     },
 
@@ -47,7 +53,7 @@ const mutations = {
         
     },
 
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.newsMangerList.data.custom = [];
         let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
@@ -55,6 +61,11 @@ const mutations = {
             state.newsMangerList.data.quanxian.push('ok')
             state.newsMangerList.data.custom.push({
                 text: "置顶",
+                type: "primary",
+                size: "small",
+                emit: "isTop"
+            } ,{
+                text: "修改",
                 type: "warning",
                 size: "small",
                 emit: "edit"
@@ -73,8 +84,8 @@ const mutations = {
 
 const actions = {
    //列表数据
-   getList({commit}){
-        commit('getnewsMangerList')
+   getList({commit},data){
+        commit('getnewsMangerList',data)
    },
    //删除数据
 //    deleteLsit({commit},id){

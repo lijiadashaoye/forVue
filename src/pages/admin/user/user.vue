@@ -14,7 +14,7 @@
       <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
     <div id="forTable" v-if="loadEnd">
-      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
       <!-- 添加用户弹出框 -->
       <el-dialog
         :close-on-click-modal="false"
@@ -162,12 +162,10 @@ export default {
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 64, message: "请输入1-64个字符", trigger: "blur" }
         ],
         phone: [{ required: true, validator: checkPhone, trigger: "blur" }],
-        lockFlag: [
-          { required: true, message: "标识必须填写", trigger: "blur" }
-        ],
+        lockFlag: [{ required: true, trigger: "blur" }],
         deptId: [
           { required: true, message: "所属部门必须选择", trigger: "blur" }
         ],
@@ -375,9 +373,7 @@ export default {
                     failName += `用户名称：${item.data[0].username} \n`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
 
                 if (numFail > 0) {
                   str += titleText + failName;
@@ -399,7 +395,7 @@ export default {
     checkChinese(rule, value, callback) {
       let pass = ("" + value).split("").some(tar => tar.charCodeAt() > 122);
       if (value === "") {
-        callback(new Error("请输入电话号码"));
+        callback(new Error("请输入密码"));
       } else if (value.length > 16 || value.length < 6) {
         callback(new Error("请输入6--19个字符"));
       } else if (pass) {
@@ -552,7 +548,7 @@ export default {
           this.dialog.show = true;
         });
     },
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let sys_user_edit = quanxian.includes("sys_user_edit");

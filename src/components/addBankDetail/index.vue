@@ -1,10 +1,25 @@
 <template>
     <el-card class="box-card">
 
+        <!-- <div class="card-item">
+            <span class="item-text">*机构代码:</span>
+            <div class="item-input">
+                <el-input v-model="organizationCode" placeholder="请输入机构代码" :disabled="detailFlag"></el-input>
+            </div>
+        </div> -->
+
         <div class="card-item">
             <span class="item-text">*银行名称:</span>
             <div class="item-input">
-                <el-input v-model="bankName" placeholder="请输入名称" :disabled="detailFlag"></el-input>
+                <!-- <el-input v-model="prodectBankId" placeholder="请输入名称" :disabled="detailFlag"></el-input> -->
+                <el-select v-model="prodectBankId" placeholder="请输入名称" :disabled="detailFlag">
+                    <el-option
+                    v-for="(item,ind) in options"
+                    :key="ind"
+                    :label="item.label"
+                    :value="item.value">
+                    </el-option>
+                </el-select>
             </div>
         </div>
 
@@ -62,23 +77,38 @@
 </template>
 
 <script>
-import { upLoadImg } from '../../api/setting_use.js';
+import { upLoadImg, institutionList } from '../../api/setting_use.js';
+import { async } from 'q';
 export default {
     name:'addBankDetail',
     props:['detailFlag', 'opts'],
     data() {
         return {
-            bankName: "",//银行名称
+            prodectBankId: "",//产品关联银行id
             LogoUrl: "",//logo路径
             bgUrl: "",//背景图路径
             closeFlag: true,//关闭按钮
-            organizationCode: "",
+            organizationCode: "",//机构代码
+            options: [],
+            bankName: '',//银行名称
         }
     },
     mounted() {
+        institutionList().then(async res=> {
+            if(res && res.success) {
+                this.options = [];
+                res.data && res.data.forEach(v => {
+                    this.options.push({
+                        value: v.id,
+                        label: v.name
+                    })
+                });
+            }
+        })
         if(this.opts){
             this.LogoUrl = this.opts.logoPhoto;
             this.bgUrl = this.opts.background;
+            this.prodectBankId = this.opts.prodectBankId;
             this.bankName = this.opts.bankName;
         }
 
@@ -89,7 +119,7 @@ export default {
             this.id = '';
             this.LogoUrl = '';
             this.bgUrl = '';
-            this.bankName = '';
+            this.prodectBankId = '';
             this.$emit('cancel')
         },
         //1--10000随机数，代替机构代码
@@ -142,13 +172,19 @@ export default {
         //点击保存
         save(){
             this.organizationCode = this.randomNum()
-            if(this.bankName && this.LogoUrl && this.bgUrl){
+            if(this.prodectBankId && this.LogoUrl && this.bgUrl){
+                this.options && this.options.forEach(v=> {
+                    if(this.prodectBankId == v.value) {
+                        this.bankName = v.label
+                    }
+                })
                 let obj = {
                     id: this.opts ? this.opts.id : '',
                     organizationCode: this.organizationCode,
-                    bankName: this.bankName,
+                    prodectBankId: this.prodectBankId,
                     logoPhoto: this.LogoUrl,
-                    background: this.bgUrl
+                    background: this.bgUrl,
+                    bankName: this.bankName
                 }
                 //向父组件传递数据
                 this.$emit('send',obj)
@@ -175,7 +211,8 @@ export default {
             // this.id = this.opts.id;
             this.LogoUrl = this.opts.logoPhoto;
             this.bgUrl = this.opts.background;
-            this.bankName = this.opts.bankName;
+            this.prodectBankId = this.opts.prodectBankId;
+            this.bankName = this.opts.bankName
         }
     }
 }

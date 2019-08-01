@@ -69,17 +69,18 @@ export default {
     let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
       //有权限  跳转到创建页面
       if (jurisdiction.indexOf("explosive_add") > -1) {
+        console.log(obj)
         explosive_add(obj).then(res => {
-          if(res.success){//添加成功  跳转到列表页面
+          if(res && res.success){//添加成功  跳转到列表页面
             this.$router.push('/home/setting/explosive/list')
           }
-        }).catch(()=> {
+        }).catch((res)=> {
           this.$alert(`${res.message}`, '保存失败', {
             confirmButtonText: '确定',
             callback: action => {
               this.$message({
-                type: 'info',
-                message: `action: ${ action }`
+                type: 'error',
+                message: `${res.message}`
               });
             }
           });

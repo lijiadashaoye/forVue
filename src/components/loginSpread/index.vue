@@ -5,7 +5,7 @@
             <span class="item-text">*选择App：</span>
             <div class="item-input">
                 <el-radio-group v-model="appChannelCode">
-                    <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
+                    <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label" :disabled="!updataFlag">{{val.value}}</el-radio>
                 </el-radio-group>
             </div>
         </div>

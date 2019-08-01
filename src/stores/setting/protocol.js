@@ -2,6 +2,7 @@ import { protocol_list, getAppChannel, protocol_delete } from '../../api/setting
 
 const state = {
     protocolList : {
+        noIndex: true,
         checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10,
         pageNum: 1,
@@ -21,7 +22,9 @@ const mutations = {
     //获取appChannelName
     getAppChannel(){
         getAppChannel('channel_type').then(res=> {
+            if(res && res.success) {
                 state.appChannel = res.data
+            }
         })
     },
     //获取列表数据
@@ -31,20 +34,7 @@ const mutations = {
             state.protocolList.total = res.data.total;
         })
     },
-    //删除列表数据
-    deleteList(state,id){
-        protocol_delete(id).then(res => {
-            if(res.success){
-                protocol_list(data).then(res=> {
-                    if(res.success){
-                        state.protocolList.data.list = res.data.list;
-                        state.protocolList.total = res.data.total;
-                    }
-                })
-            }
-        })
-    },
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.protocolList.data.custom = [];
         let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));

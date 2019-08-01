@@ -29,7 +29,10 @@
           :min-width="inputData.actions['click'].minWidth"
         >
           <template slot-scope="scope">
-            <el-tooltip :content="`点击查看：${scope.row[inputData.actions['click']['from']]}`" placement="top">
+            <el-tooltip
+              :content="`点击查看：${scope.row[inputData.actions['click']['from']]}`"
+              placement="top"
+            >
               <el-button
                 @click="caozuo('textClick',scope.row)"
                 type="text"
@@ -49,11 +52,20 @@
           :prop="item.key"
         >
           <template slot-scope="scope">
-            <img style="width:40px;" v-if="item.isImg" :src="scope.row[item.key]">
-            <span
-              :style="{color:item.color?item.color:''}"
-              v-if="!item.isImg"
-            >{{ scope.row[item.key] }}</span>
+            <div v-if="!item.imgArr">
+              <img style="width:40px;" v-if="item.isImg" :src="scope.row[item.key]" />
+              <span
+                :style="{color:item.color?item.color:''}"
+                v-if="!item.isImg"
+              >{{ scope.row[item.key] }}</span>
+            </div>
+            <!--活动管理配置管理设置素材 -->
+            <ul v-if="item.imgArr" class="imgArr">
+              <li v-for="tar of scope.row[item.key]" :key="tar.text">
+                <img style="width:50px;" :src="tar.img" />
+                <span>{{ tar.text }}</span>
+              </li>
+            </ul>
           </template>
         </el-table-column>
 
@@ -188,11 +200,16 @@ export default {
         setTimeout(() => {
           let getH = document.querySelector("#isTable");
           if (getH) {
-            this.setMaxHeight = getH.offsetHeight - 35;
+            // fenye为true时，不显示分页栏
+            if (this.inputData.fenye) {
+              this.setMaxHeight = getH.offsetHeight;
+            } else {
+              this.setMaxHeight = getH.offsetHeight - 35;
+            }
           } else {
             t();
           }
-        }, 100);
+        }, 200);
       };
       t();
     }
@@ -208,7 +225,7 @@ export default {
       if (!isLiShi) {
         this.setMaxHeightFn();
       }
-    });
+    },100);
     // 动态设置表格的 max-height，并防抖
     let isTimeOut;
     window.addEventListener("resize", () => {
@@ -217,7 +234,7 @@ export default {
         if (!isLiShi) {
           this.setMaxHeightFn();
         }
-      }, 1000);
+      }, 500);
     });
   }
 };
@@ -227,5 +244,13 @@ export default {
 @import "./isTable.scss";
 .setColor {
   color: blueviolet;
+}
+.imgArr {
+  display: flex;
+  justify-content: space-between;
+}
+.imgArr li img {
+  vertical-align: middle;
+  margin-right: 2px;
 }
 </style>

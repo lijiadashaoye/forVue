@@ -335,7 +335,7 @@ export default {
         });
       }
     },
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let market_activity_upd = quanxian.includes("market_activity_upd");

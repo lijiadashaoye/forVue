@@ -170,7 +170,7 @@ export default {
                 }
                 if(/^[1-9]\d*$|^0$/.test(this.cardPrefix) == false){
                    this.cardPrefixFlag = true;
-                   this.cardPrefixMsg = '卡bin必须是数字';
+                   this.cardPrefixMsg = '卡bin必须是数字,不能以0开头';
                    return false;
                 } else {
                    this.cardPrefixFlag = false;

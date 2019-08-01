@@ -32,7 +32,7 @@
 
 import isTable from '../../../components/isTable/isTable';
 import activityButton from '../../../components/activityButton';
-import { activity_button_upd } from '../../../api/setting_use.js';
+import { activity_button_upd, activity_button_del } from '../../../api/setting_use.js';
 import { mapActions, mapMutations } from 'vuex';
 export default {
     components: {
@@ -50,9 +50,13 @@ export default {
         }
     },
     mounted() {
+        this.$store.state.activityButton.activityButtonList.pageNum = 1;
         this.pageName = this.$route.name;
         this.userDo()
-        this.getList();
+        this.getList({
+            pageNum: 1,
+            pageSize: this.$store.state.activityButton.activityButtonList.pageSize,
+        });
         this.$store.state.activityButton.activityButtonList.data.title = [
             {
                 title: "活动编号",
@@ -116,7 +120,6 @@ export default {
         }),
         ...mapActions({
             getList: 'activityButton/getList',
-            deleteList: 'activityButton/deleteList'
         }),
         //添加按钮
         addActivityButton() {
@@ -141,12 +144,19 @@ export default {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
-            }).then(() => {
-                this.$message({
-                    type: "success",
-                    message: "删除成功!"
-                });
-                this.deleteList(id);
+            }).then((res) => {
+                activity_button_del(id).then(res => {
+                    if(res && res.success) {
+                        this.$message({
+                            type: "success",
+                            message: "删除成功!"
+                        });
+                    }
+                    this.getList({
+                        pageNum: this.$store.state.activityButton.activityButtonList.pageNum,
+                        pageSize: this.$store.state.activityButton.activityButtonList.pageSize,
+                    })
+                })
                 }).catch(() => {
                 this.$message({
                     type: "info",
@@ -164,7 +174,10 @@ export default {
         send(data){
             this.dialogVisible = false;
             activity_button_upd(data).then(()=> {
-                this.getList();
+                this.getList({
+                    pageNum: this.$store.state.activityButton.activityButtonList.pageNum,
+                    pageSize: this.$store.state.activityButton.activityButtonList.pageSize,
+                });
             }).catch((res) => {
                 this.$alert(`${res.message}`, '保存失败', {
                 confirmButtonText: '确定',
@@ -182,7 +195,10 @@ export default {
             switch (data.type) {
                 case "regetData": // 分页的emit
                 //再次请求列表数据
-                this.getList();
+                    this.getList({
+                        pageNum: this.$store.state.activityButton.activityButtonList.pageNum,
+                        pageSize: this.$store.state.activityButton.activityButtonList.pageSize,
+                    })
                 break;
                 case "edit": // 编辑按钮
                 this.edit(data.data);

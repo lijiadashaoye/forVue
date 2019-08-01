@@ -150,7 +150,7 @@
               <el-input
                 type="number"
                 class="addDanWei"
-                placeholder="最高金额"
+                placeholder="最高数量"
                 v-model="formData.maxNum"
               ></el-input>
               <span>(每个用户领券上限，如不填默认为一张)</span>
@@ -162,7 +162,7 @@
           <el-button @click="reset" type="info">重 置</el-button>
         </div>
       </div>
-      <hasSuccess @isOver="isOver" v-if="isOk"/>
+      <hasSuccess @isOver="isOver" v-if="isOk" />
     </div>
   </div>
 </template>
@@ -178,13 +178,27 @@ export default {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 23 || ("" + value).length < 0) {
+        callback(new Error("请输入1-23字符"));
       } else {
         callback();
       }
     };
-
+    // 验证数字
+    var checkamountFixed = (rule, value, callback) => {
+      let reg = /\./;
+      if (reg.test(value)) {
+        callback(new Error("请输入整数"));
+      } else if (value === "") {
+        callback(new Error("请输入数据"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 11 || ("" + value).length < 0) {
+        callback(new Error("请输入1-11字符"));
+      } else {
+        callback();
+      }
+    };
     // 验证数字
     var checkNum = (rule, value, callback) => {
       let reg = /\./;
@@ -194,8 +208,8 @@ export default {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 20 || ("" + value).length < 0) {
+        callback(new Error("请输入1-20字符"));
       } else {
         callback();
       }
@@ -207,8 +221,8 @@ export default {
         callback(new Error("请输入整数"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 11 || ("" + value).length < 0) {
+        callback(new Error("请输入1-11字符"));
       } else {
         callback();
       }
@@ -223,15 +237,24 @@ export default {
         callback();
       }
     };
-
+      // 验证总金额
+    var checkMaxAmount = (rule, value, callback) => {
+     if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 23 || ("" + value).length < 0) {
+        callback(new Error("请输入1-23字符"));
+      } else {
+        callback();
+      }
+    };
     // 金额设置
     var checkMax = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入金额"));
       } else if (+value < +this.formData.amountMin) {
         callback(new Error("金额不能比最低金额小！"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 23 || ("" + value).length < 0) {
+        callback(new Error("请输入1-23字符"));
       } else {
         callback();
       }
@@ -249,8 +272,8 @@ export default {
           +this.formData.min > +this.formData.max
         ) {
           callback(new Error("最小金额不能比最大金额大！"));
-        } else if (("" + value).length > 19 || ("" + value).length < 0) {
-          callback(new Error("请输入1-19字符"));
+        } else if (("" + value).length > 23 || ("" + value).length < 0) {
+          callback(new Error("请输入1-23字符"));
         } else {
           callback();
         }
@@ -260,24 +283,26 @@ export default {
     };
     // 概率的检查
     var checkNumber = (rule, value, callback) => {
-      if (Number(this.gailv) + Number(value) > 100) {
+      let reg = /\./;
+      if (reg.test(value)) {
+        callback(new Error("请输入整数"));
+      } else if (Number(this.gailv) + Number(value) > 100) {
         callback(new Error("累计概率不能高于 100%"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 11 || ("" + value).length < 0) {
+        callback(new Error("请输入1-11字符"));
       } else if (+value < 0) {
         callback(new Error("概率不能为负数！"));
       } else {
         callback();
       }
     };
-    // 负数的验证
     var checkBelow = (rule, value, callback) => {
       if (!value) {
         callback(new Error("请输入金额"));
       } else if (Number(value) < 0) {
         callback(new Error("数值不能为负数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 23 || ("" + value).length < 0) {
+        callback(new Error("请输入1-23字符"));
       } else {
         callback();
       }
@@ -328,15 +353,15 @@ export default {
       //表单验证
       rules: {
         name: [
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" },
+          { min: 1, max: 64, message: "请输入1-64个字符", trigger: "blur" },
           { required: true, message: "请输入红包名称", trigger: "blur" }
         ],
         packetExplain: [
-          { min: 1, max: 200, message: "请输入1-200个字符", trigger: "blur" }
+          { min: 1, max: 15, message: "请输入1-15个字符", trigger: "blur" }
         ],
         totalAmount: [{ validator: checkTotalMoney, trigger: "blur" }],
         totalNum: [{ validator: checkNum, trigger: "blur" }],
-        maxAmount: [{ validator: checkNum3, trigger: "blur" }],
+        maxAmount: [{ validator: checkMaxAmount, trigger: "blur" }],
         maxNum: [{ validator: checkNum2, trigger: "blur" }],
         amountType: [
           { required: true, message: "请输入红包类型", trigger: "blur" }
@@ -344,7 +369,7 @@ export default {
         grantType: [
           { required: true, message: "请输入发放类型", trigger: "change" }
         ],
-        amountFixed: [{ validator: checkBelow, trigger: "blur" }], // 金额设置
+        amountFixed: [{ validator: checkamountFixed, trigger: "blur" }], // 金额设置
         amountMin: [{ validator: checkBelow, trigger: "blur" }], // 最低金额
         amountMax: [{ validator: checkMax, trigger: "blur" }], // 最高金额
         min: [{ validator: checkBetween, trigger: "blur" }], // 最小金额
@@ -517,7 +542,7 @@ export default {
         this.$router.push({ name: `packet_list` });
       } else {
         sessionStorage.setItem("page", "创建红包");
-        this.reset();
+        this.$router.push({ name: `packet_add` });
         this.isOk = false;
       }
     },
@@ -568,9 +593,7 @@ export default {
           }
         } else {
           this.$message.error(
-            `用户可领取的金额应在${this.formData.amountMin} - ${
-              this.formData.amountMax
-            }之间！`
+            `用户可领取的金额应在${this.formData.amountMin} - ${this.formData.amountMax}之间！`
           );
         }
       } else {

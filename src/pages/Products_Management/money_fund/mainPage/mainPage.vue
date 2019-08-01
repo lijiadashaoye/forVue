@@ -360,15 +360,15 @@ export default {
     outPut() {},
     // 导入
     inPut() {},
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
-      this.tableInputData.data.custom.push({
-        text: "复制",
-        type: "primary",
-        size: "mini",
-        emit: "copy"
-      });
+      // this.tableInputData.data.custom.push({
+      //   text: "复制",
+      //   type: "primary",
+      //   size: "mini",
+      //   emit: "copy"
+      // });
       this.tableInputData.data.custom.push({
         text: "删除",
         type: "danger",

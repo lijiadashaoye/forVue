@@ -14,7 +14,15 @@ export const upLoadImg = (data) => {
     return AxiosPost(`/admin/file/up/setting`, data)
 }
 
+//机构列表
+export const institutionList = (data) => {
+    return AxiosGet(`/product/institution/list`, data)
+}
 
+//查询产品
+export const productList = (data) => {
+    return AxiosGet(`/setting/manager/confing-url/product-list`,data)
+}
 
 //app按钮列表数据
 export const getMenuData = (data) => {
@@ -311,15 +319,28 @@ export const bank_support_upd = (obj) => {
 
 //列表
 export const news_manager_list = (data) => {
-    return AxiosGet(`setting/manager/news-manage`, data)
+    return AxiosPost(`/setting/manager/news-manage/select`, data)
 }
 
 //新增新闻
 export const news_manger_add = (data) => {
-    return AxiosPost(`/setting/manager/news-manage/`,data)
+    return AxiosPost(`/setting/manager/news-manage`,data)
 }
 
+//是否置顶
+export const news_isTop = (data) => {
+    return AxiosPut(`/setting/manager/news-manage/status`,data)
+}
 
+//删除
+export const news_delete = (id) => {
+    return AxiosDelete(`/setting/manager/news-manage/${id}`)
+}
+
+//修改
+export const news_upData = (data) => {
+    return AxiosPut(`/setting/manager/news-manage/`,data)
+}
 
 
 //广告管理
@@ -511,3 +532,42 @@ export const productUrl_delete = (id)=> {
     return AxiosDelete(`/setting/manager/confing-url/${id}`)
 }
 
+
+
+
+//////////////////////
+
+/////会员中心   
+
+//提现管理
+
+//列表数据
+export const cash_out_list = (data)=> {
+    return AxiosPost(`/member/manager/member-wallet/cash-orders`, data)
+}
+
+//确认付款
+
+export const cash_out_payment = (data)=> {
+    return AxiosPost('/member/manager/member-wallet/confirm-pay',data)
+}
+
+//申请付款
+export const cash_out_applyFor = (id)=> {
+    return AxiosPost(`/member/manager/member-wallet/cash-pay/${id}`)
+}
+
+//驳回申请
+export const cash_out_turnDown = (id)=> {
+    return AxiosPost(`member/manager/member-wallet/reject-pay/${id}`)
+}
+
+//手动查单
+export const cash_out_operation = (id)=> {
+    return AxiosPost(`/member/manager/member-wallet/pay-status/${id}`)
+}
+
+//导出
+export const cash_out_export = (data)=> {
+    return AxiosGet(`/member/manager/member-wallet/excel`,data)
+}

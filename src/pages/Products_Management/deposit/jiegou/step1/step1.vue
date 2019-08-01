@@ -288,10 +288,10 @@ export default {
         ],
         name: [
           { required: true, message: "请输入产品名称", trigger: "blur" },
-          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         typeAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
         ],
         max: [
           { required: true, message: "请输入最高利率", trigger: "blur" },
@@ -306,10 +306,10 @@ export default {
           { validator: checkNumLilv, trigger: "blur" }
         ],
         interestRateAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         deadlineAlias: [
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
         purchaseAmount: [
           { validator: checkNum3, trigger: "blur" },
@@ -336,7 +336,7 @@ export default {
     let jiegou_step1 = sessionStorage.getItem("jiegou_step1");
     // 获取选定的机构
     let jigouData = JSON.parse(sessionStorage.getItem("xilie_jigou"));
-      this.change_xilie(jigouData.institutionId);
+    this.change_xilie(jigouData.institutionId);
 
     if (jiegou_step1) {
       this.ruleForm = JSON.parse(jiegou_step1);
@@ -378,7 +378,7 @@ export default {
             if (this.ruleForm.qishou && this.ruleForm.qixi) {
               let qishou = new Date(this.ruleForm.qishou[0]);
               let qixi = new Date(this.ruleForm.qixi[0]);
-              
+
               if (qixi >= qishou) {
                 sessionStorage.setItem(
                   "jiegou_step1",

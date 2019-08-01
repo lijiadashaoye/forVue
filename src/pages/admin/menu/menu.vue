@@ -124,12 +124,12 @@
 export default {
   props: {},
   data() {
-    // 验证数字
+    // 验证sort
     var checkSort = (rule, value, callback) => {
       if (!value) {
         callback(new Error("请输入排序"));
-      } else if (("" + value).length > 10 || ("" + value).length < 0) {
-        callback(new Error("请输入1-10字符"));
+      } else if (("" + value).length > 11 || ("" + value).length < 0) {
+        callback(new Error("请输入1-11字符"));
       } else {
         callback();
       }
@@ -180,7 +180,7 @@ export default {
       rules: {
         name: [
           { required: true, message: "请输入标题", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 32, message: "请输入1-32个字符", trigger: "blur" }
         ],
         url: [
           { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" },
@@ -195,13 +195,13 @@ export default {
         sort: [{ validator: checkSort, trigger: "blur" }],
         permission: [
           { required: true, message: "请输入权限标识", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 32, message: "请输入1-32个字符", trigger: "blur" }
         ],
         icon: [
-          { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" }
+          { min: 1, max: 32, message: "请输入1-32", trigger: "blur" }
         ],
         path: [
-          { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" }
+          { min: 1, max: 128, message: "请输入1-128个字符", trigger: "blur" }
         ]
       }
     };
@@ -223,7 +223,7 @@ export default {
         })
         .catch(() => {});
     },
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let sys_menu_add = quanxian.includes("sys_menu_add");

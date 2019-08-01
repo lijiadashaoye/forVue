@@ -19,11 +19,8 @@ const state = {
 const mutations = {
 
     //获取列表数据
-    getLoginSpreadListData(){
-        loginSpread_list({
-            pageNum: state.loginSpreadList.pageNum,
-            pageSize: state.loginSpreadList.pageSize
-        }).then(res=> {
+    getLoginSpreadListData(state,data){
+        loginSpread_list(data).then(res=> {
             state.loginSpreadList.data.list = res.data.list;
             state.loginSpreadList.total = res.data.total;
             state.loginSpreadList.data.list.forEach((v)=> {
@@ -35,27 +32,7 @@ const mutations = {
             })
         })
     },
-
-    //删除列表数据
-    deleteList(state,id){
-        loginSpread_del(id).then(()=> {
-            loginSpread_list({
-                pageNum: state.loginSpreadList.pageNum,
-                pageSize: state.loginSpreadList.pageSize
-            }).then(res=> {
-                state.loginSpreadList.data.list = res.data.list;
-                state.loginSpreadList.total = res.data.total;
-                state.loginSpreadList.data.list.forEach((v) => {
-                    if (v.status === 'ENABLE') {
-                        v.status = '启 用'
-                    } else {
-                        v.status = '停 用'
-                    }
-                })
-            })
-        })
-    },
-     // 用户权限判定
+      // 用户权限判定，之后表格右侧会有不同的操作按钮
      userDo(state) {
         state.loginSpreadList.data.custom = [];
         let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));

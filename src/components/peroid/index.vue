@@ -148,7 +148,7 @@ export default {
     methods: {
         //点击取消
         cancel() {
-
+            this.$emit('cancel')
         },
         //点击保存
         save() {

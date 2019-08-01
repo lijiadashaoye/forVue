@@ -99,7 +99,7 @@ export default {
   mounted() {
     this.userDo();
     this.getBlackNameListData({
-      pageNum : this.$store.state.blackList.blackNameList.pageNum,
+      pageNum : 1,
       pageSize : this.$store.state.blackList.blackNameList.pageSize
     });
     this.pageName = this.$route.name;

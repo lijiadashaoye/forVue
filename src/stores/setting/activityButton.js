@@ -1,4 +1,4 @@
-import { activity_button_list, activity_button_del } from '../../api/setting_use'
+import { activity_button_list } from '../../api/setting_use'
 
 const state = {
     activityButtonList : {
@@ -18,16 +18,13 @@ const state = {
 }
 
 const mutations = {
-    getActivityListData(state) {
-        activity_button_list({
-            pageNum: state.activityButtonList.pageNum,
-            pageSize: state.activityButtonList.pageSize
-        }).then(res=> {
+    getActivityListData(state,data) {
+        activity_button_list(data).then(res=> {
             state.activityButtonList.data.list = res.data.list;
             state.activityButtonList.total = res.data.total;
         })
     },
-    // 用户权限判定
+     // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.activityButtonList.data.custom = [];
         let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
@@ -52,13 +49,8 @@ const mutations = {
 }
 
 const actions = {
-    getList({commit}) {
-        commit('getActivityListData')
-    },
-    deleteList({commit},id) {
-        activity_button_del(id).then(()=> {
-            commit('getActivityListData')
-        })
+    getList({commit},data) {
+        commit('getActivityListData',data)
     }
 }
 export default {

@@ -24,6 +24,9 @@ import peroid from './setting/peroid';//首页期限配置
 import notice from './setting/notice';//公告
 import comment from './setting/comment';//评论
 import productUrl from './setting/productUrl';//通用地址
+import cashOut from './member/cashOut';//提现管理
+import devicePosition from './log/devicePosition';//log 设备定位
+import pointLocation from './log/pointLocation';//log 点位
 const store = new Vuex.Store({
     modules: { // 使用状态整合来区分
         for_layout,
@@ -47,7 +50,10 @@ const store = new Vuex.Store({
         peroid,
         notice,
         comment,
-        productUrl
+        productUrl,
+        cashOut,
+        devicePosition,
+        pointLocation
     }
 });
 

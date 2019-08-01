@@ -197,11 +197,11 @@ export default {
           { required: true, message: "请选择基金公司", trigger: "change" }
         ],
         name: [
-          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" },
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" },
           { required: true, message: "请输入产品名称", trigger: "blur" }
         ],
         code: [
-          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" },
+          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" },
           { required: true, message: "请输入基金代码", trigger: "blur" }
         ],
         status: [

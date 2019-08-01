@@ -139,7 +139,7 @@ export default {
       },
       rules: {
         sameProductFlag: [
-          { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" }
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
         flowNum: [{ validator: checkNum3, trigger: "blur" }],
         defaultNum: [{ validator: checkNum3, trigger: "blur" }],

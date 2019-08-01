@@ -58,7 +58,7 @@
         >
           <el-form
             :model="addXiLieForm"
-            label-width="100px"
+            label-width="110px"
             label-suffix=":"
             label-position="right"
           >
@@ -81,7 +81,7 @@
               <a class="isAClick" @click="toJiGou">无机构？</a>
             </el-form-item>
 
-            <el-form-item label="产品系列名称">
+            <el-form-item label="* 产品系列名称">
               <el-input v-model="addXiLieForm.xilie" placeholder="请输入产品关键字"></el-input>
             </el-form-item>
           </el-form>
@@ -645,7 +645,7 @@ export default {
       let obj = {},
         httpType = ""; // 最终返回的数据
       if (this.addXiLieForm.jigou != "" && this.addXiLieForm.xilie != "") {
-        if (this.addXiLieForm.xilie.length < 20) {
+        if (this.addXiLieForm.xilie.length < 50) {
           let jigou = this.dictData.jigou.filter(
             item => item.id == this.addXiLieForm.jigou
           )[0];
@@ -683,7 +683,7 @@ export default {
               }
             });
         } else {
-          this.$message.error("系列名字太长，请输入小于20字符！");
+          this.$message.error("系列名字太长，请输入小于50字符！");
         }
       } else {
         this.$message.error("请填写必填数据！");
@@ -815,15 +815,15 @@ export default {
     outPut() {},
     // 导入
     inPut() {},
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
-      this.tableInputData.data.custom.push({
-        text: "复制",
-        type: "primary",
-        size: "mini",
-        emit: "copy"
-      });
+      // this.tableInputData.data.custom.push({
+      //   text: "复制",
+      //   type: "primary",
+      //   size: "mini",
+      //   emit: "copy"
+      // });
       this.tableInputData.data.custom.push({
         text: "删除",
         type: "danger",

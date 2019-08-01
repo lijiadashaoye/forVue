@@ -65,6 +65,7 @@ export default {
                 this.uping = false;
               }
             }, 6000);
+            
             // 执行上传
             this.$api
               .UPImg({

@@ -51,7 +51,7 @@ export default {
         this.pageName = this.$route.name;
         this.userDo();
         this.getList({
-            pageNum: this.$store.state.slider.sliderList.pageNum,
+            pageNum: 1,
             pageSize: this.$store.state.slider.sliderList.pageSize,
         });
         this.getAppChannel();

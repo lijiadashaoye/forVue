@@ -83,15 +83,6 @@ const actions = {
     getList({commit}) {
         commit('getAdvertisListData')
     },
-    deleteList({
-        commit
-    }, id) {
-        adverdis_Page_del(id).then((res) => {
-            if(res.success) {
-                commit('getAdvertisListData')
-            }
-        })
-    }
 }
 
 export default {

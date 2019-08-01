@@ -28,7 +28,7 @@
             </div>
         </div>
 
-        <div class="card-item">
+        <div class="card-item" v-if="this.showType == 'OPENSCREEN'">
             <span class="item-text">*状态:</span>
             <div class="item-input">
                 <el-radio-group v-model="status">
@@ -39,11 +39,11 @@
         </div>
 
         <div class="card-item">
-            <span class="item-text">*适用版本:</span>
+            <span class="item-text">*适用平台:</span>
             <div class="item-input">
                 <el-radio-group v-model="platformCode">
-                    <el-radio label="android">安卓</el-radio>
-                    <el-radio label="ios">IOS</el-radio>
+                    <el-radio label="android" :disabled='upDataFlag'>安卓</el-radio>
+                    <el-radio label="ios" :disabled='upDataFlag'>IOS</el-radio>
                 </el-radio-group>
             </div>
         </div>
@@ -97,12 +97,12 @@
             <div class="card-item">
                 <span class="item-text">*点击效果连接位置:</span>
                 <div class="item-input">
-                   <el-select v-model="linkLocation" clearable placeholder="请选择">
+                    <el-select v-model="productType" clearable placeholder="请选择产品类型"  @change="typeSelect(productType)">
                         <el-option
                             v-for="(item,ind) in linkLocationOpt"
                             :key="ind"
                             :label="item.linkName"
-                            :value="item.linkUrl">
+                            :value="item.linkModel">
                             <span style="float: left">{{ item.linkName }}</span>
                             <span style="float: right; color: #8492a6; font-size: 13px">{{ item.linkUrl }}</span>
                         </el-option>
@@ -110,17 +110,36 @@
                 </div>
             </div>
 
-            <div class="card-item">
+            <div class="card-item" v-if="inputFlag">
+                <span class="item-text">网址链接:</span>
+                <div class="item-input">
+                    <el-input v-model="linkUrl" placeholder="请输入产品链接"></el-input>
+                </div>
+            </div>
+
+            <div class="card-item" v-else>
                 <span class="item-text">关联产品:</span>
                 <div class="item-input">
-                   <el-select v-model="productCode" clearable placeholder="请选择" :disabled="productCodeFlag">
+                    <el-select
+                        v-model="linkId"
+                        filterable
+                        clearable
+                        :disabled="productCodeFlag"
+                        v-loadmore='loadmore'
+                        remote
+                        reserve-keyword
+                        :remote-method="fuzzySearch"
+                        placeholder="请选择产品名称">
                         <el-option
                             v-for="(item,ind) in productOpt"
                             :key="ind"
-                            :label="item.label"
-                            :value="item.value">
+                            :label="item.name"
+                            :value="item.id">
+                            <span style="float: left">{{ item.institutionName }}</span>
+                            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
                         </el-option>
                     </el-select>
+
                 </div>
             </div>
 
@@ -138,13 +157,6 @@
                             <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                         </div>
                     </el-upload>
-                </div>
-            </div>
-
-            <div class="card-item">
-                <span class="item-text">*网址链接:</span>
-                <div class="item-input">
-                    <el-input v-model="urlLink" placeholder="请输入链接地址(300字以内)"></el-input>
                 </div>
             </div>
 
@@ -183,20 +195,6 @@
             </div>
             <!-- 部分用户地区 -->
             <div v-if="this.pushUser === 'PORTION'">
-                <div class="card-item">
-                    <span class="item-text">添加关联租:</span>
-                    <div class="item-input">
-                    <el-select v-model="associationGroup" clearable placeholder="请选择">
-                            <el-option
-                                v-for="(item,ind) in associationGroupOpt"
-                                :key="ind"
-                                :label="item.label"
-                                :value="item.value">
-                            </el-option>
-                        </el-select>
-                    </div>
-                </div>
-
                 <h4>推广地区选择</h4>
 
                 <div class="card-item province">
@@ -291,48 +289,65 @@
 </template>
 
 <script>
-import { upLoadImg, adverdis_Page_add, productUrl_list } from '../../api/setting_use.js';
+import { upLoadImg, adverdis_Page_add, productUrl_list, productList } from '../../api/setting_use.js';
 import { AxiosGet } from '../../sets/axiosMethods';
 import { mapActions } from 'vuex';
+import { filter } from 'minimatch';
 var token =  localStorage.getItem('token')
 export default {
     props: ['appChannel', 'params'],
     data() {
         return {
             id: '',
+            productId: '',
+            inputFlag: false,
+            upDataFlag: false,
+            modelType: 'LAUNCHPAGE',
             productCodeFlag: true,
             showTypeFlag: false,
+            productForm: {
+                pageSize: 200,
+                pageNum: 1,
+                linkLocationEnum: '',
+                name: null
+            },
+            productPageCount:1,
             fileList: [],//开屏列表
             appChannelName: '',//渠道名称
             appChannelCode: '',//渠道标识码
             advertisName: '',//名称
             showType: '',//显示类型
-            status: '',//状态
+            status: 'ENABLE',//状态
             platformCode: '',//平台码
             platformName: '',//平台名称
             launchAdvertisingDetails: [],//广告详情
-            linkLocation: '',//点击效果链接位置
+            productType: '',//点击效果链接位置
             displayTime: '',//闪屏时间
-            productCode: '',//产品标识码
+            linkId: '',//产品标识码
+            linkUrl: '',
             productName: '',//产品名称
             resolution: '',//分辨率
             flashScreenUrl: '',//开屏图片地址
-            urlLink: '',//网址链接
             startTime: '',//广告开始时间
             endTime: '',//广告结束时间
             pushUser: 'TOTAL',//推广用户
             locationManage: [],//推广用户地区列表
-            associationGroup: '',//关联租
             provinceList: [],//已选省份列表
             videoUrl: '',//视频地址
             frameUrl: '',//首帧图片地址
             videoFlag:false,      //刚开始的时候显示为flase
             videoUploadPercent: '0%',  //进度条刚开始的时候为0%
             launchAdvertisId: '',
+            linkLocationOpt: [],//点击效果连接列表,
+            productOpt: [],//产品列表
             resolutionOpt: [//分辨率下拉列表
                 {
                     label: '1242_2688',
                     value: '1242_2688'
+                },
+                {
+                    label: '1242_2208',
+                    value: '1242_2208'
                 },
                 {
                     label: '1125_2436',
@@ -343,28 +358,12 @@ export default {
                     value: '828_1792'
                 },
                 {
-                    label: '1125_2436',
-                    value: '1125_2436'
-                },
-                {
-                    label: '1242_2208',
-                    value: '1242_2208'
-                },
-                {
                     label: '750_1334',
                     value: '750_1334'
                 },
                 {
                     label: '640_1136',
                     value: '640_1136'
-                }
-            ],
-            linkLocationOpt: [],//点击效果连接列表,
-            productOpt: [],//产品列表
-            associationGroupOpt: [//关联组列表
-                {
-                    label: '关联组1 test',
-                    value: 'ASSOCIATIONGROUP'
                 }
             ],
             provinceOpt: [
@@ -511,6 +510,26 @@ export default {
     mounted() {
         this.getChannelData();
         if(this.params) {
+            this.upDataFlag = true;
+            if(this.params.showType == 'FLASHSCREEN') {
+                this.productType = this.params.productRelationDetailsVo.productType;
+                if(this.params.productRelationDetailsVo != null && this.params.productRelationDetailsVo.productType != '' && this.params.productRelationDetailsVo.productType != null && this.params.productRelationDetailsVo.productType == 'EXTERNAL_LINK') {
+                    this.inputFlag = true;
+                } else {
+                    this.inputFlag = false;
+                    this.productForm.pageNum = 1;
+                    this.productForm.linkLocationEnum = this.params.productRelationDetailsVo.productType;
+                    this.getproList(this.productForm)
+                }
+                if(this.params.productRelationDetailsVo != null && this.params.productRelationDetailsVo.productType != '' && this.params.productRelationDetailsVo.productType != null) {
+                    this.productCodeFlag = false;
+                } else {
+                    this.productCodeFlag = true;
+                }
+                this.linkId = this.params.productRelationDetailsVo.linkId != null && this.params.productRelationDetailsVo.linkId != '' ? this.params.productRelationDetailsVo.linkId : null;
+                this.linkUrl = this.params.productRelationDetailsVo.linkUrl != null && this.params.productRelationDetailsVo.linkUrl != '' ? this.params.productRelationDetailsVo.linkUrl : null;
+                this.productId = this.params.productRelationDetailsVo.id != null && this.params.productRelationDetailsVo.id != '' ? this.params.productRelationDetailsVo.id : null;
+            }
             this.showTypeFlag = true;
             this.id = this.params.id;
             this.appChannelName = this.params.appChannelName;
@@ -520,24 +539,22 @@ export default {
             this.status = this.params.status;
             this.platformCode = this.params.platformCode;
             this.platformName = this.params.platformName;
-            this.linkLocation = this.params.linkLocation;
             this.displayTime = this.params.displayTime;
             this.resolution = this.params.resolution;
-            this.productCode = this.params.productCode;
             this.productName = this.params.productName;
-            this.associationGroup = this.params.associationGroup;
             this.startTime = this.params.startTime;
             this.endTime = this.params.endTime;
             this.pushUser = this.params.pushUser;
-            if(this.showType == 'FLASHSCREEN' && this.pushUser === 'PORTION') {
+            if(this.params.showType == 'FLASHSCREEN' && this.params.pushUser === 'PORTION') {
                 if(this.params.locationManage.length > 0){
+                    this.provinceList = [];
                     this.params.locationManage.forEach(v=> {
                         this.provinceList.push(v.province)
                     })
                 }
             }
             if(this.params.launchAdvertisingDetails.length>0) {
-                this.urlLink = this.params.launchAdvertisingDetails[0].urlLink;
+                this.fileList = [];
                 this.params.launchAdvertisingDetails.forEach(v=> {
                     if(this.showType == 'FLASHSCREEN'){
                         this.flashScreenUrl = v.advertisUrl
@@ -556,6 +573,8 @@ export default {
             };
             this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
             this.locationManage = this.params.locationManage;
+        } else {
+            this.id = null;
         }
     },
     methods: {
@@ -563,13 +582,72 @@ export default {
             getList: 'productUrl/getList'
         }),
         cancel() {
-            this.$emit('cancel')
+            this.id = null;
+            this.$emit('cancel');
         },
-        //
+        //选择产品类型
         getChannelData() {
             productUrl_list().then(res=> {
-                this.linkLocationOpt = res.data.list;
+                if(res && res.success) {
+                    this.linkLocationOpt = res.data.list.filter(v=> {
+                        return v.linkUrl != '' && v.linkUrl != null;
+                    });
+                }
             })
+        },
+        loadmore() {
+            if(this.productForm.pageNum < this.productPageCount) {
+                this.productForm.pageNum++;
+                this.getproList(this.productForm);
+            }
+        },
+        getproList(form) {
+            productList(form).then(res=> {
+                if(res && res.success) {
+                    this.productPageCount = res.data && Math.ceil(res.data.total/this.productForm.pageSize)
+                    if(res.data && res.data.list != null && res.data.list != []) {
+                        const _res = res.data.list
+                        this.productOpt = [...this.productOpt,..._res]
+                    }
+                }
+            }).catch(res=> {
+                this.$message.error(`${res.message}`)
+            })
+        },
+        fuzzySearch(query) {
+            if(query!= '' && this.productType != '') {
+                this.productOpt = [];
+                this.productForm.name = query;
+                this.productForm.linkLocationEnum = this.productType;
+                this.getproList(this.productForm)
+            } else {
+                this.productOpt = [];
+                this.productForm.name = null;
+                this.productForm.linkLocationEnum = this.productType;
+                this.getproList(this.productForm)
+            }
+        },
+        typeSelect(val) {
+            this.linkId = '';
+            this.productForm = {
+                pageSize: 200,
+                pageNum: 1,
+                linkLocationEnum: '',
+                name: null
+            }
+            this.productOpt = [];
+            if(this.productType !="" && this.productType != null && this.productType != 'undefined'){
+                this.productCodeFlag = false;
+                if(val == 'EXTERNAL_LINK') {
+                    this.inputFlag = true;
+                } else {
+                    this.inputFlag = false;
+                    this.productForm.linkLocationEnum = val;
+                    this.getproList(this.productForm)
+                }
+            } else {
+                this.productCodeFlag = true;
+            }
         },
         //点击保存
         save() {
@@ -587,11 +665,15 @@ export default {
                     this.platformName = '苹果'
                 }
                 //产品
-                this.productOpt.forEach(v=> {
-                    if(this.productCode == v.value){
-                        this.productName = v.label
-                    }
-                })
+                if(this.productType != 'EXTERNAL_LINK' && this.linkId != '' && this.linkId != null) {
+                    this.productOpt.forEach(v=> {
+                        if(this.linkId == v.id){
+                            this.productName = v.name
+                        }
+                    })
+                } else {
+                    this.productName = '';
+                }
                 if(this.showType === "OPENSCREEN") {//开屏
                     if(this.launchAdvertisingDetails.length > 0) {
                         let obj = {
@@ -602,7 +684,8 @@ export default {
                             platformCode: this.platformCode,
                             platformName: this.platformName,
                             showType: this.showType,
-                            launchAdvertisingDetails: this.launchAdvertisingDetails
+                            launchAdvertisingDetails: this.launchAdvertisingDetails,
+                            productRelationDetailsVo: {},
                         }
                         this.$emit('send',obj)
                     } else {
@@ -617,16 +700,15 @@ export default {
                         })
                     }
                 } else if(this.showType === 'FLASHSCREEN') {//闪屏
-                    if(this.resolution && this.displayTime && this.linkLocation && this.urlLink && this.startTime && this.endTime &&this.launchAdvertisingDetails.length > 0) {
+                    if(this.resolution && this.displayTime && this.productType && this.startTime && this.endTime &&this.launchAdvertisingDetails.length > 0) {
                         this.provinceList.forEach(v=> {
                             this.locationManage.push({
                                 province: v,
                                 modelType: 'ADVERT_START'
                             })
                         })
-                        this.launchAdvertisingDetails[0].urlLink = this.urlLink;
                         let obj = {
-                            id:this.id,
+                            id:this.id != '' && this.id != null ? this.id : null,
                             advertisName: this.advertisName,
                             appChannelCode: this.appChannelCode,
                             appChannelName: this.appChannelName,
@@ -635,14 +717,18 @@ export default {
                             showType: this.showType,
                             resolution: this.resolution,
                             displayTime: this.displayTime,
-                            linkLocation: this.linkLocation,
-                            productCode: this.productCode,
-                            productName: this.productName,
+                            productRelationDetailsVo :{
+                                productType: this.productType,
+                                productName: this.productName != null && this.productName != '' ? this.productName : null,
+                                linkUrl: this.linkUrl != null && this.linkUrl != '' ? this.linkUrl : null,
+                                linkId: this.linkId != null && this.linkId != '' ? this.linkId : null,
+                                modelType: 'LAUNCHPAGE',
+                                id: this.productId != null && this.productId != '' ? this.productId : null,
+                            },
                             startTime: new Date(this.startTime).getTime(),
                             endTime: new Date(this.endTime).getTime(),
                             pushUser: this.pushUser,
                             launchAdvertisingDetails: this.launchAdvertisingDetails,
-                            associationGroup: this.associationGroup,
                             locationManage: this.locationManage
                         }
                         this.$emit('send',obj)
@@ -668,7 +754,8 @@ export default {
                             platformName: this.platformName,
                             showType: this.showType,
                             resolution: this.resolution,
-                            launchAdvertisingDetails: this.launchAdvertisingDetails
+                            launchAdvertisingDetails: this.launchAdvertisingDetails,
+                            productRelationDetailsVo: {},
                         }
                         this.$emit('send',obj)
                     } else {
@@ -696,9 +783,7 @@ export default {
             }
         },
 
-
         //闪屏
-
         //上传闪屏图片
         uploadAdvertis(params) {
             const _file = params.file;
@@ -732,7 +817,6 @@ export default {
                 }
             })
         },
-
 
         //视频
 
@@ -789,7 +873,6 @@ export default {
             })
         },
 
-
         //开屏
 
          //点击上传 开屏图片
@@ -801,8 +884,10 @@ export default {
         },
         //删除开屏图片
         handleRemove(file, fileList) {
+            var url = file.response ? this.$ImgBaseUrl + file.response.data : file.url
+            console.log(url)
             this.launchAdvertisingDetails.forEach((v,i)=> {
-                if(v.advertisUrl == (this.$ImgBaseUrl + file.response.data)){
+                if(v.advertisUrl == url){
                     this.launchAdvertisingDetails.splice(i,1)
                 }
             })
@@ -819,64 +904,71 @@ export default {
     },
     watch: {
         'params.id'() {
-            this.id = this.params.id;
-            this.appChannelName = this.params.appChannelName;
-            this.appChannelCode = this.params.appChannelCode;
-            this.advertisName = this.params.advertisName;
-            this.showType = this.params.showType;
-            this.status = this.params.status;
-            this.platformCode = this.params.platformCode;
-            this.platformName = this.params.platformName;
-            this.linkLocation = this.params.linkLocation;
-            this.displayTime = this.params.displayTime;
-            this.resolution = this.params.resolution;
-            this.productCode = this.params.productCode;
-            this.productName = this.params.productName;
-            this.associationGroup = this.params.associationGroup;
-            this.startTime = this.params.startTime;
-            this.endTime = this.params.endTime;
-            this.pushUser = this.params.pushUser;
-            if(this.showType == 'FLASHSCREEN' && this.pushUser === 'PORTION') {
-                if(this.params.locationManage.length > 0){
-                    this.params.locationManage.forEach(v=> {
-                        this.provinceList.push(v.province)
-                    })
+            if(this.params != null && this.params.showType == 'FLASHSCREEN') {
+                this.productType = this.params.productRelationDetailsVo.productType;
+                if(this.params.productRelationDetailsVo != null && this.params.productRelationDetailsVo.productType != '' && this.params.productRelationDetailsVo.productType != null && this.params.productRelationDetailsVo.productType == 'EXTERNAL_LINK') {
+                    this.inputFlag = true;
+                } else {
+                    this.inputFlag = false;
+                    this.productForm.pageNum = 1;
+                    this.productForm.linkLocationEnum = this.params.productRelationDetailsVo.productType;
+                    this.getproList(this.productForm)
                 }
+                if(this.params.productRelationDetailsVo != null && this.params.productRelationDetailsVo.productType != '' && this.params.productRelationDetailsVo.productType != null) {
+                    this.productCodeFlag = false;
+                } else {
+                    this.productCodeFlag = true;
+                }
+                this.linkId = this.params.productRelationDetailsVo.linkId != null && this.params.productRelationDetailsVo.linkId != '' ? this.params.productRelationDetailsVo.linkId : null;
+                this.linkUrl = this.params.productRelationDetailsVo.linkUrl != null && this.params.productRelationDetailsVo.linkUrl != '' ? this.params.productRelationDetailsVo.linkUrl : null;
+                this.productId = this.params.productRelationDetailsVo.id != null && this.params.productRelationDetailsVo.id != '' ? this.params.productRelationDetailsVo.id : null;
             }
-            if(this.params.launchAdvertisingDetails.length>0) {
-                this.urlLink = this.params.launchAdvertisingDetails[0].urlLink;
-                this.params.launchAdvertisingDetails.forEach(v=> {
-                    if(this.showType == 'FLASHSCREEN'){
-                        this.flashScreenUrl = v.advertisUrl
-                    } else if (this.showType == 'OPENSCREEN') {
-                        this.fileList.push({
-                            url:v.advertisUrl
+            this.showTypeFlag = true;
+            if(this.params != null) {
+                this.id = this.params != null && this.params.id ? this.params.id : '';
+                this.appChannelName = this.params != null && this.params.appChannelName ? this.params.appChannelName : '';
+                this.appChannelCode = this.params != null && this.params.appChannelCode ? this.params.appChannelCode : '';
+                this.advertisName = this.params.advertisName;
+                this.showType = this.params.showType;
+                this.status = this.params.status;
+                this.platformCode = this.params.platformCode;
+                this.platformName = this.params.platformName;
+                this.displayTime = this.params.displayTime;
+                this.resolution = this.params.resolution;
+                this.productName = this.params.productName;
+                this.startTime = this.params.startTime;
+                this.endTime = this.params.endTime;
+                this.pushUser = this.params.pushUser;
+                if(this.params.showType == 'FLASHSCREEN' && this.params.pushUser === 'PORTION') {
+                    if(this.params.locationManage.length > 0){
+                        this.provinceList = [];
+                        this.params.locationManage.forEach(v=> {
+                            this.provinceList.push(v.province)
                         })
-                    } else if (this.showType === 'VIDEO'){
-                        if(v.advertisType === 'VIDEO') {
-                            this.videoUrl = v.advertisUrl
-                        } else if (v.advertisType === 'FIRST_IMAGE') {
-                            this.frameUrl = v.advertisUrl
+                    }
+                }
+                if(this.params.launchAdvertisingDetails.length>0) {
+                    this.fileList = [];
+                    this.params.launchAdvertisingDetails.forEach(v=> {
+                        if(this.showType == 'FLASHSCREEN'){
+                            this.flashScreenUrl = v.advertisUrl
+                        } else if (this.showType == 'OPENSCREEN') {
+                            this.fileList.push({
+                                url:v.advertisUrl
+                            })
+                        } else if (this.showType === 'VIDEO'){
+                            if(v.advertisType === 'VIDEO') {
+                                this.videoUrl = v.advertisUrl
+                            } else if (v.advertisType === 'FIRST_IMAGE') {
+                                this.frameUrl = v.advertisUrl
+                            }
                         }
-                    }
-                })
-            };
-            this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
-            this.locationManage = this.params.locationManage;
-        },
-        'linkLocation'() {
-            if(this.linkLocation && this.linkLocation != null && this.linkLocation != 'undefined') {
-                this.productCodeFlag = false;
-                AxiosGet(this.linkLocation).then(res=> {
-                    if(res && res.success) {
-                        console.log(res.data.list)
-                        this.productOpt = res.data.list
-                    }
-                })
-            } else {
-                this.productCodeFlag = true;
+                    })
+                };
+                this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
+                this.locationManage = this.params.locationManage;
             }
-        }
+        },
     },
 }
 </script>

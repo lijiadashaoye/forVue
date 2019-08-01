@@ -1,448 +1,396 @@
 <template>
   <div>
-    <div class="formWaper">
-      <!-- 此功能已变更，目前不需要
-       formData={
-        // bottomBtn: "",
-        // btnImg: "",
-        // btnText: "",
-        // btnColor: "#000",
-        // bottomBtnUrl: "",
-        // bottomBtnUrlText: "",
-        // topBtn: "",
-        // topImg: "",
-        // topBtnText: "",
-        // topBtnColor: "#000",
-        // topBtnUrl: "",
-        // topBtnUrlText: "",
-        // floatBtn: "",
-        // floatImg: "",
-        // floatUrl: "",
-        // floatUrlText: "",
-       }
-        <el-form
-        size="small"
-        ref="formData"
-        :model="formData"
-        label-width="80px"
-        label-suffix=':'
-        :rules="rules"
-        >
-        <el-form-item label="活动图片">
-          <div class="actImg">
-            <div style="width:80px;">
-              <el-checkbox v-model="formData.bottomBtn">底部按钮</el-checkbox>
-            </div>
-            <div class="upimg">
-              <imgUpload @selectImg='getImg("actImg",$event)' />
-            </div>
-            <div class="toFlexImgRight">
-              <el-form-item
-                style="margin-bottom:17px;"
-                label="按钮文字"
-                prop="btnText"
-              >
-                <el-input
-                  placeholder="不填则不显示，最多4个字符"
-                  v-model="formData.btnText"
-                ></el-input>
-              </el-form-item>
-              <el-form-item
-                label="文字颜色"
-                style="margin:0;"
-              >
-                <el-color-picker
-                  :disabled='!formData.btnText'
-                  v-model="formData.btnColor"
-                ></el-color-picker>
-                <span class="cre-color">不选择默认为黑色</span>
-              </el-form-item>
-              <el-form-item
-                label="跳转链接"
-                style="position:relative;margin:0;"
-              >
-                <el-checkbox
-                  v-model="formData.bottomBtnUrl"
-                  class="urlCheckbox"
-                ></el-checkbox>
-                <el-input
-                  placeholder="勾选后同步基本信息链接地址，可修改"
-                  :disabled="!formData.bottomBtnUrl"
-                  v-model="formData.bottomBtnUrlText"
-                ></el-input>
-              </el-form-item>
-
-            </div>
-          </div>
-
-          <div class="actImg">
-            <div style="width:80px;">
-              <el-checkbox v-model="formData.topBtn">顶部按钮</el-checkbox>
-            </div>
-            <div class="upimg">
-              <imgUpload @selectImg='getImg("topBtn",$event)' />
-            </div>
-            <div class="toFlexImgRight">
-              <el-form-item
-                style="margin-bottom:17px;"
-                label="按钮文字"
-                prop="topBtnText"
-              >
-                <el-input
-                  placeholder="不填则不显示，最多4个字符"
-                  v-model="formData.topBtnText"
-                ></el-input>
-              </el-form-item>
-              <el-form-item
-                label="文字颜色"
-                style="margin:0px;"
-              >
-                <el-color-picker
-                  :disabled='!formData.topBtnText'
-                  v-model="formData.topBtnColor"
-                ></el-color-picker>
-                <span class="cre-color">不选择默认为黑色</span>
-              </el-form-item>
-              <el-form-item
-                label="跳转链接"
-                style="position:relative;margin:0;"
-              >
-                <el-checkbox
-                  v-model="formData.topBtnUrl"
-                  class="urlCheckbox"
-                ></el-checkbox>
-                <el-input
-                  placeholder="勾选后同步基本信息链接地址，可修改"
-                  :disabled="!formData.topBtnUrl"
-                  v-model="formData.topBtnUrlText"
-                ></el-input>
-              </el-form-item>
-
-            </div>
-          </div>
-
-          <div class="actImg">
-            <div style="width:80px;">
-              <el-checkbox v-model="formData.floatBtn">浮窗设置</el-checkbox>
-            </div>
-            <div class="upimg">
-              <imgUpload @selectImg='getImg("float",$event)' />
-            </div>
-            <div style="display:flex;align-items:flex-end;width:100%;">
-              <el-form-item
-                label="跳转链接"
-                style="position:relative;margin:0;width:100%;"
-              >
-                <el-checkbox
-                  v-model="formData.floatUrl"
-                  class="urlCheckbox"
-                ></el-checkbox>
-                <el-input
-                  placeholder="勾选后同步基本信息链接地址，可修改"
-                  :disabled="!formData.floatUrl"
-                  v-model="formData.floatUrlText"
-                ></el-input>
-              </el-form-item>
-
-            </div>
-          </div>
-        </el-form-item>
-      </el-form> -->
+    <div class="formWaper" v-if="!isOk">
       <div style="display:flex;justify-content:space-between;margin-bottom:20px;">
         <div>
-          <h4><span class="isPoints">*</span>请选择图片使用的场景：</h4>
-          <el-select
-            v-model="other"
-            placeholder="请选择"
-            multiple
-            @change="showChuang"
-          >
+          <h4>
+            <span class="isPoints">*</span>活动配置
+          </h4>
+          <el-select v-model="other" placeholder="请选择" multiple>
             <el-option
               v-for="item in otherList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </div>
 
         <div>
-          <h4><span class="isPoints">*</span>请选显示渠道：</h4>
-          <el-select
-            v-model="showWay"
-            placeholder="请选择"
-            clearable
-          >
+          <h4>
+            <span class="isPoints">*</span>请选显示渠道：
+          </h4>
+          <el-select v-model="showWay" placeholder="请选择" clearable>
             <el-option
               v-for="tar in qudaoList"
               :key="tar.value"
               :label="tar.label"
               :value="tar.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </div>
-
       </div>
-      <el-form
-        v-if='other.includes("1")'
-        size="small"
-        label-width="80px"
-        label-suffix=':'
-      >
-
+      <!-- 活动栏位管理 -->
+      <div v-if="other.includes('1')" class="setBorder">
         <div style="padding-bottom:10px;display:flex;justify-content:space-between;">
-          <p class="otherTitle">弹窗设置</p>
-          <div>
-            <el-button
-              type="primary"
-              size="mini"
-              plain
-              @click="addTanChuang('')"
-            >继续添加弹窗图</el-button>
-          </div>
-        </div>
+          <p class="otherTitle">活动栏位管理</p>
 
-        <el-form-item
-          v-for='(item,index) in tanchuanForm'
-          :key='index'
-        >
-          <div style="display:flex;justify-content:flex-end;">
+          <div>
+            <span>请选择栏位：</span>
+            <el-select
+              multiple
+              placeholder="请选择"
+              size="mini"
+              v-model="selectLanwei"
+              @change="selectLanweiFn"
+            >
+              <el-option
+                v-for="item in lanweiList"
+                :key="item.ID"
+                :label="item.name"
+                :value="item.ID"
+              ></el-option>
+            </el-select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span>也可以新增栏位：</span>
+            <el-button type="primary" size="mini" plain @click="lanweiForm.show = true">添加新栏位</el-button>
             <el-button
               size="mini"
-              icon="el-icon-delete"
+              icon="el-icon-close"
               type="danger"
               circle
-              title="删除"
-              @click="toDeleteTanchuang(item)"
+              title="关闭"
+              @click="toClose(1)"
             ></el-button>
           </div>
-          <div class="actImg">
-            <div class="upimg">
+        </div>]
+
+        <el-dialog
+          title="活动栏位管理"
+          :close-on-click-modal="false"
+          :visible.sync="lanweiForm.show"
+          width="40%"
+        >
+          <el-form size="small" label-width="120px" ref="lanweiForm" :model="lanweiForm">
+            <el-form-item label="ID" prop="ID">
+              <el-input v-model="lanweiForm.ID" type="number"></el-input>
+            </el-form-item>
+            <el-form-item label="栏位名称" prop="name">
+              <el-input v-model="lanweiForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="平台" prop="pingtai">
+              <el-select v-model="lanweiForm.pingtai" placeholder="请选择活动平台">
+                <el-option
+                  size="mini"
+                  v-for="item in pingTaiList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="设备" prop="shebei">
+              <el-checkbox-group v-model="lanweiForm.shebei">
+                <el-checkbox v-for="(dd,index) of shebeiList" :key="index" :label="dd.label"></el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+
+            <el-form-item label="活动栏位排序" prop="paixu">
+              <el-input v-model="lanweiForm.paixu" type="number"></el-input>
+            </el-form-item>
+
+            <el-form-item label="资源图片">
               <imgUpload
+                v-if="lanweiForm.show"
                 :datas="{
-                   url:'admin/file/up/market',
-                  imgUrl:item.img
+                  url:'admin/file/up/member',
+                  imgUrl:''
                 }"
-                @selectImg='tanChuangImg(item.id,$event)'
+                @selectImg="sharePageImg('lanwei',$event)"
               />
-            </div>
-            <div class="imgRight">
-              <div style="display:flex;">
-                <div style="display:flex;margin-right:30px;">
-                  <el-checkbox
-                    @change='check(item)'
-                    style="width:90px;"
-                    v-model="item.unLogin"
-                  >未登录</el-checkbox>
-                  <el-select
-                    :disabled="!item.unLogin"
-                    v-model="item.noNeed"
-                    placeholder="请选择"
-                    multiple
-                  >
-                    <el-option
-                      v-for="tar in loginList"
-                      :key="tar.value"
-                      :label="tar.label"
-                      :value="tar"
-                    >
-                    </el-option>
-                  </el-select>
-                </div>
-                <div style="display:flex;">
-                  <el-checkbox
-                    @change='check(item)'
-                    v-model="item.login"
-                  >已登录</el-checkbox>
-                  <el-select
-                    v-model="item.need"
-                    placeholder="请选择"
-                    multiple
-                    :disabled="!item.login"
-                  >
-                    <el-option
-                      v-for="tar in loginList"
-                      :key="tar.value"
-                      :label="tar.label"
-                      :value="tar"
-                    >
-                    </el-option>
-                  </el-select>
-                </div>
-              </div>
-              <div style="display:flex;">
-                <el-checkbox
-                  @change='check(item)'
-                  v-model="item.jumpUrl"
-                >跳转链接</el-checkbox>
-                <el-input
-                  :disabled="!item.jumpUrl"
-                  v-model="item.jumpUrlText"
-                ></el-input>
-              </div>
-            </div>
+            </el-form-item>
 
+            <el-form-item label="图片链接">
+              <el-input readonly v-model="lanweiForm.imgUrl" type="textarea" :rows="4"></el-input>
+            </el-form-item>
+
+            <el-form-item label="图片描述">
+              <el-input v-model="lanweiForm.miaoshu" type="textarea" :rows="2" placeholder="请输入内容"></el-input>
+            </el-form-item>
+
+            <el-form-item label="是否上架">
+              <el-select v-model="lanweiForm.shangjia" placeholder="请选择">
+                <el-option
+                  size="mini"
+                  v-for="item in shangjiaList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <div class="editDialogButtons">
+            <el-button type="danger" size="mini" @click="closeLanWeiTanKuang(false)">取消</el-button>
+            <el-button type="primary" size="mini" @click="closeLanWeiTanKuang(true)">保存</el-button>
           </div>
-        </el-form-item>
-      </el-form>
+        </el-dialog>
+        <div class="suolueWap">
+          <div v-for="tar of pageData.lanwei" :key="tar.ID" class="suolue">
+            <p v-if="tar.ID">ID: {{tar.ID}}</p>
+            <p v-if="tar.name">栏位名称: {{tar.name}}</p>
+            <p v-if="tar.pingtai">平台: {{(pingTaiList.filter(kk=>kk.value==tar.pingtai))[0].label}}</p>
+            <p v-if="tar.shebei.length">设备: {{tar.shebei.join('、')}}</p>
+            <p v-if="tar.paixu">栏位排序: {{tar.paixu}}</p>
+            <p v-if="tar.shangjia">是否上架: {{tar.shangjia=== "YES"?'上架':'下架'}}</p>
+            <p v-if="tar.imgUrl">
+              图片:
+              <img :src="tar.imgUrl" />
+            </p>
+            <p v-if="tar.miaoshu">图片描述: {{tar.miaoshu}}</p>
+            <el-button
+              class="suolueBtn"
+              size="mini"
+              icon="el-icon-close"
+              type="light"
+              circle
+              title="删除"
+              @click="toRemoveLanWei(tar.ID)"
+            ></el-button>
+          </div>
+        </div>
+      </div>
 
-      <el-form
-        v-if='other.includes("2")'
-        size="small"
-        label-width="80px"
-        label-suffix=':'
-      >
+      <!-- 分享页设置 -->
+      <div v-if="other.includes('2')" class="setBorder">
         <div style="padding-bottom:10px;display:flex;justify-content:space-between;">
           <p class="otherTitle">分享页设置</p>
           <div>
+            <el-button type="primary" size="mini" plain @click="shareForm.show = true">添加分享页图</el-button>
             <el-button
-              type="primary"
               size="mini"
-              plain
-              @click="addSharePage('')"
-            >继续添加分享页图</el-button>
+              icon="el-icon-close"
+              type="danger"
+              circle
+              title="关闭"
+              @click="toClose(2)"
+            ></el-button>
           </div>
         </div>
 
-        <el-form-item
-          v-for='(item,index) in shareForm'
-          :key='index'
-          :model="item"
+        <el-dialog
+          title="分享页设置"
+          :close-on-click-modal="false"
+          :visible.sync="shareForm.show"
+          width="30%"
         >
-          <div style="display:flex;justify-content:flex-end;">
+          <el-form v-model="shareForm" size="small" label-width="80px" label-suffix=":">
+            <el-form-item prop="shareWay" label="分享图片" label-width="90px">
+              <imgUpload
+                v-if="shareForm.show"
+                :datas="{
+                  url:'admin/file/up/member',
+                  imgUrl:''
+                }"
+                @selectImg="sharePageImg('share',$event)"
+              />
+            </el-form-item>
+
+            <el-form-item prop="shareWay" label="分享途径" label-width="90px">
+              <el-select v-model="shareForm.shareWay" placeholder="请选择">
+                <el-option
+                  v-for="item in shareList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item prop="title" label="分享标题" label-width="90px">
+              <el-input clearable placeholder="请输入" v-model="shareForm.title"></el-input>
+            </el-form-item>
+
+            <el-form-item prop="shareText" label="分享内容" label-width="90px">
+              <el-input type="textarea" rows="3" placeholder="请输入" v-model="shareForm.shareText"></el-input>
+            </el-form-item>
+
+            <el-form-item prop="jumpUrl" label="跳转链接" label-width="90px">
+              <el-input clearable placeholder="请输入" v-model="shareForm.jumpUrl"></el-input>
+            </el-form-item>
+          </el-form>
+
+          <div class="editDialogButtons">
+            <el-button type="danger" size="mini" @click="closeShareTanKuang(false)">取消</el-button>
+            <el-button type="primary" size="mini" @click="closeShareTanKuang(true)">保存</el-button>
+          </div>
+        </el-dialog>
+        <div class="suolueWap">
+          <div v-for="tar of pageData.share" :key="tar.title" class="suolue">
+            <p v-if="tar.title">分享标题: {{tar.title}}</p>
+            <p v-if="tar.shareWay">分享途径: {{tar.shareWay}}</p>
+            <p v-if="tar.shareText">分享内容: {{tar.shareText}}</p>
+            <p v-if="tar.jumpUrl">跳转链接: {{tar.jumpUrl}}</p>
+            <p v-if="tar.imgUrl">
+              图片:
+              <img :src="tar.imgUrl" />
+            </p>
             <el-button
+              class="suolueBtn"
               size="mini"
-              icon="el-icon-delete"
-              type="danger"
+              icon="el-icon-close"
+              type="light"
               circle
               title="删除"
-              @click="toDeleteShareForm(item)"
+              @click="toRemoveShare(tar.title)"
             ></el-button>
           </div>
-          <div class="actImg">
-            <div class="upimg">
-              <imgUpload
-                :datas="{
-                  url:'admin/file/up/market',
-                  imgUrl:item.img
-                }"
-                @selectImg='sharePageImg(item.id,$event)'
-              />
-            </div>
-            <div class="imgRight">
+        </div>
+      </div>
 
-              <el-form-item
-                required
-                label="分享途径"
-                label-width="90px"
-              >
-                <el-select
-                  v-model="item.shareWay"
-                  placeholder="请选择"
-                >
-                  <el-option
-                    v-for="item in shareList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item
-                required
-                label="分享标题"
-                label-width="90px"
-                :rules='[{ min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }]'
-              >
-                <el-input v-model="item.title"></el-input>
-              </el-form-item>
-              <el-form-item
-                required
-                label="分享内容"
-                label-width="90px"
-              >
-                <el-input
-                  type='textarea'
-                  rows="3"
-                  v-model="item.text"
-                  :rules='[{ min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }]'
-                ></el-input>
-              </el-form-item>
-              <div style="display:flex;">
-                <el-checkbox
-                  style="text-indent:-2px;margin-right:12px;"
-                  @change='checkShare(item)'
-                  v-model="item.jumpUrl"
-                >跳转链接:</el-checkbox>
-                <el-input
-                  :disabled="!item.jumpUrl"
-                  v-model="item.jumpUrlText"
-                ></el-input>
-              </div>
-            </div>
-
+      <!-- 关联产品 -->
+      <div v-if="other.includes('3')" class="setBorder">
+        <div style="padding-bottom:10px;display:flex;justify-content:space-between;">
+          <p class="otherTitle">关联产品</p>
+          <div>
+            <el-button type="primary" size="mini" plain @click="guanlianForm.show = true">添加关联产品</el-button>
+            <el-button
+              size="mini"
+              icon="el-icon-close"
+              type="danger"
+              circle
+              title="关闭"
+              @click="toClose(3)"
+            ></el-button>
           </div>
-        </el-form-item>
-      </el-form>
+        </div>
+
+        <el-dialog
+          title="添加关联产品"
+          :close-on-click-modal="false"
+          :visible.sync="guanlianForm.show"
+          width="50%"
+        >
+          <el-form v-model="guanlianForm" size="small" label-width="80px" label-suffix=":">
+            <el-form-item prop="search" label="搜索产品" label-width="90px">
+              <el-input clearable placeholder="请输入" v-model="guanlianForm.search"></el-input>
+              <el-button type="primary" size="mini" @click="toSearch(true)">搜索</el-button>
+              <el-button type="info" size="mini" @click="toSearch(false)">清除</el-button>
+            </el-form-item>
+          </el-form>
+          <div v-if="forForms.forForms">
+            <forms @tableAct="tableAct" style="with:100%;" :type="'lilv'" :pageData="forForms" />
+          </div>
+          <div class="editDialogButtons">
+            <el-button type="danger" size="mini" @click="closeGuanLianTanKuang(false)">关闭</el-button>
+            <el-button type="primary" size="mini" @click="closeGuanLianTanKuang(true)">
+              批量使用
+              <span v-if="hasSelectNum.length">{{`(${hasSelectNum.length}个)`}}</span>
+            </el-button>
+          </div>
+        </el-dialog>
+
+        <div class="suolueWap">
+          <div v-for="tar of pageData.guanlian" :key="tar.num" class="suolue">
+            <p v-if="tar.num">序号: {{tar.num}}</p>
+            <p v-if="tar.name">名称: {{tar.name}}</p>
+            <p v-if="tar.jigou">机构: {{tar.jigou}}</p>
+            <p v-if="tar.imgUrl">
+              图片:
+              <img :src="tar.imgUrl" />
+            </p>
+            <el-button
+              class="suolueBtn"
+              size="mini"
+              icon="el-icon-close"
+              type="light"
+              circle
+              title="删除"
+              @click="toRemoveGuanLian(tar.num)"
+            ></el-button>
+          </div>
+        </div>
+      </div>
 
       <div class="buttons">
-        <el-button
-          @click="step('before')"
-          type="primary"
-        >上一步</el-button>
-        <el-button
-          @click="step()"
-          type="primary"
-        >下一步</el-button>
-        <el-button
-          @click="reset"
-          type="info"
-        >重 置</el-button>
+        <el-button @click="step('before')" type="primary">上一步</el-button>
+        <el-button @click="step()" type="primary" :disabled="isSaveIng">保存</el-button>
+        <el-button @click="reset" type="info">重 置</el-button>
       </div>
     </div>
+    <hasSuccess @isOver="isOver" v-if="isOk" />
   </div>
 </template>
 <script>
 import imgUpload from "../../../../components/upImg.vue";
+import hasSuccess from "../../../../components/success.vue";
+import forms from "../../../../components/forms.vue";
 
 export default {
   props: {
     inputData: Object
   },
-  components: { imgUpload },
+  components: { imgUpload, hasSuccess, forms },
   data() {
     return {
+      isSaveIng: false, // 切换保存按钮的可点击状态
+      isOk: false,
+      //选择图片使用场景
       otherList: [
-        //  选择图片使用场景
-        // {
-        //   label: "弹窗",
-        //   value: "1"
-        // },
+        {
+          label: "活动栏位",
+          value: "1"
+        },
         {
           label: "分享页",
           value: "2"
+        },
+
+        {
+          label: "关联产品",
+          value: "3"
         }
       ],
-      loginList: [
-        // 弹窗的未登录、已登录选项
+      // 栏位
+      lanweiList: [
         {
-          value: "GENERAL",
-          label: "通用"
+          ID: "11",
+          name: "11",
+          pingtai: "",
+          shebei: [],
+          paixu: "2",
+          imgUrl: "",
+          miaoshu: "23",
+          shangjia: ""
         },
         {
-          value: "NEWUSER",
-          label: "新用户"
-        },
-        {
-          value: "OLDUSER",
-          label: "老用户"
+          ID: "12",
+          name: "12",
+          pingtai: "",
+          shebei: [],
+          paixu: "23",
+          imgUrl: "",
+          miaoshu: "234",
+          shangjia: ""
         }
       ],
+      // 关联
+      guanList: [
+        {
+          value: "a1",
+          label: "one"
+        },
+        {
+          value: "a2",
+          label: "two"
+        },
+        {
+          value: "a3",
+          label: "three"
+        }
+      ],
+      // 分享
       shareList: [
-        // 分享
         {
           label: "微信",
           value: "WECHAT"
@@ -460,8 +408,8 @@ export default {
           value: "QQ_SPACE"
         }
       ],
+      // 显示渠道
       qudaoList: [
-        // 显示渠道
         {
           label: "H5",
           value: "H5"
@@ -479,249 +427,386 @@ export default {
           value: " WEB"
         }
       ],
+      // 设备
+      shebeiList: [
+        {
+          label: "ios",
+          value: "ios"
+        },
+        {
+          label: "安卓",
+          value: "安卓"
+        }
+      ],
+      // 上架、下架
+      shangjiaList: [
+        {
+          label: "上架",
+          value: "YES"
+        },
+        {
+          label: "下架",
+          value: "NO"
+        }
+      ],
+      // 平台
+      pingTaiList: [
+        {
+          label: "比财",
+          value: "bicai"
+        },
+        {
+          label: "异业",
+          value: "yiye"
+        }
+      ],
       other: [], // 显示是否需要设置的弹窗、分享页
       showWay: "", // 显示渠道
-      tanchuanForm: [], // 弹窗的数据
-      shareForm: [] // 分享页的数据
+      ////////////////////////////
+      pageData: {
+        // 当前页面一共生成的数据
+        lanwei: [], // 活动栏位
+        share: [], // 分享页的数据
+        guanlian: [] //关联产品
+      },
+      ////////////////////////////
+      selectLanwei: [], // 通过选择获取的栏位的id组成的数据
+      // 栏位管理弹窗
+      lanweiForm: {
+        show: false,
+        ID: "",
+        name: "",
+        pingtai: "",
+        shebei: [],
+        paixu: "",
+        imgUrl: "",
+        miaoshu: "",
+        shangjia: ""
+      },
+      ////////////////////////////
+      // 分享页新建表单
+      shareForm: {
+        show: false,
+        shareWay: "",
+        title: "",
+        shareText: "",
+        jumpUrl: "",
+        imgUrl: ""
+      },
+      /////////////////////////
+      forForms: {}, // 关联产品查询后的数据列表
+      guanlianForm: {
+        show: false,
+        search: ""
+      },
+      hasSelectNum: [] // 记录关联产品弹框批量选择的产品
     };
   },
   mounted() {
     let fromHttp = sessionStorage.getItem("fromHttp");
     let step2Data = sessionStorage.getItem("step2Data");
 
-    if (fromHttp && !step2Data) {
-      // 只是通过点击编辑过来
-      let fromHttpData = JSON.parse(fromHttp);
-      // let couponList = fromHttpData.couponList; // 弹窗
-      let shareList = fromHttpData.shareList; // 分享页
-      this.showWay = fromHttpData.platformType;
-      // if (couponList.length > 0) {
-      //   this.other.push("1");
-      //   couponList.forEach(item => this.addTanChuang(item));
-      // }
-      if (shareList.length > 0) {
-        this.other.push("2");
-        shareList.forEach(item => this.addSharePage(item));
-      }
-    }
-    // 如果编辑过页面，再回到这个页面，数据要继续赋上（新建）
-    else if (step2Data) {
-      let step2 = JSON.parse(sessionStorage.getItem("step2Data"));
-      this.other = step2.other;
-      this.showWay = step2.showWay;
-      this.tanchuanForm = step2.tanchuanForm;
-      this.shareForm = step2.shareForm;
-      this.showChuang();
-    }
+    // if (fromHttp && !step2Data) {
+    //   // 只是通过点击编辑过来
+    //   let fromHttpData = JSON.parse(fromHttp);
+    //   //从服务器端接收数据
+    //   let shareList111 = fromHttpData.shareList111; // 分享页
+    //   let guanList = fromHttpData.guanList; // 关联
+    //   this.showWay = fromHttpData.platformType;
+    //   if (shareList111.length > 0) {
+    //     this.other.push("2");
+    //     shareList111.forEach(item => this.addSharePage(item));
+    //   }
+    // }
+    // // 如果编辑过页面，再回到这个页面，数据要继续赋上（新建）
+    // else if (step2Data) {
+    //   let step2 = JSON.parse(sessionStorage.getItem("step2Data"));
+    //   this.other = step2.other;
+    //   this.showWay = step2.showWay;
+    //   this.tanchuangForm = step2.tanchuangForm;
+    //   this.pageData.share = step2.pageData.share;
+    // }
   },
   methods: {
-    // 整个页面的验证
-    toValid() {
-      let shareFormValid = true; // 分享页
-      let tanchuanFormValid = true; // 弹窗
-      let pageData = false; // 当前页面是否已有数据
-      if (this.other.length > 0 && this.showWay) {
-        pageData = true;
-      }
-      // 分享页的验证
-      if (this.shareForm.length != 0) {
-        this.shareForm.forEach(item => {
-          if (item.jumpUrl && !item.jumpUrlText) {
-            shareFormValid = false;
-          }
-          if (item.title == "" || item.text == "" || item.shareWay == "") {
-            shareFormValid = false;
-          }
-        });
-      }
-      // 弹窗的验证
-      if (this.tanchuanForm.length != 0) {
-        this.tanchuanForm.forEach(item => {
-          if (item.unLogin && item.noNeed.length == 0) {
-            tanchuanFormValid = false;
-          }
-          if (item.login && item.need.length == 0) {
-            tanchuanFormValid = false;
-          }
-          if (item.jumpUrl && !item.jumpUrlText) {
-            tanchuanFormValid = false;
-          }
-        });
-      }
-      return shareFormValid && tanchuanFormValid && pageData;
-    },
-    // 弹窗设置的检查
-    check(item) {
-      if (!item.unLogin) {
-        item.noNeed = [];
-      }
-      if (!item.login) {
-        item.need = [];
-      }
-      if (!item.jumpUrl) {
-        item.jumpUrlText = "";
+    // 关闭活动配置相关模块
+    toClose(num) {
+      this.other = this.other.filter(tar => tar != num);
+      switch (num) {
+        case 1:
+          this.pageData.lanwei = [];
+          this.selectLanwei = [];
+          break;
+        case 2:
+          this.pageData.share = [];
+          break;
+        case 3:
+          this.pageData.guanlian = [];
+          break;
       }
     },
-    // 分享页的设置
-    checkShare(item) {
-      if (!item.jumpUrl) {
-        item.jumpUrlText = "";
-      }
-    },
-    // 删除弹窗
-    toDeleteTanchuang(tar) {
-      this.tanchuanForm = this.tanchuanForm.filter(item => item.id != tar.id);
-    },
-    // 删除分享页
-    toDeleteShareForm(tar) {
-      this.shareForm = this.shareForm.filter(item => item.id != tar.id);
-    },
-    // 继续添加弹窗
-    addTanChuang(data) {
-      let obj = {
-        id: this.tanchuanForm.length + 1, // 前端使用，不会给服务器
-        img: "", // 本地显示用
-        urlImg: "", // 服务器保存用
-        unLogin: "", // 是否有未登录的
-        noNeed: [], // 未登录的用户类型
-        login: "", // 是否有登录的
-        need: [], // 登录的用户类型
-        jumpUrl: "", // 是否加链接
-        jumpUrlText: "" // 链接地址
-      };
-      if (data) {
-        obj.id = data.id;
-        obj.img = data.picture;
-        obj.urlImg = data.picture;
-
-        if (data.link) {
-          obj.jumpUrl = true;
-          obj.jumpUrlText = data.link;
+    /////////////////////////////////////////////////////////////////
+    // 选择已存在的栏位
+    selectLanweiFn() {
+      this.pageData.lanwei = this.lanweiList.filter(item => {
+        if (this.selectLanwei.includes(item.ID)) {
+          return item;
         }
-        if (data.detailDtoList.length > 0) {
-          data.detailDtoList.forEach(tar => {
-            if (tar.needLogin === "NONEED") {
-              obj.unLogin = true; // 是否有未登录的
-              let sele = {
-                id: tar.id,
-                value: tar.memberType
-              };
-              switch (tar.memberType) {
-                case "GENERAL":
-                  sele.label = "通用";
-                  break;
-                case "NEWUSER":
-                  sele.label = "新用户";
-                  break;
-                case "OLDUSER":
-                  sele.label = "老用户";
-                  break;
-              }
-              obj.noNeed.push(sele); // 不需要
+      });
+    },
+    // 栏位选定弹框的关闭、保存
+    closeLanWeiTanKuang(type) {
+      if (type) {
+        let arr = this.pageData.lanwei.map(tar => tar.ID);
+        if (arr.length == 0 || !arr.some(kk => kk == this.lanweiForm.ID)) {
+          this.pageData.lanwei.push(this.lanweiForm);
+          this.lanweiForm = {
+            show: false,
+            ID: "",
+            name: "",
+            quyu: "",
+            shebei: [],
+            paixu: "",
+            imgUrl: "",
+            miaoshu: "",
+            shangjia: "",
+            lanweiName: ""
+          };
+        } else {
+          this.$message.error("新增栏位的ID出现重复！");
+        }
+      } else {
+        this.lanweiForm = {
+          show: false,
+          ID: "",
+          name: "",
+          quyu: "",
+          shebei: [],
+          paixu: "",
+          imgUrl: "",
+          miaoshu: "",
+          shangjia: "",
+          lanweiName: ""
+        };
+      }
+    },
+    // 删除新添加的栏位
+    toRemoveLanWei(id) {
+      this.pageData.lanwei = this.pageData.lanwei.filter(tar => tar.ID != id);
+      this.selectLanwei = this.selectLanwei.filter(tar => tar != id);
+    },
+    /////////////////////////////////////////////////////////////////
+    // 分享页弹框的关闭、保存
+    closeShareTanKuang(type) {
+      if (type) {
+        let arr = this.pageData.share.map(tar => tar.title);
+        if (arr.length == 0 || !arr.some(kk => kk == this.shareForm.title)) {
+          this.pageData.share.push(this.shareForm);
+          this.shareForm = {
+            show: false,
+            shareWay: "",
+            title: "",
+            shareText: "",
+            jumpUrl: "",
+            imgUrl: ""
+          };
+        } else {
+          this.$message.error("分享标题出现重复！");
+        }
+      } else {
+        this.shareForm = {
+          show: false,
+          shareWay: "",
+          title: "",
+          shareText: "",
+          jumpUrl: "",
+          imgUrl: ""
+        };
+      }
+    },
+    // 删除新添加的分享页
+    toRemoveShare(title) {
+      this.pageData.share = this.pageData.share.filter(
+        tar => tar.title != title
+      );
+    },
+    /////////////////////////////////////////////////////////////////
+    // 关联产品弹框里的表格查询按钮
+    toSearch(type) {
+      if (type) {
+        // 利率表格的数据，假数据
+        let forms = {
+          checkBox: true, // 前边的单选框
+          fenye: true, // 是否需要分页
+          pageNum: 0, // 当前页妈
+          // 表格头部的蓝点
+          titleUp: {
+            pointName: "产品列表"
+          },
+          // 表格头部
+          title: [
+            {
+              prop: "num",
+              label: "序号",
+              width: "100"
+            },
+            {
+              prop: "name",
+              label: "名称",
+              width: "100"
+            },
+            {
+              prop: "jigou",
+              label: "机构",
+              width: "100"
             }
-            if (tar.needLogin === "NEED") {
-              obj.login = true; //需要登录
-              let sele = {
-                id: tar.id,
-                value: tar.memberType
-              };
-              switch (tar.memberType) {
-                case "GENERAL":
-                  sele.label = "通用";
-                  break;
-                case "NEWUSER":
-                  sele.label = "新用户";
-                  break;
-                case "OLDUSER":
-                  sele.label = "老用户";
-                  break;
-              }
-              obj.need.push(sele);
+          ],
+          handle: [
+            // 表格执行的操作
+            {
+              click: "use", // 使用这个产品
+              text: "使用" // 表格操作栏的点击事件
             }
+          ],
+          // 表格数据
+          dataTotal: []
+        };
+
+        for (let i = 0; i < 50; i++) {
+          forms.dataTotal.push({
+            num: i + 1,
+            name: "比财大宝",
+            jigou: "比财",
+            imgUrl:
+              "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563340268661&di=3e6aea9c6560893f2befa12a4fade287&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201610%2F31%2F20161031184439_JfVYm.thumb.700_0.jpeg"
           });
         }
+        this.$set(this.forForms, "forForms", forms);
+      } else {
+        this.guanlianForm.search = "";
       }
-      this.tanchuanForm.push(obj);
     },
-    // 继续添加分享页
-    addSharePage(data) {
-      let obj = {
-        id: this.shareForm.length + 1, // 前端使用，不会给服务器
-        img: "", // 本地显示用
-        urlImg: "", // 服务器保存用
-        title: "", // "分享标题"
-        text: "", // "分享内容"
-        shareWay: "", // 分享途径
-        jumpUrl: "", // 是否加链接
-        jumpUrlText: "" // 链接地址
-      };
-      if (data) {
-        obj.id = data.id;
-        obj.img = data.picture;
-        obj.urlImg = data.picture;
-        obj.text = data.content;
-        obj.title = data.title;
-        obj.shareWay = data.type;
-        if (data.link) {
-          obj.jumpUrl = true; // 是否加链接
-          obj.jumpUrlText = data.link; // 链接地址
-        }
+    // 关联产品选中产品
+    tableAct(data) {
+      if (data.type === "use") {
+        this.pageData.guanlian.push(data.data);
+        // 选中的产品，就从当前列表中去除
+        let zz = JSON.parse(JSON.stringify(this.forForms.forForms));
+        zz.dataTotal = zz.dataTotal.filter(tar => tar.num != data.data.num);
+        this.$set(this.forForms, "forForms", null);
+        setTimeout(() => {
+          this.$set(this.forForms, "forForms", zz);
+        }, 0);
       }
-      this.shareForm.push(obj);
+      if (data.type === "moreSelect") {
+        this.hasSelectNum = data.data;
+      }
     },
-    // 监听是否添加浮窗和分享页
-    showChuang() {
-      if (this.other.includes("1")) {
-        if (this.tanchuanForm.length === 0) {
-          this.addTanChuang("");
+    // 关联产品弹框的关闭、保存
+    closeGuanLianTanKuang(type) {
+      if (type) {
+        if (this.hasSelectNum.length) {
+          this.pageData.guanlian = [
+            ...this.pageData.guanlian,
+            ...this.hasSelectNum
+          ];
+          let zz = JSON.parse(JSON.stringify(this.forForms.forForms));
+          let arr = this.hasSelectNum.map(tar => tar.num);
+          arr.forEach(num => {
+            zz.dataTotal = zz.dataTotal.filter(tar => tar.num != num);
+          });
+
+          this.$set(this.forForms, "forForms", null);
+          setTimeout(() => {
+            this.$set(this.forForms, "forForms", zz);
+          }, 0);
+        } else {
+          this.$message.error("请选择批量使用的产品！");
         }
       } else {
-        this.tanchuanForm = [];
+        this.guanlianForm = {
+          show: false,
+          search: ""
+        };
       }
-      if (this.other.includes("2")) {
-        if (this.shareForm.length === 0) {
-          this.addSharePage("");
-        }
-      } else {
-        this.shareForm = [];
+      this.hasSelectNum = [];
+    },
+    // 关联产品的删除
+    toRemoveGuanLian(num) {
+      this.pageData.guanlian = this.pageData.guanlian.filter(
+        tar => tar.num != num
+      );
+    },
+    ///////////////////////////////////////////////////////
+    // 栏位、分享页设置的图片上传
+    sharePageImg(type, data) {
+      switch (type) {
+        case "lanwei":
+          this.lanweiForm.imgUrl = this.$ImgBaseUrl + data.url;
+          break;
+        case "share":
+          this.shareForm.imgUrl = this.$ImgBaseUrl + data.url;
+          break;
       }
     },
-    // 弹窗设置的图片上传
-    tanChuangImg(id, data) {
-      let obj = this.tanchuanForm.filter(item => item.id == id)[0];
-      obj.img = data.base64;
-      obj.urlImg = data.url;
-    },
-    // 分享页设置的图片上传
-    sharePageImg(id, data) {
-      // 修改对象里的数据，直接改即可
-      let obj = this.shareForm.filter(item => item.id == id)[0];
-      obj.img = data.base64;
-      obj.urlImg = data.url;
-    },
+
     // 重置
     reset() {
-      this.showChuang();
-      this.other = [];
+      this.$confirm(
+        `重置的话，之前的操作活动配置数据将全部清除，是否继续重置？`
+      )
+        .then(_ => {
+          this.other = [];
+          this.showWay = ""; // 显示渠道
+          this.pageData = {
+            // 当前页面一共生成的数据
+            lanwei: [], // 活动栏位
+            share: [], // 分享页的数据
+            guanlian: [] //关联产品
+          };
+          this.selectLanwei = [];
+          this.isSaveIng = false;
+        })
+        .catch(() => {});
+    },
+    isOver(type) {
+      sessionStorage.removeItem("step1Data");
+      sessionStorage.removeItem("step2Data");
+      if (type === "back") {
+        sessionStorage.setItem("page", "活动列表");
+        this.$router.push({ name: `activity_list` });
+      } else {
+        sessionStorage.setItem("page", "创建活动");
+        this.$router.push({ name: `activity_create` });
+      }
     },
     // 下一步
     step(type) {
       if (type === "before") {
+        sessionStorage.setItem("step2Data", JSON.stringify(this.pageData));
         this.$router.push({ name: `activity_create_step1` });
       } else {
-        if (this.toValid()) {
-          let obj = {
-            showWay: this.showWay,
-            other: this.other, // 显示是否需要设置的弹窗、分享页
-            tanchuanForm: this.tanchuanForm, // 弹窗的数据
-            shareForm: this.shareForm // 分享页的数据
-          };
-          sessionStorage.setItem("step2Data", JSON.stringify(obj));
-          this.$router.push({ name: `activity_create_step3` });
+        if (this.showWay && this.other.length) {
+          let isAllOk = true;
+          if (this.other.includes("1") && this.pageData.lanwei.length == 0) {
+            isAllOk = false;
+          }
+          if (this.other.includes("2") && this.pageData.share.length == 0) {
+            isAllOk = false;
+          }
+          if (this.other.includes("3") && this.pageData.guanlian.length == 0) {
+            isAllOk = false;
+          }
+          if (isAllOk) {
+            // this.isSaveIng = true;
+            console.log(this.pageData);
+            // setTimeout(() => {
+            //   this.isOk = true;
+            // }, 3000);
+          } else {
+            this.$message.error("请将选择活动配置类数据填写完整！");
+          }
         } else {
-          this.$message.error(
-            "请填写必要的数据（星号标注的，以及已经勾选的）！"
-          );
+          this.$message.error("请填写必要的数据！");
         }
       }
     }
@@ -764,6 +849,10 @@ export default {
   font-size: 18px;
   font-weight: bold;
 }
+.otherTitle1 {
+  font-size: 12px;
+  font-weight: 900;
+}
 .imgRight {
   width: 100%;
   display: flex;
@@ -787,5 +876,47 @@ export default {
   line-height: 12px;
   padding: 0 4px;
   vertical-align: middle;
+  justify-content: space-between;
+}
+
+#addnewl {
+  position: absolute;
+  width: 60%;
+  height: 800px;
+  border: 1px solid gray;
+  background: #f1f0f0;
+  z-index: 999;
+  display: flex;
+}
+.setBorder {
+  border: 1px solid rgb(209, 207, 207);
+  padding: 10px 5px;
+  border-radius: 3px;
+  margin-bottom: 10px;
+}
+.editDialogButtons {
+  display: flex;
+  justify-content: center;
+}
+.suolueWap {
+  display: flex;
+  flex-wrap: wrap;
+}
+.suolue {
+  width: 180px;
+  position: relative;
+  margin-right: 5px;
+  padding: 5px;
+  border-radius: 5px 22px 5px 5px;
+  background: rgb(164, 251, 132);
+  font-size: 12px;
+}
+.suolue img {
+  width: 100%;
+}
+.suolueBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 </style>

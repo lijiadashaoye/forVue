@@ -16,12 +16,12 @@
                 </div>
                 <div class="search">
                     <el-input
-                            placeholder="请输入广告关键词"
+                            placeholder="请输入广告标题"
                             prefix-icon="el-icon-search"
                             v-model="advertisTitle"
+                            size='mini'
                             @input="search">
                     </el-input>
-                    <el-button type="success" size="mini" @click="search">查询</el-button>
                 </div>
 
             </div>
@@ -29,8 +29,8 @@
 
         <div id="forTable">
             <isTable
-                    :inputData='this.$store.state.advertisManager.advertisMangerList'
-                    @tableEmit='tableEmit'
+                :inputData='this.$store.state.advertisManager.advertisMangerList'
+                @tableEmit='tableEmit'
             />
         </div>
         <!-- 修改/详情的弹框 -->
@@ -57,9 +57,13 @@
             }
         },
         mounted() {
+            this.$store.state.advertisManager.advertisMangerList.pageNum = 1;
             this.userDo();
             this.pageName = this.$route.name;
-            this.getList();
+            this.getList({
+                pageSize: this.$store.state.advertisManager.advertisMangerList.pageSize,
+                pageNum: this.$store.state.advertisManager.advertisMangerList.pageNum
+            });
             this.$store.state.advertisManager.advertisMangerList.data.title = [
                 {
                     title: "编号",
@@ -101,11 +105,13 @@
                 },{
                     title:"结束时间",
                     key:"endTime",
-                    minWidth:"200"
+                    minWidth:"200",
+                    sortable: true
                 },{
                     title: "创建时间",
                     key: "gmtCreated",
                     minWidth: "200",
+                    sortable: true
                 },{
                     title: "创建人",
                     key: "creatorName",
@@ -123,6 +129,8 @@
             // 搜索
             search() {
                 this.getList({
+                    pageSize: 1,
+                    pageNum: this.$store.state.advertisManager.advertisMangerList.pageNum,
                     advertisTitle: this.advertisTitle
                 })
             },

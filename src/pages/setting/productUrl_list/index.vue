@@ -21,7 +21,7 @@
         
         <el-dialog :title="addDialogTitle ? '添加地址' : '修改地址'" :visible.sync="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal='false'>
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                <el-form-item label="产品类型" prop="linkModel">
+                <el-form-item label="地址类型" prop="linkModel">
                     <el-select v-model="ruleForm.linkModel" placeholder="请选择" :disabled="linkModelFlag">
                         <el-option
                         v-for="item in channelData"
@@ -78,13 +78,16 @@ export default {
     },
     mounted() {
         this.pageName = this.$route.name;
-        this.getList();
+        this.getList({
+            pageNum: 1,
+            pageSize: this.$store.state.productUrl.productUrlList.pageSize,
+        });
         this.userDo();
         this.getChannelData();
         // console.log(this.$store.state.productUrl.productUrlList.data)
         this.$store.state.productUrl.productUrlList.data.title = [
             {
-                title: "产品类型",
+                title: "地址类型",
                 key: "linkName",
                 minWidth: "120"
             },{
@@ -150,7 +153,10 @@ export default {
                             if(res && res.success) {
                                 this.dialogFormVisible = false;
                                 this.$refs.ruleForm.resetFields();
-                                this.getList();
+                                this.getList({
+                                    pageNum: this.$store.state.productUrl.productUrlList.pageNum,
+                                    pageSize: this.$store.state.productUrl.productUrlList.pageSize,
+                                });
                             }
                         })
                     } else {
@@ -163,7 +169,10 @@ export default {
                             if(res && res.success) {
                                 this.dialogFormVisible = false;
                                 this.$refs.ruleForm.resetFields();
-                                this.getList();
+                                this.getList({
+                                    pageNum: this.$store.state.productUrl.productUrlList.pageNum,
+                                    pageSize: this.$store.state.productUrl.productUrlList.pageSize,
+                                });
                             }
                         })
                     }
@@ -208,7 +217,10 @@ export default {
         tableEmit(data) {
             switch (data.type) {
                 case "regetData": // 分页的emit
-                    this.getList();
+                    this.getList({
+                        pageNum: this.$store.state.productUrl.productUrlList.pageNum,
+                        pageSize: this.$store.state.productUrl.productUrlList.pageSize,
+                    });
                 break;
                 case "delete": // 删除按钮
                     this.delete(data.data.id);

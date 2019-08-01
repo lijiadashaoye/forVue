@@ -11,14 +11,14 @@
       <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
     <div id="forTable" v-if="loadEnd">
-      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
 
     <el-dialog
       :close-on-click-modal="false"
       :title="dialog.title"
       :visible.sync="dialog.show"
-      width="500px"
+      width="400px"
       :before-close="dialogClose"
     >
       <el-form :model="menuData" label-width="100px" :rules="rules" size="mini" ref="menuData">
@@ -124,14 +124,7 @@ export default {
       // 弹出框的控制
       dialog: {
         show: false,
-        title: "",
-        datas: {
-          icon: "",
-          name: "",
-          growthStart: "",
-          growthEnd: "",
-          expireType: ""
-        }
+        title: ""
       },
       options: [
         {
@@ -157,7 +150,7 @@ export default {
       },
       rules: {
         name: [
-          { min: 1, max: 19, message: "等级名称为1-19个字符", trigger: "blur" },
+          { min: 1, max: 20, message: "等级名称为1-20个字符", trigger: "blur" },
           { required: true, message: "请输入等级名称", trigger: "blur" }
         ],
         expireType: [
@@ -399,9 +392,7 @@ export default {
                       failName += `名称：${item.data[0].name} \n`;
                     }
                   });
-                  let str = `共操作 ${
-                    arr.length
-                  } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                  let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
                   if (numFail > 0) {
                     str += titleText + failName;
                   }
@@ -416,7 +407,7 @@ export default {
         }
       }
     },
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
 
@@ -452,7 +443,6 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list;
         this.tableInputData.data.list = data.list.map(item => {
           let obj = {},
             arr = Object.keys(item);
@@ -569,9 +559,3 @@ export default {
   }
 };
 </script>
-
-<style scoped='true' lang="scss">
-.upimg {
-  width: 120px;
-}
-</style>

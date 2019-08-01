@@ -26,10 +26,11 @@
             @tableEmit='tableEmit'/>
         </div>
 
-        <el-dialog :title=title :visible.sync="dialogFormVisible" :close-on-click-modal='false'>
+        <el-dialog :title=title :visible.sync="dialogFormVisible" :close-on-click-modal='false' :before-close="beforeClose">
             <noticeAdd
             :params="params"
             :updata="updataFlag"
+            :overFlag="overFlag"
             :appChannel.sync="this.$store.state.protocol.appChannel"
             @send='send'
             @cancel='cancel'/>
@@ -56,13 +57,14 @@ export default {
             updataFlag: false,
             title: '',
             content: '',
+            overFlag: false,
         }
     },
     mounted() {
         this.pageName = this.$route.name;
         this.userDo();
         this.getList({
-            pageNum: this.$store.state.notice.noticeList.pageNum,
+            pageNum: 1,
             pageSize: this.$store.state.notice.noticeList.pageSize,
         });
         this.getAppChannel();
@@ -115,8 +117,13 @@ export default {
                 content: this.content != '' ? this.content : null
             })
         },
+        beforeClose() {
+            this.overFlag = true;
+            this.dialogFormVisible = false;
+        },
         //添加
         addPeroid() {
+            this.overFlag = false;
             let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
             if (jurisdiction.indexOf("notice_add") > -1) {
                 this.title = '添加'
@@ -155,6 +162,7 @@ export default {
             this.dialogFormVisible = true;
             this.params = data;
             this.updataFlag = true;
+            this.overFlag = false;
             this.title = '修改';
         },
         switchAction(data) {
@@ -184,34 +192,45 @@ export default {
         },
         //点击保存
         send(data) {
-            this.dialogFormVisible = false;
             if(this.updataFlag) {
                 notice_updata(data).then(res=> {
                     if( res && res.success) {
+                        this.dialogFormVisible = false;
+                        this.overFlag = true;
                         this.getList({
                             pageNum: this.$store.state.notice.noticeList.pageNum,
                             pageSize: this.$store.state.notice.noticeList.pageSize,
                             content: this.content != '' ? this.content : null
                         })
+                    } else {
+                        this.overFlag = false;
                     }
                 }).catch(res=> {
                     //弹出消息提示用户
+                    this.overFlag = false;
                     this.$message({
-                        type: "info",
-                        message: `action: ${res.message}`
+                        type: "error",
+                        message: `${res.message}`
                     });
                 })
             } else {
                 notice_add(data).then(res => {
-                    this.getList({
-                        pageNum: this.$store.state.notice.noticeList.pageNum,
-                        pageSize: this.$store.state.notice.noticeList.pageSize,
-                        content: this.content != '' ? this.content : null
-                    })
+                    if(res && res.success) {
+                        this.dialogFormVisible = false;
+                        this.overFlag = true;
+                        this.getList({
+                            pageNum: this.$store.state.notice.noticeList.pageNum,
+                            pageSize: this.$store.state.notice.noticeList.pageSize,
+                            content: this.content != '' ? this.content : null
+                        })
+                    } else {
+                        this.overFlag = false
+                    }
                 }).catch(res=> {
+                    this.overFlag = false
                     this.$message({
-                        type: 'info',
-                        message: `action: ${ res.message }`
+                        type: 'error',
+                        message: `${ res.message }`
                     });
                 })
             }

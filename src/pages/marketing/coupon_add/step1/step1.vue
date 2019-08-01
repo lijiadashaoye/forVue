@@ -1,41 +1,78 @@
 <template>
   <div class="pageWaper">
-    <div class="formWaper">
+    <div class="formWaper" v-if="!isOk">
       <div class="forms">
-        <el-form size="small" ref="formData" :model="formData" :rules="rules" label-width="121px">
-          <div style="padding-bottom:10px;">
+        <el-form
+          size="small"
+          label-suffix=":"
+          ref="formData"
+          :model="formData"
+          :rules="rules"
+          label-width="130px"
+        >
+          <el-form-item label="卡券类型">
             <el-radio
+              v-for="type of kaquanType"
+              :key="type.type"
               v-model="formData.type"
-              label="EXPERIENCE"
-              @change="couponType('EXPERIENCE')"
-            >体验金券</el-radio>
-            <el-radio v-model="formData.type" label="AWARD" @change="couponType('AWARD')">奖励金券</el-radio>
+              :label="type.type"
+              @change="couponType(type.type)"
+            >{{type.name}}</el-radio>
+          </el-form-item>
+          <!-- 体验金券 -->
+          <div v-if="formTitle.type==='tiyan'">
+            <el-form-item label="体验金金额" prop="experienceAmount" placeholder="请输入">
+              <el-input v-model="formData.experienceAmount" type="number"></el-input>
+            </el-form-item>
+            <el-form-item label="体验金持续天数" prop="experienceDays" placeholder="请输入">
+              <el-input v-model="formData.experienceDays" type="number"></el-input>
+            </el-form-item>
+          </div>
+
+          <div v-if="formTitle.type==='jiaxi'">
+            <!-- 加息券 -->
+            <el-form-item label="加息天数" prop="increasesDays" placeholder="请输入">
+              <el-input v-model="formData.increasesDays" type="number"></el-input>
+            </el-form-item>
+            <el-form-item label="计息上限金额" prop="increasesAmount" placeholder="请输入">
+              <el-input v-model="formData.increasesAmount" type="number"></el-input>
+            </el-form-item>
+            <el-form-item label="加息率" prop="increasesRate" placeholder="请输入">
+              <el-input
+                v-model="formData.increasesRate"
+                class="addDanWei forBaiFenHao"
+                type="number"
+              ></el-input>
+              <span>(加息率只保留两位小数)</span>
+            </el-form-item>
+          </div>
+
+          <div v-if="formTitle.type==='dinggou'">
+            <!-- 定购券 -->
+            <el-form-item label="定购金额" prop="orderAmount" placeholder="请输入">
+              <el-input v-model="formData.orderAmount" type="number"></el-input>
+            </el-form-item>
+            <el-form-item label="定购返现金额" prop="orderReturnAmount" placeholder="请输入">
+              <el-input v-model="formData.orderReturnAmount" type="number"></el-input>
+            </el-form-item>
           </div>
 
           <el-form-item :label="formTitle.title" prop="name" placeholder="请输入">
             <el-input v-model="formData.name"></el-input>
           </el-form-item>
 
-          <el-form-item label="卡券说明" prop="description">
+          <el-form-item label="卡券说明" prop="explains">
             <el-input
               placeholder="不显示在App端，可为空"
               rows="2"
               type="textarea"
-              v-model="formData.description"
+              v-model="formData.explains"
             ></el-input>
           </el-form-item>
 
-          <el-form-item :label="formTitle.money" prop="money">
-            <el-input type="number" class="forMoney" placeholder="请输入" v-model="formData.money"></el-input>
-          </el-form-item>
-
-          <el-form-item label="持续时间" prop="days">
-            <el-input type="number" class="forDays" placeholder="请输入" v-model="formData.days"></el-input>
-          </el-form-item>
-
-          <el-form-item label="有效期计算方式" prop="useType">
+          <el-form-item label="有效期计算方式" prop="YXQJStype">
             <el-select
-              v-model="formData.useType"
+              v-model="formData.YXQJStype"
               placeholder="请选择有效期计算方式"
               style="width:100%;"
               clearable
@@ -50,7 +87,7 @@
             </el-select>
           </el-form-item>
 
-          <div v-if="formData.useType==='FIXATION'">
+          <div v-if="formData.YXQJStype==='FIXED'">
             <el-form-item label="固定时间" prop="gudingTime">
               <el-date-picker
                 style="width:100%;"
@@ -63,80 +100,131 @@
             </el-form-item>
           </div>
 
-          <div v-if="formData.useType==='GET'" style="display:flex;width:100%;">
-            <el-form-item label="自领取之后" prop="GET">
-              <el-select
-                v-model="formData.afterGet"
-                placeholder="请选择"
-                style="width:100%;"
-                clearable
-              >
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item prop="afterGetValue" label="有效期" label-width="70px">
-              <el-input
-                class="forDays"
-                type="number"
-                placeholder="请输入"
-                v-model="formData.afterGetValue"
-              ></el-input>
-            </el-form-item>
-          </div>
-
-          <div v-if="formData.useType==='USE'" style="display:flex;width:100%;">
-            <el-form-item label="自使用之后" prop="USE">
-              <el-select
-                v-model="formData.afterUse"
-                placeholder="请选择"
-                style="width:100%;"
-                clearable
-              >
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="有效期" prop="afterUseValue" label-width="70px">
+          <div v-if="formData.YXQJStype==='AFTER_GET'">
+            <el-form-item label="自领取之后" prop="effectiveDays">
               <el-input
                 type="number"
                 class="forDays"
                 placeholder="请输入"
-                v-model="formData.afterUseValue"
+                v-model="formData.effectiveDays"
               ></el-input>
             </el-form-item>
           </div>
 
-          <el-form-item prop="limit" label="领券限制">
-            <el-input class="addDanWei" type="number" placeholder="请输入" v-model="formData.limit"></el-input>
-            <span>(每个用户领券上限，如不填默认为一张)</span>
+          <el-form-item label="卡券使用类型" prop="useType">
+            <el-select
+              v-model="formData.useType"
+              placeholder="请选择卡券使用类型"
+              style="width:100%;"
+              clearable
+            >
+              <el-option
+                v-for="item in kaquanUseType"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
           </el-form-item>
 
-          <el-form-item label="使用须知" prop="toKnow">
+          <el-form-item label="发放总张数" prop="totalCount">
             <el-input
-              type="textarea"
-              placeholder="填写后，显示于APP端中的活动规则（最多输入800个字符）"
-              v-model="formData.toKnow"
+              class="addDanWei"
+              type="number"
+              placeholder="请输入"
+              v-model="formData.totalCount"
             ></el-input>
           </el-form-item>
 
-          <el-form-item label="发放总张数" prop="total">
-            <el-input class="addDanWei" type="number" placeholder="请输入" v-model="formData.total"></el-input>
+          <el-form-item label="预警数量" prop="warningCount">
+            <el-input
+              class="addDanWei"
+              type="number"
+              placeholder="请输入"
+              v-model="formData.warningCount"
+            ></el-input>
           </el-form-item>
 
-          <el-form-item label="使用条件" prop="how">
+          <el-form-item label="预警通知手机号" prop="notifyMobile">
+            <el-input v-model="formData.notifyMobile"></el-input>
+          </el-form-item>
+
+          <el-form-item prop="receiveLimit" label="领券限制">
+            <el-input
+              class="addDanWei"
+              type="number"
+              placeholder="请输入"
+              v-model="formData.receiveLimit"
+            ></el-input>
+            <span>(每个用户领券上限，如不填默认为一张)</span>
+          </el-form-item>
+
+          <el-form-item :label="formTitle.money" prop="initialAmount">
+            <el-input
+              type="number"
+              class="forMoney"
+              placeholder="请输入"
+              v-model="formData.initialAmount"
+            ></el-input>
+            <span>(满足一定金额才可使用,如不填则跟随产品起投金额)</span>
+          </el-form-item>
+
+          <el-form-item prop="holdDays" label="持有天数限制">
+            <el-input class="forDays" type="number" placeholder="请输入" v-model="formData.holdDays"></el-input>
+            <span>(达到一定天数才可发放收益)</span>
+          </el-form-item>
+
+          <el-form-item label="收益发放类型" prop="incomeGrantType">
             <el-select
-              v-model="formData.how"
+              v-model="formData.incomeGrantType"
+              placeholder="请选择收益发放类型"
+              style="width:100%;"
+              clearable
+            >
+              <el-option
+                v-for="item in fafangType"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="适用渠道" prop="applyChannel">
+            <el-select
+              v-model="formData.applyChannel"
+              placeholder="请选择适用渠道"
+              style="width:100%;"
+              clearable
+            >
+              <el-option
+                v-for="item in qudaoList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item size="mini" label="是否为补发券" class="is50">
+            <el-radio-group v-model="formData.isReplacement">
+              <el-radio-button label="是"></el-radio-button>
+              <el-radio-button label="否"></el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item label="排序" prop="seq">
+            <el-input class="onlyText" type="number" placeholder="请输入" v-model="formData.seq"></el-input>
+            <span>(影响卡券中心展示,数值越大越靠上,0表示没有限制)</span>
+          </el-form-item>
+
+          <el-form-item label="备注" prop="remark">
+            <el-input type="textarea" placeholder="app不展示（最多输入500个字符）" v-model="formData.remark"></el-input>
+          </el-form-item>
+
+          <el-form-item label="是否做关联" prop="isLink">
+            <el-select
+              v-model="formData.isLink"
               placeholder="请选择"
               style="width:100%;"
               clearable
@@ -150,117 +238,89 @@
               ></el-option>
             </el-select>
           </el-form-item>
-
-          <div v-if="jiangliKaQuan.length>0||jiangliHongBao.length>0">
-            <p style="font-weight:bold;font-size:14px;margin-bottom:5px;">已使用的：(点击可以删除)</p>
-            <div class="hasSelectJiangLi">
-              <p
-                v-for="(tar) in jiangliKaQuan"
-                :key="tar.awardValue"
-                @click="deleteJiangli(tar)"
-                title="删除"
-              >
-                <span>卡券：</span>
-                <span>{{tar.name}}</span>
-              </p>
-              <p v-for="(tars,ind2) in jiangliHongBao" :key="ind2+2" @click="deleteJiangli(tars)">
-                <span>红包：</span>
-                <span>{{tars.name}}</span>
-              </p>
-            </div>
-          </div>
         </el-form>
       </div>
-      <div class="tables" v-if="formData.how==='SHARE'">
-        <!-- 卡券 -->
+      <div class="tables" v-if="formData.isLink">
+        <!-- 产品列表 -->
         <div>
           <div id="forHeader">
-            <el-form
-              size="small"
-              :model="COUPON_tableSearch"
-              :rules="rules"
-              label-width="80px"
-              inline
-            >
-              <el-form-item style="margin-bottom:2px;" label="持续时间">
-                <el-date-picker
-                  style="width:100%;"
-                  v-model="COUPON_tableSearch.time"
-                  type="datetimerange"
-                  value-format="yyyy-MM-dd HH:mm:ss"
-                  range-separator="~"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                ></el-date-picker>
-              </el-form-item>
+            <el-form size="small" :model="productListSearch" label-width="80px" inline>
+              <!-- <el-form-item style="margin-bottom:2px;" label="持续时间">
+                    <el-date-picker
+                      style="width:100%;"
+                      v-model="productList.time"
+                      type="datetimerange"
+                      value-format="yyyy-MM-dd HH:mm:ss"
+                      range-separator="~"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                    ></el-date-picker>
+              </el-form-item>-->
 
-              <el-form-item style="margin-bottom:2px" label="卡券名称">
-                <el-input v-model="COUPON_tableSearch.name"></el-input>
-              </el-form-item>
-              <el-form-item style="margin-bottom:2px;" label="卡券说明">
-                <el-input v-model="COUPON_tableSearch.couponExplain"></el-input>
+              <el-form-item style="margin-bottom:2px" label="产品名称">
+                <el-input v-model="productListSearch.name" @change="inputChange('product')"></el-input>
               </el-form-item>
 
               <el-form-item style="margin-bottom:2px;">
-                <el-button size="mini" type="danger" @click="toSearch('COUPON')">查询</el-button>
-                <el-button size="mini" type="info" @click="resetSearch('COUPON')">重置</el-button>
+                <el-button size="mini" type="danger" @click="toSearch('product')">查询</el-button>
+                <el-button size="mini" type="info" @click="resetSearch('product')">重置</el-button>
               </el-form-item>
             </el-form>
           </div>
           <div id="forHeader" style="height:240px;">
             <isTable
-              v-if="COUPON_table.show"
-              :inputData="COUPON_table"
-              @tableEmit="tableEmit($event,'coupon')"
+              v-if="productList.show"
+              :inputData="productList"
+              @tableEmit="tableEmit($event,'product')"
             />
           </div>
         </div>
-        <!-- 红包 -->
+        <!-- 银行列表 -->
         <div>
           <div id="forHeader">
-            <el-form
-              size="small"
-              :model="PACKET_tableSearch"
-              :rules="rules"
-              label-width="80px"
-              inline
-            >
-              <el-form-item style="margin-bottom:2px" label="红包名称">
-                <el-input v-model="PACKET_tableSearch.name"></el-input>
-              </el-form-item>
-              <el-form-item style="margin-bottom:2px;" label="红包说明">
-                <el-input v-model="PACKET_tableSearch.packetExplain"></el-input>
+            <el-form size="small" :model="bankListSearch" label-width="80px" inline>
+              <el-form-item style="margin-bottom:2px" label="银行名称">
+                <el-input v-model="bankListSearch.name" @change="inputChange('bank')"></el-input>
               </el-form-item>
 
               <el-form-item style="margin-bottom:2px;">
-                <el-button size="mini" type="danger" @click="toSearch('PACKET')">查询</el-button>
-                <el-button size="mini" type="info" @click="resetSearch('PACKET')">重置</el-button>
+                <el-button size="mini" type="danger" @click="toSearch('bank')">查询</el-button>
+                <el-button size="mini" type="info" @click="resetSearch('bank')">重置</el-button>
               </el-form-item>
             </el-form>
           </div>
           <div id="forHeader" style="height:240px;">
             <isTable
-              v-if="PACKET_table.show"
-              :inputData="PACKET_table"
-              @tableEmit="tableEmit($event,'packet')"
+              v-if="bankList.show"
+              :inputData="bankList"
+              @tableEmit="tableEmit($event,'bank')"
             />
           </div>
+        </div>
+        <div id="forHeader">
+          <forms @tableAct="tableAct" :type="'lilv'" :pageData="forForms" />
         </div>
       </div>
     </div>
 
-    <div class="buttons">
-      <el-button @click="step()" type="primary">下一步</el-button>
+    <div class="buttons" v-if="!isOk">
+      <el-button @click="save()" type="primary" :disabled="isUping">保 存</el-button>
       <el-button @click="reset" type="info">重 置</el-button>
     </div>
+    <hasSuccess @isOver="isOver" v-if="isOk" />
   </div>
 </template>
+
 <script>
 import isTable from "../../../../components/isTable/isTable.vue";
+import hasSuccess from "../../../../components/success.vue";
+import forms from "../../../../components/forms.vue";
 
 export default {
   components: {
-    isTable
+    isTable,
+    hasSuccess,
+    forms
   },
   data() {
     // 验证发放总张数
@@ -272,26 +332,37 @@ export default {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 11 || ("" + value).length < 0) {
+        callback(new Error("请输入1-11字符"));
       } else {
         callback();
       }
     };
-    // 验证数字
+    // 验证数字不包括小数
     var checkNum2 = (rule, value, callback) => {
       let reg = /\./;
       if (reg.test(value)) {
         callback(new Error("请输入整数"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+      } else if (("" + value).length > 11 || ("" + value).length < 0) {
+        callback(new Error("请输入1-11字符"));
       } else {
         callback();
       }
     };
-    // 验证数字
+    // 验证手机号
+    var checkPhone = (rule, value, callback) => {
+      if (value === "") {
+        callback();
+      } else if (!/^1[34578]\d{9}$/.test(value)) {
+        callback(new Error("手机号码有误，请重填"));
+      } else {
+        callback();
+      }
+    };
+
+    // 验证数字，可以有小数
     var checkNum3 = (rule, value, callback) => {
       if (value < 0) {
         callback(new Error("请输入正数"));
@@ -301,777 +372,687 @@ export default {
         callback();
       }
     };
+    // 验证数字，可以有小数，不能大于100
+    var checkNum4 = (rule, value, callback) => {
+      if (value < 0 || +value >= 100) {
+        callback(new Error("请输入正数且小于100"));
+      } else if (("" + value).length > 19 || ("" + value).length < 0) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字不包括小数
+    var checkNum5 = (rule, value, callback) => {
+      let total = +this.formData.totalCount;
+      let reg = /\./;
+      if (reg.test(value)) {
+        callback(new Error("请输入整数"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 11 || ("" + value).length < 0) {
+        callback(new Error("请输入1-11字符"));
+      } else if (+value > total) {
+        callback(new Error("预警数量不能大于发放总量！"));
+      } else {
+        callback();
+      }
+    };
+
     return {
+      forForms: {}, // 如果关联了银行、产品，显示表格
+      isUping: false, // 控制上传按钮
+      isOk: false, // 上传数据控制
       formData: {
         type: "EXPERIENCE",
         name: "", // 券名称
-        description: "", // 卡券说明
-        money: "", // 体验金额
-        days: "", // 持续时间
-        useType: "", // 有效期类型
-        limit: "1", // 领券限制
-        toKnow: "", // 使用须知
-        total: "", // 发放总张数
-        how: "", // 使用条件
-        discountsList: [] // 共享类型列表
+        explains: "", // 卡券说明
+        YXQJStype: "", // 有效期计算方式
+        gudingTime: "", // 固定时间
+        effectiveDays: "", // 自领取之后
+        useType: "", // 卡券使用类型
+        totalCount: "", // 发放总张数
+        warningCount: "", // 发放总张数
+        notifyMobile: "", // 预警通知手机号
+        receiveLimit: "1", // 领取限制
+        initialAmount: "", // 起投金额
+        holdDays: "", // 持有天数
+        incomeGrantType: "", // 收益(现金)发放类型
+        applyChannel: "ALL", // 适用渠道
+        isReplacement: "否", // 是否为补发券
+        seq: "0", // 排序
+        remark: "", // 备注
+        isLink: false, // 是否做关联
+        bankPrdList: [], // 关联产品、银行列表
+        experienceAmount: "", // 体验金金额(整数)
+        experienceDays: "" // 体验金持续天数
       },
-      radio: "1", // 最上边的radio
       formTitle: {
-        // 最上边的radio切换
+        // 最上边的radi 换
         title: "体验金券名称",
-        money: "体验金金额"
+        money: "体验金起投金额",
+        type: "tiyan"
       },
-      forHow: [
-        // 使用条件的下拉数据
+      // 卡券类型:INCREASE("加息券"),EXPERIENCE("体验金券"),ORDER("定购券")
+      kaquanType: [
         {
-          label: "不与其他优惠共享",
-          value: "NOSHARE"
+          name: "体验金券",
+          type: "EXPERIENCE"
         },
         {
-          label: "可与其他优惠共享",
-          value: "SHARE"
+          name: "加息券",
+          type: "INCREASE"
+        },
+        {
+          name: "定购券",
+          type: "ORDER"
         }
       ],
-
+      // 卡券使用类型:CURRENCY("通用券"),PRODUCT("产品券"),PINTUAN("拼团券")
+      kaquanUseType: [
+        {
+          label: "通用券",
+          value: "CURRENCY"
+        },
+        {
+          label: "产品券",
+          value: "PRODUCT"
+        },
+        {
+          label: "拼团券",
+          value: "PINTUAN"
+        }
+      ],
+      // 有效期计算方式
       methodData: [
-        // 活动奖励选项数据
+        // 有效期类型:FIXED("固定时间段"),AFTER_GET("领取后开始计算")
+        // {
+        //   label: "固定时间段",
+        //   value: "FIXED"
+        // },
         {
-          label: "固定时间",
-          value: "FIXATION"
-        },
-        {
-          label: "自领取后",
-          value: "GET"
-        },
-        {
-          label: "自使用后",
-          value: "USE"
+          label: "领取后开始计算",
+          value: "AFTER_GET"
         }
       ],
-      options: [
-        // 自领取之后和字使用之后下拉
+      // 收益(现金)发放类型:WHEN_BUY("购买时发放"),
+      // WHEN_REDEEM("赎回时发放"),WHEN_END("加息时间结束时发放")
+      fafangType: [
         {
-          value: "ONE",
-          label: "当天"
+          label: "赎回时发放",
+          value: "WHEN_REDEEM"
         },
         {
-          value: "TWO",
-          label: "两天"
-        },
-        {
-          value: "THREE",
-          label: "三天"
-        },
-        {
-          value: "FOUR",
-          label: "四天"
-        },
-        {
-          value: "FIVE",
-          label: "五天"
+          label: "加息时间结束时发放",
+          value: "WHEN_END"
         }
       ],
-
-      jiangliKaQuan: [], // 保存已经添加的卡券奖励
-      jiangliHongBao: [], // 保存已经添加的红包奖励
-
-      COUPON_table: {
+      // 适用渠道:ALL("all"),BICAI("bicai"),PINCAI("pincai"),YACAI("yacai")
+      qudaoList: [
+        {
+          label: "全部",
+          value: "ALL"
+        },
+        {
+          label: "比财",
+          value: "BICAI"
+        },
+        {
+          label: "拼财",
+          value: "PINCAI"
+        },
+        {
+          label: "亚财",
+          value: "YACAI"
+        }
+      ],
+      // 是否关联产品、银行
+      forHow: [
+        {
+          label: "不做关联",
+          value: false
+        },
+        {
+          label: "关联银行or产品",
+          value: true
+        }
+      ],
+      // 关联产品的服务器数据列表
+      productList: {
         // 红包备选表格
         show: false,
         pageSize: 10, // 分页相关
         pageNum: 1,
         total: null,
         actions: {}, // 记录表格内需要额外添加的点击事件
-        data: {
+        datas: {
           list: [], // 给表格的数据
           quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
           title: [], // 给表格表头
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
       },
-      PACKET_table: {
+      // 关联产品表格的查询
+      productListSearch: {
+        name: ""
+      },
+      // 关联银行的服务器数据列表
+      bankList: {
         // 红包备选表格
         show: false,
         pageSize: 10, // 分页相关
         pageNum: 1,
         total: null,
         actions: {}, // 记录表格内需要额外添加的点击事件
-        data: {
+        datas: {
           list: [], // 给表格的数据
           quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
           title: [], // 给表格表头
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
       },
-      COUPON_tableSearch: {
-        name: "",
-        couponExplain: "",
-        startTime: "",
-        endTime: "",
-        pageSize: 10,
-        pageNum: 1
-      },
-      // 红包列表的搜索
-      PACKET_tableSearch: {
-        name: "",
-        packetExplain: "",
-        pageSize: 10,
-        pageNum: 1
+      // 关联银行表格的查询
+      bankListSearch: {
+        name: ""
       },
       //表单验证
       rules: {
         name: [
           { required: true, message: "请输入券的名称", trigger: "blur" },
-          { min: 1, max: 19, message: "最多输入19个字", trigger: "blur" }
+          { min: 1, max: 64, message: "最多输入64个字", trigger: "blur" }
         ],
-        description: [
-          { min: 1, max: 200, message: "最多输入200个字", trigger: "blur" }
+        explains: [
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
-        limit: [{ validator: checkNum2, trigger: "blur" }],
-        money: [
-          { validator: checkNum3, trigger: "blur" },
-          { required: true, message: "请输入对应的体验金额", trigger: "blur" }
-        ],
-        days: [
-          { validator: checkNum2, trigger: "blur" },
-          { required: true, message: "请输入对应的持续时间", trigger: "blur" }
+        YXQJStype: [
+          { required: true, message: "请选择有效期类型", trigger: "change" }
         ],
         useType: [
-          { required: true, message: "请选择有效期类型", trigger: "blur" }
+          { required: true, message: "请选择有效期时间", trigger: "change" }
         ],
-        toKnow: [
-          { required: true, message: "请输入使用须知", trigger: "blur" },
-          { min: 1, max: 200, message: "最多输入200个字", trigger: "blur" }
+        totalCount: [
+          { required: true, validator: checkTotalMoney, trigger: "blur" }
         ],
-        total: [
-          { validator: checkTotalMoney, trigger: "blur" },
-          { required: true, message: "请输入发放总张数", trigger: "blur" }
+        warningCount: [{ validator: checkNum5, trigger: "blur" }],
+        notifyMobile: [{ validator: checkPhone, trigger: "blur" }],
+        receiveLimit: [
+          { required: true, validator: checkNum2, trigger: "blur" }
         ],
-        how: [{ required: true, message: "请选择使用条件", trigger: "change" }]
+        initialAmount: [
+          { required: true, validator: checkNum2, trigger: "blur" }
+        ],
+        holdDays: [{ required: true, validator: checkNum2, trigger: "blur" }],
+        remark: [
+          { min: 1, max: 500, message: "最多输入500个字", trigger: "blur" }
+        ],
+        incomeGrantType: [
+          { required: true, message: "请选择收益发放类型", trigger: "change" }
+        ],
+        applyChannel: [
+          { required: true, message: "适用渠道", trigger: "change" }
+        ],
+        seq: [{ validator: checkNum2, trigger: "blur" }],
+
+        experienceAmount: [
+          {
+            required: true,
+            message: "请输入体验金金额(整数)",
+            trigger: "blur"
+          },
+          { validator: checkNum2, trigger: "blur" }
+        ],
+        experienceDays: [
+          {
+            required: true,
+            message: "请输入体验金持续天数",
+            trigger: "blur"
+          },
+          { validator: checkNum2, trigger: "blur" }
+        ],
+     
+        increasesDays: [
+          { required: true, message: "请输入加息天数", trigger: "blur" },
+          { validator: checkNum3, trigger: "blur" }
+        ],
+        increasesAmount: [
+          { required: true, message: "请输入计息上限金额", trigger: "blur" },
+          { validator: checkNum3, trigger: "blur" }
+        ],
+        increasesRate: [
+          { required: true, message: "请输入加息率", trigger: "blur" },
+          { validator: checkNum4, trigger: "blur" }
+        ],
+        orderAmount: [
+          {
+            required: true,
+            message: "请输入定购金额(整数)",
+            trigger: "blur"
+          },
+          { validator: checkNum2, trigger: "blur" }
+        ],
+        orderReturnAmount: [
+          { required: true, message: "请输入定购返现金额", trigger: "blur" },
+          { validator: checkNum3, trigger: "blur" }
+        ],
+        gudingTime: [
+          { required: true, message: "请输选择有效期时间", trigger: "change" }
+        ],
+        effectiveDays: [
+          { validator: checkNum3, trigger: "blur" },
+          { required: true, message: "请输入自领取之后天数", trigger: "blur" }
+        ]
       }
     };
-  },
-  beforeDestroy() {
-    this.$store.commit("set_asideState", { data: true });
   },
   mounted() {
     this.toInit();
   },
 
   methods: {
+    // 页面初始化
     toInit() {
-      let datas = JSON.parse(sessionStorage.getItem("step1Data"));
-      let id = this.$route.query["id"];
-      if (datas || id != undefined) {
-        // 如果有datas 表示曾经编辑过step1，或者是从列表点击修改
-        if (id) {
-          // 如果有id表示是编辑
-          this.$api
-            .market_coupon_getInfo({
-              vm: this,
-              data: id
-            })
-            .then(res => {
-              if (res) {
-                // 将服务器返回的数据保存。下一步用
-                let httpData = res.data;
-
-                sessionStorage.setItem("fromHttp", JSON.stringify(httpData));
-                this.couponType(httpData.type);
-                let obj = {};
-
-                obj = {
-                  id: httpData.id,
-                  type: httpData.type,
-                  name: httpData.name, // 券名称
-                  description: httpData.couponExplain, // 卡券说明
-                  money: httpData.money, // 体验金额
-                  days: httpData.durationDay, // 持续时间
-                  limit: httpData.getLimit, // 领券限制
-                  toKnow: httpData.useNotice, // 使用须知
-                  total: httpData.issueNum, // 发放总张数
-                  how: httpData.useConditions, // 使用条件
-                  discountsList: [] // 已使用的卡券、红包
-                };
-
-                switch (httpData.expiryType) {
-                  //  String 有效期类型(:固定时间 GET:自领取后 USE:自使用后)
-                  // 有效期类型
-                  case "FIXATION":
-                    obj.useType = "FIXATION";
-                    break;
-                  case "GET":
-                    obj.useType = "GET";
-                    break;
-                  case "USE":
-                    obj.useType = "USE";
-                    break;
-                }
-                if (httpData.useConditions === "SHARE") {
-                  let couponList = httpData.couponList;
-                  let packetList = httpData.packetList;
-                  if (couponList.length > 0) {
-                    // 使用条件中与其他共享
-                    couponList.forEach(item => {
-                      // 添加卡券
-                      obj.discountsList.push({
-                        id: item.id,
-                        shareType: "COUPON",
-                        shareId: item.awardValue
-                      });
-                      let obj2 = {
-                        // 用来显示已经添加了哪些卡券
-                        type: "COUPON",
-                        name: item.name,
-                        num: item.awardValue
-                      };
-                      this.jiangliKaQuan.push(obj2);
-                    });
-                    this.toSearch("COUPON");
-                  }
-                  if (packetList.length > 0) {
-                    // 使用条件中与其他共享
-                    packetList.forEach(item => {
-                      // 添加红包
-                      obj.discountsList.push({
-                        id: item.id,
-                        shareType: "PACKET",
-                        shareId: item.awardValue
-                      });
-                      let obj3 = {
-                        // 用来显示已经添加了哪些卡券
-                        type: "PACKET",
-                        name: item.name,
-                        num: item.awardValue
-                      };
-                      this.jiangliHongBao.push(obj3);
-                    });
-                    this.toSearch("PACKET");
-                  }
-                  this.$store.commit("set_asideState", { data: false });
-                }
-                switch (httpData.expiryType) {
-                  case "FIXATION":
-                    obj.gudingTime = [
-                      new Date(httpData.startTime),
-                      new Date(httpData.endTime)
-                    ]; // 有效期时间值为固定时间的
-                    this.rules.gudingTime = [
-                      {
-                        required: true,
-                        message: "请输入固定期限",
-                        trigger: "change"
-                      }
-                    ];
-                    break;
-                  case "GET":
-                    obj.afterGet = httpData.dayType; // 自领取之后
-                    obj.afterGetValue = httpData.expiryDay; // 自领取之后的值
-                    this.rules.afterGet = [
-                      {
-                        required: true,
-                        message: "请输入自领取之后",
-                        trigger: "change"
-                      }
-                    ];
-                    this.rules.afterGetValue = [
-                      {
-                        required: true,
-                        message: "请输入自领取之后期限",
-                        trigger: "change"
-                      }
-                    ];
-                    break;
-                  case "USE":
-                    obj.afterUse = httpData.dayType; // 自使用之后
-                    obj.afterUseValue = httpData.expiryDay; // 自使用之后的值
-                    this.rules.afterUse = [
-                      {
-                        required: true,
-                        message: "请输入自使用之后",
-                        trigger: "change"
-                      }
-                    ];
-                    this.rules.afterUseValue = [
-                      {
-                        required: true,
-                        message: "请输入自领取之后期限",
-                        trigger: "change"
-                      }
-                    ];
-                    break;
-                }
-                this.formData = obj;
-              }
-            })
-            .then(() => {
-              // 恢复导航栏
-              if (this.formData.how === "NOSHARE") {
-                this.$store.commit("set_asideState", { data: true });
-              }
-            });
-        } else {
-          // 表示是曾经编辑过的step1
-          this.formData = datas;
-          if (sessionStorage.getItem("jiangliKaQuan")) {
-            this.jiangliKaQuan = JSON.parse(
-              sessionStorage.getItem("jiangliKaQuan")
-            );
-            this.toSearch("COUPON");
-            this.$store.commit("set_asideState", { data: false });
-          }
-          if (sessionStorage.getItem("jiangliHongBao")) {
-            this.jiangliHongBao = JSON.parse(
-              sessionStorage.getItem("jiangliHongBao")
-            );
-            this.toSearch("PACKET");
-            this.$store.commit("set_asideState", { data: false });
-          }
-        }
-      }
-    },
-    // 有效期计算方式变更
-    setUseType() {
-      let type = this.formData["useType"];
-      delete this.formData["gudingTime"];
-      delete this.formData["afterGet"];
-      delete this.formData["afterGetValue"];
-      delete this.formData["afterUse"];
-      delete this.formData["afterUseValue"];
-
-      delete this.rules["gudingTime"];
-      delete this.rules["afterGet"];
-      delete this.rules["afterGetValue"];
-      delete this.rules["afterUse"];
-      delete this.rules["afterUseValue"];
-      let obj = { ...this.formData };
-      let rule = { ...this.rules };
-      switch (type) {
-        case "FIXATION":
-          obj.gudingTime = []; // 有效期时间值为固定时间的
-          rule.gudingTime = [
-            { required: true, message: "请输入固定期限", trigger: "change" }
-          ];
-          break;
-        case "GET":
-          obj.afterGet = ""; // 自领取之后
-          obj.afterGetValue = ""; // 自领取之后的值
-          rule.afterGet = [
-            { required: true, message: "请输入自领取之后", trigger: "change" }
-          ];
-          rule.afterGetValue = [
-            { validator: this.checkNumFN, trigger: "blur" },
-            {
-              required: true,
-              message: "请输入自领取之后期限",
-              trigger: "blur"
-            }
-          ];
-          break;
-        case "USE":
-          obj.afterUse = ""; // 自使用之后
-          obj.afterUseValue = ""; // 自使用之后的值
-          rule.afterUse = [
-            { required: true, message: "请输入自使用之后", trigger: "change" }
-          ];
-          rule.afterUseValue = [
-            { validator: this.checkNumFN, trigger: "blur" },
-            {
-              required: true,
-              message: "请输入自使用之后期限",
-              trigger: "blur"
-            }
-          ];
-          break;
-      }
-      this.formData = obj;
-      this.rules = rule;
-    },
-    // 对数字的验证
-    checkNumFN(rule, value, callback) {
-      let reg = /\./;
-      if (reg.test(value)) {
-        callback(new Error("请输入整数"));
-      } else if (value < 0) {
-        callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
-      } else {
-        callback();
-      }
-    },
-    // 使用条件变更
-    howChange() {
-      delete this.formData.discountsList;
-      if (this.formData.how === "SHARE") {
-        this.formData.discountsList = [];
-        let one = this.toSearch("COUPON");
-        let two = this.toSearch("PACKET");
-        Promise.all([one, two]);
-        this.$store.commit("set_asideState", { data: false });
-      } else {
-        this.jiangliHongBao = [];
-        this.jiangliKaQuan = [];
-        this.formData.discountsList = [];
-        this.$store.commit("set_asideState", { data: true });
-      }
+      // let step1 = sessionStorage.getItem("step1Data");
+      // if (step1) {
+      //   this.formData = JSON.parse(step1);
+      //   this.howChange();
+      // }
     },
     // 查看是体验金券还是奖励金券
     couponType(val) {
-      if (val == "EXPERIENCE") {
-        this.formTitle = {
-          title: "体验金券名称",
-          money: "体验金金额"
-        };
-      } else {
-        this.formTitle = {
-          title: "奖励金券名称",
-          money: "奖励金金额"
-        };
-      }
-    },
-    // 右侧表格重置
-    resetSearch(type) {
-      switch (type) {
-        case "COUPON": // 卡券查询
-          this.COUPON_tableSearch.pageSize = 10;
-          this.COUPON_tableSearch.pageNum = 1;
-          this.COUPON_tableSearch = {
-            name: "",
-            couponExplain: "",
-            startTime: "",
-            endTime: "",
-            pageSize: 10,
-            pageNum: 1
-          };
-          this.toSearch(type);
-          break;
-        case "PACKET": // 红包查询
-          this.PACKET_tableSearch.pageSize = 10;
-          this.PACKET_tableSearch.pageNum = 1;
-          // 红包列表的搜索
-          this.PACKET_tableSearch = {
-            name: "",
-            packetExplain: "",
-            pageSize: 10,
-            pageNum: 1
-          };
-          this.toSearch(type);
-          break;
-      }
-    },
-    // 备选表格的查询
-    toSearch(type) {
-      this.COUPON_table.pageSize = 10;
-      this.COUPON_table.pageNum = 1;
-      this.PACKET_table.pageSize = 10;
-      this.PACKET_table.pageNum = 1;
+      let formObj = { ...this.formData };
 
+      delete formObj.increasesDays;
+      delete formObj.increasesAmount;
+      delete formObj.increasesRate;
+      delete formObj.experienceAmount;
+      delete formObj.experienceDays;
+      delete formObj.orderAmount;
+      delete formObj.orderReturnAmount;
+
+      switch (val) {
+        case "EXPERIENCE":
+          this.formTitle = {
+            title: "体验金券券名称",
+            money: "体验金起投金额",
+            type: "tiyan"
+          };
+          formObj.experienceAmount = ""; // 体验金金额(整数)
+          formObj.experienceDays = ""; // 体验金持续天数
+          this.$set(this, "fafangType", [
+            {
+              label: "赎回时发放",
+              value: "WHEN_REDEEM"
+            },
+            {
+              label: "加息时间结束时发放",
+              value: "WHEN_END"
+            }
+          ]);
+
+          break;
+        case "INCREASE":
+          this.formTitle = {
+            title: "加息券券名称",
+            money: "加息券起投金额",
+            type: "jiaxi"
+          };
+          formObj.increasesDays = ""; // 加息天数(-1表示跟随产品计息天数)
+          formObj.increasesAmount = ""; // 计息上限金额(整数,-1表示无上限,投多少算多少)
+          formObj.increasesRate = ""; // 加息率(保存到小数点后一位:3.3%)
+          this.$set(this, "fafangType", [
+            {
+              label: "赎回时发放",
+              value: "WHEN_REDEEM"
+            },
+            {
+              label: "加息时间结束时发放",
+              value: "WHEN_END"
+            }
+          ]);
+          break;
+        case "ORDER":
+          this.formTitle = {
+            title: "定购券券名称",
+            money: "定购券起投金额",
+            type: "dinggou"
+          };
+          formObj.orderAmount = ""; // 定购金额(整数)
+          formObj.orderReturnAmount = ""; // 定购返现金额(保存到小数点后两位:9.99)
+          this.$set(this, "fafangType", [
+            {
+              label: "购买时发放",
+              value: "WHEN_BUY"
+            },
+            {
+              label: "赎回时发放",
+              value: "WHEN_REDEEM"
+            },
+            {
+              label: "加息时间结束时发放",
+              value: "WHEN_END"
+            }
+          ]);
+          break;
+      }
+      this.formData = formObj;
+    },
+    // 有效期计算方式变更时执行
+    setUseType() {
+      let obj = { ...this.formData };
+      delete obj.effectiveDays;
+      delete obj.gudingTime;
+      if (this.formData.YXQJStype === "FIXED") {
+        obj.gudingTime = "";
+      } else {
+        obj.effectiveDays = "";
+      }
+      this.formData = obj;
+    },
+
+    // 使用条件变更
+    howChange() {
+      this.formData.bankPrdList = [];
+      if (this.formData.isLink) {
+        let one = this.toSearch("bank");
+        let two = this.toSearch("product");
+        this.setForForms();
+        Promise.all([one, two]).then(datas => {
+          // 收缩导航
+          this.$store.commit("set_asideState", { data: false });
+        });
+      } else {
+        this.$store.commit("set_asideState", { data: true });
+      }
+    },
+    // 关联银行、产品后显示已经添加哪些关联
+    setForForms() {
+      let forms = {
+        fenye: true, // 是否需要分页
+        pageNum: 0, // 当前页妈
+        // 表格头部的蓝点
+        titleUp: {
+          pointName: "已关联的银行or产品"
+        },
+        // 表格头部
+        title: [
+          {
+            prop: "name", // 要显示的属性
+            label: "名称", // 要显示的文字
+            width: "100" // 当前项的宽度
+          },
+          {
+            prop: "type", // 要显示的属性
+            label: "类型", // 要显示的文字
+            width: "100" // 当前项的宽度
+          }
+        ],
+        handle: [
+          {
+            click: "delete", // 表格操作栏的点击事件
+            text: "删除" // 表格操作栏的点击事件
+          }
+        ],
+        // 表格数据
+        dataTotal: [
+          {
+            type: "BANK",
+            name: "XX银行",
+            targetId: 1
+          }
+        ]
+      };
+      this.$set(this.forForms, "forForms", forms);
+    },
+    ///////////////////////////////////////////////
+    // 右侧列表的搜索
+    toSearch(type) {
       let obj = {};
-      switch (type) {
-        case "COUPON": // 卡券查询
-          this.COUPON_tableSearch.pageSize = 10;
-          this.COUPON_tableSearch.pageNum = 1;
-          // 过滤没有数据的属性
-          Object.keys(this.COUPON_tableSearch).forEach(str => {
-            if (this.COUPON_tableSearch[str]) {
-              obj[str] = this.COUPON_tableSearch[str];
-            }
-          });
-          if (obj["time"]) {
-            obj["queryBeginDay"] = obj["time"][0];
-            obj["queryEndDay"] = obj["time"][1];
-            delete obj["time"];
-          }
-          this.COUPON_Search(obj);
-          break;
-        case "PACKET": // 红包查询
-          this.PACKET_tableSearch.pageSize = 10;
-          this.PACKET_tableSearch.pageNum = 1;
-          // 过滤没有数据的属性
-          Object.keys(this.PACKET_tableSearch).forEach(str => {
-            if (this.PACKET_tableSearch[str]) {
-              obj[str] = this.PACKET_tableSearch[str];
-            }
-          });
-          this.PACKET_Search(obj);
-          break;
-      }
-    },
-    // 监听表格的操作
-    tableEmit(type, data) {
-      switch (type.type) {
-        case "regetData": // 分页的emit
-          if (data === "coupon") {
-            let obj_coupon = {};
-            // 过滤没有数据的属性
-            Object.keys(this.COUPON_tableSearch).forEach(str => {
-              if (this.COUPON_tableSearch[str]) {
-                obj_coupon[str] = this.COUPON_tableSearch[str];
-              }
-            });
-            obj_coupon.pageSize = this.COUPON_table.pageSize;
-            obj_coupon.pageNum = this.COUPON_table.pageNum;
-            this.COUPON_Search(obj_coupon);
-          }
-          if (data === "packet") {
-            let obj_packet = {};
-            // 过滤没有数据的属性
-            Object.keys(this.PACKET_tableSearch).forEach(str => {
-              if (this.PACKET_tableSearch[str]) {
-                obj_packet[str] = this.PACKET_tableSearch[str];
-              }
-            });
-            obj_packet.pageSize = this.PACKET_table.pageSize;
-            obj_packet.pageNum = this.PACKET_table.pageNum;
-            this.PACKET_Search(obj_packet);
-          }
-          break;
-        case "toUse": // 添加活动奖励
-          if (data === "coupon") {
-            // 添加卡券
-            if (this.formData.discountsList.length == 0) {
-              let obj = {
-                shareType: "COUPON",
-                shareId: type.data.id
-              };
-              this.formData.discountsList.push(obj);
-              let obj2 = {
-                // 用来显示已经添加了哪些卡券
-                type: "COUPON",
-                name: type.data.name,
-                num: type.data.id
-              };
-              this.jiangliKaQuan.push(obj2);
-            } else {
-              let isIn = this.formData.discountsList.some(item => {
-                return (
-                  item.shareType == "COUPON" && item.shareId == type.data.id
-                );
-              });
-              if (!isIn) {
-                let obj = {
-                  shareType: "COUPON",
-                  shareId: type.data.id
-                };
-                this.formData.discountsList.push(obj);
-                let obj2 = {
-                  // 用来显示已经添加了哪些卡券
-                  type: "COUPON",
-                  name: type.data.name,
-                  num: type.data.id
-                };
-                this.jiangliKaQuan.push(obj2);
-              } else {
-                this.$message.warning("已经使用了！");
-              }
-            }
-          }
-          if (data === "packet") {
-            // 添加红包
-            if (this.formData.discountsList.length == 0) {
-              let obj = {
-                shareType: "PACKET",
-                shareId: type.data.id
-              };
-              this.formData.discountsList.push(obj);
-              let obj2 = {
-                // 用来显示已经添加了哪些卡券
-                type: "PACKET",
-                name: type.data.name,
-                num: type.data.id
-              };
-              this.jiangliHongBao.push(obj2);
-            } else {
-              let isIn = this.formData.discountsList.some(item => {
-                return (
-                  item.shareType == "PACKET" && item.shareId == type.data.id
-                );
-              });
-              if (!isIn) {
-                let obj = {
-                  shareType: "PACKET",
-                  shareId: type.data.id
-                };
-                this.formData.discountsList.push(obj);
-                let obj2 = {
-                  // 用来显示已经添加了哪些红包
-                  type: "PACKET",
-                  name: type.data.name,
-                  num: type.data.id
-                };
-                this.jiangliHongBao.push(obj2);
-              } else {
-                this.$message.warning("已经使用了！");
-              }
-            }
-          }
-          break;
-      }
-    },
-    // 删除奖励
-    deleteJiangli(item) {
-      if (item.type === "PACKET") {
-        this.jiangliHongBao = this.jiangliHongBao.filter(tar => {
-          return tar.num != item.num;
-        });
-      }
-      if (item.type === "COUPON") {
-        this.jiangliKaQuan = this.jiangliKaQuan.filter(tar => {
-          return tar.num != item.num;
-        });
-      }
-      // 红包和卡券有可能id相同，所以只能用删除项在awardList 的索引进行删除
-      let num;
-      for (let i = this.formData.discountsList.length; i--; ) {
-        if (
-          this.formData.discountsList[i].shareId == item.num &&
-          this.formData.discountsList[i].shareType === item.type
-        ) {
-          num = i;
+      if (type === "bank") {
+        if (this.bankListSearch.name) {
+          obj.name = this.bankListSearch.name;
         }
+        obj.pageSize = this.bankList.pageSize;
+        obj.pageNum = this.bankList.pageNum;
+
+        // this.bankList.total = res.data.total > 0 ? res.data.total : 1;
+        // this.bankList.data.title = [
+        //   {
+        //     title: "卡券名称",
+        //     key: "name",
+        //     minWidth: "80"
+        //   }
+        // ];
+        // this.bankList.data.custom = [
+        //   {
+        //     text: "使用",
+        //     type: "warning",
+        //     size: "small",
+        //     emit: "toUse"
+        //   }
+        // ];
+        // this.bankList.data.list = [...res.data.list];
       }
-      this.formData.discountsList.splice(num, 1);
+      if (type === "product") {
+        if (this.productListSearch.name) {
+          obj.name = this.productListSearch.name;
+        }
+        obj.pageSize = this.productList.pageSize;
+        obj.pageNum = this.productList.pageNum;
+
+        // this.productList.total = res.data.total > 0 ? res.data.total : 1;
+        // this.productList.data.title = [
+        //   {
+        //     title: "卡券名称",
+        //     key: "name",
+        //     minWidth: "80"
+        //   }
+        // ];
+        // this.productList.data.custom = [
+        //   {
+        //     text: "使用",
+        //     type: "warning",
+        //     size: "small",
+        //     emit: "toUse"
+        //   }
+        // ];
+        // this.productList.data.list = [...res.data.list];
+      }
+      return obj;
     },
-    // 卡券表格的查询
-    COUPON_Search(data) {
-      this.$api
-        .market_create_getCouponList({
-          vm: this,
-          data: data
-        })
-        .then(res => {
-          this.COUPON_table.total = res.data.total > 0 ? res.data.total : 1;
-          // title 里显示的没有额外设置的表头，其他有额外设置的，需要另添加
-          this.COUPON_table.data.title = [
-            {
-              title: "卡券名称",
-              key: "name",
-              minWidth: "80"
-            },
-            {
-              title: "卡券说明",
-              key: "couponExplain",
-              minWidth: "80"
-            },
-            {
-              title: "持续时间",
-              key: "durationDay",
-              minWidth: "70"
-            },
-            {
-              title: "有效期开始时间",
-              key: "startTime",
-              minWidth: "160"
-            },
-            {
-              title: "有效期结束时间",
-              key: "endTime",
-              minWidth: "160"
-            }
-          ];
-          this.COUPON_table.data.custom = [
-            {
-              text: "使用",
-              type: "warning",
-              size: "small",
-              emit: "toUse"
-            }
-          ];
-          this.COUPON_table.data.list = [...res.data.list];
-          this.COUPON_table.data.quanxian = ["1"];
-        })
-        .then(() => {
-          this.COUPON_table.show = true;
-        });
+    // 当重新输入查询字段时，重置分页
+    inputChange(type) {
+      if (type === "bank") {
+        this.bankList.pageSize = 10;
+        this.bankList.pageNum = 1;
+      }
+      if (type === "product") {
+        this.productList.pageSize = 10;
+        this.productList.pageNum = 1;
+      }
     },
-    // 红包表格的查询
-    PACKET_Search(data) {
-      this.$api
-        .market_create_getPacketList({
-          vm: this,
-          data: data
-        })
-        .then(res => {
-          this.PACKET_table.total = res.data.total > 0 ? res.data.total : 1;
-          // title 里显示的没有额外设置的表头，其他有额外设置的，需要另添加
-          this.PACKET_table.data.title = [
-            {
-              title: "红包名称",
-              key: "name",
-              minWidth: "80"
-            },
-            {
-              title: "红包说明",
-              key: "packetExplain",
-              minWidth: "80"
-            },
-            {
-              title: "总金额",
-              key: "totalAmount",
-              minWidth: "70"
-            },
-            {
-              title: "总个数",
-              key: "totalNum",
-              minWidth: "60"
-            },
-            {
-              title: "创建时间",
-              key: "gmtCreated",
-              minWidth: "160"
-            }
-          ];
-          this.PACKET_table.data.custom = [
-            {
-              text: "使用",
-              type: "warning",
-              size: "small",
-              emit: "toUse"
-            }
-          ];
-          this.PACKET_table.data.quanxian = ["1"];
-          this.PACKET_table.data.list = [...res.data.list];
-        })
-        .then(() => {
-          this.PACKET_table.show = true;
-        });
+    // 右侧列表的重置
+    resetSearch(type) {
+      if (type === "bank") {
+        this.bankListSearch = {
+          name: ""
+        };
+        this.bankList.pageSize = 10;
+        this.bankList.pageNum = 1;
+      }
+      if (type === "product") {
+        this.productListSearch = {
+          name: ""
+        };
+        this.productList.pageSize = 10;
+        this.productList.pageNum = 1;
+      }
+      this.toSearch(type);
     },
+    ///////////////////////////////////////////////
+    // 右侧产品、银行表格里的操作
+    tableEmit(data, type) {
+      console.log(data);
+      console.log(type);
+    },
+    // 已关联的产品、银行表格的操作
+    tableAct(data) {
+      this.formData.bankPrdList = this.formData.bankPrdList.filter(
+        item => item.targetId != data.data.targetId
+      );
+    },
+    //////////////////////////////////////////////////////
     // 重置
     reset() {
       this.$refs.formData.resetFields();
-      this.jiangliKaQuan = []; // 保存已经添加的卡券奖励
-      this.jiangliHongBao = []; // 保存已经添加的红包奖励
+      this.formData = {
+        type: "EXPERIENCE",
+        name: "", // 券名称
+        explains: "", // 卡券说明
+        YXQJStype: "", // 有效期计算方式
+        gudingTime: "", // 固定时间
+        effectiveDays: "", // 自领取之后
+        useType: "", // 卡券使用类型
+        totalCount: "", // 发放总张数
+        warningCount: "", // 预警数量
+        notifyMobile: "", // 预警通知手机号
+        receiveLimit: "1", // 领取限制
+        initialAmount: "", // 起投金额
+        holdDays: "", // 持有天数
+        incomeGrantType: "", // 收益(现金)发放类型
+        applyChannel: "ALL", // 适用渠道
+        isReplacement: "否", // 是否为补发券
+        seq: "0", // 排序
+        remark: "", // 备注
+        isLink: false, // 是否做关联
+        bankPrdList: [], // 关联产品、银行列表
+        experienceAmount: "", // 体验金金额(整数)
+        experienceDays: "" // 体验金持续天数
+      };
+      this.$store.commit("set_asideState", { data: true });
       this.toInit();
     },
-    // 下一步
-    step() {
+    // 保存
+    save() {
       this.$refs.formData.validate(valid => {
         if (valid) {
-          if (
-            this.formData.how === "SHARE" &&
-            this.formData.discountsList.length == 0
-          ) {
-            this.$message.error(
-              "请选择使用的卡券或红包，或者不与其他优惠共享！"
-            );
+          if (this.formData.isLink && this.formData.bankPrdList.length === 0) {
+            this.$message.error("请选择关联产品、银行！");
+            return;
+          }
+          if (this.formData.warningCount && !this.formData.notifyMobile) {
+            this.$message.error("请输入预警通知手机号！");
+            return;
+          }
+          if (!this.formData.warningCount && this.formData.notifyMobile) {
+            this.$message.error("请输入预警数量！");
             return;
           }
 
-          sessionStorage.setItem("step1Data", JSON.stringify(this.formData));
-          sessionStorage.setItem(
-            "jiangliKaQuan",
-            JSON.stringify(this.jiangliKaQuan)
-          );
-          sessionStorage.setItem(
-            "jiangliHongBao",
-            JSON.stringify(this.jiangliHongBao)
-          );
-          this.$router.push({ name: `coupon_add_step2` });
+          let obj = {
+            name: this.formData.name,
+            type: this.formData.type,
+            explains: this.formData.explains,
+            expiryType: this.formData.YXQJStype,
+            useType: this.formData.useType,
+            effectiveDays: this.formData.effectiveDays,
+            totalCount: this.formData.totalCount,
+            warningCount: this.formData.warningCount
+              ? this.formData.warningCount
+              : null,
+            notifyMobile: this.formData.notifyMobile
+              ? this.formData.notifyMobile
+              : null,
+            receiveLimit: this.formData.receiveLimit,
+            initialAmount: this.formData.initialAmount,
+            holdDays: this.formData.holdDays,
+            incomeGrantType: this.formData.incomeGrantType,
+            applyChannel: this.formData.applyChannel,
+            isReplacement: this.formData.isReplacement === "是" ? "YES" : "NO",
+            remark: this.formData.remark ? this.formData.remark : "",
+            seq: this.formData.seq ? this.formData.seq : null,
+            typeDetail: {},
+            bankPrdList: this.formData.bankPrdList
+          };
+          switch (this.formData.type) {
+            case "EXPERIENCE": // 体验金券
+              obj.typeDetail = {
+                experienceAmount: this.formData.experienceAmount,
+                experienceDays: this.formData.experienceDays
+              };
+              break;
+            case "INCREASE": // 加息券
+              obj.typeDetail = {
+                increasesDays: this.formData.increasesDays,
+                increasesAmount: this.formData.increasesAmount,
+                increasesRate: this.jieQu(
+                  this.formData.type,
+                  this.formData.increasesRate
+                )
+              };
+              break;
+            case "ORDER": // 定购券
+              obj.typeDetail = {
+                orderAmount: this.formData.orderAmount,
+                orderReturnAmount: this.jieQu(
+                  this.formData.type,
+                  this.formData.orderReturnAmount
+                )
+              };
+              break;
+          }
+          this.isUping = true;
+          this.$api
+            .market_coupon_upCoupon({
+              vm: this,
+              httpType: "post",
+              data: obj
+            })
+            .then(res => {
+              if (res) {
+                this.isOk = true;
+              } else {
+                setTimeout(() => (this.isUping = false), 3000);
+              }
+            });
         } else {
-          this.$message.error("请选择将数据正确填写完整！");
+          this.$message.error("请将数据正确填写完整！");
         }
       });
+    },
+    // 对加息率、定购返现金额数据进行截取格式化
+    jieQu(type, num) {
+      let reg = /\./gi;
+      if (reg.test(num)) {
+        // 有小数点
+        let arr = num.split(".");
+        let str = "";
+
+        if (type === "ORDER") {
+          // 定购券
+          return `${arr[0]}.${arr[1].slice(0, 2)}`;
+        } else {
+          // 加息
+          return `${arr[0]}.${arr[1].slice(0, 1)}`;
+        }
+      } else {
+        if (type === "ORDER") {
+          // 定购券
+          return (+num).toFixed(2);
+        } else {
+          // 加息
+          return (+num).toFixed(1);
+        }
+      }
+    },
+    // 提交成功
+    isOver(type) {
+      this.isUping = false;
+      sessionStorage.setItem("page", "创建卡券 ");
+      if (type === "back") {
+        this.$router.push({ name: `coupon_list` });
+      } else {
+        this.$router.push({ name: `coupon_add` });
+      }
     }
   }
 };
@@ -1120,22 +1101,27 @@ export default {
 .hasSelectJiangLi p:hover {
   background: rgb(209, 208, 208);
 }
+.forBaiFenHao,
 .addDanWei,
 .forMoney,
-.forDays {
+.forDays,
+.onlyText {
   width: 180px;
   position: relative;
 }
-.addDanWei + span {
+.onlyText + span,
+.addDanWei + span,
+.forMoney + span,
+.forDays + span {
   position: absolute;
   right: 0px;
   top: 24px;
   display: inline-block;
-  width: 220px;
   vertical-align: middle;
-  color: rgb(231, 227, 227);
+  color: rgb(189, 184, 184);
   font-size: 12px;
 }
+
 .addDanWei::after {
   content: "张";
   position: absolute;
@@ -1156,6 +1142,15 @@ export default {
 }
 .forDays::after {
   content: "天";
+  position: absolute;
+  right: -20px;
+  top: 0;
+  font-weight: bold;
+  font-size: 14px;
+  color: rgb(99, 97, 97);
+}
+.forBaiFenHao::after {
+  content: "%";
   position: absolute;
   right: -20px;
   top: 0;

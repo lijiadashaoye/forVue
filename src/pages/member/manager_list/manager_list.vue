@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <!-- <el-input
         size="mini"
@@ -18,197 +18,109 @@
         size="mini"
         type="info"
         @click="seachClick(false)"
-      >重置</el-button> -->
-      <el-button
-        size="mini"
-        type="warning"
-        @click="moreDengJi()"
-      >批量修改等级</el-button>
-      <el-button
-        size="mini"
-        type="info"
-        @click="moreStatue()"
-      >批量修改状态</el-button>
-      <el-button
-        size="mini"
-        type="danger"
-        @click="moreJiFen()"
-      >批量调整积分</el-button>
-      <el-button
-        size="mini"
-        type="primary"
-        @click="moreMark()"
-      >批量打标签</el-button>
+      >重置</el-button>-->
+      <el-button size="mini" type="warning" @click="moreDengJi()">批量修改等级</el-button>
+      <el-button size="mini" type="info" @click="moreStatue()">批量修改状态</el-button>
+      <el-button size="mini" type="danger" @click="moreJiFen()">批量调整积分</el-button>
+      <el-button size="mini" type="primary" @click="moreMark()">批量打标签</el-button>
       <div class="forTableTitle">
         <span>配置表头</span>
-        <el-select
-          v-model="tableTitle"
-          placeholder="请选择"
-          size="small"
-          @change="setTableTitle"
-        >
+        <el-select v-model="tableTitle" placeholder="请选择" size="small" @change="setTableTitle">
           <el-option
             v-for="item in options"
             :key="item.type"
             :label="item.title"
             :value="item.type"
-          >
-          </el-option>
+          ></el-option>
         </el-select>
       </div>
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
       <!-- 标签弹出框 -->
       <el-dialog
-        :close-on-click-modal='false'
+        :close-on-click-modal="false"
         :title="dialogMark.title"
         :visible.sync="dialogMark.show"
         width="500px"
         :before-close="markDialogClose"
         style="padding:0;"
       >
-        <makeTag
-          :inputData='forMark'
-          @toSearch='getMarkList'
-        />
+        <makeTag :inputData="forMark" @toSearch="getMarkList" />
 
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="markDialogAction(false)"
-          >取 消</el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="markDialogAction(true)"
-          >确 定</el-button>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="markDialogAction(false)">取 消</el-button>
+          <el-button size="mini" type="primary" @click="markDialogAction(true)">确 定</el-button>
         </span>
       </el-dialog>
       <!-- 批量修改等级按钮点击弹框 -->
       <el-dialog
-        :close-on-click-modal='false'
+        :close-on-click-modal="false"
         :title="dengjiDialog.title"
         :visible.sync="dengjiDialog.show"
         width="400px"
         :before-close="dengjiDialogClose"
         style="padding:0;"
       >
-        <el-select
-          style="width:100%;"
-          v-model="dengjiDialog.ids"
-          placeholder="请选择"
-        >
+        <el-select style="width:100%;" v-model="dengjiDialog.ids" placeholder="请选择">
           <el-option
             v-for="item in dengjiDialog.levelList"
             :key="item.id"
             :label="item.name"
             :value="item.id"
-          >
-          </el-option>
+          ></el-option>
         </el-select>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="levelDialogAction(false)"
-          >取 消</el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="levelDialogAction(true)"
-          >确 定</el-button>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="levelDialogAction(false)">取 消</el-button>
+          <el-button size="mini" type="primary" @click="levelDialogAction(true)">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 批量修改状态按钮点击弹框 -->
       <el-dialog
-        :close-on-click-modal='false'
+        :close-on-click-modal="false"
         :title="statueDialog.title"
         :visible.sync="statueDialog.show"
         width="400px"
         :before-close="dengjiDialogClose"
         style="padding:0;"
       >
-        <el-select
-          style="width:100%;"
-          v-model="statueDialog.ids"
-          placeholder="请选择"
-        >
+        <el-select style="width:100%;" v-model="statueDialog.ids" placeholder="请选择">
           <el-option
             v-for="item in statueDialog.levelList"
             :key="item.value"
             :label="item.label"
             :value="item.value"
-          >
-          </el-option>
+          ></el-option>
         </el-select>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="statueDialogAction(false)"
-          >取 消</el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="statueDialogAction(true)"
-          >确 定</el-button>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="statueDialogAction(false)">取 消</el-button>
+          <el-button size="mini" type="primary" @click="statueDialogAction(true)">确 定</el-button>
         </span>
       </el-dialog>
 
       <!-- 批量打标签按钮点击弹框 -->
       <el-dialog
-        :close-on-click-modal='false'
+        :close-on-click-modal="false"
         :title="marksDialog.title"
         :visible.sync="marksDialog.show"
         width="400px"
         :before-close="dengjiDialogClose"
         style="padding:0;"
       >
-        <el-select
-          style="width:100%;"
-          v-model="marksDialog.ids"
-          placeholder="请选择"
-          multiple
-        >
+        <el-select style="width:100%;" v-model="marksDialog.ids" placeholder="请选择" multiple>
           <el-option
             v-for="item in marksDialog.levelList"
             :key="item.id"
             :label="item.name"
             :value="item.id"
-          >
-          </el-option>
+          ></el-option>
         </el-select>
-        <span
-          slot="footer"
-          class="dialog-footer"
-        >
-          <el-button
-            size="mini"
-            @click="marksDialogAction(false)"
-          >取 消</el-button>
-          <el-button
-            size="mini"
-            type="primary"
-            @click="marksDialogAction(true)"
-          >确 定</el-button>
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="marksDialogAction(false)">取 消</el-button>
+          <el-button size="mini" type="primary" @click="marksDialogAction(true)">确 定</el-button>
         </span>
       </el-dialog>
-
     </div>
   </div>
 </template>
@@ -663,7 +575,7 @@ export default {
           }
         });
     },
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
 
@@ -729,7 +641,6 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list;
         this.tableInputData.data.list = data.list.map(item => {
           let obj = {},
             arr = Object.keys(item);
@@ -809,7 +720,7 @@ export default {
     },
     // 获取用户表格数据
     getUserData() {
-      console.log(9)
+      console.log(9);
       this.$api
         .member_manager_getListData({
           vm: this,

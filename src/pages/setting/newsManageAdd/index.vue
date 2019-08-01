@@ -7,14 +7,16 @@
     </div>
 
     <div id="forTable">
-     <newsManager/>
+     <newsManager
+     :success.sync='success'
+     @save="save"/>
     </div>
   </div>
 </template>
 
 <script>
 import newsManager from '../../../components/newsManager';
-
+import { news_manger_add } from '../../../api/setting_use';
 
 export default {
   components: {
@@ -23,13 +25,21 @@ export default {
   data() {
       return {
           pageName: "",//页面名称
+          success: false
       }
   },
   mounted() {
       this.pageName = this.$route.name;
   },
   methods: {
-
+    save(data) {
+      news_manger_add(data).then(res=> {
+        if(res && res.success) {
+          this.success = true;
+          this.$router.push(`/home/setting/news-manage/list`)
+        }
+      })
+    }
   }
 }
 </script>

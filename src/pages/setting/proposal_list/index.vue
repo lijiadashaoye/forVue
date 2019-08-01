@@ -77,7 +77,8 @@
             this.userDo();
             this.pageName = this.$route.name;
             this.getList({
-                
+                pageNum: 1,
+                pageSize: this.$store.state.proposal.proposalList.pageSize,
             });
             this.$store.state.proposal.proposalList.data.title = [
                 {
@@ -123,6 +124,8 @@
             search() {
                 this.getList({
                     proposalContent: this.keyWords,
+                    pageNum: 1,
+                    pageSize: this.$store.state.proposal.proposalList.pageSize,
                 })
             },
             // 取消
@@ -142,7 +145,10 @@
             tableEmit(data) {
                 switch (data.type) {
                     case "regetData": // 分页的emit
-                        this.getList();
+                        this.getList({
+                            pageNum: this.$store.state.proposal.proposalList.pageNum,
+                            pageSize: this.$store.state.proposal.proposalList.pageSize,
+                        });
                         break;
                     case "delete": // 单独删除按钮
                         this.delete(data.data.id)
@@ -159,7 +165,10 @@
                         } else {
                             this.$message.error('删除失败')
                         }
-                        this.getList()
+                        this.getList({
+                            pageNum: this.$store.state.proposal.proposalList.pageNum,
+                            pageSize: this.$store.state.proposal.proposalList.pageSize,
+                        })
                     })
                 }).catch(()=>{})
             }

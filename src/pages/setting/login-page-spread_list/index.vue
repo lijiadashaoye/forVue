@@ -49,7 +49,7 @@
 <script>
 import isTable from '../../../components/isTable/isTable';
 import loginSpread from '../../../components/loginSpread';
-import { loginSpread_status_upd, loginSpread_updata } from '../../../api/setting_use.js';
+import { loginSpread_status_upd, loginSpread_updata,loginSpread_del } from '../../../api/setting_use.js';
 import { mapMutations } from 'vuex';
 export default {
   props: {},
@@ -78,7 +78,10 @@ export default {
   },
   mounted() {
     this.pageName = this.$route.name;
-    this.getLoginSpreadListData();
+    this.getLoginSpreadListData({
+        pageNum: 1,
+        pageSize: this.$store.state.loginSpread.loginSpreadList.pageSize
+    });
     this.userDo();
     this.getAppChannel();
     this.$store.state.loginSpread.loginSpreadList.data.title = [
@@ -116,7 +119,6 @@ export default {
       getAppChannel: 'protocol/getAppChannel',
       getLoginSpreadListData: 'loginSpread/getLoginSpreadListData',
       userDo: 'loginSpread/userDo',
-      deleteList: 'loginSpread/deleteList'
     }),
 
     //点击新增
@@ -147,17 +149,15 @@ export default {
       loginSpread_updata(data).then((res)=> {
         if(res && res.success){
           this.dialogVisible = false;
-          this.getLoginSpreadListData();
+          this.getLoginSpreadListData({
+              pageNum: this.$store.state.loginSpread.loginSpreadList.pageNum,
+              pageSize: this.$store.state.loginSpread.loginSpreadList.pageSize
+          });
         }
-      }).catch(() => {
-        this.$alert(`${res.message}`, '保存失败', {
-          confirmButtonText: '确定',
-          callback: action => {
-            this.$message({
-              type: 'info',
-              message: `action: ${ action }`
-            });
-          }
+      }).catch((res) => {
+        this.$message({
+          type: 'error',
+          message: `${res.message}`
         });
       })
     },
@@ -179,13 +179,24 @@ export default {
             id:this.opts.id,
             status:msg
           }).then(res=> {
+            if(res && res.success) {
+              this.statusVisible = false;
+              this.$message({
+                type: 'success',
+                message: '更改成功!'
+              });
+              this.getLoginSpreadListData({
+                  pageNum: this.$store.state.loginSpread.loginSpreadList.pageNum,
+                  pageSize: this.$store.state.loginSpread.loginSpreadList.pageSize
+              });
+            }
+          }).catch(res=> {
             this.statusVisible = false;
-            this.getLoginSpreadListData();
+            this.$message({
+              type: 'error',
+              message: `${res.massage}`
+            });          
           })
-          this.$message({
-            type: 'success',
-            message: '更改成功!'
-          });
         }).catch(() => {
           this.statusVisible = false;
           this.$message({
@@ -202,17 +213,28 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-          // window.location.reload();
+        loginSpread_del(id).then(res=> {
+          if(res && res.success) {
+            this.getLoginSpreadListData({
+                pageNum: this.$store.state.loginSpread.loginSpreadList.pageNum,
+                pageSize: this.$store.state.loginSpread.loginSpreadList.pageSize
+            });
+            this.$message({
+              type: "success",
+              message: "删除成功!"
+            });
+          }
+        }).catch(res=> {
           this.$message({
-            type: "success",
-            message: "删除成功!"
+            type: "error",
+            message: `${res.massage}`
           });
-          this.deleteList(id);
-        }).catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
+        })
+      }).catch(() => {
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
       });
     },
 
@@ -220,6 +242,7 @@ export default {
     detail(data){
       this.dialogVisible = true;
       this.detailFlag = true;
+      this.updataFlag = false;
       this.opts = data;
     },
 
@@ -242,7 +265,10 @@ export default {
       switch (data.type) {
         case "regetData": // 分页的emit
            //再次请求列表数据
-          this.getLoginSpreadListData();
+          this.getLoginSpreadListData({
+              pageNum: this.$store.state.loginSpread.loginSpreadList.pageNum,
+              pageSize: this.$store.state.loginSpread.loginSpreadList.pageSize
+          });
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);

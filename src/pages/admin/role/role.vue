@@ -11,7 +11,7 @@
       <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
     <div id="forTable" v-if="loadEnd">
-      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
       <!-- 编辑、添加 -->
       <el-dialog
         :close-on-click-modal="false"
@@ -143,15 +143,15 @@ export default {
       rules: {
         roleName: [
           { required: true, message: "角色名称必须填写", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 64, message: "请输入1-64个字符", trigger: "blur" }
         ],
         roleCode: [
           { required: true, message: "角色标识必须填写", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 64, message: "请输入1-64个字符", trigger: "blur" }
         ],
         roleDesc: [
           { required: true, message: "角色描述必须填写", trigger: "blur" },
-          { min: 1, max: 19, message: "请输入1-19个字符", trigger: "blur" }
+          { min: 1, max: 255, message: "请输入1-255个字符", trigger: "blur" }
         ],
         roleDeptId: [
           { required: true, message: "所属部门必须选择", trigger: "blur" }
@@ -244,9 +244,7 @@ export default {
                     failName += `角色名称：${item.data[0].roleName} \n`;
                   }
                 });
-                let str = `共操作${
-                  arr.length
-                }条数据，成功${numSucces}个，失败${numFail}个 \n`;
+                let str = `共操作${arr.length}条数据，成功${numSucces}个，失败${numFail}个 \n`;
 
                 if (numFail > 0) {
                   str += titleText + failName;
@@ -514,7 +512,7 @@ export default {
           }
         });
     },
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       // 变更用户权限后需要重新获取数据
       this.tableInputData.data.quanxian = [];

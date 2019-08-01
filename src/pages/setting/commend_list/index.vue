@@ -62,6 +62,7 @@
         :productNameList="productNameList"
         :opts="opts"
         @reqs="reqs"
+        :dataType="type"
         @cancel='cancel'/>
     </el-dialog>
   </div>
@@ -87,6 +88,7 @@ export default {
       searchVal: "",
       msg:"",
       flag: false,
+      type: 'RECOMMEND',
       ruleForm: {
         productName: '',
         time: [],
@@ -135,7 +137,7 @@ export default {
   },
   mounted() {
     this.getCommendList({
-      pageNum: this.$store.state.commend.commendList.pageNum,
+      pageNum: 1,
       pageSize: this.$store.state.commend.commendList.pageSize,
       dataType:"RECOMMEND"
     });
@@ -240,13 +242,13 @@ export default {
         });
     },
     cancel() {
+      this.opts = {}
       this.flag = false;
     },
     //修改后点击保存
     reqs(data){
       this.opts = data
       commend_updata(data).then(res=> {
-      console.log(data,'data')
         if(res && res.success){
           this.flag = false;
           this.getCommendList({

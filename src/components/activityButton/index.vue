@@ -232,11 +232,11 @@ export default {
                     label: "底部显示",
                     value: "bottom"
                 },{
-                    label: "左侧显示",
-                    value: "left"
+                    label: "仅浮动和底部显示",
+                    value: "float_bottom"
                 },{
-                    label: "右侧显示",
-                    value: "right"
+                    label: "仅浮动显示",
+                    value: "float"
                 }
             ],
             appChannelCode: "",//app名字标识 !!!

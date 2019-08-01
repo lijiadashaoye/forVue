@@ -62,7 +62,7 @@
       </div>
     </div>
     <div id="forTable" v-if="loadEnd">
-      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
   </div>
 </template>
@@ -183,7 +183,7 @@ export default {
               .then(res => {
                 if (res) {
                   this.$message.success("删除成功！");
-                  this.seachClick('delete');
+                  this.seachClick("delete");
                 }
               });
           })
@@ -235,9 +235,7 @@ export default {
                     failName += `活动名称为：${item.data[0].activityName} \n`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
                 if (numFail > 0) {
                   str += titleText + failName;
                 }
@@ -267,7 +265,7 @@ export default {
         });
       }
     },
-    // 用户权限判定
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let market_activity_upd = quanxian.includes("market_activity_upd");

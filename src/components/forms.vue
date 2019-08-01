@@ -20,19 +20,28 @@
           align="center"
           size="mini"
           :row-class-name="tableRowClassName"
+          @selection-change="handleSelectionChange"
         >
+          <el-table-column
+            v-if="tableContent.checkBox"
+            padding="5px"
+            type="selection"
+            width="30"
+            fixed="left"
+          ></el-table-column>
+
           <el-table-column
             v-for="(title,index) of tableContent.title"
             :key="index"
             :prop="title.prop"
             :label="title.label"
-            :width="title.width"
+            :min-width="title.width"
             align="center"
           ></el-table-column>
           <el-table-column
             fixed="right"
             label="操作"
-            :width="setWidth"
+            :min-width="setWidth"
             align="center"
             v-if="tableContent.handle.length > 0"
           >
@@ -41,8 +50,8 @@
                 v-for="(handle,index) of tableContent.handle"
                 :key="index"
                 @click="toEmit(handle.click,scope.row)"
-                type="text"
-                size="small"
+                type="info"
+                size="mini"
               >{{handle.text}}</el-button>
             </template>
           </el-table-column>
@@ -92,9 +101,9 @@ export default {
     this.tableContent.datas = this.tableContent.dataTotal.slice(0, 5); // 前端做分页
     let handleLen = this.tableContent.handle.length; // 获取操作按钮个数
     if (handleLen === 1) {
-      this.setWidth = 50;
+      this.setWidth = 60;
     } else {
-      this.setWidth = 26 * handleLen + (handleLen - 1) * 10 + 26;
+      this.setWidth = 56 * handleLen + (handleLen - 1) * 10 + 20;
     }
   },
   mounted() {
@@ -122,6 +131,10 @@ export default {
     kk();
   },
   methods: {
+    // 进行批量删除时序号前边的 checkbox
+    handleSelectionChange(selection) {
+      this.$emit("tableAct", { type: "moreSelect", data: selection });
+    },
     tableRowClassName({ row, rowIndex }) {
       if (rowIndex % 2 === 0) {
         return "";

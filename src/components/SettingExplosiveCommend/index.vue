@@ -4,12 +4,12 @@
         <div slot="header" class="clearfix">
           <div class="product-item">
             <span class="item-name">*产品类型:</span>
-            <el-select v-model="productType"  clearable  placeholder="请选择">
+            <el-select v-model="productType"  clearable  @change="typeSelect(productType)" placeholder="请选择">
               <el-option
-                v-for="item in productTypeList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="(item,ind) in productTypeList"
+                :key="ind"
+                :label="item.linkName"
+                :value="item.linkModel"
                 >
               </el-option>
             </el-select>
@@ -18,12 +18,16 @@
           <!-- 产品名称 -->
           <div class="product-item">
             <span class="item-name">*产品名称:</span>
-            <el-select v-model="productName" :disabled="changeFlag"  clearable  placeholder="请选择">
+            <el-select v-model="productId" :disabled="changeFlag"  clearable filterable placeholder="请选择">
               <el-option
-                v-for="item in this.productNameList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                v-for="(item,ind) in this.productNameList"
+                :key="ind"
+                :label="item.name"
+                :value="item.id"
+                remote
+                reserve-keyword
+                :remote-method="fuzzySearch"
+                v-loadmore='loadmore'>
               </el-option>
             </el-select>
           </div>
@@ -68,55 +72,73 @@
 </template>
 
 <script>
-import { upLoadImg } from '../../api/setting_use.js';
+import { upLoadImg, productUrl_list, productList } from '../../api/setting_use.js';
 export default {
   name:'SettingExplosiveCommend',
-  props:['productTypeList', 'productNameList', 'opts', 'dataType'],
+  props:['opts', 'dataType'],
   data() {
     return {
       flag: true,
+      productForm: {
+        pageSize: 200,
+        pageNum: 1,
+        linkLocationEnum: '',
+        name: null
+      },
       productType: "",
+      productId: "",
       productName: "",
       productTypeName: '',
       defaultTime:[],
+      productTypeList: [],
+      productNameList: [],
       pickerOpt: {
-      shortcuts: [{
-        text: '最近一周',
-        onClick(picker) {
-          const end = new Date();
-          const start = new Date();
-          end.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
-          picker.$emit('pick', [start, end]);
-        }
-      }, {
-        text: '最近一个月',
-        onClick(picker) {
-          const end = new Date();
-          const start = new Date();
-          end.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
-          picker.$emit('pick', [start, end]);
-        }
-      }, {
-        text: '最近三个月',
-        onClick(picker) {
-          const end = new Date();
-          const start = new Date();
-          end.setTime(start.getTime() + 3600 * 1000 * 24 * 90);
-          picker.$emit('pick', [start, end]);
-        }
-      }],
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            end.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            end.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            end.setTime(start.getTime() + 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }],
         disabledDate(time) {
           return time.getTime() < Date.now() - 8.64e7;
         }
-    },
+      },
     timeVal: '',
     imageUrl: ''
     }
   },
   mounted(){
+    productUrl_list().then(res=> {
+      if(res && res.success) {
+        this.productTypeList = res.data.list.filter(v=> {
+          return v.linkUrl != '' && v.linkUrl != null && v.linkUrl != 0;
+        });
+      }
+    });
     if(this.opts){
-      this.productType = this.opts.productTypeName;
+      this.productForm.pageNum = 1;
+      this.productType = this.opts.productType;
       this.productName = this.opts.productName;
+      this.productId = this.opts.productId;
       this.timeVal = [this.opts.startTime,this.opts.endTime];
       this.imageUrl = this.opts.productImageUrl;
     }
@@ -137,41 +159,78 @@ export default {
           return false;
       }
       upLoadImg(formData).then(res=> {
-          if(res.success){
+          if(res && res.success){
               this.imageUrl = this.$ImgBaseUrl + res.data
           }
       })
+    },
+    loadmore() {
+      if(this.productForm.pageNum < this.productPageCount) {
+        this.productForm.pageNum++;
+        this.getproList(this.productForm);
+      }
+    },
+    getproList(form) {
+      productList(form).then(res=> {
+        if(res && res.success) {
+          this.productPageCount = res.data && Math.ceil(res.data.total/this.productForm.pageSize)
+          if(res.data && res.data.list != null && res.data.list != []) {
+            const _res = res.data.list
+            this.productNameList = [...this.productNameList,..._res]
+          }
+        }
+      }).catch(res=> {
+        this.$message.error(`${res.message}`)
+      })
+    },
+    fuzzySearch(query) {
+      if(query!= '' && this.productType != '') {
+          this.productNameList = [];
+          this.productForm.name = query;
+          this.productForm.linkLocationEnum = this.productType;
+          this.getproList(this.productForm)
+      } else {
+          this.productNameList = [];
+          this.productForm.name = null;
+          this.productForm.linkLocationEnum = this.productType;
+          this.getproList(this.productForm)
+      }
     },
     cancel() {
       this.$emit('cancel')
       if(!this.opts) {
         this.productType = '';
-        this.productName = '';
+        this.productId = '';
         this.timeVal = [];
         this.imageUrl = '';
       }
     },
     save(){
-      if(this.productType && this.productName && this.timeVal && this.imageUrl){
+      if(this.productType && this.productId && this.timeVal && this.imageUrl){
         let id;
         this.productNameList.forEach((v, i)=> {
-          if(v.value === this.productName){
-            id = v.id
+          if(v.id === this.productId){
+            this.productName = v.name
+          }
+        })
+        this.productTypeList.forEach(v=> {
+          if(this.productType == v.linkModel) {
+            this.productTypeName = v.linkName
           }
         })
         //整理params
         let obj = {
           id:this.opts ? this.opts.id : "",
           productType:this.productType,
-          productName:this.productName,
+          productId:this.productId,
+          productName: this.productName,
           startTime:new Date(this.timeVal[0]).getTime(),
           endTime:new Date(this.timeVal[1]).getTime(),
-          productId:id,
           code:"12",
-          productTypeName:this.productType,
+          productTypeName:this.productTypeName,
           dataType:this.dataType,
           productImageUrl: this.imageUrl,
-          dataType: this.opts.dataType ?  this.opts.dataType : ''
+          // dataType: this.opts.dataType ?  this.opts.dataType : ''
         }
         //向父组件传递   请求你事需要的参数
         this.$emit('reqs',obj)
@@ -187,19 +246,40 @@ export default {
         })
       }
     },
+    //选择产品类型
+    typeSelect(val) {
+      this.productNameList = [];
+      this.productForm = {
+        pageSize: 200,
+        pageNum: 1,
+        linkLocationEnum: '',
+        name: null
+      }
+      this.productForm.linkLocationEnum = val;
+      this.getproList(this.productForm)
+    },
   },
   watch:{
     'opts.id'() {
-      this.productType = this.opts.productTypeName;
+      this.productForm.pageNum = 1;
+      this.productType = this.opts.productType;
+      this.productTypeName = this.opts.productTypeName;
       this.productName = this.opts.productName;
+      this.productId = this.opts.productId;
       this.timeVal = [this.opts.startTime,this.opts.endTime];
       this.imageUrl = this.opts.productImageUrl;
     },
+    'productType'() {
+      if(this.productType != '' && this.productType != null) {
+        this.productForm.linkLocationEnum = this.productType;
+        this.getproList(this.productForm)
+      }
+    }
     // 'opts.productTypeName'(){
     //   this.productType = this.opts.productTypeName;
     // },
-    // 'opts.productName'(){
-    //   this.productName = this.opts.productName;
+    // 'opts.productId'(){
+    //   this.productId = this.opts.productId;
     // },
     // 'opts.startTime'(){
     //   this.timeVal = [this.opts.startTime,this.opts.endTime];
