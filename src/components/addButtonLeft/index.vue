@@ -38,7 +38,7 @@
                     :show-file-list="false"
                     :http-request="uploadCheckImg"
                     >
-                    <img v-if="buttonSelectedIcon" :src="buttonSelectedIcon" class="avatar">
+                    <img v-if="buttonSelectedIcon" :src="ImgBaseUrl + buttonSelectedIcon" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -55,7 +55,7 @@
                     :show-file-list="false"
                     :http-request="uploadUnCheckImg"
                     >
-                    <img v-if="buttonUnselectedIcon" :src="buttonUnselectedIcon" class="avatar">
+                    <img v-if="buttonUnselectedIcon" :src="ImgBaseUrl + buttonUnselectedIcon" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -190,9 +190,11 @@ export default {
             versionNo: "",//版本号
             sort: "",//显示顺序
             buttonKey: "",//按钮索引标识
+            ImgBaseUrl: ''
         }
     },
     mounted() {
+        this.ImgBaseUrl = this.$ImgBaseUrl;
         //修改时传入当前要修改得值
         if(this.opts) {
             this.platformFlag = this.isWxFlag;
@@ -236,7 +238,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.buttonUnselectedIcon = this.$ImgBaseUrl + res.data
+                    this.buttonUnselectedIcon = res.data
                 }
             })
         },
@@ -258,7 +260,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.buttonSelectedIcon = this.$ImgBaseUrl + res.data
+                    this.buttonSelectedIcon = res.data
                 }
             })
         },

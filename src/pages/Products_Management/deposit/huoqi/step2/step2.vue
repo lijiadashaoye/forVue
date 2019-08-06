@@ -324,10 +324,10 @@ export default {
                 item => item.value === obj.appInfo.listAreaFlag
               )[0].label
             : "";
-          // 获取标签
-          if (step1.marks.length > 0) {
-            this.dictData.marks.forEach(item => {
-              step1.marks.forEach(tar => {
+          // 获取产品标签
+          if (step1.productTags.length > 0) {
+            this.dictData.productTags.forEach(item => {
+              step1.productTags.forEach(tar => {
                 if (item.id === tar) {
                   obj.productTags.push({
                     id: tar,

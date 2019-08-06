@@ -1,17 +1,9 @@
 <template>
-  <div class="componentWaper">
-    <router-view v-if="isRouterAlive"></router-view>
-  </div>
+  <router-view v-if="isRouterAlive"></router-view>
 </template>
 <script>
 export default {
   props: {},
-  // provide() {
-  //   return {
-  //     //动态刷新页面
-  //     reload: this.reload
-  //   };
-  // },
   data() {
     return {
       //动态刷新页面

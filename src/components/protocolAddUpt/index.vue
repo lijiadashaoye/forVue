@@ -71,6 +71,21 @@
       </div>
     </div>
 
+    <div class="card-item">
+      <span class="item-text">字体大小:</span>
+      <div class="item-input">
+        <!-- <el-input v-model="fontSize" placeholder="请选择字体大小" :disabled="detailFlag"></el-input> -->
+        <el-input-number v-model="fontSize" controls-position="right" :min="14" :max="30"></el-input-number>
+      </div>
+    </div>
+
+    <div class="card-item">
+      <span class="item-text">关联地址:</span>
+      <div class="item-input">
+        <el-input v-model="linkUrl" placeholder="请输入关联地址" :disabled="detailFlag"></el-input>
+      </div>
+    </div>
+
     <div class="card-footer" v-if="!detailFlag">
       <el-button @click="cancel">取消</el-button>
       <el-button type="primary" @click="save">保存</el-button>
@@ -83,7 +98,7 @@
 </template>
 
 <script>
-import { protocol_detail } from "../../api/setting_use.js";
+import { protocol_detail, getAppChannel } from "../../api/setting_use.js";
 export default {
   name: "protocolAddUpt",
   props: ["appChannel", "upd", "opts", "detailFlag"],
@@ -101,39 +116,18 @@ export default {
       configContent: "", //服务协议内容
       appChannelVal: "", //app渠道
       configType: "", //类型  服务/隐私
-      options: [
-        {
-          value: "SERVER",
-          label: "服务协议"
-        },
-        {
-          value: "PRIVATE",
-          label: "隐私政策"
-        },
-        {
-          value: "WALLET_QUESTION",
-          label: "钱包问题"
-        },
-        {
-          value: "ASSETS_QUESTION",
-          label: "资产问题"
-        },
-        {
-          value: "CONTACT_OUR",
-          label: "联系我们"
-        },
-        {
-          value: "AUTHENTICATION_PAGE",
-          label: "实名认证"
-        },
-        {
-          value: "INDEX_PRIVATE_SHOW",
-          label: "首页协议"
-        },
-      ]
+      options: [],
+      fontSize: 14,
+      linkUrl: '',
     };
   },
   mounted() {
+    getAppChannel('configuration').then(res=> {
+      if(res && res.success) {
+        this.options = res.data
+      }
+    })
+
     //判断是修改或是添加 upd为true时是修改  detailFlag为true时是详情
 
     //修改传入参数
@@ -144,7 +138,9 @@ export default {
       this.appChannelVal = this.opts.appChannelCode;
       this.configType = this.opts.configType;
       this.title = this.opts.title;
-      this.configContent = this.opts.configContent
+      this.configContent = this.opts.configContent;
+      this.fontSize = this.opts.fontSize;
+      this.linkUrl = this.opts.linkUrl;
     }
     //取markedWords configContent
     if (this.id) {
@@ -183,7 +179,9 @@ export default {
           highlight: this.highlight,
           highlightColor: this.highlightColor,
           markedWords: this.markedWords,
-          configContent: this.configContent
+          configContent: this.configContent,
+          fontSize: this.fontSize,
+          linkUrl: this.linkUrl
         };
         this.$emit("req", obj);
       } else {
@@ -209,6 +207,8 @@ export default {
       this.configContent = "";
       this.appChannelVal = "";
       this.configType = "";
+      this.fontSize = 14;
+      this.linkUrl = '';
     },
 
     //点击关闭
@@ -241,7 +241,14 @@ export default {
     },
     "opts.title"() {
       this.title = this.opts.title;
-    }
+    },
+    "opts.fontSize"() {
+      this.fontSize = this.opts.fontSize;
+    },
+    "opts.linkUrl"() {
+      this.linkUrl = this.opts.linkUrl;
+    },
+
   }
 };
 </script>

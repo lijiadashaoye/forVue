@@ -62,7 +62,7 @@
                     :show-file-list="false"
                     :http-request="uploadbuttonImage"
                     >
-                    <img v-if="buttonImage" :src="buttonImage" class="avatar">
+                    <img v-if="buttonImage" :src="ImgBaseUrl + buttonImage" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -80,7 +80,7 @@
                     :show-file-list="false"
                     :http-request="uploadshrinkImage"
                     >
-                    <img v-if="shrinkImage" :src="shrinkImage" class="avatar">
+                    <img v-if="shrinkImage" :src="ImgBaseUrl + shrinkImage" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -98,7 +98,7 @@
                     :show-file-list="false"
                     :http-request="uploadfloatImage"
                     >
-                    <img v-if="floatImage" :src="floatImage" class="avatar">
+                    <img v-if="floatImage" :src="ImgBaseUrl + floatImage" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -116,7 +116,7 @@
                     :show-file-list="false"
                     :http-request="uploadbuttonTitleImage"
                     >
-                    <img v-if="buttonTitleImage" :src="buttonTitleImage" class="avatar">
+                    <img v-if="buttonTitleImage" :src="ImgBaseUrl + buttonTitleImage" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -263,9 +263,11 @@ export default {
             linkUrl: "",//链接地址 !!!
             lotteryTime: "",//开奖时间 !!!
             sort: "",//排序 !!!
+            ImgBaseUrl: '',
         }
     },
     mounted() {
+        this.ImgBaseUrl =  this.$ImgBaseUrl
         //活动名称列表
         activity_list().then(res=> {
             this.activityOpt = res.data.list.map(v=> {
@@ -311,7 +313,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.buttonImage = this.$ImgBaseUrl + res.data
+                    this.buttonImage = res.data
                 }
             })
         },
@@ -332,7 +334,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.shrinkImage = this.$ImgBaseUrl + res.data
+                    this.shrinkImage = res.data
                 }
             })
         },
@@ -353,7 +355,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.floatImage = this.$ImgBaseUrl + res.data
+                    this.floatImage = res.data
                 }
             })
         },
@@ -374,7 +376,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.buttonTitleImage = this.$ImgBaseUrl + res.data
+                    this.buttonTitleImage = res.data
                 }
             })
         },

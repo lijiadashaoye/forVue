@@ -27,6 +27,8 @@ import productUrl from './setting/productUrl';//通用地址
 import cashOut from './member/cashOut';//提现管理
 import devicePosition from './log/devicePosition';//log 设备定位
 import pointLocation from './log/pointLocation';//log 点位
+import topProduct from './product/topProduct'; //榜单置顶
+
 const store = new Vuex.Store({
     modules: { // 使用状态整合来区分
         for_layout,
@@ -53,7 +55,8 @@ const store = new Vuex.Store({
         productUrl,
         cashOut,
         devicePosition,
-        pointLocation
+        pointLocation,
+        topProduct
     }
 });
 

@@ -77,8 +77,9 @@ export default {
   mounted() {
     this.pageName = this.$route.name;
     this.userDo();
+    this.$store.state.protocol.protocolList.pageNum = 1;
     this.getProtocolListData({
-            pageNum: 1,
+            pageNum: this.$store.state.protocol.protocolList.pageNum,
             pageSize: this.$store.state.protocol.protocolList.pageSize
           });
     this.getAppChannel();
@@ -133,10 +134,10 @@ export default {
     },
     //点击保存
     req(data){
-      this.dialogFormVisible = false;
-      this.upd = false;
       protocol_upd(data).then(res=> {
         if(res && res.success){
+          this.dialogFormVisible = false;
+          this.upd = false;
           this.getProtocolListData({
             pageNum: this.$store.state.protocol.protocolList.pageNum,
             pageSize: this.$store.state.protocol.protocolList.pageSize

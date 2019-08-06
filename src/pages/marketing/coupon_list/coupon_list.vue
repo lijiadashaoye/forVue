@@ -110,8 +110,9 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button size="mini" type="primary" @click="seachClick('search')">查询</el-button>
-            <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
+            <el-button size="mini" type="primary" @click="seachClick('search')">查 询</el-button>
+            <el-button size="mini" type="info" @click="seachClick('reset')">重 置</el-button>
+            <el-button size="mini" type="warning" @click="addGroup()">分组操作</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -804,6 +805,13 @@ export default {
         this.dialogClose();
       }
     },
+    // 分组操作
+    addGroup() {
+      sessionStorage.setItem("page", "分组操作");
+      this.$router.push({
+        name: "coupon_group"
+      });
+    },
     // 创建卡券按钮、表格的编辑按钮
     buttonRowUpdata(type, inData) {
       if (type) {
@@ -953,6 +961,13 @@ export default {
                   this.$message.success("修改成功！");
                   this.seachClick("search");
                   this.dialogClose();
+                } else {
+                  if (!res[0]) {
+                    this.$message.success("基本信息未成功修改！");
+                  }
+                  if (!res[1]) {
+                    this.$message.success("卡券类型未成功修改！");
+                  }
                 }
               } else {
                 if (res[0]) {
@@ -1322,8 +1337,8 @@ export default {
           });
           return obj;
         });
-        resolve();
-      }).then(() => {
+        resolve(data);
+      }).then(data => {
         this.loadEnd = true;
         return true;
       });
@@ -1401,8 +1416,7 @@ export default {
             this.afterGetData(res.data);
           }
         });
-    },
-
+    }
   }
 };
 </script>

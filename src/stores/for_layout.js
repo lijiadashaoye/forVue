@@ -40,7 +40,7 @@ const actions = {
             })
     },
     // 获取用户数据
-    getUserData({ }, vm) {
+    getUserData({}, vm) {
         let userInfo = vm.$api.getInfo(vm)
             .then(res => {
                 if (res) {
@@ -82,10 +82,135 @@ const actions = {
         })
     },
     // 注销
-    logout({ }, vm) {
+    logout({}, vm) {
         vm.$router.push({
             name: 'login'
         })
+    },
+    // 获取数据字典
+    get_dict({}, vm) {
+        let obj = {};
+        // 获取数据字典信息
+        let promiseArr1 = [];
+        let arr = [
+            "cooperation_mode", // 银行合作方式
+            "connection_mode", // 对接方式
+            "risk_level", // 风险等级
+            "deposit_type", //  存款类型
+            "surplus_quota", // 剩余额度
+            "pay_time", //  支付时间
+            "regulatory_property", // 监管属性
+            "monetary_unit", // 货币单位
+            "rule_symbol", // <、<=等等 规则符号
+            "transaction_state" // 交易状态
+        ];
+
+        arr.forEach((str) => {
+            let kk = new Promise(resolve => {
+                vm.$api
+                    .get_dict({
+                        vm: vm,
+                        data: str
+                    })
+                    .then(res => {
+                        if (res) {
+                            resolve(res.data);
+                        }
+                    });
+            });
+            promiseArr1.push(kk);
+        });
+
+        let promiseArr2 = [];
+        let arr2 = [
+            '/product/fundHouse/list',  // 基金公司列表 0
+            "/product/institution/list",    // 机构列表 1
+            '/product/institution/topList',  // 获取隶属机构数据 2
+            '/product/tag/list?type=product_tag', // 获取产品标签列表 3
+            '/product/tag/list?type=self_defining_tag',    // 获取自定义标签列表 4
+            '/product/tag/list?type=activity_tag', // 获取活动标签列表 5
+            '/log/common/area/tree/one'   // 区域数据 6
+        ]
+
+        arr2.forEach((str) => {
+            let kk = new Promise(resolve => {
+                vm.$api
+                    .get_fn({
+                        vm: vm,
+                        url: str
+                    })
+                    .then(res => {
+                        if (res) {
+                            resolve(res.data);
+                        }
+                    });
+            });
+            promiseArr2.push(kk);
+        });
+
+        let promiseArr3 = [];
+        let arr3 = [
+            "interest_mode", //  计息方式
+            "income_return_way", //  收益返还方式
+            "deadline_type", // 期限类型
+            "frequency_type", // 付息频率
+            "list_area_type", // 榜单专区标识
+            "product_coverage_type", // 产品覆盖类型
+            "channel_coverage_type", //  渠道覆盖类型
+            "customer_classification", // 客户分类
+            "institution_star", // 银行星级
+            "institution_type" // 机构类型
+        ];
+
+        arr3.forEach(str => {
+            let kk = new Promise(resolve => {
+                vm.$api
+                    .get_dict({
+                        vm: vm,
+                        data: str
+                    })
+                    .then(res => {
+                        if (res) {
+                            resolve(res.data);
+                        }
+                    });
+            });
+            promiseArr3.push(kk);
+        });
+
+        async function Pro() {
+            let kk1 = await Promise.all(promiseArr1);
+            let kk2 = await Promise.all(promiseArr2);
+            let kk3 = await Promise.all(promiseArr3);
+            [...arr, ...arr3].forEach((item, index) => {
+                obj[item] = [...kk1, ...kk3][index] ? [...kk1, ...kk3][index] : [];
+            });
+            obj.jijin = kk2[0] ? kk2[0] : [];
+            obj.jigou = kk2[1] ? kk2[1] : [];
+            obj.paren = kk2[2] ? kk2[2] : [];
+            obj.productTags = kk2[3] ? kk2[3] : [];
+            obj.selfDefiningTags = kk2[4] ? kk2[4] : [];
+            obj.activityTags = kk2[5] ? kk2[5] : [];
+            obj.quyu = kk2[6] ? kk2[6] : [];
+            obj.shelveList = [{
+                    label: "上架中",
+                    value: "YES"
+                },
+                {
+                    label: "已下架",
+                    value: "NO"
+                }
+            ];
+            return obj;
+        }
+        Pro()
+            .then(res => {
+                sessionStorage.setItem("dict", JSON.stringify(res));
+            })
+            .catch(err => {
+                console.log(err);
+            });
+
     },
     clearToken() {
         localStorage.removeItem("buttenpremissions");

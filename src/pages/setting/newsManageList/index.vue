@@ -87,7 +87,7 @@
                     :show-file-list="false"
                     :http-request="upload"
                 >
-                    <img v-if="softNewsForm.newsImageUrl" :src="softNewsForm.newsImageUrl" class="avatar">
+                    <img v-if="softNewsForm.newsImageUrl" :src="ImgBaseUrl + softNewsForm.newsImageUrl" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -136,10 +136,7 @@
             </el-form-item>
 
             <el-form-item label="产品名称" prop="linkId" class="istopItem">
-                <el-input v-if="inputFlag" v-model="softNewsForm.linkId" placeholder="请输入产品链接"></el-input>
                 <el-select
-                  v-else
-                  @focus="selectFocus(softNewsForm.productType)"
                   v-model="softNewsForm.linkId"
                   v-loadmore='loadmore'
                   filterable
@@ -273,9 +270,11 @@ export default {
                 linkLocationEnum: '',
                 name: null
             },
+            ImgBaseUrl: '',
         }
     },
     mounted() {
+        this.ImgBaseUrl = this.$ImgBaseUrl;
         this.pageName = this.$route.name;
         this.userDo();
         this.getList({
@@ -285,7 +284,7 @@ export default {
         productUrl_list().then(res=> {
         if(res && res.success) {
             this.channelData = res.data.list.filter(v=> {
-            return v.linkUrl != '' && v.linkUrl != null;
+                return v.linkUrl != '' && v.linkUrl != null && v.remarks == 'news';
             });
         }
         })
@@ -345,12 +344,13 @@ export default {
             this.dialogFormVisible = false;
             this.opts = null;
         },
-        selectFocus(val) {
-            if(val != '') {
-                this.productForm.linkLocationEnum = val;
-                this.getproList(this.productForm)
-            }
-        },
+        // selectFocus(val) {
+        //     this.productNameOpt = [];
+        //     if(val != '') {
+        //         this.productForm.linkLocationEnum = val;
+        //         this.getproList(this.productForm)
+        //     }
+        // },
         loadmore() {
             if(this.productForm.pageNum < this.productPageCount) {
                 this.productForm.pageNum++;
@@ -358,12 +358,11 @@ export default {
             }
         },
         getproList(form) {
-            this.productNameOpt = [];
             productList(form).then(res=> {
                 if(res && res.success) {
                     this.productPageCount = res.data && Math.ceil(res.data.total/this.productForm.pageSize)
-                    if(res.data && res.data != null && res.data != []) {
-                        const _res = res.data
+                    if(res.data && res.data.list != null && res.data.list != []) {
+                        const _res = res.data.list
                         this.productNameOpt = [...this.productNameOpt,..._res]
                     }
                 }
@@ -385,19 +384,15 @@ export default {
         //选择产品类型
         typeSelect(val) {
             this.softNewsForm.linkId = ''
+            this.productNameOpt = []
             this.productForm = {
                 pageSize: 200,
                 pageNum: 1,
                 linkLocationEnum: '',
                 name: null
             }
-            if(val == 'EXTERNAL_LINK') {
-                this.inputFlag = true;
-            } else {
-                this.inputFlag = false;
-                this.productForm.linkLocationEnum = val;
-                this.getproList(this.productForm)
-            }
+            this.productForm.linkLocationEnum = val;
+            this.getproList(this.productForm)
         },
         //取消置顶按钮
         cancelTop() {
@@ -469,7 +464,7 @@ export default {
             }
             upLoadImg(formData).then(res => {
                 if (res && res.success) {
-                    this.softNewsForm.newsImageUrl = this.$ImgBaseUrl + res.data;
+                    this.softNewsForm.newsImageUrl = res.data;
                 }
             });
         },

@@ -106,11 +106,17 @@
           <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.deadlineAlias"></el-input>
         </el-form-item>
 
-        <el-form-item label="标签" class="is50">
-          <el-select class="isInput" v-model="ruleForm.marks" clearable placeholder="请选择" multiple>
+        <el-form-item label="产品标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.productTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
             <el-option
               size="mini"
-              v-for="item in dictData.marks"
+              v-for="item in dictData.productTags"
               :key="item.id"
               :label="item.name"
               :value="item.id"
@@ -122,6 +128,42 @@
               class="myIcon14px icon-wenhaoyuanyiwenxianxing"
             ></i>
           </span>
+        </el-form-item>
+
+        <el-form-item label="自定义标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.selfDefiningTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.selfDefiningTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="活动标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.activityTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.activityTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="产品描述">
@@ -173,7 +215,9 @@ export default {
         deadlineAlias: "", // 期限别名
         minAmount: "", // 起存金额
         increaseAmount: "", // 递增金额
-        marks: [], // 标签
+        productTags: [], // 产品标签
+        selfDefiningTags: [], // 自定义标签
+        activityTags: [], // 活动标签
         description: "" // 产品描述
       },
       xilie: [], // 从服务器返回的产品系列数据

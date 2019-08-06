@@ -21,10 +21,10 @@
           <el-select v-model="ruleForm.locationId" clearable placeholder="请选择">
             <el-option
               size="mini"
-              v-for="item in dictData.institution_star"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
+              v-for="item in dictData.quyu"
+              :key="item.adcode"
+              :label="item.name"
+              :value="item.adcode"
             ></el-option>
           </el-select>
         </el-form-item>

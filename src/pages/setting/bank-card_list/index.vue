@@ -40,7 +40,7 @@
 
 <script>
 import { mapMutations, mapActions } from 'vuex';
-import { bank_card_upd } from '../../../api/setting_use.js';
+import { bank_card_upd, bank_card_del } from '../../../api/setting_use.js';
 import isTable from '../../../components/isTable/isTable';
 import bankCardAddUpd from '../../../components/bankCardAddUpd';
 export default {
@@ -192,18 +192,8 @@ export default {
               message: "删除成功!"
             });
           }
-        }).catch(res=> {
-            this.$message({
-              type: "error",
-              message: `${res.message}`
-            });
         })
-      }).catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-      });
+      })
     },
     //点击编辑
     edit(data) {

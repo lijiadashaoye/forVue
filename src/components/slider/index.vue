@@ -33,7 +33,7 @@
                     :show-file-list="false"
                     :http-request="uploadColumnImage"
                     >
-                    <img v-if="columnImage" :src="columnImage" class="avatar">
+                    <img v-if="columnImage" :src="ImgBaseUrl + columnImage" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -187,9 +187,11 @@ export default {
                     value: "left"
                 }
             ],
+            ImgBaseUrl: '',
         }
     },
     mounted() {
+        this.ImgBaseUrl = this.$ImgBaseUrl;
         if(this.params) {
             this.id = this.params.id;
             this.appChannelCode = this.params.appChannelCode;
@@ -310,7 +312,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.columnImage = this.$ImgBaseUrl + res.data
+                    this.columnImage = res.data
                 }
             })
         },

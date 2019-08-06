@@ -1,154 +1,91 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
 
       <div style="margin-bottom:5px;">
-        <el-button
-          size="mini"
-          type="primary"
-          @click="addNew(true)"
-        >新增机构</el-button>
-        <!-- v-if="tableInputData.data.quanxian.includes('sys_user_add')" -->
-        <!-- <el-button
-          size="mini"
-          type="success"
-          @click="outPut(true)"
-        >导出</el-button>
-        <el-button
-          size="mini"
-          type="warning"
-          @click="inPut(true)"
-        >导入</el-button> -->
-        <el-button
-          size="mini"
-          type="warning"
-          @click="seachClick(true)"
-        >查询</el-button>
-        <el-button
-          size="mini"
-          type="info"
-          @click="seachClick(false)"
-        >重置</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="toDelete('more')"
-        >批量删除</el-button>
+        <el-button size="mini" type="primary" @click="addNew(true)">新增机构</el-button>
+        <el-button size="mini" type="warning" @click="seachClick(true)">查询</el-button>
+        <el-button size="mini" type="info" @click="seachClick(false)">重置</el-button>
+        <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       </div>
       <el-form
         :inline="true"
         :model="searchForm"
         label-width="80px"
-        label-suffix=':'
-        label-position='right'
-        size='mini'
+        label-suffix=":"
+        label-position="right"
+        size="mini"
         ref="searchForm"
       >
         <el-form-item style="margin-bottom:5px;">
-          <el-input
-            v-model="searchForm.name"
-            placeholder="请输入机构名称"
-          ></el-input>
+          <el-input v-model="searchForm.name" placeholder="请输入机构名称"></el-input>
         </el-form-item>
 
         <el-form-item label="所属省市">
-          <el-cascader
-            v-model="searchForm.locationId"
-            :options="options"
-            change-on-select
-          ></el-cascader>
+          <el-select v-model="searchForm.locationId" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item in dictData.quyu"
+              :key="item.adcode"
+              :label="item.name"
+              :value="item.adcode"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="机构类型"
-          style="margin-bottom:5px;"
-        >
-          <el-select
-            v-model="searchForm.type"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="机构类型" style="margin-bottom:5px;">
+          <el-select v-model="searchForm.type" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.institution_type"
               :key="item.id"
               :label="item.label"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="银行星级"
-          style="margin-bottom:5px;"
-        >
-          <el-select
-            v-model="searchForm.star"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="银行星级" style="margin-bottom:5px;">
+          <el-select v-model="searchForm.star" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in dictData.institution_star"
               :key="item.id"
               :label="item.label"
               :value="item.id"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-
         </el-form-item>
 
-        <el-form-item
-          label="是否签约"
-          style="margin-bottom:5px;"
-        >
-          <el-select
-            v-model="searchForm.signedUp"
-            clearable
-            placeholder="请选择"
-          >
+        <el-form-item label="是否签约" style="margin-bottom:5px;">
+          <el-select v-model="searchForm.signedUp" clearable placeholder="请选择">
             <el-option
-              size='mini'
+              size="mini"
               v-for="item in shelveList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            >
-            </el-option>
+            ></el-option>
           </el-select>
-
         </el-form-item>
 
-        <el-form-item
-          label="创建时间"
-          style="margin-bottom:5px;"
-        >
+        <el-form-item label="创建时间" style="margin-bottom:5px;">
           <el-date-picker
             v-model="riqi"
             type="datetimerange"
             range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size='mini'
+            size="mini"
             style="width:100%"
-            value-format='yyyy-MM-dd HH:mm:ss'
-          >
-          </el-date-picker>
-
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
         </el-form-item>
       </el-form>
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
   </div>
 </template>
@@ -166,7 +103,7 @@ export default {
       riqi: [], // 创建时间
       searchForm: {
         name: "", // 机构名称
-        locationId: [], // 所属地/直辖市ID
+        locationId: "", // 所属地/直辖市ID
         type: "", // 机构ID
         star: "", // 星级
         signedUp: "", // 是否签约
@@ -596,9 +533,7 @@ export default {
                     failName += `名称：${item.data[0].name}； \n`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
 
                 if (numFail > 0) {
                   str += titleText + failName;
@@ -620,11 +555,19 @@ export default {
           this.searchForm.createTimeStart = this.riqi[0];
           this.searchForm.createTimeEnd = this.riqi[1];
         }
+        let arr = Object.keys(this.searchForm),
+          obj = {};
+        arr.forEach(tar => {
+          if (this.searchForm[tar]) {
+            obj[tar] = this.searchForm[tar];
+          }
+        });
+
         // 查询机构
         this.$api
           .get_jigouList({
             vm: this,
-            data: this.searchForm
+            data: obj
           })
           .then(res => {
             if (res) {
@@ -636,7 +579,7 @@ export default {
         this.riqi = []; // 创建时间
         this.searchForm = {
           name: "", // 机构名称
-          locationId: [], // 所属地/直辖市ID
+          locationId: "", // 所属地/直辖市ID
           type: "", // 机构ID
           star: "", // 星级
           signedUp: "", // 是否签约
@@ -659,7 +602,7 @@ export default {
     outPut() {},
     // 导入
     inPut() {},
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       // this.tableInputData.data.custom.push({
@@ -688,7 +631,7 @@ export default {
           arr.forEach(str => {
             obj[str] = item[str];
             // 将 shelfStatus 属性换成 action 属性
-            if (str === "signUp") {
+            if (str === "signedUp") {
               delete obj[str];
               switch (item[str]) {
                 case "YES":
@@ -715,7 +658,7 @@ export default {
         this.tableInputData.actions.switch = {
           label: "签约/解约",
           minWidth: 80,
-          from: "signUp" // 记录这个交互操作的原数据属性
+          from: "signedUp" // 记录这个交互操作的原数据属性
         };
         // // 设置字体点击事件
         this.tableInputData.actions.click = {

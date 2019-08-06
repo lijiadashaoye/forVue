@@ -125,7 +125,7 @@ export default {
     market_coupon_downLoad(data) {
         return data.vm.$axios({
             method: 'get',
-            responseType: 'blob', 
+            responseType: 'blob',
             url: `/marketing/manager/coupon/receive/excel?${qs.stringify(data.data)}`,
         })
     },
@@ -153,6 +153,43 @@ export default {
         })
     },
 
+    // 查询分组
+    get_group(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/marketing/manager/coupon/group/all`,
+        })
+    },
+    // 添加分组
+    add_group(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `/marketing/manager/coupon/group`,
+            data: data.data
+        })
+    },
+    // 从组中移除卡券
+    remove_coupon(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/marketing/manager/coupon/group/${data.data}`,
+        })
+    },
+    // 查看组详情
+    see_group(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/marketing/manager/coupon/group/${data.data}`,
+        })
+    },
+    // 分组操作时，查询可用的卡券列表
+    get_group_use_list(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `marketing/manager/coupon/details`,
+            data: data.data
+        })
+    },
 
     ///////////////////////////////////////////////////////////////////////
 

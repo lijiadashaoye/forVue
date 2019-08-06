@@ -4,17 +4,6 @@
       <h3>{{pageName}}</h3>
       <div style="margin-bottom:5px;">
         <el-button size="mini" type="primary" @click="addNew()">新增纯债基金</el-button>
-        <!-- v-if="tableInputData.data.quanxian.includes('sys_user_add')" -->
-        <!-- <el-button
-          size="mini"
-          type="success"
-          @click="outPut(true)"
-        >导出</el-button>
-        <el-button
-          size="mini"
-          type="warning"
-          @click="inPut(true)"
-        >导入</el-button>-->
         <el-button size="mini" type="warning" @click="seachClick('search')">查询</el-button>
         <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
         <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
@@ -403,7 +392,7 @@ export default {
     outPut() {},
     // 导入
     inPut() {},
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       // this.tableInputData.data.custom.push({

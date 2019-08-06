@@ -72,9 +72,9 @@ export default {
 
   methods: {
     // 概览
-    toSee() {
-      console.log("概览");
-    },
+    // toSee() {
+    //   console.log("概览");
+    // },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {

@@ -27,7 +27,7 @@
             :show-file-list="false"
             :http-request="upload"
           >
-            <img v-if="newsImageUrl" :src="newsImageUrl" class="avatar">
+            <img v-if="newsImageUrl" :src="ImgBaseUrl + newsImageUrl" class="avatar">
             <div v-else>
               <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
             </div>
@@ -387,9 +387,11 @@ export default {
           }
         }
       },
+      ImgBaseUrl: ''
     };
   },
   mounted() {
+    this.ImgBaseUrl = this.$ImgBaseUrl;
     productUrl_list().then(res=> {
       if(res && res.success) {
         this.channelData = res.data.list.filter(v=> {
@@ -459,8 +461,9 @@ export default {
       productList(form).then(res=> {
         if(res && res.success) {
           this.productPageCount = res.data && Math.ceil(res.data.total/this.productForm.pageSize)
-          if(res.data && res.data != null && res.data != []) {
-            const _res = res.data
+          console.log(res)
+          if(res.data && res.data.list != null && res.data.list != []) {
+            const _res = res.data.list
             this.productNameOpt = [...this.productNameOpt,..._res]
             console.log(this.productNameOpt)
           }
@@ -535,7 +538,7 @@ export default {
       }
       upLoadImg(formData).then(res => {
         if (res && res.success) {
-          this.newsImageUrl = this.$ImgBaseUrl + res.data;
+          this.newsImageUrl = res.data;
         }
       });
     },
@@ -548,12 +551,12 @@ export default {
       let url = "";
       upLoadImg(formData).then(res => {
         if (res && res.success) {
-          url = this.$ImgBaseUrl + res.data;
+          url = res.data;
         }
         if (url != null && url.length > 0) {
           // 将文件上传后的URL地址插入到编辑器文本中
           if (_file.type.indexOf("image") != -1) {
-            this.content += `<img style="wid" src="${url}" alt=""/>`;
+            this.content += `<img style="wid" src="${this.ImgBaseUrl}${url}" alt=""/>`;
           } else if (_file.type.indexOf("video") != -1) {
             this.videoUrl = url;
             var bq=` <video width="320" height="240" controls="controls">

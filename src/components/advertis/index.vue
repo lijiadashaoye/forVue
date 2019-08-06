@@ -152,7 +152,7 @@
                         :show-file-list="false"
                         :http-request="uploadAdvertis"
                         >
-                        <img v-if="flashScreenUrl" :src="flashScreenUrl" class="avatar">
+                        <img v-if="flashScreenUrl" :src="ImgBaseUrl + flashScreenUrl" class="avatar">
                         <div v-else>
                             <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                         </div>
@@ -246,7 +246,7 @@
                         :on-progress="uploadVideoProcess">
                         <video
                             v-if="videoUrl !='' && videoFlag == false"
-                            :src="videoUrl"
+                            :src="ImgBaseUrl + videoUrl"
                             width="350"
                             height="180"
                             controls="controls"
@@ -271,7 +271,7 @@
                         :show-file-list="false"
                         :http-request="uploadFrame"
                         >
-                        <img v-if="frameUrl" :src="frameUrl" class="avatar">
+                        <img v-if="frameUrl" :src="ImgBaseUrl + frameUrl" class="avatar">
                         <div v-else>
                             <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                         </div>
@@ -505,10 +505,12 @@ export default {
                 }
             ],
             myHeaders: {Authorization:'Bearer ' + token},
+            ImgBaseUrl: '',
         }
     },
     mounted() {
         this.getChannelData();
+        this.ImgBaseUrl = this.$ImgBaseUrl;
         if(this.params) {
             this.upDataFlag = true;
             if(this.params.showType == 'FLASHSCREEN') {
@@ -801,7 +803,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.flashScreenUrl = this.$ImgBaseUrl + res.data
+                    this.flashScreenUrl = res.data
                     this.launchAdvertisingDetails.push({
                         advertisType: 'IMAGE',
                         advertisUrl: this.flashScreenUrl,
@@ -834,7 +836,7 @@ export default {
                 if(res && res.success){
                     this.videoFlag = false;
                     this.videoUploadPercent = 0;
-                    this.videoUrl = this.$ImgBaseUrl + res.data
+                    this.videoUrl = res.data
                     this.launchAdvertisingDetails.push({
                         advertisType: 'VIDEO',
                         advertisUrl: this.videoUrl,
@@ -864,7 +866,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.frameUrl = this.$ImgBaseUrl + res.data
+                    this.frameUrl = res.data
                     this.launchAdvertisingDetails.push({
                         advertisType: 'IMAGE',
                         advertisUrl: this.frameUrl

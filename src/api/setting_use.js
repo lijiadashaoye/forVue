@@ -571,3 +571,18 @@ export const cash_out_operation = (id)=> {
 export const cash_out_export = (data)=> {
     return AxiosGet(`/member/manager/member-wallet/excel`,data)
 }
+
+
+//产品中心
+
+//榜单置顶
+
+//列表
+export const top_product_list = (data)=> {
+    return AxiosGet(`/product/topProduct/page`,data)
+}
+
+//币种
+export const currency_Code = (data) => {
+    return AxiosGet(`/admin/dict/type/currency_type`,data)
+}

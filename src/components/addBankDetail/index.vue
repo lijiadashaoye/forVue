@@ -38,7 +38,7 @@
                     :http-request="uploadLogo"
                     :disabled="detailFlag"
                     >
-                    <img v-if="LogoUrl" :src="LogoUrl" class="avatar">
+                    <img v-if="LogoUrl" :src="ImgBaseUrl + LogoUrl" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -57,7 +57,7 @@
                     :http-request="uploadBgFile"
                     :disabled="detailFlag"
                     >
-                    <img v-if="bgUrl" :src="bgUrl" class="avatar">
+                    <img v-if="bgUrl" :src="ImgBaseUrl + bgUrl" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
@@ -90,10 +90,12 @@ export default {
             closeFlag: true,//关闭按钮
             organizationCode: "",//机构代码
             options: [],
-            bankName: '',//银行名称
+            bankName: '',//银行名称,
+            ImgBaseUrl: ''
         }
     },
     mounted() {
+        this.ImgBaseUrl = this.$ImgBaseUrl;
         institutionList().then(async res=> {
             if(res && res.success) {
                 this.options = [];
@@ -144,7 +146,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.LogoUrl = this.$ImgBaseUrl + res.data
+                    this.LogoUrl = res.data
                 }
             })
         },
@@ -165,7 +167,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.bgUrl = this.$ImgBaseUrl + res.data
+                    this.bgUrl = res.data
                 }
             })
         },

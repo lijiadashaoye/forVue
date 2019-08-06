@@ -21,7 +21,7 @@
           label-position="right"
           size="mini"
           ref="ruleForm"
-        >
+         >
           <el-form-item label="活动编号">
             <el-input v-model="ruleForm.activityNo" placeholder="请输入"></el-input>
           </el-form-item>

@@ -10,11 +10,11 @@ export default {
             url: `/admin/dict/type/${data.data}`,
         })
     },
-    // 获取区域数据
-    get_quyu(data) {
+    // 其他get方法的数据获取
+    get_fn(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `/log/common/area/tree/one`,
+            url: data.url,
         })
     },
     //////////////////////////////////////////////////////////////////////////////////
@@ -24,13 +24,6 @@ export default {
         return data.vm.$axios({
             method: 'get',
             url: `/product/pureDebtFund/page?${qs.stringify(data.data)}`,
-        })
-    },
-    // 获取基金、机构列表
-    getJiJin_JiGou_list(data) {
-        return data.vm.$axios({
-            method: 'get',
-            url: data.url,
         })
     },
 
@@ -207,13 +200,6 @@ export default {
         return data.vm.$axios({
             method: 'get',
             url: `/product/productSeries/tree/deposit`,
-        })
-    },
-    // 获取新建各个存款时用到的标签数据
-    get_marksData(data) {
-        return data.vm.$axios({
-            method: 'get',
-            url: `/product/tag/list?type=product_tag`,
         })
     },
     // 获取页面初始化列表数据、查询
@@ -423,14 +409,6 @@ export default {
             method: data.httpType,
             url: '/product/institution',
             data: data.data
-        })
-    },
-
-    // step1 获取隶属机构数据
-    get_parentList(data) {
-        return data.vm.$axios({
-            method: 'get',
-            url: `/product/institution/topList`,
         })
     },
 

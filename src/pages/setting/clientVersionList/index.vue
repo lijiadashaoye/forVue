@@ -96,7 +96,7 @@
                             :show-file-list="false"
                             :http-request="uploadLogo"
                             >
-                            <img v-if="ruleForm.backgroundUrl" :src="ruleForm.backgroundUrl" class="avatar">
+                            <img v-if="ruleForm.backgroundUrl" :src="ImgBaseUrl + ruleForm.backgroundUrl" class="avatar">
                             <div v-else>
                                 <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                             </div>
@@ -214,9 +214,11 @@
                         { required: true, message: '请上传图片', trigger: 'change' },
                     ]
                 }, // 验证
+                ImgBaseUrl: '',
             }
         },
         mounted() {
+            this.ImgBaseUrl = this.$ImgBaseUrl;
             this.userDo();
             this.pageName = this.$route.name.trim();
             this.getList({
@@ -380,7 +382,7 @@
                 }
                 upLoadImg(formData).then(res=> {
                 if(res.success){
-                        this.ruleForm.backgroundUrl = this.$ImgBaseUrl + res.data
+                        this.ruleForm.backgroundUrl = res.data
                     }
                 })
             },

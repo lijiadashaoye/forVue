@@ -106,7 +106,15 @@ let marketing = [{
         name: 'coupon_info', // 领用详情
         path: '/home/marketing/coupon/coupon_info',
         component: resolve => require(['./pages/marketing/coupon_info/coupon_info.vue'], resolve)
-    }, {
+    },
+
+    {
+        name: 'coupon_group', // 分组操作
+        path: '/home/marketing/coupon/coupon_group',
+        component: resolve => require(['./pages/marketing/coupon_info/coupon_group.vue'], resolve)
+    },
+
+    {
         name: 'coupon_list', // 卡券列表
         path: '/home/marketing/coupon/list',
         component: resolve => require(['./pages/marketing/coupon_list/coupon_list.vue'], resolve),
@@ -484,6 +492,11 @@ let Products_Management = [{
             }
         ]
     },
+    { // 榜单置顶管理
+        name: '榜单置顶管理',
+        path: '/home/Products_Management/topProduct/list',
+        component: resolve => require(['./pages/Products_Management/topProduct'], resolve),
+    },
     { // 机构管理
         name: 'organizational',
         path: '/home/Organizational_Management/organizational',
@@ -623,12 +636,11 @@ let member = [{
     {
         name: '提现管理',
         path: '/home/member/cash-out',
-        component: resolve => require(['./pages/member/cash_out'],resolve),
+        component: resolve => require(['./pages/member/cash_out'], resolve),
     }
 ]
 // 设备定位列表，点位列表
-let log = [
-    {
+let log = [{
         name: '设备定位列表',
         path: '/log/device/list',
         component: resolve => require(['./pages/log/equipmentPositioning/equipmentPositioningList.vue'], resolve),

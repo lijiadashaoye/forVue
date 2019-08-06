@@ -352,17 +352,10 @@ export default {
         .then(res => {
           this.isSaveIng = false;
           if (res) {
-            this.isOk = true;
-            // 获取隶属机构数据
-            // this.$api
-            //   .get_parentList({
-            //     vm: this
-            //   })
-            //   .then(res => {
-            //     if (res) {
-            //       console.log(res.data)
-            //     }
-            //   });
+            sessionStorage.removeItem("dict");
+            this.$store.dispatch("get_dict", this).then(res => {
+              this.isOk = true;
+            });
           }
         });
     },

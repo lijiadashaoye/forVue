@@ -163,7 +163,7 @@
               :show-file-list="false"
               :http-request="upload"
             >
-              <img v-if="ruleForm.advertisImageUrl" :src="ruleForm.advertisImageUrl" class="avatar">
+              <img v-if="ruleForm.advertisImageUrl" :src="ImgBaseUrl + ruleForm.advertisImageUrl" class="avatar">
               <div v-else>
                 <el-button>
                   选择图片
@@ -455,7 +455,8 @@ export default {
           linkLocationEnum: '',
           name: null
       },
-    };
+      ImgBaseUrl: ''
+    }
   },
   watch: {
     ruleForm: {
@@ -489,6 +490,7 @@ export default {
     }
   },
   mounted() {
+    this.ImgBaseUrl = this.$ImgBaseUrl;
     productUrl_list().then(res=> {
       if(res && res.success) {
         this.advertisTypeList = res.data.list
@@ -584,7 +586,7 @@ export default {
       }
       upLoadImg(formData).then(res => {
         if (res.success) {
-          this.ruleForm.advertisImageUrl = this.$ImgBaseUrl + res.data;
+          this.ruleForm.advertisImageUrl = res.data;
         }
       });
     },
