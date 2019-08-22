@@ -2,8 +2,8 @@
   <div class="componentWaper">
     <div id="forHeader">
       <h3>{{pageName}}</h3>
-      <span>活动编号：</span>
-      <el-select size="mini" v-model="actNO" clearable placeholder="请选择">
+      <span>配置位置：</span>
+      <el-select size="mini" v-model="actNO" placeholder="请选择" @change="getUserData">
         <el-option
           v-for="item in searchList"
           :key="item.value"
@@ -36,7 +36,7 @@ export default {
       loadEnd: false,
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
-      actNO: "", // 活动编号
+      actNO: "sidebar_left", // 配置位置
       tableInputData: {
         // 传给table子组件的数据
         checkBox: true, // 判断需要不需要添加选择框
@@ -51,15 +51,30 @@ export default {
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
       },
-
       searchList: [
         {
-          label: "侧边栏-left",
-          value: "left"
+          label: "侧边栏-左侧",
+          value: "sidebar_left"
         },
         {
-          label: "侧边栏-bottom",
-          value: "bottom"
+          label: "首页按钮",
+          value: "button_top"
+        },
+        {
+          label: "活动按钮-顶部",
+          value: "activity_button_top"
+        },
+        {
+          label: "开屏广告",
+          value: "launch_advertis"
+        },
+        {
+          label: "侧边栏广告",
+          value: "sidebar_banner"
+        },
+        {
+          label: "首页广告",
+          value: "index_banner"
         }
       ]
     };
@@ -95,18 +110,20 @@ export default {
         case "moreDelete": // 批量删除按钮
           var arr = data.data.map(item => item);
           this.deleteData = arr;
+
           break;
       }
     },
     // 表格里的switch事件
     switchAction(data) {
+      let obj = {
+        id: data.id,
+        status: data.switch ? "ENABLE" : "DISABLE"
+      };
       this.$api
-        .member_level_UpDown({
+        .switch_change({
           vm: this,
-          data: {
-            id: data.id,
-            status: data.switch ? "ENABLE" : "DISABLE"
-          }
+          data: obj
         })
         .then(res => {
           this.getUserData();
@@ -124,13 +141,17 @@ export default {
         this.$router.push({
           name: "scbj",
           query: {
-            id: data.data.id
+            id: data.data.id,
+            weizhi: this.actNO
           }
         });
       } else {
         // 添加
         this.$router.push({
-          name: "scbj"
+          name: "scbj",
+          query: {
+            weizhi: this.actNO
+          }
         });
       }
     },
@@ -144,7 +165,7 @@ export default {
               this.$message.error("启用状态，不可删除");
             } else {
               this.$api
-                .member_level_deleteLevel({
+                .setting_peizhi_list_delete({
                   vm: this,
                   data: this.aloneDeleteData[0].id
                 })
@@ -172,7 +193,7 @@ export default {
               } else {
                 this.deleteData.forEach(item => {
                   let del = this.$api
-                    .member_level_deleteLevel({
+                    .setting_peizhi_list_delete({
                       vm: this,
                       data: item.id
                     })
@@ -205,7 +226,7 @@ export default {
                       numSucces++;
                     } else {
                       numFail++;
-                      failName += `名称：${item.data[0].name} \n`;
+                      failName += `名称：${item.data[0].solutionDesc} \n`;
                     }
                   });
                   let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
@@ -251,43 +272,32 @@ export default {
             obj[str] = item[str];
             if (str === "status") {
               delete obj[str];
-              // 会员状态(ENABLE:启用 DISABLE:冻结)
+              // ENABLE 启用  DISABLE 停用;
               switch (item[str]) {
                 case "ENABLE":
                   obj["switch"] = true;
-                  obj["action"] = "启用";
+                  obj["action"] = "有效";
                   break;
                 case "DISABLE":
                   obj["switch"] = false;
-                  obj["action"] = "冻结";
+                  obj["action"] = "无效";
                   break;
               }
             }
             // 活动管理配置管理设置素材，属性名： sucai
-            obj.sucai = [
-              {
-                text: "素材1",
-                img:
-                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
-              },
-              {
-                text: "素材2",
-                img:
-                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
-              },
-              {
-                text: "素材3",
-                img:
-                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
-              }
-            ];
+            obj.sucai = item.previewResourceListVos.map(tar => {
+              return {
+                text: tar.title,
+                img: tar.imageUrl
+              };
+            });
           });
           return obj;
         });
         this.tableInputData.data.title = [
           {
-            title: "活动名称",
-            key: "name",
+            title: "方案名称",
+            key: "solutionDesc",
             minWidth: "100"
           },
           {
@@ -305,7 +315,7 @@ export default {
         };
         // 设置需要的额外switch事件
         this.tableInputData.actions.switch = {
-          label: "启用/冻结",
+          label: " 有效/无效",
           minWidth: 80,
           from: "status" // 记录这个交互操作的原数据属性
         };
@@ -317,10 +327,10 @@ export default {
     // 获取表格数据
     getUserData() {
       this.$api
-        .member_level_getList({
+        .setting_peizhi_list({
           vm: this,
           data: {
-            levelId: this.seachInput,
+            solutionGroup: this.actNO,
             pageSize: this.tableInputData.pageSize,
             pageNum: this.tableInputData.pageNum
           }

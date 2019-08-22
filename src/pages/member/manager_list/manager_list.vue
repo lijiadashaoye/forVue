@@ -19,9 +19,9 @@
         type="info"
         @click="seachClick(false)"
       >重置</el-button>-->
-      <el-button size="mini" type="warning" @click="moreDengJi()">批量修改等级</el-button>
+      <el-button size="mini" :disabled="true" type="warning" @click="moreDengJi()">批量修改等级</el-button>
       <el-button size="mini" type="info" @click="moreStatue()">批量修改状态</el-button>
-      <el-button size="mini" type="danger" @click="moreJiFen()">批量调整积分</el-button>
+      <el-button size="mini" :disabled="true" type="danger" @click="moreJiFen()">批量调整积分</el-button>
       <el-button size="mini" type="primary" @click="moreMark()">批量打标签</el-button>
       <div class="forTableTitle">
         <span>配置表头</span>
@@ -400,28 +400,28 @@ export default {
     dengji(data) {},
     // 批量修改等级
     moreDengJi() {
-      if (this.moreAction.length != 0) {
-        if (this.dengjiDialog.levelList.length == 0) {
-          this.$api
-            .member_level_getList({
-              vm: this,
-              data: {
-                pageSize: this.dengjiDialog.pageSize,
-                pageNum: this.dengjiDialog.pageNum
-              }
-            })
-            .then(res => {
-              if (res) {
-                this.dengjiDialog.levelList = res.data.list;
-                this.dengjiDialog.show = true;
-              }
-            });
-        } else {
-          this.dengjiDialog.show = true;
-        }
-      } else {
-        this.$message.error("请选择要操作的列表项！");
-      }
+      // if (this.moreAction.length != 0) {
+      //   if (this.dengjiDialog.levelList.length == 0) {
+      //     this.$api
+      //       .member_level_getList({
+      //         vm: this,
+      //         data: {
+      //           pageSize: this.dengjiDialog.pageSize,
+      //           pageNum: this.dengjiDialog.pageNum
+      //         }
+      //       })
+      //       .then(res => {
+      //         if (res) {
+      //           this.dengjiDialog.levelList = res.data.list;
+      //           this.dengjiDialog.show = true;
+      //         }
+      //       });
+      //   } else {
+      //     this.dengjiDialog.show = true;
+      //   }
+      // } else {
+      //   this.$message.error("请选择要操作的列表项！");
+      // }
     },
     // 关闭等级框、状态框、积分框
     dengjiDialogClose() {
@@ -448,7 +448,7 @@ export default {
               }
             })
             .then(res => {
-              if (res.success) {
+              if (res) {
                 this.$message.success("操作成功！");
                 this.getUserData();
                 this.dengjiDialogClose();
@@ -484,7 +484,7 @@ export default {
               }
             })
             .then(res => {
-              if (res.success) {
+              if (res) {
                 this.$message.success("操作成功！");
                 this.getUserData();
                 this.dengjiDialogClose();
@@ -608,18 +608,18 @@ export default {
           emit: "mark"
         });
       }
-      this.tableInputData.data.custom.push({
-        text: "等级",
-        type: "info",
-        size: "small",
-        emit: "dengji"
-      });
-      this.tableInputData.data.custom.push({
-        text: "积分",
-        type: "danger",
-        size: "small",
-        emit: "jifen"
-      });
+      // this.tableInputData.data.custom.push({
+      //   text: "等级",
+      //   type: "info",
+      //   size: "small",
+      //   emit: "dengji",
+      // });
+      // this.tableInputData.data.custom.push({
+      //   text: "积分",
+      //   type: "danger",
+      //   size: "small",
+      //   emit: "jifen"
+      // });
 
       if (member_manager_upd_status) {
         this.tableInputData.data.quanxian.push("member_manager_upd_status");

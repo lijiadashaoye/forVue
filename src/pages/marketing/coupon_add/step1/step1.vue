@@ -70,7 +70,7 @@
             ></el-input>
           </el-form-item>
 
-          <el-form-item label="有效期计算方式" prop="YXQJStype">
+          <!-- <el-form-item label="有效期计算方式" prop="YXQJStype">
             <el-select
               v-model="formData.YXQJStype"
               placeholder="请选择有效期计算方式"
@@ -85,9 +85,9 @@
                 :value="item.value"
               ></el-option>
             </el-select>
-          </el-form-item>
+          </el-form-item>-->
 
-          <div v-if="formData.YXQJStype==='FIXED'">
+          <!-- <div v-if="formData.YXQJStype==='FIXED'">
             <el-form-item label="固定时间" prop="gudingTime">
               <el-date-picker
                 style="width:100%;"
@@ -98,18 +98,18 @@
                 end-placeholder="结束日期"
               ></el-date-picker>
             </el-form-item>
-          </div>
+          </div>-->
 
-          <div v-if="formData.YXQJStype==='AFTER_GET'">
-            <el-form-item label="自领取之后" prop="effectiveDays">
-              <el-input
-                type="number"
-                class="forDays"
-                placeholder="请输入"
-                v-model="formData.effectiveDays"
-              ></el-input>
-            </el-form-item>
-          </div>
+          <!-- <div v-if="formData.YXQJStype==='AFTER_GET'"> -->
+          <el-form-item label="自领取之后" prop="effectiveDays">
+            <el-input
+              type="number"
+              class="forDays"
+              placeholder="请输入"
+              v-model="formData.effectiveDays"
+            ></el-input>
+          </el-form-item>
+          <!-- </div> -->
 
           <el-form-item label="卡券使用类型" prop="useType">
             <el-select
@@ -298,7 +298,7 @@
           </div>
         </div>
         <div id="forHeader">
-          <forms @tableAct="tableAct" :type="'lilv'" :pageData="forForms" />
+          <forms @tableAct="tableAct" :pageData="forForms" />
         </div>
       </div>
     </div>
@@ -407,8 +407,7 @@ export default {
         type: "EXPERIENCE",
         name: "", // 券名称
         explains: "", // 卡券说明
-        YXQJStype: "", // 有效期计算方式
-        gudingTime: "", // 固定时间
+
         effectiveDays: "", // 自领取之后
         useType: "", // 卡券使用类型
         totalCount: "", // 发放总张数
@@ -564,17 +563,21 @@ export default {
         explains: [
           { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
-        YXQJStype: [
-          { required: true, message: "请选择有效期类型", trigger: "change" }
-        ],
+
         useType: [
           { required: true, message: "请选择有效期时间", trigger: "change" }
         ],
         totalCount: [
           { required: true, validator: checkTotalMoney, trigger: "blur" }
         ],
-        warningCount: [{ validator: checkNum5, trigger: "blur" }],
-        notifyMobile: [{ validator: checkPhone, trigger: "blur" }],
+        warningCount: [
+          { required: true, message: "请输入预警数量", trigger: "blur" },
+          { validator: checkNum5, trigger: "blur" }
+        ],
+        notifyMobile: [
+          { required: true, message: "请输入预警手机号", trigger: "blur" },
+          { validator: checkPhone, trigger: "blur" }
+        ],
         receiveLimit: [
           { required: true, validator: checkNum2, trigger: "blur" }
         ],
@@ -609,7 +612,7 @@ export default {
           },
           { validator: checkNum2, trigger: "blur" }
         ],
-     
+
         increasesDays: [
           { required: true, message: "请输入加息天数", trigger: "blur" },
           { validator: checkNum3, trigger: "blur" }
@@ -634,9 +637,7 @@ export default {
           { required: true, message: "请输入定购返现金额", trigger: "blur" },
           { validator: checkNum3, trigger: "blur" }
         ],
-        gudingTime: [
-          { required: true, message: "请输选择有效期时间", trigger: "change" }
-        ],
+
         effectiveDays: [
           { validator: checkNum3, trigger: "blur" },
           { required: true, message: "请输入自领取之后天数", trigger: "blur" }
@@ -736,18 +737,18 @@ export default {
       }
       this.formData = formObj;
     },
-    // 有效期计算方式变更时执行
-    setUseType() {
-      let obj = { ...this.formData };
-      delete obj.effectiveDays;
-      delete obj.gudingTime;
-      if (this.formData.YXQJStype === "FIXED") {
-        obj.gudingTime = "";
-      } else {
-        obj.effectiveDays = "";
-      }
-      this.formData = obj;
-    },
+    // // 有效期计算方式变更时执行
+    // setUseType() {
+    //   let obj = { ...this.formData };
+    //   delete obj.effectiveDays;
+    //   delete obj.gudingTime;
+    //   if (this.formData.YXQJStype === "FIXED") {
+    //     obj.gudingTime = "";
+    //   } else {
+    //     obj.effectiveDays = "";
+    //   }
+    //   this.formData = obj;
+    // },
 
     // 使用条件变更
     howChange() {
@@ -801,7 +802,8 @@ export default {
           }
         ]
       };
-      this.$set(this.forForms, "forForms", forms);
+      this.forForms.type = "guanlianchanpin"; // 添加关联产品
+      this.$set(this.forForms, "guanlianchanpin", forms);
     },
     ///////////////////////////////////////////////
     // 右侧列表的搜索
@@ -908,8 +910,6 @@ export default {
         type: "EXPERIENCE",
         name: "", // 券名称
         explains: "", // 卡券说明
-        YXQJStype: "", // 有效期计算方式
-        gudingTime: "", // 固定时间
         effectiveDays: "", // 自领取之后
         useType: "", // 卡券使用类型
         totalCount: "", // 发放总张数
@@ -939,29 +939,17 @@ export default {
             this.$message.error("请选择关联产品、银行！");
             return;
           }
-          if (this.formData.warningCount && !this.formData.notifyMobile) {
-            this.$message.error("请输入预警通知手机号！");
-            return;
-          }
-          if (!this.formData.warningCount && this.formData.notifyMobile) {
-            this.$message.error("请输入预警数量！");
-            return;
-          }
 
           let obj = {
             name: this.formData.name,
             type: this.formData.type,
             explains: this.formData.explains,
-            expiryType: this.formData.YXQJStype,
+
             useType: this.formData.useType,
             effectiveDays: this.formData.effectiveDays,
             totalCount: this.formData.totalCount,
-            warningCount: this.formData.warningCount
-              ? this.formData.warningCount
-              : null,
-            notifyMobile: this.formData.notifyMobile
-              ? this.formData.notifyMobile
-              : null,
+            warningCount: this.formData.warningCount,
+            notifyMobile: this.formData.notifyMobile,
             receiveLimit: this.formData.receiveLimit,
             initialAmount: this.formData.initialAmount,
             holdDays: this.formData.holdDays,

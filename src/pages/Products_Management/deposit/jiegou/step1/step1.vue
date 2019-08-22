@@ -82,6 +82,32 @@
           ></el-input>
         </el-form-item>
 
+        <el-form-item label="付息频率" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
+            <el-option
+              size="mini"
+              v-for="item in dictData.frequency_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="投资期限" prop="qixian" class="is50">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="ruleForm.qixian"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="期限别名" prop="deadlineAlias" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.deadlineAlias"></el-input>
+        </el-form-item>
+
         <el-form-item label="最高利率" class="is50" prop="max">
           <el-input
             class="isInput"
@@ -102,26 +128,6 @@
             v-model="ruleForm.end"
           ></el-input>
           <span class="isA">%</span>
-        </el-form-item>
-
-        <el-form-item label="起存金额" prop="purchaseAmount" class="is50">
-          <el-input
-            type="number"
-            class="isInput"
-            clearable
-            v-model="ruleForm.purchaseAmount"
-            placeholder="请输入"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="递增金额" prop="increaseAmount" class="is50">
-          <el-input
-            class="isInput"
-            clearable
-            v-model="ruleForm.increaseAmount"
-            placeholder="请输入"
-            type="number"
-          ></el-input>
         </el-form-item>
 
         <el-form-item prop="fengxian" label="风险等级" style="position:relative" class="is50">
@@ -148,18 +154,26 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="投资期限" prop="qixian" class="is50">
+        <el-form-item label="产品版本标识" prop="contentVersion" class="is50">
           <el-input
             class="isInput"
             clearable
-            v-model="ruleForm.qixian"
+            v-model="ruleForm.contentVersion"
             placeholder="请输入"
             type="number"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="期限别名" prop="deadlineAlias" class="is50">
-          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.deadlineAlias"></el-input>
+        <el-form-item label="币种" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
+            <el-option
+              size="mini"
+              v-for="item in dictData.bizhong"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="监管属性" class="is50" prop="regulatoryProperty">
@@ -179,11 +193,17 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="标签" class="is50">
-          <el-select class="isInput" v-model="ruleForm.marks" clearable placeholder="请选择" multiple>
+        <el-form-item label="产品标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.productTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
             <el-option
               size="mini"
-              v-for="item in dictData.marks"
+              v-for="item in dictData.productTags"
               :key="item.id"
               :label="item.name"
               :value="item.id"
@@ -195,6 +215,52 @@
               class="myIcon14px icon-wenhaoyuanyiwenxianxing"
             ></i>
           </span>
+        </el-form-item>
+
+        <el-form-item label="自定义标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.selfDefiningTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.selfDefiningTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="活动标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.activityTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.activityTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="递增金额" prop="increaseAmount" class="is50">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="ruleForm.increaseAmount"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
         </el-form-item>
 
         <el-form-item label="起售日期" class="is50">
@@ -216,9 +282,34 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
+        <el-form-item class="is50"></el-form-item>
+
+        <el-form-item label="最大起购金额(元)" prop="maxAmount" class="is50">
+          <el-input
+            type="number"
+            class="isInput"
+            clearable
+            v-model="ruleForm.maxAmount"
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="最小起购金额(元)" prop="minAmount" class="is50">
+          <el-input
+            type="number"
+            class="isInput"
+            clearable
+            v-model="ruleForm.minAmount"
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="起购范围说明">
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.amountRangeExplain"></isQuill>
+        </el-form-item>
 
         <el-form-item label="产品描述">
-          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
 
@@ -230,8 +321,10 @@
   </div>
 </template>
 <script>
+import isQuill from "@/components/quill.vue";
+
 export default {
-  props: {},
+  components: { isQuill },
   data() {
     // 验证数字
     var checkNum3 = (rule, value, callback) => {
@@ -255,6 +348,34 @@ export default {
         callback();
       }
     };
+    // 验证数字 最大起购额
+    var checkNum4 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请正确输入"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (value && +value <= +this.ruleForm.minAmount) {
+        callback(new Error("不能小于或等于最小起购额"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字 最小起购额
+    var checkNum5 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请正确输入"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (value && +value >= +this.ruleForm.maxAmount) {
+        callback(new Error("不能大于或等于最大起购额"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
 
     return {
       xilie: [], // 从服务器返回的产品系列数据
@@ -269,7 +390,7 @@ export default {
         interestRateAlias: "", // 利率别名
         max: "", // 最高利率
         end: "", // 到期利率
-        purchaseAmount: "", // 起存金额
+        frequencyType: "", // 付息频率
         increaseAmount: "", // 递增金额
         fengxian: "", // 风险等级
         surplusQuota: "", // 剩余额度
@@ -278,8 +399,13 @@ export default {
         regulatoryProperty: "", // 监管属性
         qishou: null, // 起售日期
         qixi: null, // 起息日期
-        marks: [], // 标签
-        description: "" // 产品描述
+        description: "", // 产品描述
+
+        currencyCode: "", // 币种编码
+        contentVersion: "", // 内容版本号
+        minAmount: "", // 默认最小存款金额
+        maxAmount: "", // 默认最大存款金额
+        amountRangeExplain: "" // 默认存款金额说明
       },
       //表单验证
       rules: {
@@ -311,10 +437,6 @@ export default {
         deadlineAlias: [
           { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],
-        purchaseAmount: [
-          { validator: checkNum3, trigger: "blur" },
-          { required: true, message: "请输入起购金额", trigger: "blur" }
-        ],
         increaseAmount: [
           { validator: checkNum3, trigger: "blur" },
           { required: true, message: "请输入递增金额", trigger: "blur" }
@@ -325,11 +447,13 @@ export default {
         ],
         regulatoryProperty: [
           { required: true, message: "请选择监管属性", trigger: "change" }
-        ]
+        ],
+        minAmount: [{ required: true, validator: checkNum5, trigger: "blur" }],
+        maxAmount: [{ required: true, validator: checkNum4, trigger: "blur" }]
       }
     };
   },
-  mounted() {
+  created() {
     this.pageName = sessionStorage.getItem("page") + " > 新增结构存款第一步"; // 获取页面名称
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
     // 如果有数据，则表示是编辑过的，如果没有，那就是从mainpage过来的
@@ -367,8 +491,8 @@ export default {
       }
     },
     next() {
-      this.$refs.ruleForm.validate(valid => {
-        if (valid) {
+      // this.$refs.ruleForm.validate(valid => {
+      //   if (valid) {
           if (
             (this.ruleForm.qishou && !this.ruleForm.qixi) ||
             (!this.ruleForm.qishou && this.ruleForm.qixi)
@@ -400,8 +524,8 @@ export default {
               });
             }
           }
-        }
-      });
+        // }
+      // });
     },
     // 取消
     back() {

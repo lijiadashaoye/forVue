@@ -57,10 +57,10 @@
         </el-form-item>
 
         <el-form-item label="是否上架" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.shelve" clearable placeholder="请选择">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
             <el-option
               size="mini"
-              v-for="item in dictData.shelveList"
+              v-for="item in dictData.shelve_status"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -87,7 +87,7 @@
   </div>
 </template>
 <script>
-import isTable from "../../../../components/isTable/isTable.vue";
+import isTable from "@/components/isTable/isTable.vue";
 
 export default {
   components: {
@@ -100,16 +100,17 @@ export default {
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
       pageName: "", // 当前页面名字
       riqi: [], // 创建时间
+      // 搜索表单
       searchForm: {
         name: "", // 产品关键字
         status: "", // 交易状态
         institutionId: "", // 机构ID
         fundHouseId: "", // 基金公司ID
         status: "", // 交易状态
-        shelve: "", // 是否上架
+        shelveStatus: "", // 是否上架
         createTimeStart: "", // 创建时间（开始）
         createTimeEnd: "" // 创建时间（结束）
-      }, // 搜索表单
+      },
       dictData: {}, // 数据字典
       tableInputData: {
         // 传给table子组件的数据
@@ -174,7 +175,7 @@ export default {
                   }
                 };
                 let step2 = {
-                  shelve: res.data.appInfo.shelve == "YES" ? "是" : "否", // 是否上架
+                  shelveStatus: res.data.appInfo.shelveStatus, // 是否上架
                   recommend: res.data.appInfo.recommend == "YES" ? "是" : "否", // 是否推荐
                   visaInterview:
                     res.data.appInfo.visaInterview == "YES" ? "是" : "否", // 是否面签
@@ -335,7 +336,7 @@ export default {
                 }
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
-                  callback: this.seachClick("search")
+                  callback: this.seachClick("reset")
                 });
               });
             })
@@ -369,7 +370,7 @@ export default {
             institutionId: "", // 机构ID
             fundHouseId: "", // 基金公司ID
             status: "", // 交易状态
-            shelve: "", // 是否上架
+            shelveStatus: "", // 是否上架
             createTimeStart: "", // 创建时间（开始）
             createTimeEnd: "" // 创建时间（结束）
           };
@@ -414,41 +415,7 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list.map(item => {
-          let obj = {},
-            arr = Object.keys(item);
-          arr.forEach(str => {
-            obj[str] = item[str];
-            // 将 shelfStatus 属性换成 action 属性
-            if (str === "shelve") {
-              delete obj[str];
-              switch (item[str]) {
-                case "YES":
-                  obj["switch"] = true;
-                  obj["action"] = "上架中";
-                  break;
-                case "NO":
-                  obj["switch"] = false;
-                  obj["action"] = "已下架";
-                  break;
-              }
-            }
-          });
-          return obj;
-        });
-        // 需要额外设置字体颜色的
-        this.tableInputData.actions.setColor = {
-          label: "上架状态",
-          minWidth: 70,
-          from: "action", // 标注对应的属性
-          with: "switch" // 关联到其他属性
-        };
-        // 设置需要的额外switch事件
-        this.tableInputData.actions.switch = {
-          label: "上架/下架",
-          minWidth: 80,
-          from: "shelve" // 记录这个交互操作的原数据属性
-        };
+        this.tableInputData.data.list = data.list;
         // // 设置字体点击事件
         this.tableInputData.actions.click = {
           label: "产品名称",
@@ -464,12 +431,12 @@ export default {
           {
             title: "机构",
             key: "institutionName",
-            minWidth: "120"
+            minWidth: "130"
           },
           {
             title: "交易状态",
             key: "statusName",
-            minWidth: "100"
+            minWidth: "90"
           },
           {
             title: "基金公司名称",
@@ -495,9 +462,14 @@ export default {
             sortable: true
           },
           {
+            title: "上架状态",
+            key: "shelveStatusLabel",
+            minWidth: "80"
+          },
+          {
             title: "创建时间",
             key: "gmtCreated",
-            minWidth: "140",
+            minWidth: "160",
             sortable: true
           }
         ];

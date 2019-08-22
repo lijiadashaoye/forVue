@@ -60,7 +60,7 @@ const actions = {
     //     commit
     // }, id) {
     //     adverdis_Page_del(id).then((res) => {
-    //         if (res.success) {
+    //         if (res) {
     //             // commit('getSliderListData')
     //         }
     //     })

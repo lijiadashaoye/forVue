@@ -27,6 +27,7 @@
       :opts.sync="opts"
       :updataFlag.sync="updataFlag"
       :detailFlag.sync="detailFlag"
+      :addFlag='addFlag'
       @req="req"
       @close="close"
       @cancel="cancel"/>
@@ -73,10 +74,12 @@ export default {
       },{
         label: 'DISABLE',
         value: '停用'
-      }]
+      }],
+      addFlag: true,
     };
   },
   mounted() {
+    this.updataFlag = true;
     this.pageName = this.$route.name;
     this.getLoginSpreadListData({
         pageNum: 1,
@@ -126,6 +129,8 @@ export default {
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
       //有权限  跳转到创建页面
       if (jurisdiction.indexOf("login_page_spread_add") > -1) {
+        this.addFlag = true;
+        this.updataFlag = true;
         this.$router.push(`/home/setting/login-page-spread/add`);
       } else {
         //弹出消息提示用户
@@ -136,13 +141,13 @@ export default {
     },
 
     //点击关闭
-    close(data) {
-      this.dialogVisible = data
+    close() {
+      this.dialogVisible = false
     },
 
     //点击取消
-    cancel(data) {
-      this.dialogVisible = data
+    cancel() {
+      this.dialogVisible = false
     },
     //接受更改后的信息  请求
     req(data) {
@@ -243,6 +248,7 @@ export default {
       this.dialogVisible = true;
       this.detailFlag = true;
       this.updataFlag = false;
+      this.addFlag = false;
       this.opts = data;
     },
 
@@ -250,6 +256,7 @@ export default {
     edit(data){
       this.dialogVisible = true;
       this.updataFlag = true;
+      this.addFlag = false;
       this.opts = data;
       this.detailFlag = false;
     },

@@ -1,8 +1,6 @@
 import qs from 'qs';
 export default {
 
-
-
     // 获取字典数据
     get_dict(data) {
         return data.vm.$axios({
@@ -73,8 +71,16 @@ export default {
     putChunZhaiEdit(data) {
         return data.vm.$axios({
             method: 'put',
-            url: `product/pureDebtFund/info`,
+            url: `product/pureDebtFund`,
             data: data.data
+        })
+    },
+
+    // 获取认购
+    get_rengou(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/pureDebtFund/${data.type}/${data.id}`
         })
     },
     //////////////////////////////////////////////////////////////////////////////////
@@ -426,4 +432,66 @@ export default {
             url: `/product/institution/${data.data}`,
         })
     },
+
+    product_all_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: data.url,
+        })
+    },
+    // 机构管理签约
+    product_jigou_qianyue(data) {
+        let url = '';
+        if (data.data.status === 'YES') {
+            url = `/product/institution/signUp/${data.data.id}`
+        } else {
+            url = `/product/institution/terminate/${data.data.id}`
+        }
+        return data.vm.$axios({
+            method: 'post',
+            url: url,
+        })
+    },
+    //////////////////////////////////////////////////////////////////
+    // 基金公司管理
+
+    // 获取基金公司列表
+    get_jijingongsi(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/fundHouse/page?${qs.stringify(data.data)}`,
+        })
+    },
+    // 新增基金公司
+    save_jijingonsi(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: '/product/fundHouse',
+            data: data.data
+        })
+    },
+    // 获取基金公司信息
+    get_jijingongsi_info(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/fundHouse/${data.id}`,
+        })
+    },
+
+    // 删除基金公司
+    product_jijin_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/fundHouse/${data.data}`,
+        })
+    },
+    // 新增基金公司
+    put_jijingonsi(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: '/product/fundHouse',
+            data: data.data
+        })
+    },
+
 }

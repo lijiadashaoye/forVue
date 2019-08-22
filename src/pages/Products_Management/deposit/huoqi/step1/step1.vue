@@ -82,16 +82,6 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="起存金额(元)" prop="minAmount" class="is50">
-          <el-input
-            type="number"
-            class="isInput"
-            clearable
-            v-model="ruleForm.minAmount"
-            placeholder="请输入"
-          ></el-input>
-        </el-form-item>
-
         <el-form-item label="递增金额(元)" prop="increaseAmount" class="is50">
           <el-input
             class="isInput"
@@ -104,6 +94,57 @@
 
         <el-form-item label="期限别名" class="is50" prop="deadlineAlias">
           <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.deadlineAlias"></el-input>
+        </el-form-item>
+
+        <el-form-item label="监管属性" style="position:relative" class="is50">
+          <el-select
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.regulatoryProperty"
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.regulatory_property"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="付息频率" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
+            <el-option
+              size="mini"
+              v-for="item in dictData.frequency_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="币种" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
+            <el-option
+              size="mini"
+              v-for="item in dictData.bizhong"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="产品版本标识" prop="contentVersion" class="is50">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="ruleForm.contentVersion"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
         </el-form-item>
 
         <el-form-item label="产品标签" class="is50">
@@ -165,9 +206,33 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item class="is50"></el-form-item>
+
+        <el-form-item label="最大起购金额(元)" prop="maxAmount" class="is50">
+          <el-input
+            type="number"
+            class="isInput"
+            clearable
+            v-model="ruleForm.maxAmount"
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="最小起购金额(元)" prop="minAmount" class="is50">
+          <el-input
+            type="number"
+            class="isInput"
+            clearable
+            v-model="ruleForm.minAmount"
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="起购范围说明">
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.amountRangeExplain"></isQuill>
+        </el-form-item>
 
         <el-form-item label="产品描述">
-          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
@@ -178,13 +243,42 @@
   </div>
 </template>
 <script>
+import isQuill from "@/components/quill.vue";
 export default {
-  props: {},
+  components: { isQuill },
   data() {
     // 验证数字
     var checkNum3 = (rule, value, callback) => {
       if (value < 0) {
         callback(new Error("请输入正数"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字
+    var checkNum4 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请正确输入"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (+value <= +this.ruleForm.minAmount) {
+        callback(new Error("不能小于或等于最小起购额"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字
+    var checkNum5 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请正确输入"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (+value >= +this.ruleForm.maxAmount) {
+        callback(new Error("不能大于或等于最大起购额"));
       } else if (("" + value).length > 14 || ("" + value).length < 0) {
         callback(new Error("请输入1-14字符"));
       } else {
@@ -213,12 +307,18 @@ export default {
         interestRate: "", // 利率
         interestRateAlias: "", // 利率别名
         deadlineAlias: "", // 期限别名
-        minAmount: "", // 起存金额
+        maxAmount: "", // 最大起购金额
+        minAmount: "", // 最小起购金额
+        amountRangeExplain: "", // 起购范围说明
         increaseAmount: "", // 递增金额
+        regulatoryProperty: "", // 监管属性
+        frequencyType: "", // 付息频率
+        currencyCode: "", // 币种编码
         productTags: [], // 产品标签
         selfDefiningTags: [], // 自定义标签
         activityTags: [], // 活动标签
-        description: "" // 产品描述
+        description: "", // 产品描述
+        contentVersion: "" // 内容版本号
       },
       xilie: [], // 从服务器返回的产品系列数据
       //表单验证
@@ -244,7 +344,11 @@ export default {
           { required: true, message: "请输入利率", trigger: "blur" }
         ],
         minAmount: [
-          { validator: checkNum3, trigger: "blur" },
+          { validator: checkNum5, trigger: "blur" },
+          { required: true, message: "请输入起购金额", trigger: "blur" }
+        ],
+        maxAmount: [
+          { validator: checkNum4, trigger: "blur" },
           { required: true, message: "请输入起购金额", trigger: "blur" }
         ],
         increaseAmount: [
@@ -254,7 +358,7 @@ export default {
       }
     };
   },
-  mounted() {
+  created() {
     this.pageName = sessionStorage.getItem("page") + " > 新增活期存款第一步"; // 获取页面名称
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
 
@@ -324,3 +428,6 @@ export default {
   }
 };
 </script>
+
+
+

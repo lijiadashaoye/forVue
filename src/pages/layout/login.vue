@@ -66,12 +66,12 @@ export default {
   mounted() {
     this.$store.dispatch("clearToken");
     // 动态设置登录背景
-    setTimeout(() => {
+    this.$nextTick(() => {
       let num = Math.ceil(Math.random() * 27);
       this.setBk = `setBk${num}`;
-      this.imgSrc = require(`../../assets/forbg/${num}.png`);
+      this.imgSrc = require(`../../assets/${num}.png`);
       this.toaddClass = true;
-    }, 0);
+    });
   },
   beforeDestroy() {
     this.$loading().close();
@@ -93,6 +93,9 @@ export default {
         grant_type: "password",
         scope: "server"
       };
+      setTimeout(() => {
+        this.$loading().close();
+      }, 5000);
       this.login({
         vm: this,
         data: loginData

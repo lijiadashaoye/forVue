@@ -10,7 +10,7 @@
             </div>
         </div>
 
-        <div class="card-item">
+        <!-- <div class="card-item">
             <span class="item-text">*平台:</span>
             <div class="item-input">
                 <el-radio-group v-model="platformCode">
@@ -18,7 +18,7 @@
                     <el-radio :label="'android'">安卓</el-radio>
                 </el-radio-group>
             </div>
-        </div>
+        </div> -->
 
         <div class="card-item">
             <span class="item-text">*版本号:</span>
@@ -45,13 +45,13 @@
             <span class="item-text">*期限类型:</span>
             <div class="item-input">
                 <el-radio-group v-model="peroidType">
-                    <el-radio :label="'PETTY'">小额</el-radio>
-                    <el-radio :label="'FINANCING'">理财</el-radio>
+                    <el-radio :label="0">内地</el-radio>
+                    <el-radio :label="1">香港</el-radio>
                 </el-radio-group>
             </div>
         </div>
 
-        <div class="card-item">
+        <!-- <div class="card-item">
             <span class="item-text">*显示类型:</span>
             <div class="item-input">
                 <el-radio-group v-model="showType">
@@ -59,7 +59,7 @@
                     <el-radio :label="'PORTRAIT'">竖版</el-radio>
                 </el-radio-group>
             </div>
-        </div>
+        </div> -->
 
         <div class="card-item">
             <span class="item-text">*开始天:</span>
@@ -111,8 +111,8 @@ export default {
         return {
             pageName: '',
             id: '',
-            appChannelCode: '',//app标识
-            appChannelName: '',//app名字
+            // appChannelCode: '',//app标识
+            // appChannelName: '',//app名字
             versionNo: '',//版本号
             peroidCode: '',//期限编号
             peroidName: '',//期限名称
@@ -122,7 +122,7 @@ export default {
             sort: '',//排序值
             indexPageSize: '',//每页限制条数
             total: '',//总条数
-            showType: '',//显示类型
+            // showType: '',//显示类型
             platformCode: '',//平台
             platformName: '',
         }
@@ -131,7 +131,7 @@ export default {
         this.pageName = this.$route.name;
         if(this.params) {
             this.id = this.params.id;
-            this.platformCode = this.params.platformCode;
+            // this.platformCode = this.params.platformCode;
             this.appChannelCode = this.params.appChannelCode;
             this.versionNo = this.params.versionNo;
             this.peroidCode = this.params.peroidCode;
@@ -142,7 +142,7 @@ export default {
             this.sort = this.params.sort;
             this.indexPageSize = this.params.indexPageSize;
             this.total = this.params.total;
-            this.showType = this.params.showType;
+            // this.showType = this.params.showType;
         }
     },
     methods: {
@@ -152,21 +152,21 @@ export default {
         },
         //点击保存
         save() {
-            if(this.appChannelCode && this.versionNo && this.peroidCode &&this.peroidName && this.peroidType && this.startDay && this.endDay && this.sort && this.sort && this.indexPageSize && this.total && this.showType && this.platformCode) {
+            if(this.appChannelCode && this.versionNo && this.peroidCode &&this.peroidName && this.peroidType && this.startDay && this.endDay && this.sort && this.sort && this.indexPageSize && this.total) {
                     //渠道
                 this.appChannel.forEach(v=> {
                     if(this.appChannelCode == v.label){
                         this.appChannelName = v.value
                     }
                 })
-                if(this.platformCode == "ios") {
-                    this.platformName = "苹果"
-                } else if(this.platformCode == "android") {
-                    this.platformName = "安卓"
-                }
+                // if(this.platformCode == "ios") {
+                //     this.platformName = "苹果"
+                // } else if(this.platformCode == "android") {
+                //     this.platformName = "安卓"
+                // }
                 let obj = {
                     id: this.id,
-                    platformCode: this.platformCode,
+                    // platformCode: this.platformCode,
                     platformName: this.platformName,
                     appChannelCode: this.appChannelCode,
                     appChannelName: this.appChannelName,
@@ -179,7 +179,7 @@ export default {
                     sort: this.sort,
                     indexPageSize: this.indexPageSize,
                     total: this.total,
-                    showType: this.showType
+                    // showType: this.showType
                 }
                 this.$emit('send',obj)
             } else {
@@ -198,7 +198,7 @@ export default {
     watch: {
         'params.id'() {
             this.id = this.params.id;
-            this.platformCode = this.params.platformCode;
+            // this.platformCode = this.params.platformCode;
             this.appChannelCode = this.params.appChannelCode;
             this.versionNo = this.params.versionNo;
             this.peroidCode = this.params.peroidCode;
@@ -209,7 +209,7 @@ export default {
             this.sort = this.params.sort;
             this.indexPageSize = this.params.indexPageSize;
             this.total = this.params.total;
-            this.showType = this.params.showType;
+            // this.showType = this.params.showType;
         }
     }
 }

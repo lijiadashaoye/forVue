@@ -14,8 +14,8 @@
           >
             <el-select v-model="ruleForm.appChannelCode">
               <el-option
-                v-for="item in appChannelCodeList"
-                :key="item.code"
+                v-for="(item,index) in appChannelCodeList"
+                :key="index"
                 :value="item.code"
                 :label="item.name"
               ></el-option>
@@ -59,8 +59,8 @@
             <template>
               <el-radio-group v-model="ruleForm.visualType">
                 <el-radio label="NO_LIMIT">不限定</el-radio>
-                <el-radio label="LOGIN_USER">登陆用户可见</el-radio>
-                <el-radio label="NO_LOGIN_USER">非登陆用户可见</el-radio>
+                <el-radio label="LOGIN_USER" :disabled="true">登陆用户可见</el-radio>
+                <el-radio label="NO_LOGIN_USER" :disabled="true">非登陆用户可见</el-radio>
               </el-radio-group>
             </template>
           </el-form-item>
@@ -198,7 +198,7 @@
           <el-form-item label="用户选择" prop="spreadUser">
             <template>
               <el-radio v-model="ruleForm.spreadUser" label="TOTAL">发送给全部用户</el-radio>
-              <el-radio v-model="ruleForm.spreadUser" label="PORTION">发送给部分用户</el-radio>
+              <el-radio v-model="ruleForm.spreadUser" label="PORTION" :disabled="true">发送给部分用户</el-radio>
             </template>
           </el-form-item>
           <el-form-item label="添加关联组" v-if="ruleForm.spreadUser != 'TOTAL'">
@@ -263,8 +263,8 @@ export default {
     return {
       appChannelCodeList: [
         // app 标识
-        { code: "比财", name: "比财" },
-        { code: "安财", name: "安财" }
+        { code: "bicai", name: "比财" },
+        { code: "ancai", name: "安财" }
       ],
       productId: '',//产品对象id
       inputFlag: false,
@@ -432,7 +432,7 @@ export default {
         advertisTitle: "", // 标题
         advertisViceTitle: "", // 付标题
         advertisLocation: "", // 广告位置
-        appChannelCode: "比财", // 应用渠道code
+        appChannelCode: "", // 应用渠道code
         appChannelName: "", // 应用渠道name
         advertisType: "", // 广告类型
         advertisId: "", // 广告id
@@ -585,7 +585,7 @@ export default {
         return false;
       }
       upLoadImg(formData).then(res => {
-        if (res.success) {
+        if (res) {
           this.ruleForm.advertisImageUrl = res.data;
         }
       });
@@ -596,7 +596,7 @@ export default {
         id: this.$route.query.id
       };
       adverdis_detail(params).then(res => {
-        if (res.success) {
+        if (res) {
           var val = res.data.productRelationDetailsVo.productType;
           if(val == 'EXTERNAL_LINK') {
             this.inputFlag = true;
@@ -641,7 +641,7 @@ export default {
       this.$refs[ruleForm].validate(valid => {
         if (valid) {
           this.appChannelCodeList.forEach(v=> {
-            if(this.appChannelCode == v.code) {
+            if(this.ruleForm.appChannelCode == v.code) {
               this.appChannelName = v.name;
             }
           })
@@ -650,7 +650,7 @@ export default {
             advertisTitle: this.ruleForm.advertisTitle, // 标题
             advertisViceTitle: this.ruleForm.advertisViceTitle, // 付标题
             appChannelCode: this.ruleForm.appChannelCode, // 应用渠道code
-            appChannelName: this.ruleForm.appChannelCode, // 应用渠道name
+            appChannelName: this.appChannelName, // 应用渠道name
             productRelationDetailsVo: {
               modelType: 'ADVERMANAGE',
               modelId: this.productId != '' && this.productId != null ? this.productId : null,

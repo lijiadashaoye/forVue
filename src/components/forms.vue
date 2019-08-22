@@ -65,7 +65,7 @@
         </div>
       </div>
     </div>
-    <div class="show_time2" v-if="type==='lishi'">
+    <div class="show_time2" v-if="pageData.type==='lishi'">
       <span class="isUpTime">
         更新时间：
         {{inputDatas.createTime}}
@@ -76,12 +76,8 @@
   </div>
 </template>
 <script>
-import xiangqingDatas from "./isData.js";
-import isTable from "./isTable/isTable.vue";
-
 export default {
-  components: { isTable },
-  props: ["type", "pageData"],
+  props: ["pageData"],
   data() {
     return {
       inputDatas: null,
@@ -95,8 +91,59 @@ export default {
     };
   },
   created() {
+    // let forms = {
+    //   topClick: true, // 表格上边的新增利率
+    //   fenye: true, // 是否需要分页
+    //   pageNum: 0, // 当前页妈
+    //   // 表格头部的蓝点
+    //   titleUp: {
+    //     pointName: "认购规则"
+    //   },
+    //   // 表格头部
+    //   title: [
+    //     {
+    //       prop: "num", // 要显示的属性
+    //       label: "序号", // 要显示的文字
+    //       width: "100" // 当前项的宽度
+    //     },
+    //     {
+    //       prop: "id", // 要显示的属性
+    //       label: "ID", // 要显示的文字
+    //       width: "80" // 当前项的宽度
+    //     },
+    //     {
+    //       prop: "rate", // 要显示的属性
+    //       label: "费率 %", // 要显示的文字
+    //       width: "100" // 当前项的宽度
+    //     },
+    //     {
+    //       prop: "cost", // 要显示的属性
+    //       label: "费用", // 要显示的文字
+    //       width: "100" // 当前项的宽度
+    //     },
+    //     {
+    //       prop: "rateDiscount", // 要显示的属性
+    //       label: "费率折扣", // 要显示的文字
+    //       width: "100" // 当前项的宽度
+    //     }
+    //   ],
+    //   handle: [
+    //     // 表格执行的操作
+    //     {
+    //       click: "edit", // 表格操作栏的点击事件
+    //       text: "编辑" // 表格操作栏的点击事件
+    //     },
+    //     {
+    //       click: "delete", // 表格操作栏的点击事件
+    //       text: "删除" // 表格操作栏的点击事件
+    //     }
+    //   ],
+    //   // 表格数据
+    //   dataTotal: []
+    // };
+    // 表格 数据设置方式，看 pages\marketing\activity_create\step2\step2.vue 634行
     // 获取表格设置
-    this.tableContent = this.pageData.forForms;
+    this.tableContent = this.pageData[this.pageData.type];
     this.tableContent.total = Math.ceil(this.tableContent.dataTotal.length / 5);
     this.tableContent.datas = this.tableContent.dataTotal.slice(0, 5); // 前端做分页
     let handleLen = this.tableContent.handle.length; // 获取操作按钮个数

@@ -40,7 +40,7 @@ export default {
       if (pagename === "coupon_add") {
         sessionStorage.clear(); // 既然是创建，那之前点击编辑过来的数据就不要了
         sessionStorage.setItem("page", kk);
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.$router.push({
             name: "coupon_add_step1"
           });

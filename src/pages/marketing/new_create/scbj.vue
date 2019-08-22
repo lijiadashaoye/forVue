@@ -6,17 +6,28 @@
     <div id="forTable">
       <div class="toflex">
         <div class="toleft">
-          <el-form ref="leftForm" :inline="true" :model="leftForm" label-width="80px">
-            <el-form-item label="显示名称">
+          <el-form
+            ref="leftForm"
+            :rules="rules"
+            :inline="true"
+            :model="leftForm"
+            label-width="80px"
+          >
+            <el-form-item label="显示名称" prop="name">
               <el-input v-model="leftForm.name" placeholder="APP标识+平台+登陆状态+描述信息" style="width:107%"></el-input>
             </el-form-item>
 
             <el-form-item label="排序值" prop="paixu" label-width="95px">
-              <el-input v-model="leftForm.paixu" placeholder="请输入整数" style="width:107%"></el-input>
+              <el-input
+                v-model="leftForm.paixu"
+                type="number"
+                placeholder="请输入整数"
+                style="width:107%"
+              ></el-input>
             </el-form-item>
 
-            <el-form-item label="APP标识">
-              <el-select v-model="leftForm.appMark" placeholder="全部">
+            <el-form-item label="APP标识" prop="appMark">
+              <el-select v-model="leftForm.appMark" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of selectData"
                   :key="item.value"
@@ -26,8 +37,8 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="是否有效">
-              <el-select v-model="leftForm.youxiao" placeholder="请选择">
+            <el-form-item label="是否有效" prop="youxiao">
+              <el-select v-model="leftForm.youxiao" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of shifou"
                   :key="item.value"
@@ -37,8 +48,13 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="配置点">
-              <el-select v-model="leftForm.peizhi" placeholder="请选择">
+            <el-form-item label="配置点" prop="peizhi">
+              <el-select
+                v-model="leftForm.peizhi"
+                placeholder="请选择"
+                clearable
+                @change="set_peizhidian"
+              >
                 <el-option
                   v-for="item of peizhiList"
                   :key="item.value"
@@ -48,8 +64,8 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="登录状态">
-              <el-select v-model="leftForm.loginStatus" placeholder="请选择">
+            <el-form-item label="登录状态" prop="loginStatus">
+              <el-select v-model="leftForm.loginStatus" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of dlzt"
                   :key="item.value"
@@ -59,8 +75,8 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="平台">
-              <el-select v-model="leftForm.pingtai" placeholder="选择">
+            <el-form-item label="平台" prop="pingtai">
+              <el-select v-model="leftForm.pingtai" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of pingtai"
                   :key="item.value"
@@ -70,16 +86,15 @@
               </el-select>
             </el-form-item>
 
-            <div></div>
-
-            <el-form-item label="描述信息" >
-              <el-input v-model="leftForm.pingtai" type="textarea" rows="3" placeholder="请输入" style="width:116%"></el-input>
+            <el-form-item label="描述信息">
+              <el-input
+                v-model="leftForm.miaoshu"
+                type="textarea"
+                rows="3"
+                placeholder="请输入"
+                style="width:116%"
+              ></el-input>
             </el-form-item>
-
-            <el-form-item label="备注信息" label-width="112px">
-              <el-input v-model="leftForm.marks" type="textarea" rows="3" placeholder="请输入" style="width:116%"></el-input>
-            </el-form-item>
-            <div></div>
 
             <el-form-item label="其他条件">
               <el-button size="mini" @click="toAdd">+</el-button>
@@ -91,9 +106,9 @@
             <ul>
               <li class="aline" v-for="data of leftForm.other" :key="data.num">
                 <el-form-item size="mini">
-                  <el-select v-model="data.q1" placeholder="请选择">
+                  <el-select v-model="data.ruleType" placeholder="请选择" clearable>
                     <el-option
-                      v-for="item of langueData"
+                      v-for="item of ruleTypeList"
                       :key="item.value"
                       :label="item.label"
                       :value="item.value"
@@ -102,7 +117,7 @@
                 </el-form-item>
 
                 <el-form-item size="mini">
-                  <el-select size="mini" v-model="data.q2" placeholder="请选择">
+                  <el-select size="mini" v-model="data.signType" placeholder="请选择" clearable>
                     <el-option
                       v-for="item of fuhao"
                       :key="item.value"
@@ -113,7 +128,7 @@
                 </el-form-item>
 
                 <el-form-item size="mini">
-                  <el-input v-model="data.q3" placeholder="请输入"></el-input>
+                  <el-input v-model="data.ruleValue" placeholder="请输入"></el-input>
                 </el-form-item>
 
                 <el-button
@@ -133,7 +148,7 @@
         <div class="toright">
           <el-form :inline="true" ref="rightForm" :model="rightForm" label-width="80px">
             <el-form-item label="APP标识">
-              <el-select v-model="rightForm.appbs" placeholder="全部">
+              <el-select v-model="rightForm.appChannelCode" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of selectData"
                   :key="item.value"
@@ -144,7 +159,7 @@
             </el-form-item>
 
             <el-form-item label="平台">
-              <el-select v-model="rightForm.pt" placeholder="全部">
+              <el-select v-model="rightForm.platformCode" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of pingtai"
                   :key="item.value"
@@ -154,41 +169,26 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="登陆状态">
-              <el-select v-model="rightForm.rightForm" placeholder="全部">
-                <el-option
-                  v-for="item of dlzt"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item label="审核">
-              <el-select v-model="rightForm.sh" placeholder="全部">
-                <el-option
-                  v-for="item of shenhe"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-
             <el-form-item>
-               <button @click="jiade">动态更新假数据</button>
-              <el-button @click="tofind()">查询</el-button>
-              <button @click="jiade">动态更新假数据</button>
+              <el-button size="mini" type="primary" @click="getList()">查询</el-button>
+              <el-button size="mini" type="warning" @click="reset()">重置</el-button>
             </el-form-item>
           </el-form>
 
-          <div id="forTable" style="max-height:500px">
-            <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
+          <div id="forTable" style="max-height:520px;">
+            <isTable :inputData="tableInputData" @tableEmit="tableEmit" v-if="loadEnd" />
           </div>
         </div>
       </div>
     </div>
+
+    <el-dialog :visible.sync="show" width="30%" center :close-on-click-modal="false">
+      <span>数据提交成功，请选择下一步执行步骤</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="toList(true)">去配置列表</el-button>
+        <el-button type="primary" @click="toList(false)">再次编辑</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -200,11 +200,22 @@ export default {
     isTable
   },
   data() {
+    // 验证数字，小数的
+    var checkNum2 = (rule, value, callback) => {
+      let reg = /\./;
+      if (reg.test(value)) {
+        callback(new Error("请输入整数"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
+      } else {
+        callback();
+      }
+    };
     return {
-      labelPosition: "left",
+      show: false, // 保存结束弹框
       loadEnd: false,
-
-      otherDatas: [],
       tableInputData: {
         noIndex: true,
         // 传给table子组件的数据
@@ -224,38 +235,69 @@ export default {
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
       },
-      shifou: [{ label: "是", value: "shi" }, { label: "否", value: "fou" }],
+      shifou: [
+        { label: "非默认", value: "NO_DEFULT" },
+        { label: "默认", value: "DEFAULT" }
+      ],
       shenhe: [
         { label: "审核限制", value: "shxz" },
         { label: "正常素材", value: "zcsc" }
       ],
       dlzt: [
-        { label: "登陆用户可见", value: "dlyhkj" },
-        { label: "非登陆用户可见", value: "fdlyhkj" }
+        { label: "全部", value: "ALL" },
+        { label: "登陆", value: "LOGIN" },
+        { label: "未登录", value: "LOGIN_OUT" }
       ],
       selectData: [
-        { label: "比财", value: "bc" },
-        { label: "拼财", value: "pc" },
-        { label: "拼财小程序", value: "pcxcx" },
-        { label: "亚财", value: "yc" }
+        { label: "全部", value: "ALL" },
+        { label: "比财", value: "BICAI" },
+        { label: "拼财", value: "PINCAI" },
+        { label: "拼财小程序", value: "WECHAT_PINCAI" },
+        { label: "亚财", value: "YACAI" }
       ],
-      langueData: [
-        { label: "语言", value: "yy" },
-        { label: "APP版本", value: "appbb" },
-        { label: "年龄", value: "nl" }
+      ruleTypeList: [
+        { label: "是否审核", value: "ios_audit_flag" },
+        { label: "APP版本", value: "app_version" },
+        { label: "语言", value: "language" }
       ],
       fuhao: [
         { label: ">", value: ">" },
+        { label: ">=", value: ">=" },
+        { label: "!=", value: "!=" },
         { label: "=", value: "=" },
-        { label: "<", value: "<" }
+        { label: "<", value: "<" },
+        { label: "<=", value: "<=" }
       ],
       pingtai: [
-        { label: "苹果", value: "pgg" },
-        { label: "安卓", value: "azz" }
+        { label: "全部", value: "ALL" },
+        { label: "苹果", value: "IOS" },
+        { label: "安卓", value: "ANDROID" }
       ],
       peizhiList: [
-        { label: "左侧侧边栏", value: "left" },
-        { label: "底部", value: "bottom" }
+        {
+          label: "侧边栏-左侧",
+          value: "sidebar_left"
+        },
+        {
+          label: "首页按钮",
+          value: "button_top"
+        },
+        {
+          label: "活动按钮-顶部",
+          value: "activity_button_top"
+        },
+        {
+          label: "开屏广告",
+          value: "launch_advertis"
+        },
+        {
+          label: "侧边栏广告",
+          value: "sidebar_banner"
+        },
+        {
+          label: "首页广告",
+          value: "index_banner"
+        }
       ],
       num: 0, // 其它条件添加时，前端用来计数
       pageName: "", // 当前页面名字,
@@ -269,82 +311,240 @@ export default {
         loginStatus: "", // 登录状态
         pingtai: "", // 登录状态
         miaoshu: "", // 描述信息
-        marks: "", // 备注信息
-        other: [] // 其他条件
+        other: [], // 其他条件
+        hasSelect: [] // 如果是编辑，保存已选择的
       },
       // 右边查询
       rightForm: {
-        appbs: "", // APP标识
-        pt: "", // 平台
-        dlzt: "", // 登陆状态
-        sh: "" // 审核
+        solutionGroup: "",
+        appChannelCode: "", // APP标识
+        platformCode: "" // 平台
+      },
+      beforeSelect: [], // 记录素材列表之前已选择的
+      rules: {
+        name: [
+          { required: true, message: "请输入名称", trigger: "blur" },
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
+        ],
+        appMark: [
+          { required: true, message: "请输选择APP标识", trigger: "change" }
+        ],
+        youxiao: [
+          { required: true, message: "请输选择是否有效", trigger: "change" }
+        ],
+        peizhi: [
+          { required: true, message: "请输选择配置点", trigger: "change" }
+        ],
+        loginStatus: [
+          { required: true, message: "请输选择登录状态", trigger: "change" }
+        ],
+        pingtai: [
+          { required: true, message: "请输选择平台", trigger: "change" }
+        ],
+        paixu: [
+          { required: true, message: "请输入排序值", trigger: "blur" },
+          { validator: checkNum2, trigger: "blur" }
+        ]
       }
     };
   },
   mounted() {
     this.pageName = sessionStorage.getItem("page");
-    this.getUserData();
+    this.init();
   },
   methods: {
+    init() {
+      this.show = false;
+      let id = this.$route.query["id"];
+      this.leftForm.peizhi = this.$route.query["weizhi"];
+      this.rightForm.solutionGroup = this.leftForm.peizhi;
+      if (id) {
+        this.getUserData(id);
+      } else {
+        this.getList();
+      }
+    },
     // 其它条件添加
     toAdd() {
-      this.leftForm.other.push({
-        num: this.num++,
-        q1: "",
-        q2: "",
-        q3: ""
-      });
+      if (this.leftForm.other.length === 0) {
+        this.leftForm.other.push({
+          num: this.num++,
+          ruleType: "",
+          signType: "",
+          ruleValue: ""
+        });
+      } else {
+        let arr = this.leftForm.other
+          .map(tar => tar.id)
+          .filter(item => Boolean(item));
+
+        if (!arr.includes(this.num)) {
+          this.leftForm.other.push({
+            num: this.num++,
+            ruleType: "",
+            signType: "",
+            ruleValue: ""
+          });
+        } else {
+          this.num++;
+          this.toAdd();
+        }
+      }
     },
     // 左侧底下的删除
     toDelete(item) {
-      this.leftForm.other = this.leftForm.other.filter(
-        tar => tar.num != item.num
-      );
+      this.leftForm.other = this.leftForm.other.filter(tar => {
+        if (tar.id) {
+          return tar.id != item.id;
+        } else {
+          return tar.num != item.num;
+        }
+      });
     },
     // 左侧的保存
     toSave() {
-      console.log(this.leftForm);
+      this.$refs.leftForm.validate(valid => {
+        if (valid) {
+          let httpType = "",
+            obj = {
+              solutionGroup: this.leftForm.peizhi,
+              solutionDesc: this.leftForm.name,
+              platformType: this.leftForm.pingtai,
+              appType: this.leftForm.appMark,
+              loginType: this.leftForm.loginStatus,
+              displayName: this.leftForm.miaoshu,
+              defaultFlag: this.leftForm.youxiao,
+              sortIndex: +this.leftForm.paixu,
+              solutionCondition: this.leftForm.other.map(tar => {
+                let obj = {
+                  ruleType: tar.ruleType,
+                  ruleValue: tar.ruleValue,
+                  signType: tar.signType
+                };
+                if (tar.id) {
+                  obj.id = tar.id;
+                }
+                return obj;
+              }),
+              resourceIdList: [...this.leftForm.hasSelect.map(tar => tar.id)]
+            };
+          if (this.leftForm.id) {
+            httpType = "put";
+            obj.id = this.leftForm.id;
+          } else {
+            httpType = "post";
+          }
+
+          this.$api
+            .add_put({
+              vm: this,
+              data: obj,
+              httpType: httpType
+            })
+            .then(res => {
+              if (res) {
+                if (res) {
+                  this.show = true;
+                }
+              }
+            });
+        } else {
+          this.$message.error("请输入完整数据！");
+        }
+      });
     },
-    // 右侧的查询
-    tofind() {
-      console.log(this.rightForm);
+    toList(type) {
+      if (type) {
+        this.$router.push({ name: `pzgl` });
+      } else {
+        this.init();
+      }
+    },
+    // 右侧的重置
+    reset() {
+      // 重置
+      this.rightForm.solutionGroup = this.$route.query["weizhi"];
+      this.rightForm.appChannelCode = ""; // APP标识
+      this.rightForm.platformCode = ""; // 平台
+      this.tableInputData.pageSize = 10;
+      this.tableInputData.pageNum = 1;
+      this.getList();
     },
 
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.getUserData();
+          this.getList();
           break;
-        case "moreDelete": // 批量删除按钮
-          var arr = data.data.map(item => item);
-          this.deleteData = arr;
+        case "moreDelete": // 从右侧添加使用的
+          if (!this.beforeSelect.length) {
+            this.beforeSelect = data.data;
+          } else {
+            // 如果 this.beforeSelect.length > data.data.length 表示是删除已选过的
+            if (this.beforeSelect.length > data.data.length) {
+              let arr = data.data.map(kk => kk.id); // 获取当前分页已选的素材
+              for (let i = this.beforeSelect.length; i--; ) {
+                if (!arr.includes(this.beforeSelect[i].id)) {
+                  // 如果当前页选择的素材，不包含在hasSelect，就表示是取消选中状态，要
+                  // 从 hasSelect 数组中删除
+                  this.leftForm.hasSelect = this.leftForm.hasSelect.filter(
+                    jj => jj.id != this.beforeSelect[i].id
+                  );
+                }
+              }
+            } else {
+              // 添加新的
+              if (data.data.length) {
+                data.data.forEach(item => {
+                  // 遍历当前页选中的，把新勾选的添加到 hasSelect
+                  let isIn = this.leftForm.hasSelect.some(tar => {
+                    return tar.id === item.id;
+                  });
+                  if (!isIn) {
+                    this.leftForm.hasSelect.push(item);
+                  }
+                });
+              }
+            }
+            this.beforeSelect = JSON.parse(JSON.stringify(data.data));
+          }
           break;
       }
     },
-    // 获取表格数据
-    getUserData() {
+    // 获取素材列表
+    getList() {
+      let obj = {
+        pageSize: this.tableInputData.pageSize,
+        pageNum: this.tableInputData.pageNum
+      };
+      for (let i in this.rightForm) {
+        if (this.rightForm[i]) {
+          obj[i] = this.rightForm[i];
+        }
+      }
+
       this.$api
-        .member_level_getList({
+        .get_sucai_list({
           vm: this,
-          data: {
-            levelId: this.seachInput,
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum
-          }
+          data: obj
         })
         .then(res => {
           if (res) {
+            this.beforeSelect = [];
             this.afterGetData(res.data);
           }
         });
     },
+
     // 获取数据后的处理
-    afterGetData(data) {
+    afterGetData(data1) {
+      this.loadEnd = false;
       new Promise(resolve => {
-        this.tableInputData.total = data.total;
-        this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
-        this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list.map(item => {
+        this.tableInputData.total = data1.total;
+        this.tableInputData.pageSize =
+          data1.pageSize == 0 ? 10 : data1.pageSize;
+        this.tableInputData.pageNum = data1.pageNum == 0 ? 1 : data1.pageNum;
+        this.tableInputData.data.list = data1.list.map(item => {
           let obj = {},
             arr = Object.keys(item);
           arr.forEach(str => {
@@ -352,35 +552,38 @@ export default {
             // 活动管理配置管理设置素材，属性名： sucai
             obj.sucai = [
               {
-                text: "素材1",
-                img:
-                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
-              },
-              {
-                text: "素材2",
-                img:
-                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
-              },
-              {
-                text: "素材3",
-                img:
-                  "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563362228441&di=c1434cdc709b17f598337b0d0f531954&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201803%2F07%2F20180307125924_43kra.thumb.700_0.jpeg"
+                text: item.title,
+                img: item.imageUrl
               }
             ];
+            obj.afterText = item.appChannelCode
+              ? `${item.appChannelName + " / " + item.platformName}`
+              : "";
           });
           return obj;
         });
+        if (this.leftForm.id) {
+          let hasSelect = this.leftForm.hasSelect.map(tar => tar.id);
+          this.tableInputData.data.setCheck = this.tableInputData.data.list.filter(
+            item => hasSelect.includes(item.id)
+          );
+        }
         this.tableInputData.data.title = [
           {
-            title: "编号",
-            key: "name",
-            minWidth: "100"
+            title: "名称",
+            key: "title",
+            minWidth: "80"
           },
           {
             title: "素材预览",
             key: "sucai",
-            minWidth: "200",
+            minWidth: "100",
             imgArr: true // 展示图片数组
+          },
+          {
+            title: "App标识/平台",
+            key: "afterText",
+            minWidth: "100"
           }
         ];
         resolve();
@@ -388,8 +591,40 @@ export default {
         this.loadEnd = true;
       });
     },
-    jiade() {
-   
+    // 获取获取详情数据
+    getUserData(id) {
+      return this.$api
+        .get_info({
+          vm: this,
+          data: id
+        })
+        .then(res => {
+          if (res) {
+            let datas = res.data;
+            this.leftForm = {
+              id: datas.id,
+              name: datas.solutionDesc, // 显示名称
+              appMark: datas.appType, // APP标识
+              paixu: datas.sortIndex, // 排序值
+              youxiao: datas.defaultFlag, // 是否有效
+              peizhi: datas.solutionGroup, // 配置点
+              loginStatus: datas.loginType, // 登录状态
+              pingtai: datas.platformType, // 平台
+              miaoshu: datas.displayName, // 描述信息
+              other: datas.solutionCondition, // 其他条件
+              hasSelect: datas.previewResourceListVos // 已经添加使用的素材
+            };
+            this.rightForm.solutionGroup = this.leftForm.peizhi;
+            this.getList();
+          }
+        });
+    },
+    // 与配置点联动
+    set_peizhidian() {
+      this.rightForm.solutionGroup = this.leftForm.peizhi;
+      this.tableInputData.pageSize = 10;
+      this.tableInputData.pageNum = 1;
+      this.getList();
     }
   }
 };

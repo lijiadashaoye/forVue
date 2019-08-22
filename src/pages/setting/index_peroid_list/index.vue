@@ -58,10 +58,6 @@ export default {
         this.getAppChannel();
         this.$store.state.peroid.peroidList.data.title = [
             {
-                title: "App",
-                key: "appChannelName",
-                minWidth: "80"
-            },{
                 title: "期限名称",
                 key: "peroidName",
                 minWidth: "120"
@@ -84,10 +80,6 @@ export default {
             },{
                 title: "有效标识",
                 key: "validStatusCN",
-                minWidth: "80"
-            },{
-                title: "显示类型",
-                key: "showTypeCN",
                 minWidth: "80"
             },{
                 title: "限制条数",

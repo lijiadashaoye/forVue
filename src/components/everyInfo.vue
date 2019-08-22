@@ -6,16 +6,19 @@
         <div v-if="pageData.forProduct">
           <baseinfo :pageData="pageData" @toReGetData="toReGetData" />
         </div>
+
         <div v-if="pageData.forChart">
           <chart :pageData="pageData" />
         </div>
-        <div v-if="pageData.forChart">
-          <div class="table_top">
+
+        <div>
+          <div class="table_top" v-if="pageData.forLishi">
             <div>
               <span class="guizeTitle">历史业绩</span>
             </div>
             <el-button size="mini" @click="toUpdate">更新</el-button>
           </div>
+
           <div v-if="pageData.forForms">
             <forms :type="'lishi'" :pageData="pageData" />
           </div>
@@ -27,19 +30,13 @@
         <div class="table_top" v-if="pageData.forForm">
           <div>
             <span class="guizeTitle">交易规则</span>
-            <!-- <span
-              class="isQuestion"
-              title='有疑问？'
-            >
-              <i class="fa fa-question-circle-o"></i>
-            </span>-->
           </div>
           <el-button size="mini" @click="add_guize">新增规则</el-button>
         </div>
-        <div v-if="pageData.forForm">
-          <forms :type="'rengou'" :pageData="pageData" />
-          <forms :type="'shengou'" :pageData="pageData" />
-          <forms :type="'shuhui'" :pageData="pageData" />
+        <div>
+          <!-- <forms  :pageData="rengou" />
+          <forms :pageData="shengou" />
+          <forms  :pageData="shuhui" />-->
         </div>
       </div>
     </div>
@@ -84,7 +81,7 @@
       </div>
 
       <div>
-        <simple :pageData="pageData" />
+        <simple :pageData="pageData" v-if="pageData.forSimple" />
       </div>
     </div>
 
@@ -100,7 +97,7 @@
       <div>
         <simple :pageData="pageData" />
         <div v-if="pageData.forForms">
-          <forms @tableAct="tableAct" :type="'lilv'" :pageData="pageData" />
+          <!-- <forms @tableAct="tableAct" :type="'lilv'" :pageData="pageData" /> -->
         </div>
       </div>
     </div>
@@ -137,29 +134,27 @@
     </div>
 
     <!-- 机构管理 -->
-    <div v-if="pageData.page==='organizational'&&forJiGouCom.datas" id="forTable">
-      <jigou :forJiGouInfo="forJiGouCom" />
+    <div v-if="pageData.page==='organizational'&&forJiGouCom.datas">
+      <jigou :forJiGouInfo="forJiGouCom" @toReGetData="toReGetData" />
 
       <el-radio-group v-model="checkTable" size="mini" @change="changeFn">
         <el-radio-button v-for="(item,index) in checkList" :key="index" :label="item.name"></el-radio-button>
       </el-radio-group>
-
-      <!-- <forms
-        :type='"jigou"'
-        id='forTable'
-      />-->
     </div>
 
     <!-- 基金公司管理 -->
-    <div v-if="pageData.page==='fund_company'&&forJiGouCom.dats">
-      <jigou :forJiGouInfo="forJiGouCom" />
+    <div v-if="pageData.page==='fund_company'&&pageData.datas">
+      <jigou :forJiGouInfo="pageData" />
 
       <el-radio-group v-model="checkTable" size="mini" @change="changeFn">
         <el-radio-button v-for="(item,index) in checkList" :key="index" :label="item.name"></el-radio-button>
       </el-radio-group>
-
-      <forms :type="'jijin'" />
     </div>
+
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
+    </div>
+
     <!-- 新增交易规则弹框 -->
     <el-dialog
       :close-on-click-modal="false"
@@ -397,7 +392,7 @@
           <el-select class="isInput" clearable placeholder="请选择" v-model="newLiLvDia.data.danwei">
             <el-option
               size="mini"
-              v-for="item in dict.deadline_type"
+              v-for="item in dictData.deadline_type"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -424,7 +419,7 @@
           <el-select placeholder="请选择" v-model="newLiLvDia.data.bangdan">
             <el-option
               size="mini"
-              v-for="item in shelveList"
+              v-for="item in dictData.shelveList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -436,7 +431,7 @@
           <el-select placeholder="请选择" v-model="newLiLvDia.data.lockBangDan">
             <el-option
               size="mini"
-              v-for="item in shelveList"
+              v-for="item in dictData.shelveList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -527,6 +522,7 @@ import chart from "./chart.vue";
 import forms from "./forms.vue";
 import simple from "./simple.vue";
 import jigou from "./jigou.vue";
+import isTable from "./isTable/isTable.vue";
 
 export default {
   props: {
@@ -537,7 +533,8 @@ export default {
     chart,
     forms,
     simple,
-    jigou
+    jigou,
+    isTable
   },
   data() {
     // 验证数字
@@ -566,7 +563,25 @@ export default {
       }
     };
     return {
-      dict: null, // 字典数据
+      rengou: {},
+      shengou: {},
+      shuhui: {},
+      loadEnd: false, // 控制表格的显示隐藏（机构管理详情底下的表）
+      tableInputData: {
+        // 传给table子组件的数据
+        checkBox: true, // 判断需要不需要添加选择框
+        pageSize: 10, // 分页相关
+        pageNum: 1,
+        total: null,
+        actions: {},
+        data: {
+          list: [], // 给表格的数据
+          quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
+          title: [], // 给表格表头
+          custom: [] // 给表格按钮数量、类型（编辑、删除等）
+        }
+      },
+      dictData: null, // 字典数据
       pageType: null,
       checkTable: null,
       checkList: [], // 用来切换表单
@@ -606,16 +621,6 @@ export default {
         liuyue: "",
         yinian: ""
       },
-      shelveList: [
-        {
-          label: "是",
-          value: "YES"
-        },
-        {
-          label: "否",
-          value: "NO"
-        }
-      ],
       // 新增利率弹框
       newLiLvDia: {
         show: false,
@@ -631,7 +636,7 @@ export default {
         }
       },
 
-      isChange: true, // 控制数据是否可以提交
+      isChange: true, // 控制数据是否可以提交(保存按钮的可点击)
       show: ["feilvleixing"], // 用来控制显示哪些表单选项
       forJiGouCom: {}, // 传给机构组件的数据
       rules: {
@@ -665,17 +670,32 @@ export default {
     };
   },
   created() {
-    this.dict = JSON.parse(sessionStorage.getItem("dict"));
+    this.dictData = JSON.parse(sessionStorage.getItem("dict"));
   },
   mounted() {
     this.init(); // 页面初始化
   },
   methods: {
+    // 监听表格的操作
+    tableEmit(data) {
+      switch (data.type) {
+        case "regetData": // 分页的emit
+          this.changeFn();
+          break;
+        case "delete": // 单独删除按钮
+          this.toDelete(data.data.id);
+          break;
+        case "switch": // switch 变换
+          this.switchAction(data.data);
+          break;
+      }
+    },
+
     init() {
       let page = this.pageData.page;
       this.trade_rules = {
-        money: this.dict.monetary_unit,
-        limit: this.dict.rule_symbol
+        money: this.dictData.currency_unit,
+        limit: this.dictData.rule_symbol
       };
 
       switch (page) {
@@ -710,6 +730,7 @@ export default {
           this.checkTable = this.checkList[0].name;
           this.forJiGouCom = this.pageData;
           this.jigouguanli_data();
+          this.changeFn();
           break;
         case "fund_company": // 基金管理
           this.checkList = [
@@ -723,6 +744,8 @@ export default {
             }
           ];
           this.checkTable = this.checkList[0].name;
+          this.get_jijingongsi_xiangqing();
+          this.changeFn();
           break;
         case "demand_deposit": // 活期存款管理
           this.get_huoqi_xiangqing();
@@ -753,7 +776,7 @@ export default {
             id: data.data.id
           })
           .then(res => {
-            if (res.success) {
+            if (res) {
               this.newLiLvDia = {
                 type: data.type,
                 show: false,
@@ -780,7 +803,7 @@ export default {
             data: data.data.id
           })
           .then(res => {
-            if (res.success) {
+            if (res) {
               this.$message.success("操作成功！");
               this.init();
               this.toCloseNewGuiZeDialog();
@@ -793,7 +816,6 @@ export default {
       this.$refs.lilvform.validate(valid => {
         if (valid) {
           let datas = this.newLiLvDia.data,
-            dictData = JSON.parse(sessionStorage.getItem("dict")), // 字典
             obj = {}, // 最终使用的数据
             httpType = ""; // 请求方式
           if (this.newLiLvDia.type === "edit") {
@@ -828,7 +850,7 @@ export default {
           }
           // 期限label
           obj.timeUnitLabel = obj.timeUnitType
-            ? dictData.deadline_type.filter(
+            ? this.dictData.deadline_type.filter(
                 item => item.value === obj.timeUnitType
               )[0].label
             : "";
@@ -839,7 +861,7 @@ export default {
               data: obj
             })
             .then(res => {
-              if (res.success) {
+              if (res) {
                 this.$message.success("操作成功！");
                 this.init();
                 this.toCloseNewGuiZeDialog();
@@ -866,7 +888,7 @@ export default {
               table: [
                 {
                   title: "起购金额",
-                  num: res.data.appInfo.defaultAmount
+                  num: res.data.appInfo.minAmount
                 },
                 {
                   title: "递增金额",
@@ -892,11 +914,13 @@ export default {
                 },
                 {
                   title: "到期",
-                  text: new Date(res.data.managementDate[1]).toLocaleDateString()
+                  text: new Date(
+                    res.data.managementDate[1]
+                  ).toLocaleDateString()
                 }
               ]
             };
-            setTimeout(() => {
+            this.$nextTick(() => {
               this.$set(this.pageData, "forProduct", res.data);
               this.$set(this.pageData, "forChart", stepsTop);
             });
@@ -912,7 +936,10 @@ export default {
         })
         .then(res => {
           if (res) {
-            this.$set(this.forJiGouCom, "datas", res.data);
+            this.$set(this.forJiGouCom, "datas", null);
+            this.$nextTick(() => {
+              this.$set(this.forJiGouCom, "datas", res.data);
+            });
           }
         });
     },
@@ -940,7 +967,7 @@ export default {
         .then(res => {
           if (res) {
             this.$set(this.pageData, "datas", null);
-            setTimeout(() => {
+            this.$nextTick(() => {
               this.$set(this.pageData, "datas", res.data);
               // 利率表格的数据
               let forms = {
@@ -1023,7 +1050,7 @@ export default {
         .then(res => {
           if (res) {
             this.$set(this.pageData, "datas", null);
-            setTimeout(() => {
+            this.$nextTick(() => {
               this.$set(this.pageData, "datas", res.data);
               // 利率表格的数据
               let forms = {
@@ -1111,7 +1138,7 @@ export default {
     },
     // 纯债基金详情页面的所有数据
     get_chunzhai_xiangqing() {
-      this.$api
+      this.$api // 获取详情 1
         .getChunZhaiInfoData({
           vm: this,
           data: this.pageData.id
@@ -1119,7 +1146,9 @@ export default {
         .then(res => {
           if (res) {
             this.$set(this.pageData, "forProduct", null);
-            setTimeout(() => this.$set(this.pageData, "forProduct", res.data));
+            this.$nextTick(() =>
+              this.$set(this.pageData, "forProduct", res.data)
+            );
           }
         });
     },
@@ -1137,6 +1166,17 @@ export default {
           }
         });
     },
+    get_jijingongsi_xiangqing() {
+      this.$api
+        .get_jijingongsi_info({
+          vm: this,
+          id: this.pageData.id
+        })
+        .then(res => {
+          this.$set(this.pageData, "datas", null);
+          this.$nextTick(() => (this.pageData.datas = res.data));
+        });
+    },
 
     // 各个子编辑完重新获取数据
     toReGetData(type) {
@@ -1145,7 +1185,7 @@ export default {
           this.get_chunzhai_xiangqing();
           break;
         case "huoqi": // 活期存款管理编辑完
-          this.get_huobi_xiangqing();
+          this.get_huoqi_xiangqing();
           break;
         case "dingqi": // 定期存款管理编辑完
           this.get_dingqi_xiangqing();
@@ -1157,502 +1197,17 @@ export default {
           this.get_jiegou_xiangqing();
           break;
         case "huobi": // 货币基金编辑完
-          this.get_chunzhai_xiangqing();
+          this.get_huobi_xiangqing();
           break;
         case "licai": // 理财管理编辑完
           this.get_licai_xiangqing();
           break;
+        case "organizational": // 理财管理编辑完
+          this.jigouguanli_data();
+          break;
       }
     },
     /****************************************************************************/
-
-    // 获取页面的各种数据
-    // reGetData() {
-    //   this.$api
-    //     .getChunZhaiInfo({
-    //       vm: this,
-    //       id: this.pageData.id
-    //     })
-    //     .then(res => {
-    //       if (res) {
-    //         this.$set(this.pageData, "forProduct", null);
-    //         this.$set(this.pageData, "forChart", null);
-    //         this.$set(this.pageData, "forForm", null);
-
-    //         console.log("res.data", res.data);
-    //         console.log("认购", res.data.subscribeList);
-    //         console.log("申购", res.data.applyForPurchaseList);
-    //         console.log("赎回", res.data.redemptionList);
-
-    //         setTimeout(() => {
-    //           this.$set(this.pageData, "forProduct", {
-    //             title: res.data.name, // 上标题(产品名称)
-    //             id: res.data.id, // 列表id
-    //             name: res.data.institutionName, // 机构
-    //             jigouId: res.data.institutionId, // 机构id
-    //             logo:
-    //               "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551783667609&di=968aba5a1957ab1d7c552e6a8b6cc769&imgtype=0&src=http%3A%2F%2Fimg2.woyaogexing.com%2F2018%2F01%2F20%2Fa17016d0a174e3b4%2521400x400_big.jpg",
-    //             jijingongsi: res.data.fundHouseName, // 基金公司
-    //             jijingongsiID: res.data.fundHouseId, // 基金公司id
-    //             daima: res.data.code, // 基金代码
-    //             rizhangfu: res.data.dailyIncrease, // 日涨幅
-    //             jiaoyizhuangtai: res.data.statusName, // 交易状态显示名
-    //             jiaoyizhuangtaiStatus: res.data.status, // 交易状态
-    //             shangjia: res.data.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
-    //             mianqian:
-    //               res.data.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
-    //             tuijian: res.data.appInfo.recommend === "YES" ? "是" : "否", // 是否推荐
-    //             paihang: res.data.appInfo.homePage === "YES" ? "是" : "否", // 是否首页排行
-    //             bishu: res.data.appInfo.defaultNum, // 默认购买笔数
-    //             morenjine: res.data.appInfo.defaultAmount, // 默认购买金额
-    //             chanpinID: res.data.appInfo.productId, // 产品id
-    //             createTime: "2018-7-6 10:03", // 创建时间
-    //             who: "张飞 " // 创建人
-    //           });
-    //           this.$set(this.pageData, "forChart", {
-    //             chartData: {
-    //               data0: {
-    //                 columns: ["日期", "单位净值", "累计净值"],
-    //                 rows: [
-    //                   {
-    //                     日期: "1/1",
-    //                     单位净值: 1393,
-    //                     累计净值: 1093
-    //                   },
-    //                   {
-    //                     日期: "1/2",
-    //                     单位净值: 3530,
-    //                     累计净值: 3230
-    //                   },
-    //                   {
-    //                     日期: "1/3",
-    //                     单位净值: 2923,
-    //                     累计净值: 2623
-    //                   },
-    //                   {
-    //                     日期: "1/4",
-    //                     单位净值: 1723,
-    //                     累计净值: 1423
-    //                   },
-    //                   {
-    //                     日期: "1/5",
-    //                     单位净值: 3792,
-    //                     累计净值: 3492
-    //                   },
-    //                   {
-    //                     日期: "1/6",
-    //                     单位净值: 4593,
-    //                     累计净值: 4293
-    //                   }
-    //                 ]
-    //               },
-    //               data1: {
-    //                 columns: ["日期", "单位净值", "累计净值"],
-    //                 rows: [
-    //                   {
-    //                     日期: "1/1",
-    //                     单位净值: 345,
-    //                     累计净值: 324
-    //                   },
-    //                   {
-    //                     日期: "1/2",
-    //                     单位净值: 345,
-    //                     累计净值: 45
-    //                   },
-    //                   {
-    //                     日期: "1/3",
-    //                     单位净值: 1115,
-    //                     累计净值: 777
-    //                   },
-    //                   {
-    //                     日期: "1/4",
-    //                     单位净值: 45345,
-    //                     累计净值: 123
-    //                   },
-    //                   {
-    //                     日期: "1/5",
-    //                     单位净值: 224,
-    //                     累计净值: 44
-    //                   },
-    //                   {
-    //                     日期: "1/6",
-    //                     单位净值: 8789,
-    //                     累计净值: 11
-    //                   }
-    //                 ]
-    //               },
-    //               data2: {
-    //                 columns: ["日期", "单位净值", "累计净值"],
-    //                 rows: [
-    //                   {
-    //                     日期: "1/1",
-    //                     单位净值: 4534,
-    //                     累计净值: 345
-    //                   },
-    //                   {
-    //                     日期: "1/2",
-    //                     单位净值: 4498,
-    //                     累计净值: 3453
-    //                   },
-    //                   {
-    //                     日期: "1/3",
-    //                     单位净值: 34345,
-    //                     累计净值: 98
-    //                   },
-    //                   {
-    //                     日期: "1/4",
-    //                     单位净值: 6987,
-    //                     累计净值: 1423
-    //                   },
-    //                   {
-    //                     日期: "1/5",
-    //                     单位净值: 3792,
-    //                     累计净值: 321
-    //                   },
-    //                   {
-    //                     日期: "1/6",
-    //                     单位净值: 4593,
-    //                     累计净值: 786
-    //                   }
-    //                 ]
-    //               },
-    //               data3: {
-    //                 columns: ["日期", "单位净值", "累计净值"],
-    //                 rows: [
-    //                   {
-    //                     日期: "1/1",
-    //                     单位净值: 65455,
-    //                     累计净值: 324
-    //                   },
-    //                   {
-    //                     日期: "1/2",
-    //                     单位净值: 3445,
-    //                     累计净值: 45
-    //                   },
-    //                   {
-    //                     日期: "1/3",
-    //                     单位净值: 3115,
-    //                     累计净值: 777
-    //                   },
-    //                   {
-    //                     日期: "1/4",
-    //                     单位净值: 544,
-    //                     累计净值: 123
-    //                   },
-    //                   {
-    //                     日期: "1/5",
-    //                     单位净值: 45345,
-    //                     累计净值: 44
-    //                   },
-    //                   {
-    //                     日期: "1/6",
-    //                     单位净值: 324,
-    //                     累计净值: 11
-    //                   }
-    //                 ]
-    //               },
-    //               data4: {
-    //                 columns: ["日期", "单位净值", "累计净值"],
-    //                 rows: [
-    //                   {
-    //                     日期: "1/1",
-    //                     单位净值: 4345,
-    //                     累计净值: 324
-    //                   },
-    //                   {
-    //                     日期: "1/2",
-    //                     单位净值: 43534,
-    //                     累计净值: 45
-    //                   },
-    //                   {
-    //                     日期: "1/3",
-    //                     单位净值: 3333,
-    //                     累计净值: 777
-    //                   },
-    //                   {
-    //                     日期: "1/4",
-    //                     单位净值: 6345,
-    //                     累计净值: 123
-    //                   },
-    //                   {
-    //                     日期: "1/5",
-    //                     单位净值: 3454,
-    //                     累计净值: 44
-    //                   },
-    //                   {
-    //                     日期: "1/6",
-    //                     单位净值: 3534,
-    //                     累计净值: 11
-    //                   }
-    //                 ]
-    //               }
-    //             },
-    //             createTime: "2019-2-22 10:11",
-    //             who: "赵云",
-    //             chartList: [
-    //               {
-    //                 id: "0",
-    //                 name: "最近一个月"
-    //               },
-    //               {
-    //                 id: "1",
-    //                 name: "最近一季"
-    //               },
-    //               {
-    //                 id: "2",
-    //                 name: "最近半年"
-    //               },
-    //               {
-    //                 id: "3",
-    //                 name: "最近一年"
-    //               },
-    //               {
-    //                 id: "4",
-    //                 name: "今年"
-    //               }
-    //             ]
-    //           });
-    //           this.$set(this.pageData, "forForm", {
-    //             lishi: {
-    //               handle: null,
-    //               tableTitle: [
-    //                 {
-    //                   title: "日期",
-    //                   key: "date",
-    //                   minWidth: "80"
-    //                 },
-    //                 {
-    //                   title: "张跌幅",
-    //                   key: "zhangdie",
-    //                   minWidth: "80"
-    //                 }
-    //               ],
-    //               tableData: [
-    //                 {
-    //                   date: "单日",
-    //                   zhangdie: res.data.performanceList[0].oneDayIncrease
-    //                     ? res.data.performanceList[0].oneDayIncrease > 0
-    //                       ? "+" +
-    //                         res.data.performanceList[0].oneDayIncrease +
-    //                         "%"
-    //                       : res.data.performanceList[0].oneDayIncrease + "%"
-    //                     : ""
-    //                 },
-    //                 {
-    //                   date: "近三个月",
-    //                   zhangdie: res.data.performanceList[0].threeMonthIncrease
-    //                     ? res.data.performanceList[0].threeMonthIncrease > 0
-    //                       ? "+" +
-    //                         res.data.performanceList[0].threeMonthIncrease +
-    //                         "%"
-    //                       : res.data.performanceList[0].threeMonthIncrease + "%"
-    //                     : ""
-    //                 },
-    //                 {
-    //                   date: "近六个月",
-    //                   zhangdie: res.data.performanceList[0].sixMonthIncrease
-    //                     ? res.data.performanceList[0].sixMonthIncrease > 0
-    //                       ? "+" +
-    //                         res.data.performanceList[0].sixMonthIncrease +
-    //                         "%"
-    //                       : res.data.performanceList[0].sixMonthIncrease + "%"
-    //                     : ""
-    //                 },
-    //                 {
-    //                   date: "近一年",
-    //                   zhangdie: res.data.performanceList[0].oneYearIncrease
-    //                     ? res.data.performanceList[0].oneYearIncrease > 0
-    //                       ? "+" +
-    //                         res.data.performanceList[0].oneYearIncrease +
-    //                         "%"
-    //                       : res.data.performanceList[0].oneYearIncrease + "%"
-    //                     : ""
-    //                 }
-    //               ],
-    //               createTime: "2018-7-6 10:03",
-    //               who: "马超",
-    //               id: res.data.performanceList[0].id,
-    //               fundId: res.data.performanceList[0].fundId
-    //             },
-    //             rengou: {
-    //               handle: {
-    //                 minWidth: "122",
-    //                 fixed: "right",
-    //                 custom: [
-    //                   {
-    //                     text: "编辑",
-    //                     type: "primary",
-    //                     size: "mini",
-    //                     emit: "updata",
-    //                     plain: true
-    //                   },
-    //                   {
-    //                     text: "删除",
-    //                     type: "danger",
-    //                     size: "mini",
-    //                     emit: "delete",
-    //                     plain: true
-    //                   }
-    //                 ]
-    //               },
-    //               tableTitle: [
-    //                 {
-    //                   title: "ID",
-    //                   key: "id",
-    //                   minWidth: "60"
-    //                 },
-    //                 {
-    //                   title: "金额",
-    //                   key: "jine",
-    //                   minWidth: "215"
-    //                 },
-    //                 {
-    //                   title: "费率",
-    //                   key: "feilv",
-    //                   minWidth: "55"
-    //                 },
-    //                 {
-    //                   title: "单笔费用",
-    //                   key: "danbi",
-    //                   minWidth: "70"
-    //                 },
-    //                 {
-    //                   title: "优惠折扣",
-    //                   key: "youhui",
-    //                   minWidth: "70"
-    //                 }
-    //               ],
-    //               tableData: [
-    //                 {
-    //                   id: "e",
-    //                   jine: "0.01元<交易金额<10000.00元",
-    //                   feilv: "0.4%",
-    //                   danbi: "1,000",
-    //                   youhui: "80%"
-    //                 }
-    //               ]
-    //             },
-    //             shengou: {
-    //               handle: {
-    //                 minWidth: "122",
-    //                 fixed: "right",
-    //                 custom: [
-    //                   {
-    //                     text: "编辑",
-    //                     type: "primary",
-    //                     size: "mini",
-    //                     emit: "updata",
-    //                     plain: true
-    //                   },
-    //                   {
-    //                     text: "删除",
-    //                     type: "danger",
-    //                     size: "mini",
-    //                     emit: "delete",
-    //                     plain: true
-    //                   }
-    //                 ]
-    //               },
-    //               tableTitle: [
-    //                 {
-    //                   title: "ID",
-    //                   key: "id",
-    //                   minWidth: "60"
-    //                 },
-    //                 {
-    //                   title: "金额",
-    //                   key: "jine",
-    //                   minWidth: "215"
-    //                 },
-    //                 {
-    //                   title: "费率",
-    //                   key: "feilv",
-    //                   minWidth: "60"
-    //                 },
-    //                 {
-    //                   title: "单笔费用",
-    //                   key: "danbi",
-    //                   minWidth: "70"
-    //                 },
-    //                 {
-    //                   title: "优惠折扣",
-    //                   key: "youhui",
-    //                   minWidth: "70"
-    //                 }
-    //               ],
-    //               tableData: [
-    //                 {
-    //                   id: "232",
-    //                   jine: "0.01元<交易金额<10000.00元",
-    //                   feilv: "0.4%",
-    //                   danbi: "1,000",
-    //                   youhui: "80%"
-    //                 }
-    //               ]
-    //             },
-    //             shuhui: {
-    //               handle: {
-    //                 minWidth: "122",
-    //                 fixed: "right",
-    //                 custom: [
-    //                   {
-    //                     text: "编辑",
-    //                     type: "primary",
-    //                     size: "mini",
-    //                     emit: "updata",
-    //                     plain: true
-    //                   },
-    //                   {
-    //                     text: "删除",
-    //                     type: "danger",
-    //                     size: "mini",
-    //                     emit: "delete",
-    //                     plain: true
-    //                   }
-    //                 ]
-    //               },
-    //               tableTitle: [
-    //                 {
-    //                   title: "ID",
-    //                   key: "id",
-    //                   minWidth: "55"
-    //                 },
-    //                 {
-    //                   title: "期限",
-    //                   key: "qixian",
-    //                   minWidth: "160"
-    //                 },
-    //                 {
-    //                   title: "费率",
-    //                   key: "feilv",
-    //                   minWidth: "55"
-    //                 },
-    //                 {
-    //                   title: "单笔费用",
-    //                   key: "danbi",
-    //                   minWidth: "70"
-    //                 },
-    //                 {
-    //                   title: "优惠折扣",
-    //                   key: "youhui",
-    //                   minWidth: "70"
-    //                 }
-    //               ],
-    //               tableData: [
-    //                 {
-    //                   id: "232",
-    //                   qixian: "10天<赎回天数<30天",
-    //                   feilv: "0.4%",
-    //                   danbi: "1,000",
-    //                   youhui: "80%"
-    //                 }
-    //               ]
-    //             }
-    //           });
-    //         }, 0);
-    //       }
-    //     });
-    // },
     // 存款管理左侧系列里的新增、编辑按钮弹框
     add_guize() {
       this.newGuiZe = true;
@@ -1719,10 +1274,576 @@ export default {
     },
     // 切换表单
     changeFn() {
-      console.log(this.checkTable);
+      let datas = {};
+      datas.pageSize = this.tableInputData.pageSize;
+      datas.pageNum = this.tableInputData.pageNum;
+      datas.institutionId = this.pageData.id;
+      switch (this.checkTable) {
+        case "货币基金":
+          this.huobi_list(datas);
+          break;
+        case "理财产品":
+          this.licai_list(datas);
+          break;
+        case "存款产品":
+          this.cunkuan_list(datas);
+          break;
+        case "纯债基金":
+          this.chunzai_list(datas);
+          break;
+      }
+    },
+    /////////////////////////////////////////////////////////////////////////////
+    // 获取纯债基金数据后的处理
+    chunzhai_list_after(data) {
+      this.loadEnd = false;
+      this.tableInputData = {
+        // 传给table子组件的数据
+        checkBox: true, // 判断需要不需要添加选择框
+        pageSize: 10, // 分页相关
+        pageNum: 1,
+        total: null,
+        actions: {},
+        data: {
+          list: [], // 给表格的数据
+          quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
+          title: [], // 给表格表头
+          custom: [] // 给表格按钮数量、类型（编辑、删除等）
+        }
+      };
+      new Promise(resolve => {
+        this.tableInputData.total = data.total;
+        this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
+        this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
+        this.tableInputData.data.list = data.list.map(item => {
+          let obj = {},
+            arr = Object.keys(item);
+          arr.forEach(str => {
+            obj[str] = item[str];
+            // 将 shelfStatus 属性换成 action 属性
+            if (str === "shelve") {
+              delete obj[str];
+              switch (item[str]) {
+                case "YES":
+                  obj["switch"] = true;
+                  obj["action"] = "上架中";
+                  break;
+                case "NO":
+                  obj["switch"] = false;
+                  obj["action"] = "已下架";
+                  break;
+              }
+            }
+          });
+          return obj;
+        });
+        // 需要额外设置字体颜色的
+        this.tableInputData.actions.setColor = {
+          label: "上架状态",
+          minWidth: 70,
+          from: "action", // 标注对应的属性
+          with: "switch" // 关联到其他属性
+        };
+        // 设置需要的额外switch事件
+        this.tableInputData.actions.switch = {
+          label: "上架/下架",
+          minWidth: 80,
+          from: "shelve" // 记录这个交互操作的原数据属性
+        };
+        // // 设置字体点击事件
+        this.tableInputData.actions.click = {
+          label: "产品名称",
+          minWidth: 180,
+          from: "name" // 记录这个交互操作的原数据属性
+        };
+        this.tableInputData.data.title = [
+          {
+            title: "代码",
+            key: "code",
+            minWidth: "80"
+          },
+          {
+            title: "机构",
+            key: "institutionName",
+            minWidth: "120"
+          },
+          {
+            title: "交易状态",
+            key: "statusName",
+            minWidth: "100"
+          },
+          {
+            title: "基金公司名称",
+            key: "fundHouseName",
+            minWidth: "180"
+          },
+          {
+            title: "日涨幅%",
+            key: "dailyIncrease",
+            minWidth: "100",
+            sortable: true
+          },
+          {
+            title: "单位净值",
+            key: "netAssetValue",
+            minWidth: "100",
+            sortable: true
+          },
+          {
+            title: "累计净值",
+            key: "netAccumulateValue",
+            minWidth: "100",
+            sortable: true
+          },
+          {
+            title: "创建时间",
+            key: "gmtCreated",
+            minWidth: "140",
+            sortable: true
+          }
+        ];
+        this.tableInputData.data.custom.push({
+          text: "删除",
+          type: "danger",
+          size: "mini",
+          emit: "delete"
+        });
+        resolve();
+      }).then(() => {
+        this.loadEnd = true;
+      });
+    },
+    // 获取纯债基金表格数据
+    chunzai_list(datas) {
+      this.$api
+        .get_chunzhaiList({
+          vm: this,
+          data: datas
+        })
+        .then(res => {
+          if (res) {
+            this.chunzhai_list_after(res.data);
+          }
+        });
     },
 
-    // 保存更新数据
+    /////////////////////////////////////////////////////////////////////////////
+
+    // 获取存款表格数据
+    cunkuan_list(datas) {
+      this.$api
+        .get_cunkuanlistData({
+          vm: this,
+          data: datas
+        })
+        .then(res => {
+          if (res) {
+            this.cunkuan_list_after(res.data);
+          }
+        });
+    },
+    // 获取数据后的处理
+    cunkuan_list_after(data) {
+      this.loadEnd = false;
+      this.tableInputData = {
+        // 传给table子组件的数据
+        checkBox: true, // 判断需要不需要添加选择框
+        pageSize: 10, // 分页相关
+        pageNum: 1,
+        total: null,
+        actions: {},
+        data: {
+          list: [], // 给表格的数据
+          quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
+          title: [], // 给表格表头
+          custom: [] // 给表格按钮数量、类型（编辑、删除等）
+        }
+      };
+      new Promise(resolve => {
+        this.tableInputData.total = data.total;
+        this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
+        this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
+        this.tableInputData.data.list = data.list.map(item => {
+          let obj = {},
+            arr = Object.keys(item);
+
+          arr.forEach(str => {
+            obj[str] = item[str];
+            // 将 shelfStatus 属性换成 action 属性
+            if (str === "shelve") {
+              delete obj[str];
+              switch (item[str]) {
+                case "YES":
+                  obj["switch"] = true;
+                  obj["action"] = "上架中";
+                  break;
+                case "NO":
+                  obj["switch"] = false;
+                  obj["action"] = "已下架";
+                  break;
+              }
+            }
+          });
+          return obj;
+        });
+        // 设置需要的额外设置字体颜色的
+        this.tableInputData.actions.setColor = {
+          label: "上架状态",
+          minWidth: 70,
+          from: "action",
+          with: "switch"
+        };
+        // 设置需要的额外switch事件
+        this.tableInputData.actions.switch = {
+          label: "上架/下架",
+          minWidth: 80,
+          from: "shelve" // 记录这个交互操作的原数据属性
+        };
+        // // 设置字体点击事件
+        this.tableInputData.actions.click = {
+          label: "产品名称",
+          minWidth: 120,
+          from: "name" // 记录这个交互操作的原数据属性
+        };
+        this.tableInputData.data.title = [
+          {
+            title: "机构",
+            key: "institutionName",
+            minWidth: "160"
+          },
+
+          {
+            title: "产品系列",
+            key: "seriesName",
+            minWidth: "120"
+          },
+          {
+            title: "存款类别",
+            key: "productSubtypeLabel",
+            minWidth: "140"
+          },
+          {
+            title: "产品类型",
+            key: "typeAlias",
+            minWidth: "120"
+          },
+
+          {
+            title: "创建时间",
+            key: "gmtCreated",
+            minWidth: "160",
+            sortable: true
+          }
+        ];
+        this.tableInputData.data.custom.push({
+          text: "删除",
+          type: "danger",
+          size: "mini",
+          emit: "delete"
+        });
+        resolve();
+      }).then(() => {
+        this.loadEnd = true;
+      });
+    },
+    /////////////////////////////////////////////////////////////////////////////
+    // 获取货币基金数据后的处理
+    huobi_list_after(data) {
+      this.loadEnd = false;
+      this.tableInputData = {
+        // 传给table子组件的数据
+        checkBox: true, // 判断需要不需要添加选择框
+        pageSize: 10, // 分页相关
+        pageNum: 1,
+        total: null,
+        actions: {},
+        data: {
+          list: [], // 给表格的数据
+          quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
+          title: [], // 给表格表头
+          custom: [] // 给表格按钮数量、类型（编辑、删除等）
+        }
+      };
+      new Promise(resolve => {
+        this.tableInputData.total = data.total;
+        this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
+        this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
+        this.tableInputData.data.list = data.list.map(item => {
+          let obj = {},
+            arr = Object.keys(item);
+          arr.forEach(str => {
+            obj[str] = item[str];
+            // 将 shelfStatus 属性换成 action 属性
+            if (str === "shelve") {
+              delete obj[str];
+              switch (item[str]) {
+                case "YES":
+                  obj["switch"] = true;
+                  obj["action"] = "上架中";
+                  break;
+                case "NO":
+                  obj["switch"] = false;
+                  obj["action"] = "已下架";
+                  break;
+              }
+            }
+          });
+          return obj;
+        });
+        // 设置需要的额外设置字体颜色的
+        this.tableInputData.actions.setColor = {
+          label: "上架状态",
+          minWidth: 70,
+          from: "action",
+          with: "switch"
+        };
+        // 设置需要的额外switch事件
+        this.tableInputData.actions.switch = {
+          label: "上架/下架",
+          minWidth: 80,
+          from: "shelve" // 记录这个交互操作的原数据属性
+        };
+        // // 设置字体点击事件
+        this.tableInputData.actions.click = {
+          label: "产品名称",
+          minWidth: 180,
+          from: "name" // 记录这个交互操作的原数据属性
+        };
+        this.tableInputData.data.title = [
+          {
+            title: "机构名称",
+            key: "institutionName",
+            minWidth: "180"
+          },
+          {
+            title: "基金公司名称",
+            key: "fundHouseName",
+            minWidth: "100"
+          },
+          {
+            title: "七日年化收益率",
+            key: "onThe7thOfTheYearYield",
+            minWidth: "130",
+            sortable: true
+          },
+          {
+            title: "万份年化收益率",
+            key: "thousandsOfYearsYields",
+            minWidth: "130",
+            sortable: true
+          },
+          {
+            title: "起购金额",
+            key: "minAmount",
+            minWidth: "120",
+            sortable: true
+          },
+
+          {
+            title: "赎回到账日",
+            key: "redemptionDate",
+            minWidth: "120",
+            sortable: true
+          },
+          {
+            title: "创建时间",
+            key: "gmtCreated",
+            minWidth: "140",
+            sortable: true
+          }
+        ];
+        this.tableInputData.data.custom.push({
+          text: "删除",
+          type: "danger",
+          size: "mini",
+          emit: "delete"
+        });
+        resolve();
+      }).then(() => {
+        this.loadEnd = true;
+      });
+    },
+    // 获取表格数据
+    huobi_list(datas) {
+      this.$api
+        .get_huobiList({
+          vm: this,
+          data: datas
+        })
+        .then(res => {
+          if (res) {
+            this.huobi_list_after(res.data);
+          }
+        });
+    },
+    /////////////////////////////////////////////////////////////////////////////
+    // 获取数据后的处理
+    licai_list_after(data) {
+      this.loadEnd = false;
+      this.tableInputData = {
+        // 传给table子组件的数据
+        checkBox: true, // 判断需要不需要添加选择框
+        pageSize: 10, // 分页相关
+        pageNum: 1,
+        total: null,
+        actions: {},
+        data: {
+          list: [], // 给表格的数据
+          quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
+          title: [], // 给表格表头
+          custom: [] // 给表格按钮数量、类型（编辑、删除等）
+        }
+      };
+      new Promise(resolve => {
+        this.tableInputData.total = data.total;
+        this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
+        this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
+        this.tableInputData.data.list = data.list.map(item => {
+          let obj = {},
+            arr = Object.keys(item);
+          arr.forEach(str => {
+            obj[str] = item[str];
+            // 将 shelfStatus 属性换成 action 属性
+            if (str === "shelve") {
+              delete obj[str];
+              switch (item[str]) {
+                case "YES":
+                  obj["switch"] = true;
+                  obj["action"] = "上架中";
+                  break;
+                case "NO":
+                  obj["switch"] = false;
+                  obj["action"] = "已下架";
+                  break;
+              }
+            }
+          });
+          return obj;
+        });
+        // 设置需要的额外设置字体颜色的
+        this.tableInputData.actions.setColor = {
+          label: "上架状态",
+          minWidth: 70,
+          from: "action",
+          with: "switch"
+        };
+        // 设置需要的额外switch事件
+        this.tableInputData.actions.switch = {
+          label: "上架/下架",
+          minWidth: 80,
+          from: "shelve" // 记录这个交互操作的原数据属性
+        };
+        // // 设置字体点击事件
+        this.tableInputData.actions.click = {
+          label: "产品名称",
+          minWidth: 180,
+          from: "name" // 记录这个交互操作的原数据属性
+        };
+        this.tableInputData.data.title = [
+          {
+            title: "机构名称",
+            key: "institutionName",
+            minWidth: "180"
+          },
+          {
+            title: "系列名称",
+            key: "seriesName",
+            minWidth: "100"
+          },
+          {
+            title: "预期年化收益率",
+            key: "interestRate",
+            minWidth: "130",
+            sortable: true
+          },
+          {
+            title: "风险等级",
+            key: "riskLevelLabel",
+            minWidth: "130"
+          },
+          {
+            title: "创建时间",
+            key: "gmtCreated",
+            minWidth: "140",
+            sortable: true
+          }
+        ];
+        this.tableInputData.data.custom.push({
+          text: "删除",
+          type: "danger",
+          size: "mini",
+          emit: "delete"
+        });
+        resolve();
+      }).then(() => {
+        this.loadEnd = true;
+      });
+    },
+    // 获取理财表格数据
+    licai_list(datas) {
+      this.$api
+        .get_licaiList({
+          vm: this,
+          data: datas
+        })
+        .then(res => {
+          if (res) {
+            this.licai_list_after(res.data);
+          }
+        });
+    },
+    /////////////////////////////////////////////////////////////////////////////
+    // 表格里的switch事件
+    switchAction(data) {
+      this.$api
+        .product_chunzhai_UpDown({
+          vm: this,
+          data: {
+            id: data.productId,
+            status: data.switch ? "YES" : "NO"
+          }
+        })
+        .then(res => {
+          this.changeFn();
+        });
+    },
+    // 删除
+    toDelete(id) {
+      this.$confirm("确认删除吗？")
+        .then(() => {
+          let url = "";
+          switch (this.checkTable) {
+            case "货币基金":
+              url = `/product/monetaryFund/${id}`; // 货币基金删除
+              break;
+            case "理财产品":
+              url = `/product/pureDebtFund/${id}`; // 理财管理删除
+              break;
+            case "存款产品":
+              url = `/product/deposit/demand/${id}`; // 存款删除
+              break;
+            case "纯债基金":
+              url = `/product/pureDebtFund/${id}`; // 纯债删除
+              break;
+          }
+
+          this.$api
+            .product_all_delete({
+              vm: this,
+              url: url
+            })
+            .then(res => {
+              if (res) {
+                this.$message.success("删除成功！");
+                this.changeFn();
+              }
+            });
+        })
+        .catch(() => {});
+    },
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    // 新增交易规则保存
     save() {
       console.log(this.ruleForm);
       // this.toCloseNewGuiZeDialog();

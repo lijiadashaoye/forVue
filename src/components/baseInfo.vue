@@ -4,18 +4,17 @@
       <p>{{pageInfos.title}}</p>
       <div>
         <el-button size="mini" @click="toEdit()">编辑</el-button>
-        <el-button size="mini" @click="toUpDown()">{{this.shangjia?'下架':'上架'}}</el-button>
         <el-button size="mini" @click="toDelete()">删除</el-button>
       </div>
     </div>
 
     <div class="isContentWaper">
       <div class="isContentLong">
-        <span class="isTitleLong">机构：</span>
+        <span class="isTitle">机构：</span>
         <p>
           <img style="width:40px" :src="pageInfos.logo" />
           <br />
-          <a class="isLink" @click="toJiGou" title="点击查看">{{pageInfos.name}}</a>
+          <a class="isLink" @click="toJiGou" title="点击查看">{{pageInfos.institutionName}}</a>
         </p>
       </div>
 
@@ -34,7 +33,7 @@
 
     <div class="isContentWaper">
       <div class="isContent" v-if="isToShow('daima')">
-        <span class="isTitle">基金代码：</span>
+        <span class="isTitleLong">基金代码：</span>
         <p>{{pageInfos.daima}}</p>
       </div>
       <div class="isContentLong" v-if="isToShow('rizhangfu')">
@@ -45,7 +44,7 @@
 
     <div class="isContentWaper">
       <div class="isContent" v-if="isToShow('jiaoyizhuangtai')">
-        <span class="isTitle">交易状态：</span>
+        <span class="isTitleLong">交易状态：</span>
         <p>{{pageInfos.jiaoyizhuangtai}}</p>
       </div>
 
@@ -56,44 +55,42 @@
           <span v-if="pageInfos.yuqishouyi">%</span>
         </p>
       </div>
-    </div>
 
-    <div class="isContent" v-if="isToShow('miaoshu')">
-      <span class="isTitle" @click="toShowMore(1)" title="点击查看全部内容" style="cursor: pointer;">
-        {{this.pageData.page === "organizational"?'银行描述':'公司描述'}}
-        :&nbsp;
-        <span
-          style="font-size:12px;color:#aaabac;"
-        >(可点击)</span>
-      </span>
-      <p :class="toShowMoreNum===1?'':'isHidden'">{{pageInfos.miaoshu}}</p>
+      <div class="isContentLong" v-if="isToShow('contentVersion')">
+        <span class="isTitleLong">产品版本标识：</span>
+        <p>{{pageInfos.contentVersion}}</p>
+      </div>
+
+      <div class="isContentLong" v-if="isToShow('productFeature')">
+        <span class="isTitleLong">产品特性：</span>
+        <p>{{pageInfos.productFeature}}</p>
+      </div>
+
+      <div class="isContentLong" v-if="isToShow('chanpinquyu')">
+        <span class="isTitleLong">产品区域：</span>
+        <p>{{pageInfos.chanpinquyu}}</p>
+      </div>
     </div>
 
     <div class="isContentWaper">
       <div class="isContent" v-if="isToShow('qigou')">
-        <span class="isTitle">起购金额：</span>
+        <span class="isTitleLong">起购金额：</span>
         <p>{{pageInfos.qigou}}</p>
       </div>
       <div class="isContentLong" v-if="isToShow('suoding')">
-        <span class="isTitle">锁定期：</span>
+        <span class="isTitleLong">锁定期：</span>
         <p>{{pageInfos.suoding}}</p>
       </div>
-    </div>
-
-    <div class="isContentWaper">
       <div class="isContentLong" v-if="isToShow('shuhui')">
         <span class="isTitleLong">到帐赎回日：</span>
         <p>{{pageInfos.shuhui}}</p>
       </div>
       <div class="isContentLong" v-if="isToShow('shouxufei')">
-        <span class="isTitle">手续费用：</span>
+        <span class="isTitleLong">手续费用：</span>
         <p>{{pageInfos.shouxufei}}</p>
       </div>
-    </div>
-
-    <div class="isContentWaper">
       <div class="isContentLong" v-if="isToShow('qixian')">
-        <span class="isTitle">投资期限：</span>
+        <span class="isTitleLong">投资期限：</span>
         <p>
           {{pageInfos.qixian}}
           <span v-if="pageInfos.qixian">天</span>
@@ -103,31 +100,25 @@
         <span class="isTitleLong">期限别名：</span>
         <p>{{pageInfos.deadlineAlias}}</p>
       </div>
-    </div>
 
-    <div class="isContentWaper">
       <div class="isContent" v-if="isToShow('qishou')">
-        <span class="isTitle">起售日期：</span>
+        <span class="isTitleLong">起售日期：</span>
         <p>{{pageInfos.qishou}}</p>
       </div>
       <div class="isContentLong" v-if="isToShow('jiezhi')">
-        <span class="isTitle">截止日期：</span>
+        <span class="isTitleLong">截止日期：</span>
         <p>{{pageInfos.jiezhi}}</p>
       </div>
-    </div>
 
-    <div class="isContentWaper">
       <div class="isContent" v-if="isToShow('qixi')">
-        <span class="isTitle">起息日：</span>
+        <span class="isTitleLong">起息日：</span>
         <p>{{pageInfos.qixi}}</p>
       </div>
       <div class="isContentLong" v-if="isToShow('jiexi')">
-        <span class="isTitle">结息日：</span>
+        <span class="isTitleLong">结息日：</span>
         <p>{{pageInfos.jiexi}}</p>
       </div>
-    </div>
 
-    <div class="isContentWaper">
       <div class="isContentLong" v-if="isToShow('kaishi')">
         <span class="isTitleLong">理财开始日期：</span>
         <p>{{pageInfos.kaishi}}</p>
@@ -136,9 +127,7 @@
         <span class="isTitleLong">理财结束日期：</span>
         <p>{{pageInfos.jieshu}}</p>
       </div>
-    </div>
 
-    <div class="isContentWaper">
       <div class="isContentLong" v-if="isToShow('leibie')">
         <span class="isTitleLong">类别别名：</span>
         <p>{{pageInfos.leibie}}</p>
@@ -147,9 +136,7 @@
         <span class="isTitleLong">产品类型：</span>
         <p>{{pageInfos.leixing}}</p>
       </div>
-    </div>
 
-    <div class="isContentWaper">
       <div class="isContentLong" v-if="isToShow('lilv')">
         <span class="isTitleLong">利率：</span>
         <p>
@@ -176,9 +163,7 @@
           <span v-if="pageInfos.daoqiLilv">%</span>
         </p>
       </div>
-    </div>
 
-    <div class="isContentWaper">
       <div class="isContentLong" v-if="isToShow('shengyuED')">
         <span class="isTitleLong">剩余额度：</span>
         <p>{{pageInfos.shengyuED}}</p>
@@ -202,14 +187,16 @@
         <span class="isTitleLong">收益返还方式：</span>
         <p>{{pageInfos.fanhuan}}</p>
       </div>
-    </div>
+      <div class="isContentLong" v-if="isToShow('bizhong')">
+        <span class="isTitleLong">币种：</span>
+        <p>{{pageInfos.bizhong}}</p>
+      </div>
 
-    <div class="isContentWaper">
-      <div class="isContentLong" v-if="isToShow('qicun')">
+      <div class="isContentLong" v-if="isToShow('qicunjine')">
         <span class="isTitleLong">起存金额：</span>
         <p>
-          {{pageInfos.qicun}}
-          <span v-if="pageInfos.qicun">元</span>
+          {{pageInfos.qicunjine}}
+          <span v-if="pageInfos.qicunjine">元</span>
         </p>
       </div>
       <div class="isContentLong" v-if="isToShow('dizengjine')">
@@ -219,16 +206,19 @@
           <span v-if="pageInfos.dizengjine">元</span>
         </p>
       </div>
-    </div>
-    <div class="isContentWaper">
+
       <div class="isContentLong" v-if="isToShow('zhuancun')">
         <span class="isTitleLong">到期是否转存：</span>
         <p>{{pageInfos.zhuancun}}</p>
       </div>
+      <div class="isContent" v-if="isToShow('mairu')">
+        <span class="isTitleLong">买入:</span>
+        <p>{{pageInfos.mairu}}</p>
+      </div>
     </div>
 
-    <div class="isContentWaper">
-      <div class="isContentLong" style="width:100%;" v-if="isToShow('biaoqian')">
+    <div class="isContentWaper" v-if="isToShow('biaoqian')">
+      <div class="isContentLong" style="width:100%;">
         <span class="isTitleLong">标签：</span>
         <p>
           <span
@@ -240,15 +230,12 @@
         </p>
       </div>
     </div>
-    <div class="isContent" v-if="isToShow('mairu')">
-      <span class="isTitle">买入:</span>
-      <p>{{pageInfos.mairu}}</p>
-    </div>
 
     <div class="isContentLong" v-if="isToShow('shouyiguize')">
       <span class="isTitleLong" @click="toShowMore(1)" title="点击查看全部内容" style="cursor: pointer">
         收益规则:
         <br />
+        <p v-if="toShowMoreNum!==1" style="font-size:12px;color:#aaabac;">内容已被截取</p>
         <span style="font-size:12px;color:#aaabac;">(可点击)</span>
       </span>
       <p :class="toShowMoreNum===1?'':'isHidden'" v-html="pageInfos.shouyiguize"></p>
@@ -257,21 +244,40 @@
       <span class="isTitleLong" @click="toShowMore(2)" title="点击查看全部内容" style="cursor: pointer">
         产品描述:
         <br />
+        <p v-if="toShowMoreNum!==2" style="font-size:12px;color:#aaabac;">内容已被截取</p>
         <span style="font-size:12px;color:#aaabac;">(可点击)</span>
       </span>
       <p :class="toShowMoreNum===2?'':'isHidden'" v-html="pageInfos.chanpinmiaoshu"></p>
     </div>
+    <div class="isContentLong" v-if="isToShow('qicunfanwei')">
+      <span class="isTitleLong" @click="toShowMore(3)" title="点击查看全部内容" style="cursor: pointer">
+        起存范围说明:
+        <br />
+        <p v-if="toShowMoreNum!==3" style="font-size:12px;color:#aaabac;">内容已被截取</p>
+        <span style="font-size:12px;color:#aaabac;">(可点击)</span>
+      </span>
+      <p :class="toShowMoreNum===3?'':'isHidden'" v-html="pageInfos.qicunfanwei"></p>
+    </div>
+    <div class="isContent" v-if="isToShow('miaoshu')">
+      <span class="isTitleLong" @click="toShowMore(1)" title="点击查看全部内容" style="cursor: pointer;">
+        {{this.pageData.page === "organizational"?'银行描述':'公司描述'}}
+        :&nbsp;
+        <span
+          style="font-size:12px;color:#aaabac;"
+        >(可点击)</span>
+      </span>
+      <p :class="toShowMoreNum===1?'':'isHidden'">{{pageInfos.miaoshu}}</p>
+    </div>
 
     <div class="isContentWaper">
       <div class="isContentLong" v-if="isToShow('shangjia')">
-        <span class="isTitleLong">是否上架：</span>
+        <span class="isTitleLong">上架状态：</span>
         <p>{{pageInfos.shangjia}}</p>
       </div>
       <div class="isContentLong" v-if="isToShow('jianguan')">
         <span class="isTitleLong">监管属性：</span>
         <p>{{pageInfos.jianguan}}</p>
       </div>
-
       <div class="isContentLong" v-if="isToShow('guanzhuNum')">
         <span class="isTitleLong">默认关注数量：</span>
         <p>{{pageInfos.guanzhuNum}}</p>
@@ -281,7 +287,6 @@
         <span class="isTitleLong">是否面签：</span>
         <p>{{pageInfos.mianqian}}</p>
       </div>
-
       <div class="isContentLong" v-if="isToShow('shiming')">
         <span class="isTitleLong">是否实名认证：</span>
         <p>{{pageInfos.shiming}}</p>
@@ -291,7 +296,6 @@
         <span class="isTitleLong">是否显示银行页面：</span>
         <p>{{pageInfos.yinhangpage}}</p>
       </div>
-
       <div class="isContentLong" v-if="isToShow('qianyue')">
         <span class="isTitleLong">是否签约：</span>
         <p>{{pageInfos.qianyue}}</p>
@@ -311,7 +315,6 @@
         <span class="isTitleLong">银行对接方式：</span>
         <p>{{pageInfos.duijie}}</p>
       </div>
-
       <div class="isContentLong" v-if="isToShow('tuijian')">
         <span class="isTitleLong">是否推荐：</span>
         <p>{{pageInfos.tuijian}}</p>
@@ -338,19 +341,19 @@
         </p>
       </div>
 
-      <div class="isContentLong" v-if="isToShow('bishu')">
+      <div class="isContentLong" v-if="isToShow('goumaibishu')">
         <span class="isTitleLong">默认购买笔数：</span>
         <p>
-          {{pageInfos.bishu}}
-          <span v-if="pageInfos.bishu">笔</span>
+          {{pageInfos.goumaibishu}}
+          <span v-if="pageInfos.goumaibishu">笔</span>
         </p>
       </div>
 
-      <div class="isContentLong" v-if="isToShow('morenjine')">
+      <div class="isContentLong" v-if="isToShow('goumaimorenjine')">
         <span class="isTitleLong">默认购买金额:</span>
         <p>
-          {{pageInfos.morenjine}}
-          <span v-if="pageInfos.morenjine">元</span>
+          {{pageInfos.goumaimorenjine}}
+          <span v-if="pageInfos.goumaimorenjine">元</span>
         </p>
       </div>
 
@@ -358,9 +361,9 @@
         <span class="isTitleLong">同一产品标识：</span>
         <p>{{pageInfos.chanpinbiaozhi}}</p>
       </div>
-      <div class="isContentLong" v-if="isToShow('bangdan')">
+      <div class="isContentLong" v-if="isToShow('zhuanqubiaozhi')">
         <span class="isTitleLong">榜单专区标识：</span>
-        <p>{{pageInfos.bangdan}}</p>
+        <p>{{pageInfos.zhuanqubiaozhi}}</p>
       </div>
 
       <div class="isContentLong" v-if="isToShow('fuxipinlv')">
@@ -374,6 +377,7 @@
         <p>{{pageInfos.h5Url}}</p>
       </div>
     </div>
+
     <div style="position:relative;height:20px;">
       <div class="show_time">
         <span class="isUpTime">
@@ -409,10 +413,6 @@
 
         <el-form-item label="基金代码:" class="is50" v-if="isToShow1('daima')" prop="daima">
           <el-input clearable placeholder="请输入" v-model="ruleForm.daima"></el-input>
-        </el-form-item>
-
-        <el-form-item label="起购金额:" class="is50" v-if="isToShow1('qigou')" prop="qigou">
-          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.qigou"></el-input>
         </el-form-item>
 
         <el-form-item prop="jigou_name" label="机构:" class="is50" v-if="isToShow1('jigou_name')">
@@ -452,15 +452,23 @@
         >
           <el-input clearable placeholder="请输入" v-model="ruleForm.productjijin"></el-input>
         </el-form-item>
+        <el-form-item
+          label="存款产品名称:"
+          class="is50"
+          v-if="isToShow1('productcunkuan')"
+          prop="productcunkuan"
+        >
+          <el-input clearable placeholder="请输入" v-model="ruleForm.productcunkuan"></el-input>
+        </el-form-item>
 
-        <el-form-item label="产品区域:" class="is50" v-if="isToShow1('quyu')">
-          <el-select clearable placeholder="请输入" v-model="ruleForm.quyu">
+        <el-form-item label="产品区域:" class="is50" v-if="isToShow1('chanpinquyu')">
+          <el-select clearable placeholder="请输入" v-model="ruleForm.chanpinquyu">
             <el-option
               size="mini"
               v-for="item in dictData.quyu"
-              :key="item.adcode"
-              :label="item.name"
-              :value="item.adcode"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -498,20 +506,11 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item
-          label="存款产品名称:"
-          class="is50"
-          v-if="isToShow1('productcunkuan')"
-          prop="productcunkuan"
-        >
-          <el-input clearable placeholder="请输入" v-model="ruleForm.productcunkuan"></el-input>
-        </el-form-item>
-
         <el-form-item label="产品类型别名:" class="is50" v-if="isToShow1('bieming')" prop="bieming">
           <el-input clearable placeholder="请输入" v-model="ruleForm.bieming"></el-input>
         </el-form-item>
 
-        <el-form-item label="计息方式" style="position:relative" class="is50" v-if="isToShow1('jixi')">
+        <el-form-item label="计息方式" class="is50" v-if="isToShow1('jixi')">
           <el-select clearable placeholder="请选择" v-model="ruleForm.jixi">
             <el-option
               size="mini"
@@ -523,22 +522,26 @@
           </el-select>
         </el-form-item>
 
-        <!-- <el-form-item
-          label="日涨幅:"
+        <el-form-item label="产品特性" class="is50" v-if="isToShow1('productFeature')">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.productFeature">
+            <el-option
+              size="mini"
+              v-for="item in dictData.product_feature_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          label="产品版本标识:"
           class="is50"
-          v-if="isToShow1('rizhangfu')"
-          style="position:relative;"
-          prop="rizhangfu"
+          v-if="isToShow1('contentVersion')"
+          prop="contentVersion"
         >
-          <el-input
-            type="number"
-            style="width:calc(100% - 25px);"
-            clearable
-            placeholder="请输入"
-            v-model="ruleForm.rizhangfu"
-          ></el-input>
-          <span class="isAd"></span>
-        </el-form-item>-->
+          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.contentVersion"></el-input>
+        </el-form-item>
 
         <el-form-item
           label="利率:"
@@ -604,18 +607,38 @@
           <el-input clearable placeholder="请输入" v-model="ruleForm.qicunjine"></el-input>
         </el-form-item>
 
-        <el-form-item v-show="isToShow1('marks')" label="标签:" class="is50">
-          <div class="toFlex">
-            <el-select multiple v-model="ruleForm.marks" clearable placeholder="请选择">
-              <el-option
-                size="mini"
-                v-for="item in dictData.marks"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </div>
+        <el-form-item v-show="isToShow1('biaoqian')" label="活动标签:" class="is50">
+          <el-select multiple v-model="ruleForm.actBiaoQian" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item in dictData.activityTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="isToShow1('biaoqian')" label="自定义标签:" class="is50">
+          <el-select multiple v-model="ruleForm.selfBiaoQian" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item in dictData.selfDefiningTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-show="isToShow1('biaoqian')" label="产品标签:" class="is50">
+          <el-select multiple v-model="ruleForm.chanpinBiaoQian" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item in dictData.productTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item prop="zhiqu" v-show="isToShow1('zhiqu')" label="支取时间:" class="is50">
@@ -628,6 +651,9 @@
               :value="item.value"
             ></el-option>
           </el-select>
+        </el-form-item>
+        <el-form-item label="起购金额:" class="is50" v-if="isToShow1('qigou')" prop="qigou">
+          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.qigou"></el-input>
         </el-form-item>
 
         <el-form-item prop="dizeng" label="递增金额:" class="is50" v-if="isToShow1('dizeng')">
@@ -771,19 +797,57 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="到期是否转存:" class="is50" v-if="isToShow1('zhuancun')">
-          <el-radio-group v-model="ruleForm.zhuancun">
-            <el-radio-button label="是"></el-radio-button>
-            <el-radio-button label="否"></el-radio-button>
-          </el-radio-group>
+        <el-form-item label="币种:" class="is50" v-if="isToShow1('bizhong')">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.bizhong">
+            <el-option
+              size="mini"
+              v-for="item in dictData.bizhong"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          label="最小起存金额:"
+          class="is50"
+          v-if="isToShow1('qicunjineMin')"
+          prop="qicunjineMin"
+        >
+          <el-input clearable placeholder="请输入" v-model="ruleForm.qicunjineMin"></el-input>
+        </el-form-item>
+        <el-form-item
+          label="最大起存金额:"
+          class="is50"
+          v-if="isToShow1('qicunjineMax')"
+          prop="qicunjineMax"
+        >
+          <el-input clearable placeholder="请输入" v-model="ruleForm.qicunjineMax"></el-input>
+        </el-form-item>
+
+        <el-form-item v-show="isToShow1('qicunfanwei')" label="起存范围说明:">
+          <isQuill
+            :url="'admin/file/up/setting'"
+            v-model="ruleForm.qicunfanwei"
+            style="width:590px;"
+          ></isQuill>
         </el-form-item>
 
         <el-form-item v-show="isToShow1('chanpinmiaoshu')" label="产品描述:">
-          <quill-editor v-model="ruleForm.chanpinmiaoshu" style="width:520px;"></quill-editor>
+          <isQuill
+            :url="'admin/file/up/setting'"
+            v-model="ruleForm.chanpinmiaoshu"
+            style="width:590px;"
+          ></isQuill>
         </el-form-item>
 
         <el-form-item v-show="isToShow1('shouyiguize')" label="收益规则:">
-          <quill-editor v-model="ruleForm.shouyiguize" style="width:520px;"></quill-editor>
+          <isQuill
+            :url="'admin/file/up/setting'"
+            v-model="ruleForm.shouyiguize"
+            style="width:590px;"
+          ></isQuill>
         </el-form-item>
 
         <el-form-item
@@ -809,15 +873,32 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="是否上架:" class="is50" v-if="isToShow1('shangjia')">
-          <el-radio-group v-model="ruleForm.shangjia">
-            <el-radio-button label="是"></el-radio-button>
-            <el-radio-button label="否"></el-radio-button>
-          </el-radio-group>
+        <el-form-item label="上下架状态:" class="is50" v-if="isToShow1('shangjia')">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.shangjia">
+            <el-option
+              size="mini"
+              v-for="item in dictData.shelve_status"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="是否面签:" class="is50" v-if="isToShow1('mianqian')">
-          <el-radio-group v-model="ruleForm.mianqian">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.mianqian">
+            <el-option
+              size="mini"
+              v-for="item in dictData.visa_interview_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="到期是否转存:" class="is50" v-if="isToShow1('zhuancun')">
+          <el-radio-group v-model="ruleForm.zhuancun">
             <el-radio-button label="是"></el-radio-button>
             <el-radio-button label="否"></el-radio-button>
           </el-radio-group>
@@ -851,8 +932,8 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="显示银行过渡页:" class="is50" v-if="isToShow1('yihangTip')">
-          <el-radio-group v-model="ruleForm.yihangTip">
+        <el-form-item label="显示银行页:" class="is50" v-if="isToShow1('yinhangpage')">
+          <el-radio-group v-model="ruleForm.yinhangpage">
             <el-radio-button label="是"></el-radio-button>
             <el-radio-button label="否"></el-radio-button>
           </el-radio-group>
@@ -868,32 +949,32 @@
         <el-form-item
           label="默认存款笔数:"
           class="is50"
+          v-if="isToShow1('cunkuanbishu')"
+          prop="goumaibishu"
+        >
+          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.goumaibishu"></el-input>
+        </el-form-item>
+
+        <el-form-item label="默认存款金额:" class="is50" v-if="isToShow1('cunkuanmorenjine')" prop="cunkuanmorenjine">
+          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.cunkuanmorenjine"></el-input>
+        </el-form-item>
+
+        <el-form-item
+          label="默认购买笔数:"
+          class="is50"
           v-if="isToShow1('goumaibishu')"
           prop="goumaibishu"
         >
           <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.goumaibishu"></el-input>
         </el-form-item>
 
-        <el-form-item label="默认存款金额:" class="is50" v-if="isToShow1('goumaijine')" prop="goumaijine">
-          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.goumaijine"></el-input>
-        </el-form-item>
-
-        <el-form-item
-          label="默认购买笔数:"
-          class="is50"
-          v-if="isToShow1('goumaibishu2')"
-          prop="goumaibishu2"
-        >
-          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.goumaibishu2"></el-input>
-        </el-form-item>
-
         <el-form-item
           label="默认购买金额:"
           class="is50"
-          v-if="isToShow1('goumaijine2')"
-          prop="goumaijine2"
+          v-if="isToShow1('goumaimorenjine')"
+          prop="goumaimorenjine"
         >
-          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.goumaijine2"></el-input>
+          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.goumaimorenjine"></el-input>
         </el-form-item>
 
         <el-form-item label="年收费率(%):" class="is50" v-if="isToShow1('shoufeilv')" prop="shoufeilv">
@@ -916,7 +997,7 @@
           <el-select clearable placeholder="请选择" v-model="ruleForm.duijie">
             <el-option
               size="mini"
-              v-for="item in dictData.connection_mode"
+              v-for="item in dictData.bank_connection_mode"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -924,8 +1005,8 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="银行合作方式:" class="is50" v-if="isToShow1('hezuo')">
-          <el-select clearable placeholder="请选择" v-model="ruleForm.hezuo">
+        <el-form-item label="银行合作方式:" class="is50" v-if="isToShow1('hezuoType')">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.hezuoType">
             <el-option
               size="mini"
               v-for="item in dictData.cooperation_mode"
@@ -936,89 +1017,13 @@
           </el-select>
         </el-form-item>
 
-        <div style="width:100%;" v-if="isToShow1('h5Url')">
-          <label>产品H5链接:</label>
+        <div style="width:723px;display:flex;" v-if="isToShow1('h5Url')">
+          <label style="width:142px;text-align:right;margin-right:12px;">产品H5链接:</label>
           <el-input clearable placeholder="请输入" v-model="ruleForm.h5Url"></el-input>
         </div>
 
         <div v-if="isToShow1('lilvlist')" style="width:100%;" label="利率">
-          <div class="toaddlilv">
-            <h3>利率列表</h3>
-            <span @click="addNewLilv">新增利率(点击添加,备注以外全必填)</span>
-            <span
-              style="padding-left:30px;color:red;font-size:14px;"
-              v-if="isHasError"
-            >{{isErrorMessage}}</span>
-          </div>
-          <ul :class="{'hasAddTitleTip':isHasError}">
-            <li class="isLi">
-              <span v-for="(tit,ind) in addLilvTable.title" :key="ind">{{tit}}</span>
-            </li>
-            <li
-              class="isLi2"
-              :class="index%2!==0?'isOdd':''"
-              v-for="(data,index) in addLilvTable.datas"
-              :key="index"
-            >
-              <span style="width:150px;">{{index+1}}</span>
-              <span>
-                <el-input type="number" v-model="data.limit" size="mini" placeholder="请输入"></el-input>
-              </span>
-              <span>
-                <el-select size="mini" placeholder="请选择" v-model="data.danwei">
-                  <el-option
-                    size="mini"
-                    v-for="item in dictData.deadline_type"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </span>
-              <span>
-                <el-input type="number" v-model="data.lilv" size="mini" placeholder="请输入"></el-input>
-              </span>
-
-              <span>
-                <el-input type="number" v-model="data.lockinPeriod" size="mini" placeholder="请输入"></el-input>
-              </span>
-
-              <span>
-                <el-input v-model="data.beizhu" size="mini" placeholder="请输入"></el-input>
-              </span>
-
-              <span>
-                <el-select size="mini" placeholder="请选择" v-model="data.showList">
-                  <el-option
-                    size="mini"
-                    v-for="item in shelveList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </span>
-              <span>
-                <el-select size="mini" placeholder="请选择" v-model="data.lockinShowList">
-                  <el-option
-                    size="mini"
-                    v-for="item in shelveList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </span>
-
-              <div style="width:30px;cursor: pointer;flex-shrink: 0" @click="toShowProp(data)">删除</div>
-            </li>
-            <li class="nextPage">
-              <span>总共：{{addLilvTable.total}}</span>
-              <span>第{{addLilvTable.pageNum+1}}页</span>
-              <span @click="pageStep(true)">上一页</span>
-              <span @click="pageStep(false)">下一页</span>
-            </li>
-          </ul>
+          <addLiLv :addLiLvProp="addLiLvProp"></addLiLv>
         </div>
       </el-form>
 
@@ -1031,7 +1036,14 @@
 </template>
 
 <script>
+import isQuill from "./quill.vue";
+import addLiLv from "@/components/addLiLv.vue";
+
 export default {
+  components: {
+    isQuill,
+    addLiLv
+  },
   props: ["pageData"],
   data() {
     // 验证数字，小数的
@@ -1057,9 +1069,169 @@ export default {
         callback();
       }
     };
+    // 验证数字
+    var checkNum4 = (rule, value, callback) => {
+      if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (value > this.ruleForm.qicunjineMax) {
+        callback(new Error("请输入不能大于最大起存金额"));
+      } else if (("" + value).length > 19 || ("" + value).length < 0) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字
+    var checkNum5 = (rule, value, callback) => {
+      if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (value < this.ruleForm.qicunjineMin) {
+        callback(new Error("请输入不能小于最小起存金额"));
+      } else if (("" + value).length > 19 || ("" + value).length < 0) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
     return {
-      isHasError: false, // 利率列表是否有错误
-      isErrorMessage: "", // 利率列表错误提示文字
+      pageUse: {
+        // 公共的详情展示用属性：
+        logo: "机构图标",
+        institutionName: "机构名称",
+        title: "产品名称",
+        chanpinID: "产品ID",
+        createTime: "创建时间",
+        who: "创建人",
+        // show 是用来展示的，可用的属性包括：
+        jijingongsi: "基金公司",
+        xilie: "产品系列",
+        leibie: "类别别名",
+        daima: "基金代码",
+        rizhangfu: "日涨幅",
+        jiaoyizhuangtai: "交易状态",
+        yuqishouyi: "预期年化收益率",
+        contentVersion: "产品版本标识",
+        miaoshu: "银行描述/公司描述",
+        qigou: "起购金额",
+        suoding: "锁定期",
+        shuhui: "到帐赎回日",
+        shouxufei: "手续费用",
+        qixian: "投资期限",
+        deadlineAlias: "期限别名",
+        qishou: "起售日期",
+        jiezhi: "截止日期",
+        qixi: "起息日",
+        jiexi: "结息日",
+        kaishi: "理财开始日期",
+        jieshu: "理财结束日期",
+        leixing: "产品类型",
+        lilv: "利率",
+        interestRateAlias: "利率别名",
+        maxLilv: "最高利率",
+        daoqiLilv: "到期利率",
+        shengyuED: "剩余额度",
+        jixi: "计息方式",
+        zhiqu: "支取时间",
+        fengxian: "风险等级",
+        fanhuan: "收益返还方式",
+        qicunjine: "起存金额",
+        dizengjine: "递增金额",
+        zhuancun: "到期是否转存",
+        mairu: "买入",
+        biaoqian: "标签",
+        shouyiguize: "收益规则",
+        chanpinmiaoshu: "产品描述",
+        shangjia: "上架状态",
+        jianguan: "监管属性",
+        guanzhuNum: "默认关注数量",
+        mianqian: "是否面签",
+        shiming: "是否实名认证",
+        yinhangpage: "是否显示银行页面",
+        qianyue: "是否签约",
+        hezuoType: "合作方式",
+        autoUpDown: "自动上下架",
+        duijie: "银行对接方式",
+        tuijian: "是否推荐",
+        paihang: "是否首页排行",
+        cunkuanbishu: "默认存款笔数",
+        cunkuanmorenjine: "默认存款金额",
+        goumaibishu: "默认购买笔数",
+        goumaimorenjine: "默认购买金额",
+        chanpinbiaozhi: "同一产品标识",
+        zhuanqubiaozhi: "榜单专区标识",
+        fuxipinlv: "付息频率",
+        h5Url: "H5链接",
+        productFeature: "产品特性",
+        qicunfanwei: "起存范围说明",
+        bizhong: "币种",
+        // 编辑数据
+        product: "产品名称",
+        daima: "基金代码",
+        qigou: "起购金额",
+        jigou_name: "机构",
+        xilie: "产品系列",
+        productjijin: "基金产品名称",
+        chanpinquyu: "产品区域",
+        fanhuan: "收益返还方式",
+        guanzhuNum: "默认关注数量",
+        fuxipinlv: "付息频率",
+        productcunkuan: "存款产品名称",
+        bieming: "产品类型别名",
+        jixi: "计息方式",
+        contentVersion: "产品版本标识",
+        lilv: "利率",
+        interestRateAlias: "利率别名",
+        maxLilv: "最高利率",
+        daoqiLilv: "到期利率",
+        qicunjine: "起存金额",
+        qicunjineMin: "最小起存金额",
+        qicunjineMax: "最大起存金额",
+        biaoqian: "标签",
+        zhiqu: "支取时间",
+        dizeng: "递增金额",
+        fengxian: "风险等级",
+        shengyuED: "剩余额度",
+        qixiri: "起息日",
+        qixian: "投资期限",
+        deadlineAlias: "期限别名",
+        qishou: "起售日期",
+        qixi: "起息日期",
+        licairiqi: "理财日期",
+        muji: "募集日期",
+        gongsi: "基金公司",
+        shuhui: "到帐赎回日",
+        suoding: "锁定期",
+        mairu: "买入",
+        shouxufei: "手续费用",
+        jiaoyizhuangtai: "交易状态",
+        zhuancun: "到期是否转存",
+        chanpinmiaoshu: "产品描述",
+        shouyiguize: "收益规则",
+        chanpinbiaozhi: "同一产品标识",
+        jianguan: "监管属性",
+        shangjia: "上下架状态",
+        mianqian: "是否面签",
+        tuijian: "是否推荐",
+        paihang: "是否首页排行",
+        shiming: "是否实名认证",
+        qianyue: "是否签约",
+        yinhangpage: "显示银行页",
+        autoUpDown: "自动上架",
+        cunkuanbishu: "默认存款笔数",
+        cunkuanmorenjine: "默认存款金额",
+        goumaibishu: "默认购买笔数",
+        goumaimorenjine: "默认购买金额",
+        shoufeilv: "年收费率",
+        zhuanqubiaozhi: "榜单专区标识",
+        duijie: "银行对接方式",
+        hezuoType: "银行合作方式",
+        h5Url: "产品H5链接",
+        lilvlist: "利率列表",
+        productFeature: "产品特性",
+        qicunfanwei: "起存范围说明",
+        bizhong: "币种"
+      },
+      addLiLvProp: {},
       //表单验证
       rules: {
         jigou_name: [
@@ -1115,8 +1287,16 @@ export default {
         maxLilv: [{ validator: checkNum3, trigger: "blur" }],
         daoqiLilv: [{ validator: checkNum3, trigger: "blur" }],
         qicunjine: [{ validator: checkNum3, trigger: "blur" }],
-        goumaibishu2: [{ validator: checkNum3, trigger: "blur" }],
-        goumaijine2: [{ validator: checkNum3, trigger: "blur" }],
+        qicunjineMin: [
+          { required: true, message: "请输入最小起存额", trigger: "blur" },
+          { validator: checkNum4, trigger: "blur" }
+        ],
+        qicunjineMax: [
+          { required: true, message: "请输入最大起存额", trigger: "blur" },
+          { validator: checkNum5, trigger: "blur" }
+        ],
+        goumaibishu: [{ validator: checkNum3, trigger: "blur" }],
+        goumaimorenjine: [{ validator: checkNum3, trigger: "blur" }],
         dizeng: [
           { required: true, message: "请输入递增金额", trigger: "blur" },
           { validator: checkNum3, trigger: "blur" }
@@ -1127,83 +1307,16 @@ export default {
       },
       xilie: null, // 产品系列数据
       serverData: null, // 服务器返回的数据
-      dictData: null, // 字典数据
+      dictData: {}, // 字典数据
       pageInfos: null, // 页面数据
       show: [], // 控制页面显示哪些
       show1: [], // 控制点击编辑时页面显示哪些
       toShowMoreNum: null, // 描述多行文本隐藏切换
-      shangjia: true, // 上架、下架切换，为true时，表示目前上架状态
       forEmit: "", // 当编辑完数据后，需要重新获取数据时，emit用
       deleteType: "", // 点击删除时使用
       bianjieDialog: false, // 纯债编辑按钮弹出框显示隐藏
-      ruleForm: {
-        chanpinIds: "", // 产品id
-        // 纯债编辑按钮弹出框
-        product: "", // 产品名称
-        daima: "", // 基金代码
-        jigou_name: "", // 机构名称
-        gongsi: "", // 基金公司
-        jiaoyizhuangtai: "", // 交易状态
-        rizhangfu: "", // 日涨幅
-        shangjia: "", // 是否上架
-        mianqian: "", // 是否面签
-        tuijian: "", // 是否推荐
-        paihang: "", // 是否首页排行
-        goumaibishu: "", // 默认存款笔数
-        goumaijine: "", // 默认存款金额
-        goumaibishu2: "", //  默认购买笔数
-        goumaijine2: "", // 默认购买金额
-        qigou: "", // 起购金额
-        shuhui: "", // 到帐赎回日
-        suoding: "", // 锁定期
-        mairu: "", // 买入
-        shouxufei: "", // 手续费用
-        chanpinmiaoshu: "", // 产品描述
-        shouyiguize: "", // 收益规则
-        chanpinbiaozhi: "", // 同一产品标识
-        guanzhuNum: "", // 默认关注数量
-        zhuanqubiaozhi: "", // 榜单专区标识
-        xilie: "", // 产品系列
-        productjijin: "", // 基金产品名称
-        dizeng: "", // 递增金额
-        yuqinianhua: "", // 预期年化收益率
-        fengxian: "", // 风险等级
-        shengyuED: "", // 剩余额度
-        qixiri: "", // 起息日
-        qixian: "", // 期限
-        licairiqi: "", // 理财日期
-        muji: "", // 募集日期
-        jianguan: "", // 监管属性
-        productcunkuan: "", // 存款产品名称
-        bieming: "", // 产品类型(别名)
-        lilv: "", // 利率
-        interestRateAlias: "", // 利率别名
-        deadlineAlias: "", // 期限别名
-        qicunjine: "", // 起存金额
-        marks: "", // 标签
-        quyu: "", // 产品区域
-        fanhuan: "", // 收益返还方式
-        zhuancun: "", // 到期是否转存
-        fuxipinlv: "", // 付息频率
-        shiming: "", // 是否实名
-        qianyue: "", // 是否签约
-        shoufeilv: "", // 年收费率(%)
-        h5Url: "", // 产品H5链接
-        yihangTip: "", // 显示银行过渡页
-        duijie: "", // 银行对接方式
-        hezuo: "", // 银行合作方式
-        autoUpDown: "" // 自动上架
-      },
-      shelveList: [
-        {
-          label: "是",
-          value: "YES"
-        },
-        {
-          label: "否",
-          value: "NO"
-        }
-      ],
+      ruleForm: null,
+
       // 新建智能存款底下的利率选项
       addLilvTable: {
         pageNum: 0,
@@ -1227,8 +1340,9 @@ export default {
   created() {
     let page = this.pageData.page;
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
+
     switch (page) {
-      // 纯债
+      // 纯债基金管理
       case "pure_debt_fund":
         this.forEmit = "chunzhai";
         this.show = [
@@ -1239,8 +1353,12 @@ export default {
           "mianqian",
           "tuijian",
           "paihang",
-          "bishu",
-          "morenjine"
+          "goumaibishu",
+          "goumaimorenjine",
+          "contentVersion",
+          "h5Url",
+          "yinhangpage",
+          "shiming"
         ];
         this.show1 = [
           "product",
@@ -1253,39 +1371,51 @@ export default {
           "tuijian",
           "paihang",
           "goumaibishu",
-          "goumaijine"
+          "goumaimorenjine",
+          "shiming",
+          "contentVersion",
+          "h5Url",
+          "yinhangpage",
+          "yinhangpage"
         ];
+
         this.pageInfos = {
           // 展示页面详情数据
           id: this.pageData.forProduct.id,
           skuId: this.pageData.forProduct.skuId,
           title: this.pageData.forProduct.name, // 上标题，产品名称
           institutionId: this.pageData.forProduct.institutionId, // 机构id
+          institutionName: this.pageData.forProduct.institutionName, // 机构名称
           logo:
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551783667609&di=968aba5a1957ab1d7c552e6a8b6cc769&imgtype=0&src=http%3A%2F%2Fimg2.woyaogexing.com%2F2018%2F01%2F20%2Fa17016d0a174e3b4%2521400x400_big.jpg",
           jijingongsi: this.pageData.forProduct.fundHouseName,
+          contentVersion: this.pageData.forProduct.contentVersion,
           daima: this.pageData.forProduct.code,
           jiaoyizhuangtai: this.pageData.forProduct.statusName,
-          shangjia:
-            this.pageData.forProduct.appInfo.shelve === "YES" ? "是" : "否",
-          mianqian:
-            this.pageData.forProduct.appInfo.visaInterview === "YES"
-              ? "是"
-              : "否",
+          shangjia: this.pageData.forProduct.appInfo.shelveStatusLabel,
+          mianqian: this.pageData.forProduct.appInfo.visaInterviewLabel,
           tuijian:
             this.pageData.forProduct.appInfo.recommend === "YES" ? "是" : "否",
           paihang:
             this.pageData.forProduct.appInfo.homePage === "YES" ? "是" : "否",
-          bishu: this.pageData.forProduct.appInfo.defaultBuyNum,
-          morenjine: this.pageData.forProduct.appInfo.defaultAmount,
+          goumaibishu: this.pageData.forProduct.appInfo.defaultBuyNum,
+          goumaimorenjine: this.pageData.forProduct.appInfo.defaultAmount,
+          h5Url: this.pageData.forProduct.appInfo.h5Url,
+          yinhangpage:
+            this.pageData.forProduct.appInfo.showBankPage === "YES"
+              ? "是"
+              : "否",
+          shiming:
+            this.pageData.forProduct.appInfo.realNameAuth === "YES"
+              ? "是"
+              : "否",
           chanpinID: this.pageData.forProduct.productId,
           createTime: this.pageData.forProduct.gmtCreated,
-          who: "gg"
+          who: this.pageData.forProduct.operator
         };
-        this.shangjia =
-          this.pageData.forProduct.appInfo.shelve === "YES" ? true : false;
+
         break;
-      // 货币
+      // 货币基金管理
       case "money_fund":
         this.forEmit = "huobi";
         this.show = [
@@ -1305,7 +1435,14 @@ export default {
           "paihang",
           "chanpinbiaozhi",
           "guanzhuNum",
-          "bangdan"
+          "zhuanqubiaozhi",
+          "contentVersion",
+          "yinhangpage",
+          "h5Url",
+          "qianyue",
+          "shiming",
+          "hezuoType",
+          "shoufeilv"
         ];
         this.show1 = [
           "qigou",
@@ -1320,13 +1457,20 @@ export default {
           "shouyiguize",
           "chanpinbiaozhi",
           "guanzhuNum",
-          "goumaibishu2",
-          "goumaijine2",
+          "goumaibishu",
+          "goumaimorenjine",
           "zhuanqubiaozhi",
           "shangjia",
           "mianqian",
           "tuijian",
-          "paihang"
+          "paihang",
+          "contentVersion",
+          "yinhangpage",
+          "h5Url",
+          "qianyue",
+          "shiming",
+          "hezuoType",
+          "shoufeilv"
         ];
 
         this.pageInfos = {
@@ -1335,6 +1479,7 @@ export default {
           skuId: this.pageData.forProduct.skuId,
           title: this.pageData.forProduct.name, // 上标题，产品名称
           institutionId: this.pageData.forProduct.institutionId, // 机构id
+          institutionName: this.pageData.forProduct.institutionName, // 机构名称
           logo:
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551783667609&di=968aba5a1957ab1d7c552e6a8b6cc769&imgtype=0&src=http%3A%2F%2Fimg2.woyaogexing.com%2F2018%2F01%2F20%2Fa17016d0a174e3b4%2521400x400_big.jpg",
           jijingongsi: this.pageData.forProduct.fundHouseName,
@@ -1344,12 +1489,8 @@ export default {
           shouxufei: this.pageData.forProduct.commission,
           shouyiguize: this.pageData.forProduct.yieldRule,
           chanpinmiaoshu: this.pageData.forProduct.description,
-          shangjia:
-            this.pageData.forProduct.appInfo.shelve === "YES" ? "是" : "否 ",
-          mianqian:
-            this.pageData.forProduct.appInfo.visaInterview === "YES"
-              ? "是"
-              : "否 ",
+          shangjia: this.pageData.forProduct.appInfo.shelveStatusLabel,
+          mianqian: this.pageData.forProduct.appInfo.visaInterviewLabel,
           mairu: this.pageData.forProduct.buyIn,
           cunkuanbishu: this.pageData.forProduct.appInfo.defaultBuyNum,
           cunkuanmorenjine: this.pageData.forProduct.appInfo.defaultAmount,
@@ -1359,15 +1500,27 @@ export default {
             this.pageData.forProduct.appInfo.homePage === "YES" ? "是" : "否 ",
           chanpinbiaozhi: this.pageData.forProduct.appInfo.sameProductFlag,
           guanzhuNum: this.pageData.forProduct.appInfo.defaultFlowNum,
-          bangdan: this.pageData.forProduct.appInfo.listAreaFlagLabel,
+          zhuanqubiaozhi: this.pageData.forProduct.appInfo.listAreaFlagLabel,
           chanpinID: this.pageData.forProduct.productId,
           createTime: this.pageData.forProduct.gmtCreated,
-          who: "gg"
+          who: this.pageData.forProduct.operator,
+          h5Url: this.pageData.forProduct.appInfo.h5Url,
+          hezuoType: this.pageData.forProduct.appInfo.cooperationModeLabel,
+          contentVersion: this.pageData.forProduct.contentVersion,
+          yinhangpage:
+            this.pageData.forProduct.appInfo.showBankPage === "YES"
+              ? "是"
+              : "否",
+          shiming:
+            this.pageData.forProduct.appInfo.realNameAuth === "YES"
+              ? "是"
+              : "否",
+          qianyue:
+            this.pageData.forProduct.appInfo.signed === "YES" ? "是" : "否"
         };
-        this.shangjia =
-          this.pageData.forProduct.appInfo.shelve === "YES" ? true : false;
+
         break;
-      // 理财
+      // 理财管理
       case "manage_money_matters":
         this.forEmit = "licai";
         this.show = [
@@ -1386,8 +1539,18 @@ export default {
           "paihang",
           "chanpinbiaozhi",
           "guanzhuNum",
-          "bangdan",
-          "jianguan"
+          "zhuanqubiaozhi",
+          "jianguan",
+          "productFeature",
+          "contentVersion",
+          "h5Url",
+          "qianyue",
+          "shiming",
+          "hezuoType",
+          "shoufeilv",
+          "chanpinquyu",
+          "autoUpDown",
+          "duijie"
         ];
         this.show1 = [
           "jigou_name",
@@ -1411,15 +1574,26 @@ export default {
           "goumaibishu",
           "goumaijine",
           "zhuanqubiaozhi",
-          "guanzhuNum"
+          "guanzhuNum",
+          "productFeature",
+          "contentVersion",
+          "h5Url",
+          "qianyue",
+          "shiming",
+          "hezuoType",
+          "shoufeilv",
+          "autoUpDown",
+          "chanpinquyu",
+          "duijie",
+          "qigou"
         ];
-
         this.pageInfos = {
           // 展示页面详情数据
           id: this.pageData.forProduct.id,
           skuId: this.pageData.forProduct.skuId,
           title: this.pageData.forProduct.name, // 上标题，产品名称
           institutionId: this.pageData.forProduct.institutionId, // 机构id
+          institutionName: this.pageData.forProduct.institutionName, // 机构名称
           logo:
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551783667609&di=968aba5a1957ab1d7c552e6a8b6cc769&imgtype=0&src=http%3A%2F%2Fimg2.woyaogexing.com%2F2018%2F01%2F20%2Fa17016d0a174e3b4%2521400x400_big.jpg",
           name: this.pageData.forProduct.institutionName,
@@ -1430,12 +1604,8 @@ export default {
           kaishi: this.pageData.forProduct.managementDate[0],
           jieshu: this.pageData.forProduct.managementDate[1],
           chanpinmiaoshu: this.pageData.forProduct.description,
-          shangjia:
-            this.pageData.forProduct.appInfo.shelve === "YES" ? "是" : "否",
-          mianqian:
-            this.pageData.forProduct.appInfo.visaInterview === "YES"
-              ? "是"
-              : "否",
+          shangjia: this.pageData.forProduct.appInfo.shelveStatusLabel,
+          mianqian: this.pageData.forProduct.appInfo.visaInterviewLabel,
           cunkuanbishu: this.pageData.forProduct.appInfo.defaultBuyNum,
           cunkuanmorenjine: this.pageData.forProduct.appInfo.defaultAmount,
           tuijian:
@@ -1444,14 +1614,31 @@ export default {
             this.pageData.forProduct.appInfo.homePage === "YES" ? "是" : "否",
           chanpinbiaozhi: this.pageData.forProduct.appInfo.sameProductFlag,
           guanzhuNum: this.pageData.forProduct.appInfo.defaultFlowNum,
-          bangdan: this.pageData.forProduct.appInfo.listAreaFlagLabel,
+          zhuanqubiaozhi: this.pageData.forProduct.appInfo.listAreaFlagLabel,
           jianguan: this.pageData.forProduct.regulatoryPropertyLabel,
           chanpinID: this.pageData.forProduct.productId,
           createTime: this.pageData.forProduct.gmtCreated,
-          who: "gg"
+          who: this.pageData.forProduct.operator,
+          productFeature: this.pageData.forProduct.productFeatureLabel,
+          contentVersion: this.pageData.forProduct.contentVersion,
+          chanpinquyu: this.pageData.forProduct.appInfo.areaName,
+          yinhangpage:
+            this.pageData.forProduct.appInfo.showBankPage === "YES"
+              ? "是"
+              : "否",
+          shiming:
+            this.pageData.forProduct.appInfo.realNameAuth === "YES"
+              ? "是"
+              : "否",
+          qianyue:
+            this.pageData.forProduct.appInfo.signed === "YES" ? "是" : "否",
+          hezuoType: this.pageData.forProduct.appInfo.cooperationModeLabel,
+          h5Url: this.pageData.forProduct.appInfo.h5Url,
+          qigou: this.pageData.forProduct.appInfo.minAmount,
+          duijie: this.pageData.forProduct.appInfo.connectionModeLabel,
+          autoUpDown:
+            this.pageData.forProduct.appInfo.autoShelve === "YES" ? "是" : "否" // 自动上架
         };
-        this.shangjia =
-          this.pageData.forProduct.appInfo.shelve === "YES" ? true : false;
         break;
       // 活期存款
       case "demand_deposit":
@@ -1462,9 +1649,10 @@ export default {
           "leibie",
           "leixing",
           "lilv",
-          "qicun",
+          "qicunjine",
           "dizengjine",
           "biaoqian",
+          "jianguan",
           "chanpinmiaoshu",
           "shangjia",
           "mianqian",
@@ -1473,8 +1661,23 @@ export default {
           "tuijian",
           "paihang",
           "chanpinbiaozhi",
-          "bangdan",
-          "interestRateAlias"
+          "zhuanqubiaozhi",
+          "interestRateAlias",
+          "qicunfanwei",
+          "fuxipinlv",
+          "bizhong",
+          "contentVersion",
+          "shiming",
+          "guanzhuNum",
+          "hezuoType",
+          "shoufeilv",
+          "yinhangpage",
+          "duijie",
+          "h5Url",
+          "chanpinquyu",
+          "jianguan",
+          "qianyue",
+          "deadlineAlias"
         ];
         this.show1 = [
           "jigou_name",
@@ -1482,30 +1685,42 @@ export default {
           "productcunkuan",
           "bieming",
           "lilv",
-          "qicunjine",
           "dizeng",
-          "marks",
+          "biaoqian",
           "chanpinmiaoshu",
           "shangjia",
           "mianqian",
-          "cunkuanbishu",
-          "cunkuanmorenjine",
           "tuijian",
           "paihang",
           "chanpinbiaozhi",
-          "bangdan",
           "goumaibishu",
           "goumaijine",
           "zhuanqubiaozhi",
-          "interestRateAlias"
+          "interestRateAlias",
+          "qicunjineMin",
+          "qicunjineMax",
+          "qicunfanwei",
+          "jianguan",
+          "fuxipinlv",
+          "bizhong",
+          "contentVersion",
+          "shiming",
+          "guanzhuNum",
+          "hezuoType",
+          "shoufeilv",
+          "yinhangpage",
+          "duijie",
+          "h5Url",
+          "chanpinquyu",
+          "deadlineAlias",
+          "qianyue"
         ];
-
         this.pageInfos = {
           // 展示页面详情数据
           id: this.pageData.datas.id,
           title: this.pageData.datas.name, // 上标题，产品名称
           institutionId: this.pageData.datas.institutionId, // 机构id
-          name: this.pageData.datas.institutionName, // 机构名称
+          institutionName: this.pageData.datas.institutionName, // 机构名称
           logo:
             "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1551783667609&di=968aba5a1957ab1d7c552e6a8b6cc769&imgtype=0&src=http%3A%2F%2Fimg2.woyaogexing.com%2F2018%2F01%2F20%2Fa17016d0a174e3b4%2521400x400_big.jpg",
           seriesId: this.pageData.datas.seriesId, // 产品系列ID
@@ -1514,26 +1729,43 @@ export default {
           leixing: this.pageData.datas.productSubtypeLabel, // 产品类型
           lilv: this.pageData.datas.interest.interestRate, // 利率
           interestRateAlias: this.pageData.datas.interestRateAlias, // 利率别名
-          qicun: this.pageData.datas.minAmount, // 起存金额
+          deadlineAlias: this.pageData.datas.deadlineAlias,
+          qicunjine:
+            this.pageData.datas.minAmount +
+            " ~ " +
+            this.pageData.datas.maxAmount, // 起存金额
+          qicunfanwei: this.pageData.datas.amountRangeExplain, // 起存范围说明
           dizengjine: this.pageData.datas.increaseAmount, // 递增金额
           chanpinmiaoshu: this.pageData.datas.description, // 产品描述
-          shangjia: this.pageData.datas.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
-          mianqian:
-            this.pageData.datas.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
+          shangjia: this.pageData.datas.appInfo.shelveStatusLabel, // 上架状态
+          mianqian: this.pageData.datas.appInfo.visaInterviewLabel, // 是否面签
           tuijian:
             this.pageData.datas.appInfo.recommend === "YES" ? "是" : "否", // 是否推荐
           paihang: this.pageData.datas.appInfo.homePage === "YES" ? "是" : "否", // 是否首页排行
+          shiming:
+            this.pageData.datas.appInfo.realNameAuth === "YES" ? "是" : "否", // 是否实名
+          qianyue: this.pageData.datas.appInfo.signed === "YES" ? "是" : "否", // 是否签约
+          guanzhuNum: this.pageData.datas.appInfo.defaultFlowNum, // 默认关注数量
+          hezuoType: this.pageData.datas.appInfo.cooperationModeLabel, // 合作方式
+          duijie: this.pageData.datas.appInfo.connectionModeLabel, // 银行对接方式
+          shoufeilv: this.pageData.datas.appInfo.yearRate, // 银行对接方式
+          yinhangpage:
+            this.pageData.datas.appInfo.showBankPage === "YES" ? "是" : "否", // 是否显示银行过渡页
+          h5Url: this.pageData.datas.appInfo.h5Url, // H5链接
           cunkuanbishu: this.pageData.datas.appInfo.defaultBuyNum, // 默认购买笔数
           cunkuanmorenjine: this.pageData.datas.appInfo.defaultAmount, // 默认购买金额
           chanpinbiaozhi: this.pageData.datas.appInfo.sameProductFlag, // 同一产品标识
-          bangdan: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
+          zhuanqubiaozhi: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
           chanpinID: this.pageData.datas.appInfo.productId, // 产品id
           createTime: this.pageData.datas.gmtCreated, // 创建时间
           who: this.pageData.datas.operator, // 创建人
-          biaoqian: this.pageData.datas.productTags // 标签
+          biaoqian: this.pageData.datas.productTags, // 标签
+          fuxipinlv: this.pageData.datas.frequencyTypeLabel, // 付息频率
+          bizhong: this.pageData.datas.currencyName, // 币种
+          contentVersion: this.pageData.datas.contentVersion,
+          chanpinquyu: this.pageData.datas.appInfo.areaName,
+          jianguan: this.pageData.datas.regulatoryPropertyLabel
         };
-        this.shangjia =
-          this.pageData.datas.appInfo.shelve === "YES" ? true : false;
         break;
 
       // 定期存款
@@ -1541,36 +1773,44 @@ export default {
         this.forEmit = "dingqi";
         this.deleteType = "time";
         this.show = [
-          "chanpinmiaoshu",
           "xilie",
           "leibie",
           "leixing",
-          "shangjia",
-          "paihang",
-          "mianqian",
-          "yinhangpage", // 显示银行过渡页
+          "interestRateAlias",
+          "deadlineAlias",
+          "goumaibishu",
+          "goumaimorenjine",
+          "dizeng",
+          "chanpinbiaozhi",
+          "zhuancun", // 到期是否转存
+          "zhiqu", // 支取时间
+          "fanhuan", // 收益返还方式
           "jianguan",
+          "fuxipinlv", // 付息频率
+          "bizhong",
+          "chanpinmiaoshu",
+          "contentVersion",
+          "shangjia",
+          "mianqian",
+          "tuijian",
+          "paihang",
           "cunkuanbishu",
           "cunkuanmorenjine",
-          "chanpinbiaozhi",
-          "qianyue",
-          "hezuoType",
-          "autoUpDown",
-          "biaoqian",
-          "qicun",
-          "dizengjine",
-          "bangdan",
-          "tuijian",
-          "guanzhuNum", // 默认关注数量
-          "quyu", // 产品区域
-          "fanhuan", // 收益返还方式
-          "zhuancun", // 到期是否转存
-          "fuxipinlv", // 付息频率
           "shiming", // 是否实名
+          "qianyue",
+          "guanzhuNum", // 默认关注数量
+          "zhuanqubiaozhi",
+          "hezuoType",
           "shoufeilv", // 年收费率(%)
-          "h5Url", // 产品H5链接
+          "autoUpDown",
+          "yinhangpage", // 显示银行过渡页
           "duijie", // 银行对接方式
-          "zhiqu" // 支取时间
+          "h5Url", // 产品H5链接
+          "biaoqian",
+          "qicunjine",
+          "dizengjine",
+          "qicunfanwei", // 起存范围说明
+          "chanpinquyu" // 产品区域
         ];
         this.show1 = [
           "xilie",
@@ -1579,13 +1819,16 @@ export default {
           "productcunkuan",
           "lilvlist",
           "fanhuan",
-          "quyu",
+          "chanpinquyu",
           "zhuancun",
-          "qicunjine",
+          "bizhong",
           "fuxipinlv",
           "dizeng",
-          "marks",
+          "biaoqian",
           "chanpinmiaoshu",
+          "qicunjineMin",
+          "qicunjineMax",
+          "qicunfanwei",
           "shangjia",
           "mianqian",
           "tuijian",
@@ -1599,12 +1842,14 @@ export default {
           "zhuanqubiaozhi",
           "shoufeilv",
           "guanzhuNum",
-          "yihangTip",
+          "yinhangpage",
           "duijie",
           "h5Url",
           "autoUpDown",
           "zhiqu",
-          "hezuo"
+          "deadlineAlias",
+          "hezuoType",
+          "interestRateAlias"
         ];
 
         this.pageInfos = {
@@ -1621,10 +1866,13 @@ export default {
           leibie: this.pageData.datas.typeAlias, // 存款类别
           productSubtype: this.pageData.datas.productSubtype, // 产品子类型
           leixing: this.pageData.datas.productSubtypeLabel, // 产品类型
-          qicun: this.pageData.datas.minAmount, // 起存金额
+          qicunjine:
+            this.pageData.datas.minAmount +
+            " ~ " +
+            this.pageData.datas.maxAmount, // 起存金额
           dizengjine: this.pageData.datas.increaseAmount, // 递增金额
           chanpinbiaozhi: this.pageData.datas.appInfo.sameProductFlag, // 同一产品标识
-          bangdan: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
+          zhuanqubiaozhi: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
           chanpinID: this.pageData.datas.appInfo.productId, // 产品id
           createTime: this.pageData.datas.gmtCreated, // 创建时间
           who: this.pageData.datas.operator, // 创建人
@@ -1635,7 +1883,7 @@ export default {
           jianguan: this.pageData.datas.regulatoryPropertyLabel, // 监管属性
           chanpinmiaoshu: this.pageData.datas.description, // 产品描述
           fuxipinlv: this.pageData.datas.frequencyType, // 付息频率
-          shangjia: this.pageData.datas.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
+          shangjia: this.pageData.datas.appInfo.shelve === "YES" ? "是" : "否", // 上架状态
           mianqian:
             this.pageData.datas.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
           tuijian:
@@ -1654,10 +1902,12 @@ export default {
             this.pageData.datas.appInfo.autoShelve === "YES" ? "是" : "否", // 自动上架
           shoufeilv: this.pageData.datas.appInfo.yearRate, // 年收费率(%)
           h5Url: this.pageData.datas.appInfo.h5Url, // 产品H5链接
+          deadlineAlias: this.pageData.datas.appInfo.deadlineAlias, // 期限别名
+          interestRateAlias: this.pageData.datas.interestRateAlias, // 利率别名
+          qicunfanwei: this.pageData.datas.amountRangeExplain, // 起存范围说明
+
           duijie: this.pageData.datas.appInfo.connectionModeLabel // 银行对接方式
         };
-        this.shangjia =
-          this.pageData.datas.appInfo.shelve === "YES" ? true : false;
         break;
       // 智能存款
       case "intelligent_deposit":
@@ -1673,7 +1923,7 @@ export default {
           "mianqian",
           "jixi",
           "zhiqu",
-          "qicun",
+          "qicunjine",
           "dizengjine",
           "zhuancun",
           "biaoqian",
@@ -1682,7 +1932,8 @@ export default {
           "cunkuanbishu",
           "cunkuanmorenjine",
           "chanpinbiaozhi",
-          "bangdan"
+          "zhuanqubiaozhi",
+          "deadlineAlias"
         ];
         this.show1 = [
           "jigou_name",
@@ -1691,7 +1942,7 @@ export default {
           "bieming",
           "jixi", // 计息方式
           "qicunjine",
-          "marks",
+          "biaoqian",
           "dizeng",
           "zhuancun",
           "zhiqu",
@@ -1704,6 +1955,7 @@ export default {
           "shangjia",
           "mianqian",
           "tuijian",
+          "deadlineAlias",
           "paihang"
         ];
 
@@ -1720,11 +1972,12 @@ export default {
           seriesId: this.pageData.datas.seriesId, // 产品系列ID
           xilie: this.pageData.datas.seriesName, // 产品系列
           leibie: this.pageData.datas.typeAlias, // 存款类别
+          deadlineAlias: this.pageData.datas.deadlineAlias, // 期限别名
           leixing: this.pageData.datas.productSubtypeLabel, // 产品类型
-          qicun: this.pageData.datas.minAmount, // 起存金额
+          qicunjine: this.pageData.datas.minAmount, // 起存金额
           dizengjine: this.pageData.datas.increaseAmount, // 递增金额
           chanpinbiaozhi: this.pageData.datas.appInfo.sameProductFlag, // 同一产品标识
-          bangdan: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
+          zhuanqubiaozhi: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
           chanpinID: this.pageData.datas.appInfo.productId, // 产品id
           createTime: this.pageData.datas.gmtCreated, // 创建时间
           who: this.pageData.datas.operator, // 创建人
@@ -1732,7 +1985,7 @@ export default {
           zhuancun: this.pageData.datas.renewal === "YES" ? "是" : "否", // 到期是否转存
           zhiqu: this.pageData.datas.withdrawalTimeLabel, // 支取时间
           chanpinmiaoshu: this.pageData.datas.description, // 产品描述
-          shangjia: this.pageData.datas.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
+          shangjia: this.pageData.datas.appInfo.shelve === "YES" ? "是" : "否", // 上架状态
           mianqian:
             this.pageData.datas.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
           tuijian:
@@ -1744,8 +1997,6 @@ export default {
         this.rules.zhiqu = [
           { required: true, message: "请选择支取时间！", trigger: "change" }
         ];
-        this.shangjia =
-          this.pageData.datas.appInfo.shelve === "YES" ? true : false;
         break;
       // 结构存款
       case "structured_deposit":
@@ -1759,7 +2010,7 @@ export default {
           "maxLilv", // 最高利率
           "daoqiLilv", // 到期利率
           "qixian",
-          "qicun",
+          "qicunjine",
           "dizengjine",
           "shengyuED", // 剩余额度
           "fengxian",
@@ -1775,7 +2026,7 @@ export default {
           "cunkuanmorenjine",
           "tuijian",
           "jianguan",
-          "bangdan",
+          "zhuanqubiaozhi",
           "paihang",
           "chanpinbiaozhi",
           "interestRateAlias",
@@ -1797,7 +2048,7 @@ export default {
           "jianguan",
           "qicunjine",
           "dizeng",
-          "marks",
+          "biaoqian",
           "chanpinmiaoshu",
           "shangjia",
           "mianqian",
@@ -1806,10 +2057,9 @@ export default {
           "tuijian",
           "paihang",
           "chanpinbiaozhi",
-          "bangdan",
+          "zhuanqubiaozhi",
           "goumaibishu",
           "goumaijine",
-          "zhuanqubiaozhi",
           "interestRateAlias",
           "deadlineAlias"
         ];
@@ -1833,13 +2083,13 @@ export default {
           daoqiLilv: this.pageData.datas.interest.expireInterestRate, // 到期利率
           deadlineAlias: this.pageData.datas.deadlineAlias, // 期限别名
           qixian: this.pageData.datas.interest.deadline, // 投资期限
-          qicun: this.pageData.datas.minAmount, // 起存金额
+          qicunjine: this.pageData.datas.minAmount, // 起存金额
           shengyuED: this.pageData.datas.surplusQuotaLabel, // 剩余额度
           fengxian: this.pageData.datas.riskLevelLabel, // 风险等级
           jianguan: this.pageData.datas.regulatoryPropertyLabel, // 监管属性
           dizengjine: this.pageData.datas.increaseAmount, // 递增金额
           chanpinmiaoshu: this.pageData.datas.description, // 产品描述
-          shangjia: this.pageData.datas.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
+          shangjia: this.pageData.datas.appInfo.shelve === "YES" ? "是" : "否", // 上架状态
           mianqian:
             this.pageData.datas.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
           tuijian:
@@ -1848,7 +2098,7 @@ export default {
           cunkuanbishu: this.pageData.datas.appInfo.defaultBuyNum, // 默认购买笔数
           cunkuanmorenjine: this.pageData.datas.appInfo.defaultAmount, // 默认购买金额
           chanpinbiaozhi: this.pageData.datas.appInfo.sameProductFlag, // 同一产品标识
-          bangdan: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
+          zhuanqubiaozhi: this.pageData.datas.appInfo.listAreaFlagLabel, // 榜单专区标识
           chanpinID: this.pageData.datas.appInfo.productId, // 产品id
           createTime: this.pageData.datas.gmtCreated, // 创建时间
           who: this.pageData.datas.operator, // 创建人
@@ -1867,102 +2117,11 @@ export default {
         this.rules.jianguan = [
           { required: true, message: "请选择监管属性！", trigger: "change" }
         ];
-        this.shangjia =
-          this.pageData.datas.appInfo.shelve === "YES" ? true : false;
+
         break;
     }
   },
   methods: {
-    // 新增利率(点击添加)
-    addNewLilv() {
-      let i = this.addLilvTable.total;
-      let idNum = i; // 添加新利率表时，排除已存在的id
-      let idArr = this.addLilvTable.dataTotal.map(item => item.id);
-      if (idArr.some(tar => tar === i)) {
-        idNum += 1;
-        while (idArr.some(tar => tar === idNum)) {
-          idNum += 1;
-        }
-      }
-      let obj = {
-        id: idNum,
-        spuId: this.pageData.datas.id,
-        limit: "", // 期限
-        danwei: "", // 单位
-        lilv: "", // 利率
-        lockinPeriod: "", // 锁定期限
-        beizhu: "", // 备注
-        showList: "", // 榜单展示
-        lockinShowList: "" // 锁定期榜单展示
-      };
-
-      this.addLilvTable.dataTotal.unshift(obj);
-      this.addLilvTable.total += 1;
-      let num = this.addLilvTable.dataTotal.length;
-      if (num <= 5) {
-        this.addLilvTable.datas = this.addLilvTable.dataTotal.slice();
-      } else {
-        this.addLilvTable.datas = this.addLilvTable.dataTotal.slice(0, 5);
-      }
-    },
-    // 显示删除确认框
-    toShowProp(tar) {
-      this.$confirm(`确定要删除吗？`)
-        .then(_ => {
-          this.toDeletelist(tar);
-        })
-        .catch(() => {});
-    },
-    // 删除利率
-    toDeletelist(item) {
-      let num = item,
-        obj = this.addLilvTable;
-      obj.dataTotal = obj.dataTotal.filter(item => item.id != num.id); // 从总数据中删除要删除的
-      obj.datas = obj.datas.filter(item => item.id != num.id); // 更新当前页显示的
-      obj.total = obj.dataTotal.length; // 更新总量数
-
-      let arr = [];
-      let isShowd = obj.datas;
-      // 如果总数大于当前显示的数量，将删除项后边一位的数据补充到datas进行显示
-      if (obj.dataTotal.length > isShowd.length) {
-        for (let i = isShowd.length; i--; ) {
-          arr.push(isShowd[i].id);
-        }
-        let ids = Math.max(...arr) + 1; // 旧的显示列表id最大的一项的后一项，以索引评判
-        let item = null;
-        for (let i = obj.dataTotal.length; i--; ) {
-          if (obj.dataTotal[i].id === ids) {
-            item = obj.dataTotal[i]; // 找到要进行补位的项
-          }
-        }
-        if (item) {
-          obj.datas.push(item);
-        }
-      }
-    },
-    // 上一页 true、下一页 false
-    pageStep(type) {
-      if (type) {
-        if (this.addLilvTable.pageNum > 0) {
-          this.addLilvTable.pageNum -= 1;
-          this.addLilvTable.datas = this.addLilvTable.dataTotal.slice(
-            this.addLilvTable.pageNum * 5,
-            this.addLilvTable.pageNum * 5 + 5
-          );
-        }
-      } else {
-        let num1 = this.addLilvTable.total / 5;
-        let num2 = this.addLilvTable.pageNum + 1;
-
-        if (this.addLilvTable.total > 5 && num1 > num2) {
-          this.addLilvTable.pageNum += 1;
-          this.addLilvTable.datas = this.addLilvTable.dataTotal.slice(
-            this.addLilvTable.pageNum * 5,
-            this.addLilvTable.pageNum * 5 + 5
-          );
-        }
-      }
-    },
     /********************************************************************************************/
     // 产品描述的展开与否
     toShowMore(num) {
@@ -2030,13 +2189,18 @@ export default {
             jigou_name: this.serverData.institutionId,
             gongsi: this.serverData.fundHouseId,
             jiaoyizhuangtai: this.serverData.status,
-            shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否",
-            mianqian:
-              this.serverData.appInfo.visaInterview === "YES" ? "是" : "否",
+            shangjia: this.serverData.appInfo.shelveStatus,
+            mianqian: this.serverData.appInfo.visaInterview,
             tuijian: this.serverData.appInfo.recommend === "YES" ? "是" : "否",
             paihang: this.serverData.appInfo.homePage === "YES" ? "是" : "否",
             goumaibishu: this.serverData.appInfo.defaultBuyNum,
-            goumaijine: this.serverData.appInfo.defaultAmount
+            goumaimorenjine: this.serverData.appInfo.defaultAmount,
+            shiming:
+              this.serverData.appInfo.realNameAuth === "YES" ? "是" : "否",
+            h5Url: this.serverData.appInfo.h5Url,
+            contentVersion: this.serverData.contentVersion,
+            yinhangpage:
+              this.serverData.appInfo.showBankPage === "YES" ? "是" : "否"
           };
           this.bianjieDialog = true;
         });
@@ -2049,7 +2213,7 @@ export default {
           data: this.pageData.id
         })
         .then(res => {
-          if (res.success) {
+          if (res) {
             this.serverData = res.data;
             this.change_xilie(this.serverData.institutionId);
             // 点击编辑按钮
@@ -2062,19 +2226,38 @@ export default {
               interestRateAlias: this.serverData.interestRateAlias, // 利率别名
               deadlineAlias: this.serverData.deadlineAlias, // 期限别名
               qicunjine: this.serverData.minAmount, // 起存金额
-              marks: this.serverData.productTags.map(tar => tar.id), // 标签
+              activityTags: this.serverData.activityTags.map(tar => tar.id), // 活动标签
+              selfBiaoQian: this.serverData.selfDefiningTags.map(tar => tar.id), // 自定义标签
+              chanpinBiaoQian: this.serverData.productTags.map(tar => tar.id), // 产品标签
               dizeng: this.serverData.increaseAmount, // 递增金额
               chanpinmiaoshu: this.serverData.description, // 产品描述
               chanpinbiaozhi: this.serverData.appInfo.sameProductFlag, // 同一产品标识
-              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
-              mianqian:
-                this.serverData.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
+              shangjia: this.serverData.appInfo.shelveStatus, // 上架状态
+              mianqian: this.serverData.appInfo.visaInterview, // 是否面签
               tuijian:
                 this.serverData.appInfo.recommend === "YES" ? "是" : "否", // 是否推荐
               paihang: this.serverData.appInfo.homePage === "YES" ? "是" : "否", // 是否首页排行
               goumaibishu: this.serverData.appInfo.defaultBuyNum, // 默认购买笔数
               goumaijine: this.serverData.appInfo.defaultAmount, // 默认购买金额
-              zhuanqubiaozhi: this.serverData.appInfo.listAreaFlag // 榜单专区标识
+              zhuanqubiaozhi: this.serverData.appInfo.listAreaFlag, // 榜单专区标识
+              qicunjineMin: this.serverData.minAmount, // 最小起购金额
+              qicunjineMax: this.serverData.maxAmount, // 最大起购金额
+              qicunfanwei: this.serverData.amountRangeExplain, // 起购范围说明
+              jianguan: this.serverData.regulatoryProperty, // 监管属性
+              fuxipinlv: this.serverData.frequencyType, // 付息频率
+              bizhong: this.serverData.currencyCode, // 币种
+              contentVersion: this.serverData.contentVersion, // 内容版本号
+              shiming:
+                this.serverData.appInfo.realNameAuth === "YES" ? "是" : "否", // 是否推荐
+              guanzhuNum: this.serverData.appInfo.defaultFlowNum, // 默认关注数量
+              hezuoType: this.serverData.appInfo.cooperationMode, // 合作方式
+              shoufeilv: this.serverData.appInfo.yearRate, // 年收费率
+              yinhangpage:
+                this.serverData.appInfo.showBankPage === "YES" ? "是" : "否", // 是否推荐
+              duijie: this.serverData.appInfo.connectionMode, // 银行对接方式
+              h5Url: this.serverData.appInfo.h5Url, // 最小起购金额
+              chanpinquyu: this.serverData.appInfo.areaCode, // 最小起购金额
+              qianyue: this.serverData.appInfo.recommend === "YES" ? "是" : "否" // 是否推荐
             };
             this.bianjieDialog = true;
           }
@@ -2088,7 +2271,7 @@ export default {
           data: this.pageData.id
         })
         .then(res => {
-          if (res.success) {
+          if (res) {
             this.serverData = res.data;
             this.change_xilie(this.serverData.institutionId);
             // 点击编辑按钮
@@ -2098,17 +2281,17 @@ export default {
               productcunkuan: this.serverData.name, // 存款产品名称
               goumaibishu: this.serverData.appInfo.defaultBuyNum, // 默认购买笔数
               goumaijine: this.serverData.appInfo.defaultAmount, // 默认购买金额
-              qicunjine: this.serverData.minAmount, // 起存金额
               dizeng: this.serverData.increaseAmount, // 递增金额
               chanpinbiaozhi: this.serverData.appInfo.sameProductFlag, // 同一产品标识
               bieming: this.serverData.typeAlias, // 产品类型(别名)
+              deadlineAlias: this.serverData.deadlineAlias,
               zhuancun: this.serverData.renewal === "YES" ? "是" : "否", // 到期后是否转存
               zhiqu: this.serverData.withdrawalTime, // 支取时间
               fanhuan: this.serverData.incomeReturnWay, // 收益返还方式
               jianguan: this.serverData.regulatoryProperty, // 监管属性
               fuxipinlv: this.serverData.frequencyType, // 付息频率
               chanpinmiaoshu: this.serverData.description, // 产品描述
-              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
+              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否", // 上架状态
               mianqian:
                 this.serverData.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
               tuijian:
@@ -2116,9 +2299,9 @@ export default {
               paihang: this.serverData.appInfo.homePage === "YES" ? "是" : "否", // 是否首页排行
               zhuanqubiaozhi: this.serverData.appInfo.listAreaFlag, // 榜单专区标识
               duijie: this.serverData.appInfo.connectionMode, // 银行对接方式
-              hezuo: this.serverData.appInfo.cooperationMode, // 银行合作方式
+              hezuoType: this.serverData.appInfo.cooperationMode, // 银行合作方式
               shoufeilv: this.serverData.appInfo.yearRate, // 年收费率
-              yihangTip:
+              yinhangpage:
                 this.serverData.appInfo.showBankPage === "YES" ? "是" : "否", // 显示银行过渡页
               autoUpDown:
                 this.serverData.appInfo.autoShelve === "YES" ? "是" : "否", // 自动上架
@@ -2127,29 +2310,46 @@ export default {
               guanzhuNum: this.serverData.appInfo.defaultFlowNum, // 默认关注数量
               shiming:
                 this.serverData.appInfo.realNameAuth === "YES" ? "是" : "否", // 是否实名
-              quyu: this.pageData.datas.appInfo.areaCode, // 产品区域
-              marks: this.serverData.productTags.map(tar => tar.id), // 标签
+              chanpinquyu: this.pageData.datas.appInfo.areaCode, // 产品区域
+              biaoqian: this.serverData.productTags.map(tar => tar.id), // 标签
               qishou: this.serverData.riskLevelLabel, // 起售日期
               qixi: this.serverData.valueDate, // 起息日期
-              fengxian: this.serverData.riskLevel // 风险等级
+              fengxian: this.serverData.riskLevel, // 风险等级
+              lilv: [],
+              interestRateAlias: this.serverData.interestRateAlias, // 利率别名
+
+              qicunjineMin: this.serverData.minAmount, // 最小起购金额
+              qicunjineMax: this.serverData.maxAmount, // 最大起购金额
+              qicunfanwei: this.serverData.amountRangeExplain // 起购范围说明
             };
-            let kk = this.serverData.interestRates.map(item => {
+
+            this.ruleForm.lilv = this.serverData.interestRates.map(item => {
               let obj = {
                 id: item.id,
                 spuId: item.spuId,
-                limit: item.deadline, // 期限
-                danwei: item.timeUnitType, // 单位
-                lilv: item.interestRate, // 利率
-                lockinPeriod: item.lockinPeriod, // 锁定期限
-                beizhu: item.remark, // 备注
-                showList: item.showList, // 榜单展示
-                lockinShowList: item.lockinShowList // 锁定期榜单展示
+                minDeadline: "", // 最小期限
+                min_danwei: "", // 最小期限单位
+                min_symbol: "", // 最小单位符号
+                maxDeadline: "", // 最大期限
+                max_danwei: "", // 最大期限单位
+                max_symbol: "", // 最小单位符号
+                lilv: "", // 利率
+                lockinPeriod: "", // 锁定期限
+                showList: "", // 榜单展示
+                lockinShowList: "", // 锁定期榜单展示
+                remark: "", // 备注
+                homepageCopywriting: "", // 首页文案
+                detailCopywriting: "", // 详情页文案
+                bankCopywriting: "" //  银行文案
               };
               return obj;
             });
-            this.addLilvTable.total = kk.length;
-            this.addLilvTable.dataTotal = kk;
-            this.addLilvTable.datas = kk.slice(0, 5);
+
+            this.addLiLvProp = {
+              isInput: false, // 记录表单是否发生数据输入
+              lilv_data: this.ruleForm.lilv,
+              num: 0
+            };
             this.bianjieDialog = true;
           }
         });
@@ -2162,7 +2362,7 @@ export default {
           data: this.pageData.id
         })
         .then(res => {
-          if (res.success) {
+          if (res) {
             this.serverData = res.data;
             this.change_xilie(this.serverData.institutionId);
             // 点击编辑按钮
@@ -2179,7 +2379,7 @@ export default {
               zhiqu: this.serverData.withdrawalTime, // 支取时间
               jixi: this.serverData.interestMode, // 计息方式
               chanpinmiaoshu: this.serverData.description, // 产品描述
-              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
+              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否", // 上架状态
               mianqian:
                 this.serverData.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
               tuijian:
@@ -2188,26 +2388,39 @@ export default {
               zhuanqubiaozhi: this.serverData.appInfo.listAreaFlag, // 榜单专区标识
               goumaibishu: this.serverData.appInfo.defaultBuyNum, // 默认购买笔数
               goumaijine: this.serverData.appInfo.defaultAmount, // 默认购买金额
-              marks: this.serverData.productTags.map(tar => tar.id), // 标签
+              biaoqian: this.serverData.productTags.map(tar => tar.id), // 标签
+              deadlineAlias: this.serverData.deadlineAlias,
               lilv: []
             };
-            let kk = this.serverData.interestRates.map(item => {
+            console.log(this.serverData.interestRates);
+
+            this.ruleForm.lilv = this.serverData.interestRates.map(item => {
               let obj = {
                 id: item.id,
                 spuId: item.spuId,
-                limit: item.deadline, // 期限
-                danwei: item.timeUnitType, // 单位
-                lilv: item.interestRate, // 利率
-                lockinPeriod: item.lockinPeriod, // 锁定期限
-                beizhu: item.remark, // 备注
-                showList: item.showList, // 榜单展示
-                lockinShowList: item.lockinShowList // 锁定期榜单展示
+                minDeadline: "", // 最小期限
+                min_danwei: "", // 最小期限单位
+                min_symbol: "", // 最小单位符号
+                maxDeadline: "", // 最大期限
+                max_danwei: "", // 最大期限单位
+                max_symbol: "", // 最小单位符号
+                lilv: "", // 利率
+                lockinPeriod: "", // 锁定期限
+                showList: "", // 榜单展示
+                lockinShowList: "", // 锁定期榜单展示
+                remark: "", // 备注
+                homepageCopywriting: "", // 首页文案
+                detailCopywriting: "", // 详情页文案
+                bankCopywriting: "" //  银行文案
               };
               return obj;
             });
-            this.addLilvTable.total = kk.length;
-            this.addLilvTable.dataTotal = kk;
-            this.addLilvTable.datas = kk.slice(0, 5);
+
+            this.addLiLvProp = {
+              isInput: false, // 记录表单是否发生数据输入
+              lilv_data: this.ruleForm.lilv,
+              num: 0
+            };
             this.bianjieDialog = true;
           }
         });
@@ -2220,7 +2433,7 @@ export default {
           data: this.pageData.id
         })
         .then(res => {
-          if (res.success) {
+          if (res) {
             this.serverData = res.data;
             this.change_xilie(this.serverData.institutionId);
             // 点击编辑按钮
@@ -2236,7 +2449,7 @@ export default {
               lilv: this.serverData.interest.interestRate, // 利率
               maxLilv: this.serverData.interest.maxInterestRate, // 最高利率
               daoqiLilv: this.serverData.interest.expireInterestRate, // 到期利率
-              marks: this.serverData.productTags.map(tar => tar.id), // 标签
+              biaoqian: this.serverData.productTags.map(tar => tar.id), // 标签
               shengyuED: this.serverData.surplusQuota, // 剩余额度
               fengxian: this.serverData.riskLevel, // 风险等级
               jianguan: this.serverData.regulatoryProperty, // 监管属性
@@ -2244,7 +2457,7 @@ export default {
               qishou: this.serverData.sellingDate, // 起售日期
               qixi: this.serverData.valueDate, // 起息日期
               chanpinmiaoshu: this.serverData.description, // 产品描述
-              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
+              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否", // 上架状态
               mianqian:
                 this.serverData.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
               tuijian:
@@ -2268,12 +2481,9 @@ export default {
         })
         .then(res => {
           this.serverData = res.data;
-
           this.ruleForm = {
-            zhuanqubiaozhi: this.serverData.appInfo.listAreaFlag,
-            shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否",
-            mianqian:
-              this.serverData.appInfo.visaInterview === "YES" ? "是" : "否",
+            shangjia: this.serverData.appInfo.shelveStatus,
+            mianqian: this.serverData.appInfo.visaInterview,
             tuijian: this.serverData.appInfo.recommend === "YES" ? "是" : "否",
             paihang: this.serverData.appInfo.homePage === "YES" ? "是" : "否",
             qigou: this.serverData.minAmount,
@@ -2288,9 +2498,20 @@ export default {
             shouyiguize: this.serverData.yieldRule,
             chanpinbiaozhi: this.serverData.appInfo.sameProductFlag,
             guanzhuNum: this.serverData.appInfo.defaultFlowNum,
-            goumaibishu2: this.serverData.appInfo.defaultBuyNum,
-            goumaijine2: this.serverData.appInfo.defaultAmount,
-            zhuanqubiaozhi: this.serverData.appInfo.listAreaFlag
+            goumaibishu: this.serverData.appInfo.defaultBuyNum,
+            goumaimorenjine: this.serverData.appInfo.defaultAmount,
+            zhuanqubiaozhi: this.serverData.appInfo.listAreaFlag,
+
+            qianyue: this.serverData.appInfo.signed === "YES" ? "是" : "否",
+            contentVersion: this.serverData.appInfo.contentVersion,
+            yinhangpage:
+              this.serverData.appInfo.showBankPage === "YES" ? "是" : "否",
+            h5Url: this.serverData.appInfo.h5Url,
+
+            shiming:
+              this.serverData.appInfo.realNameAuth === "YES" ? "是" : "否",
+            hezuoType: this.serverData.appInfo.cooperationMode,
+            shoufeilv: this.serverData.appInfo.yearRate
           };
           this.bianjieDialog = true;
         });
@@ -2321,16 +2542,31 @@ export default {
               chanpinmiaoshu: res.data.description,
               jianguan: res.data.regulatoryProperty,
               chanpinbiaozhi: res.data.appInfo.sameProductFlag,
-              shangjia: this.serverData.appInfo.shelve === "YES" ? "是" : "否",
-              mianqian:
-                this.serverData.appInfo.visaInterview === "YES" ? "是" : "否",
+              shangjia: this.serverData.appInfo.shelveStatus,
+              mianqian: this.serverData.appInfo.visaInterview,
               tuijian:
                 this.serverData.appInfo.recommend === "YES" ? "是" : "否",
               paihang: this.serverData.appInfo.homePage === "YES" ? "是" : "否",
               goumaibishu: res.data.appInfo.defaultBuyNum,
               goumaijine: res.data.appInfo.defaultAmount,
               zhuanqubiaozhi: res.data.appInfo.listAreaFlag,
-              guanzhuNum: res.data.appInfo.defaultFlowNum
+              guanzhuNum: res.data.appInfo.defaultFlowNum,
+              productFeature: res.data.productFeature,
+
+              qianyue: this.serverData.appInfo.signed === "YES" ? "是" : "否",
+              contentVersion: this.serverData.contentVersion,
+              yinhangpage:
+                this.serverData.appInfo.showBankPage === "YES" ? "是" : "否",
+              h5Url: this.serverData.appInfo.h5Url,
+              shiming:
+                this.serverData.appInfo.realNameAuth === "YES" ? "是" : "否",
+              hezuoType: this.serverData.appInfo.cooperationMode,
+              shoufeilv: this.serverData.appInfo.yearRate,
+              qigou: this.serverData.appInfo.minAmount,
+              autoUpDown:
+                this.serverData.appInfo.autoShelve === "YES" ? "是" : "否",
+              chanpinquyu: this.pageData.forProduct.appInfo.areaCode,
+              duijie: this.pageData.forProduct.appInfo.connectionMode
             };
 
             this.bianjieDialog = true;
@@ -2344,67 +2580,27 @@ export default {
       this.xilie = xilieData.filter(
         item => item.institutionId === id
       )[0].seriesList;
-
-      if (this.ruleForm.xilie) {
+      if (this.ruleForm && this.ruleForm.xilie) {
         this.ruleForm.xilie = "";
       }
     },
-    // 上、下架
-    toUpDown() {
-      let message = "",
-        id = "";
-      if (this.shangjia) {
-        message = "下架后客户将不可见，确定下架吗？";
-      } else {
-        message = "上架后客户将可见，确定上架吗？";
-      }
-      switch (this.pageData.page) {
-        case "manage_money_matters":
-        case "pure_debt_fund": // 纯债基金
-          id = this.pageData.forProduct.productId;
-          break;
-        // 存款
-        case "demand_deposit":
-        case "time_deposit":
-        case "intelligent_deposit":
-        case "structured_deposit":
-          id = this.pageData.datas.productId;
-          break;
-      }
-
-      this.$confirm(message)
-        .then(() => {
-          this.$api
-            .product_chunzhai_UpDown({
-              vm: this,
-              data: {
-                id: id,
-                status: this.shangjia ? "NO" : "YES"
-              }
-            })
-            .then(res => {
-              if (res.success) {
-                this.$message.success("操作成功！");
-                this.$emit("toReGetData", this.forEmit);
-              } else {
-                this.$message.success("操作失败！");
-              }
-            });
-        })
-        .catch(() => {});
-    },
     // 删除
     toDelete() {
+      // console.log(this.pageData.page);
       let type = "", // 存款和纯债的接口有一点不同
         routePage = ""; // 修改完要跳转的路由
       switch (this.pageData.page) {
-        case "manage_money_matters":
-          type = "wmp";
-          routePage = "manage_money_matters_mainPage";
-          break;
         case "pure_debt_fund": // 纯债基金
           type = "pureDebtFund";
           routePage = "pure_debt_fund_mainPage";
+          break;
+        case "money_fund": // 货币基金
+          type = "monetaryFund";
+          routePage = "money_fund_mainPage";
+          break;
+        case "manage_money_matters": // 理财管理
+          type = "wmp";
+          routePage = "manage_money_matters_mainPage";
           break;
         // 存款
         case "demand_deposit":
@@ -2425,7 +2621,7 @@ export default {
               type: type
             })
             .then(res => {
-              if (res.success) {
+              if (res) {
                 this.$message.success("删除成功！");
                 this.$router.push({
                   name: routePage
@@ -2437,6 +2633,7 @@ export default {
         })
         .catch(() => {});
     },
+
     // 点击编辑的保存并验证必填项是否有数据
     save() {
       this.$refs.ruleForm.validate(valid => {
@@ -2448,7 +2645,7 @@ export default {
             case "pure_debt_fund":
               let chunzhaiData = {
                 id: this.serverData.id,
-                productId: this.serverData.productId,
+                uuid: this.serverData.uuid,
                 skuId: this.serverData.skuId,
                 institutionId: this.ruleForm.jigou_name,
                 institutionName: "",
@@ -2457,33 +2654,48 @@ export default {
                 name: this.ruleForm.product,
                 code: this.ruleForm.daima,
                 status: this.ruleForm.jiaoyizhuangtai,
+                contentVersion: this.ruleForm.contentVersion,
                 statusName: "",
                 appInfo: {
                   id: this.serverData.appInfo.id,
-                  productId: this.serverData.productId,
+                  productUuid: this.serverData.appInfo.productUuid,
                   defaultBuyNum: +this.ruleForm.goumaibishu,
-                  defaultAmount: +this.ruleForm.goumaijine,
-                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO",
-                  visaInterview: this.ruleForm.mianqian === "是" ? "YES" : "NO",
+                  defaultAmount: +this.ruleForm.goumaimorenjine,
+                  shelveStatus: this.ruleForm.shangjia,
+                  shelveStatusLabel: "",
+                  visaInterview: this.ruleForm.mianqian,
+                  visaInterviewLabel: "",
+                  realNameAuth: this.ruleForm.shiming === "是" ? "YES" : "NO",
+                  h5Url: this.ruleForm.h5Url,
                   recommend: this.ruleForm.tuijian === "是" ? "YES" : "NO",
-                  homePage: this.ruleForm.paihang === "是" ? "YES" : "NO"
+                  homePage: this.ruleForm.paihang === "是" ? "YES" : "NO",
+                  showBankPage: this.ruleForm.paihang === "是" ? "YES" : "NO"
                 }
               };
               chunzhaiData.institutionName = this.dictData.jigou.filter(
-                item => {
-                  return item.id === chunzhaiData.institutionId;
-                }
+                item => item.id === chunzhaiData.institutionId
               )[0].name;
 
-              chunzhaiData.fundHouseName = this.dictData.jijin.filter(item => {
-                return item.id === chunzhaiData.fundHouseId;
-              })[0].name;
+              chunzhaiData.fundHouseName = this.dictData.jijin.filter(
+                item => item.id === chunzhaiData.fundHouseId
+              )[0].name;
+
               chunzhaiData.statusName = this.dictData.transaction_state.filter(
-                item => {
-                  return item.value === chunzhaiData.status;
-                }
+                item => item.value === chunzhaiData.status
               )[0].label;
 
+              // 上架状态
+              chunzhaiData.appInfo.shelveStatusLabel = this.ruleForm.shangjia
+                ? this.dictData.shelve_status.filter(
+                    item => item.value === this.ruleForm.shangjia
+                  )[0].label
+                : "";
+              // 是否面签Label
+              chunzhaiData.appInfo.visaInterviewLabel = this.ruleForm.mianqian
+                ? this.dictData.visa_interview_type.filter(
+                    item => item.value === this.ruleForm.mianqian
+                  )[0].label
+                : "";
               this.$api
                 .putChunZhaiEdit({
                   vm: this,
@@ -2501,7 +2713,8 @@ export default {
             case "money_fund":
               let huobiData = {
                 id: this.serverData.id,
-                productId: this.serverData.productId,
+                uuid: this.serverData.uuid,
+                skuId: this.serverData.skuId,
                 institutionId: this.ruleForm.jigou_name,
                 institutionName: "",
                 fundHouseId: this.ruleForm.gongsi,
@@ -2509,21 +2722,35 @@ export default {
                 name: this.ruleForm.product,
                 minAmount: +this.ruleForm.qigou,
                 redemptionDate: +this.ruleForm.shuhui,
+                lockinPeriod: +this.ruleForm.suoding,
                 buyIn: +this.ruleForm.mairu,
+                commission: +this.ruleForm.shouxufei,
                 description: this.ruleForm.chanpinmiaoshu,
+                yieldRule: this.ruleForm.shouyiguize,
+                contentVersion: +this.ruleForm.contentVersion,
                 appInfo: {
                   id: this.serverData.appInfo.id,
-                  productId: this.serverData.appInfo.productId,
-                  defaultBuyNum: +this.ruleForm.goumaibishu2,
+                  productUuid: this.serverData.appInfo.productUuid,
+                  shelveStatus: this.ruleForm.shangjia,
+                  shelveStatusLabel: "",
+                  visaInterview: this.ruleForm.mianqian,
+                  visaInterviewLabel: "",
+                  defaultBuyNum: +this.ruleForm.goumaibishu,
                   defaultFlowNum: +this.ruleForm.guanzhuNum,
-                  defaultAmount: +this.ruleForm.goumaijine2,
+                  defaultAmount: +this.ruleForm.goumaimorenjine,
                   listAreaFlag: this.ruleForm.zhuanqubiaozhi,
                   listAreaFlagLabel: "",
                   sameProductFlag: this.ruleForm.chanpinbiaozhi,
-                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO",
-                  visaInterview: this.ruleForm.mianqian === "是" ? "YES" : "NO",
                   recommend: this.ruleForm.tuijian === "是" ? "YES" : "NO",
-                  homePage: this.ruleForm.paihang === "是" ? "YES" : "NO"
+                  homePage: this.ruleForm.paihang === "是" ? "YES" : "NO",
+                  realNameAuth: this.ruleForm.shiming === "是" ? "YES" : "NO",
+                  signed: this.ruleForm.qianyue === "是" ? "YES" : "NO",
+                  cooperationMode: this.ruleForm.hezuoType,
+                  cooperationModeLabel: "",
+                  yearRate: +this.ruleForm.shoufeilv,
+                  h5Url: this.ruleForm.h5Url,
+                  showBankPage:
+                    this.ruleForm.yinhangpage === "是" ? "YES" : "NO"
                 }
               };
               huobiData.institutionName = this.dictData.jigou.filter(item => {
@@ -2541,6 +2768,25 @@ export default {
                   }
                 )[0].label;
               }
+              // 银行合作方式Label
+              huobiData.appInfo.cooperationModeLabel = huobiData.appInfo
+                .cooperationMode
+                ? this.dictData.cooperation_mode.filter(
+                    item => item.value === huobiData.appInfo.cooperationMode
+                  )[0].label
+                : "";
+              // 上架状态
+              huobiData.appInfo.shelveStatusLabel = this.ruleForm.shangjia
+                ? this.dictData.shelve_status.filter(
+                    item => item.value === this.ruleForm.shangjia
+                  )[0].label
+                : "";
+              // 是否面签Label
+              huobiData.appInfo.visaInterviewLabel = this.ruleForm.mianqian
+                ? this.dictData.visa_interview_type.filter(
+                    item => item.value === this.ruleForm.mianqian
+                  )[0].label
+                : "";
 
               this.$api
                 .putHuoBiEdit({
@@ -2581,48 +2827,60 @@ export default {
 
               let licaiData = {
                 id: this.serverData.id,
+                uuid: this.serverData.uuid,
                 skuId: this.serverData.skuId,
-                productId: this.serverData.productId,
                 institutionId: this.ruleForm.jigou_name,
                 institutionName: "",
-                increaseAmount: +this.ruleForm.dizeng,
                 seriesId: this.ruleForm.xilie,
                 seriesName: "",
                 name: this.ruleForm.productjijin,
+                minAmount: +this.ruleForm.qigou,
+                increaseAmount: +this.ruleForm.dizeng,
+                interestRate: this.ruleForm.yuqinianhua,
+                productFeature: this.ruleForm.productFeature,
+                productFeatureLabel: "",
                 riskLevel: this.ruleForm.fengxian,
                 riskLevelLabel: "",
                 surplusQuota: this.ruleForm.shengyuED,
                 surplusQuotaLabel: "",
                 regulatoryProperty: this.ruleForm.jianguan,
                 regulatoryPropertyLabel: "",
-                interestRate: this.ruleForm.yuqinianhua,
+                valueDate: this.ruleForm.qixiri,
                 deadline: this.ruleForm.qixian,
                 managementDate: this.ruleForm.licairiqi,
                 raiseDate: this.ruleForm.muji,
                 description: this.ruleForm.chanpinmiaoshu,
-                valueDate: this.ruleForm.qixiri,
+                contentVersion: this.ruleForm.contentVersion,
                 appInfo: {
                   id: this.serverData.appInfo.id,
-                  productId: this.serverData.appInfo.productId,
+                  productUuid: this.serverData.appInfo.productUuid,
                   defaultBuyNum: +this.ruleForm.goumaibishu,
                   defaultFlowNum: +this.ruleForm.guanzhuNum,
                   defaultAmount: +this.ruleForm.goumaijine,
                   listAreaFlag: this.ruleForm.zhuanqubiaozhi,
                   listAreaFlagLabel: "",
                   sameProductFlag: this.ruleForm.chanpinbiaozhi,
-                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO",
-                  visaInterview: this.ruleForm.mianqian === "是" ? "YES" : "NO",
+                  shelveStatus: this.ruleForm.shangjia,
+                  shelveStatusLabel: "",
+                  visaInterview: this.ruleForm.mianqian,
+                  visaInterviewLabel: "",
                   recommend: this.ruleForm.tuijian === "是" ? "YES" : "NO",
-                  homePage: this.ruleForm.paihang === "是" ? "YES" : "NO"
+                  homePage: this.ruleForm.paihang === "是" ? "YES" : "NO",
+                  realNameAuth: this.ruleForm.shiming === "是" ? "YES" : "NO",
+                  signed: this.ruleForm.qianyue === "是" ? "YES" : "NO",
+                  cooperationMode: this.ruleForm.hezuoType,
+                  cooperationModeLabel: "",
+                  yearRate: +this.ruleForm.shoufeilv,
+                  autoShelve: this.ruleForm.autoUpDown === "是" ? "YES" : "NO",
+                  showBankPage:
+                    this.ruleForm.yinhangpage === "是" ? "YES" : "NO",
+                  connectionMode: this.ruleForm.duijie,
+                  connectionModeLabel: "",
+                  h5Url: this.ruleForm.h5Url,
+                  areaCode: this.ruleForm.chanpinquyu,
+                  areaName: ""
                 }
               };
-              // 榜单专区标识Label
-              this.dictData.list_area_type.forEach(item => {
-                if (item.value === this.ruleForm.zhuanqubiaozhi) {
-                  licaiData.appInfo.listAreaFlagLabel = item.label;
-                }
-              });
-
               // 机构名
               xilieData.forEach(item => {
                 if (item.institutionId === this.ruleForm.jigou_name) {
@@ -2637,19 +2895,24 @@ export default {
                   }
                 });
               }
-              // 剩余额度Label
-              this.dictData.surplus_quota.forEach(item => {
-                if (item.value === this.ruleForm.shengyuED) {
-                  licaiData.surplusQuotaLabel = item.label;
-                }
-              });
+              // 产品特性
+              licaiData.productFeatureLabel = licaiData.productFeature
+                ? this.dictData.product_feature_type.filter(
+                    item => item.value === licaiData.productFeature
+                  )[0].label
+                : "";
               // 风险等级Label
               this.dictData.risk_level.forEach(item => {
                 if (item.value === this.ruleForm.fengxian) {
                   licaiData.riskLevelLabel = item.label;
                 }
               });
-
+              // 剩余额度Label
+              this.dictData.surplus_quota.forEach(item => {
+                if (item.value === this.ruleForm.shengyuED) {
+                  licaiData.surplusQuotaLabel = item.label;
+                }
+              });
               // 监管属性Label
               this.dictData.regulatory_property.forEach(item => {
                 if (item.value === this.ruleForm.jianguan) {
@@ -2663,13 +2926,53 @@ export default {
                 }
               });
 
+              // 上架状态
+              licaiData.appInfo.shelveStatusLabel = licaiData.appInfo
+                .shelveStatus
+                ? this.dictData.shelve_status.filter(
+                    item => item.value === licaiData.appInfo.shelveStatus
+                  )[0].label
+                : "";
+
+              // 是否面签Label
+              licaiData.appInfo.visaInterviewLabel = licaiData.appInfo
+                .visaInterview
+                ? this.dictData.visa_interview_type.filter(
+                    item => item.value === licaiData.appInfo.visaInterview
+                  )[0].label
+                : "";
+              // 银行合作方式Label
+              licaiData.appInfo.cooperationModeLabel = licaiData.appInfo
+                .cooperationMode
+                ? this.dictData.cooperation_mode.filter(
+                    item => item.value === licaiData.appInfo.cooperationMode
+                  )[0].label
+                : "";
+              // 银行对接方式
+              licaiData.appInfo.connectionModeLabel = licaiData.appInfo
+                .connectionMode
+                ? this.dictData.bank_connection_mode.filter(
+                    item => item.value === licaiData.appInfo.connectionMode
+                  )[0].label
+                : "";
+
+              if (this.ruleForm.chanpinquyu) {
+                licaiData.appInfo.areaCode = this.ruleForm.chanpinquyu;
+                let quyu = this.dictData.quyu;
+                wap: for (let i = quyu.length; i--; ) {
+                  if (quyu[i].value == licaiData.appInfo.areaCode) {
+                    licaiData.appInfo.areaName = quyu[i].label;
+                    break wap;
+                  }
+                }
+              }
               this.$api
                 .put_LiCai_data({
                   vm: this,
                   data: licaiData
                 })
                 .then(res => {
-                  if (res.success) {
+                  if (res) {
                     this.$message.success("修改成功");
                     this.toClosebianjieDialog();
                     this.$emit("toReGetData", this.forEmit);
@@ -2680,47 +2983,67 @@ export default {
             case "demand_deposit":
               let huoqiData = {
                 id: this.serverData.id, // ID
-                productId: this.serverData.productId, // 产品ID
-                skuId: this.serverData.skuId, // sku主键
+                uuid: this.serverData.uuid,
+                skuId: this.serverData.skuId,
                 institutionId: this.ruleForm.jigou_name,
                 institutionName: "",
                 seriesId: this.ruleForm.xilie,
                 seriesName: "",
+                name: this.ruleForm.productcunkuan,
                 productSubtype: this.serverData.productSubtype,
                 productSubtypeLabel: this.serverData.productSubtypeLabel,
                 typeAlias: this.ruleForm.bieming,
-                name: this.ruleForm.productcunkuan,
-                minAmount: +this.ruleForm.qicunjine,
+                maxAmount: +this.ruleForm.qicunjineMax,
+                minAmount: +this.ruleForm.qicunjineMin,
+                amountRangeExplain: this.ruleForm.qicunfanwei,
                 increaseAmount: +this.ruleForm.dizeng,
                 interestRateAlias: this.ruleForm.interestRateAlias,
+                regulatoryProperty: this.ruleForm.jianguan,
+                regulatoryPropertyLabel: "",
+                frequencyType: +this.ruleForm.fuxipinlv,
+                frequencyTypeLabel: "",
+                currencyCode: this.ruleForm.bizhong,
+                currencyName: "",
+                currencyUnit: "",
                 description: this.ruleForm.chanpinmiaoshu,
+                contentVersion: +this.ruleForm.contentVersion,
                 interest: {
                   id: this.serverData.interest.id,
                   spuId: this.serverData.interest.spuId,
                   interestRate: +this.ruleForm.lilv
                 },
                 productTags: [],
+                selfDefiningTags: [],
+                activityTags: [],
                 appInfo: {
                   id: this.serverData.appInfo.id,
-                  productId: this.serverData.productId, // 产品ID
-                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO",
-                  visaInterview: this.ruleForm.mianqian === "是" ? "YES" : "NO",
+                  productUuid: this.serverData.appInfo.productUuid,
+                  shelveStatus: this.ruleForm.shangjia,
+                  shelveStatusLabel: "",
+                  visaInterview: this.ruleForm.mianqian,
+                  visaInterviewLabel: "",
                   recommend: this.ruleForm.tuijian === "是" ? "YES" : "NO",
                   homePage: this.ruleForm.paihang === "是" ? "YES" : "NO",
                   defaultBuyNum: +this.ruleForm.goumaibishu,
                   defaultAmount: +this.ruleForm.goumaijine,
                   listAreaFlag: this.ruleForm.zhuanqubiaozhi,
                   listAreaFlagLabel: "",
-                  sameProductFlag: this.ruleForm.chanpinbiaozhi
+                  sameProductFlag: this.ruleForm.chanpinbiaozhi,
+                  realNameAuth: this.ruleForm.shiming === "是" ? "YES" : "NO",
+                  signed: this.ruleForm.qianyue === "是" ? "YES" : "NO",
+                  defaultFlowNum: this.ruleForm.guanzhuNum,
+                  cooperationMode: this.ruleForm.hezuoType,
+                  cooperationModeLabel: "",
+                  yearRate: this.ruleForm.shoufeilv,
+                  showBankPage:
+                    this.ruleForm.yinhangpage === "是" ? "YES" : "NO",
+                  connectionMode: this.ruleForm.duijie,
+                  connectionModeLabel: "",
+                  h5Url: this.ruleForm.h5Url,
+                  areaCode: this.ruleForm.chanpinquyu,
+                  areaName: ""
                 }
               };
-
-              // 榜单专区标识Label
-              this.dictData.list_area_type.forEach(item => {
-                if (item.value === this.ruleForm.zhuanqubiaozhi) {
-                  huoqiData.appInfo.listAreaFlagLabel = item.label;
-                }
-              });
 
               // 机构名
               xilieData.forEach(item => {
@@ -2737,10 +3060,83 @@ export default {
                 });
               }
 
-              // 获取标签
-              if (this.ruleForm.marks.length > 0) {
-                this.dictData.marks.forEach(item => {
-                  this.ruleForm.marks.forEach(tar => {
+              // 榜单专区标识Label
+              this.dictData.list_area_type.forEach(item => {
+                if (item.value === this.ruleForm.zhuanqubiaozhi) {
+                  huoqiData.appInfo.listAreaFlagLabel = item.label;
+                }
+              });
+              // 监管属性Label
+              this.dictData.regulatory_property.forEach(item => {
+                if (item.value === this.ruleForm.jianguan) {
+                  huoqiData.regulatoryPropertyLabel = item.label;
+                }
+              });
+              // 付息频率Label
+              huoqiData.frequencyTypeLabel = huoqiData.frequencyType
+                ? this.dictData.frequency_type.filter(
+                    item => item.value == huoqiData.frequencyType
+                  )[0].label
+                : "";
+
+              // 币种
+              if (huoqiData.currencyCode) {
+                let kk = this.dictData.bizhong.filter(
+                  tar => tar.value === huoqiData.currencyCode
+                )[0];
+                huoqiData.currencyName = kk.label;
+                huoqiData.currencyUnit = kk.unit;
+              }
+
+              // 上架状态
+              huoqiData.appInfo.shelveStatusLabel = huoqiData.appInfo
+                .shelveStatus
+                ? this.dictData.shelve_status.filter(
+                    item => item.value === huoqiData.appInfo.shelveStatus
+                  )[0].label
+                : "";
+              // 是否面签Label
+              huoqiData.appInfo.visaInterviewLabel = huoqiData.appInfo
+                .visaInterview
+                ? this.dictData.visa_interview_type.filter(
+                    item => item.value === huoqiData.appInfo.visaInterview
+                  )[0].label
+                : "";
+
+              // 榜单专区标识Label
+              huoqiData.appInfo.listAreaFlagLabel = huoqiData.appInfo
+                .listAreaFlag
+                ? this.dictData.list_area_type.filter(
+                    item => item.value === huoqiData.appInfo.listAreaFlag
+                  )[0].label
+                : "";
+
+              // 银行合作方式Label
+              huoqiData.appInfo.cooperationModeLabel = huoqiData.appInfo
+                .cooperationMode
+                ? this.dictData.cooperation_mode.filter(
+                    item => item.value === huoqiData.appInfo.cooperationMode
+                  )[0].label
+                : "";
+              // 银行对接方式
+              huoqiData.appInfo.connectionModeLabel = huoqiData.appInfo
+                .connectionMode
+                ? this.dictData.bank_connection_mode.filter(
+                    item => item.value === huoqiData.appInfo.connectionMode
+                  )[0].label
+                : "";
+
+              // 所属区域
+              huoqiData.appInfo.areaName = huoqiData.appInfo.areaCode
+                ? this.dictData.quyu.filter(
+                    item => item.value === huoqiData.appInfo.areaCode
+                  )[0].label
+                : "";
+
+              // 获取产品标签
+              if (this.ruleForm.chanpinBiaoQian.length > 0) {
+                this.dictData.productTags.forEach(item => {
+                  this.ruleForm.chanpinBiaoQian.forEach(tar => {
                     if (item.id === tar) {
                       huoqiData.productTags.push({
                         id: tar,
@@ -2750,13 +3146,41 @@ export default {
                   });
                 });
               }
+
+              // 获取自定义标签
+              if (this.ruleForm.selfBiaoQian.length > 0) {
+                this.dictData.selfDefiningTags.forEach(item => {
+                  this.ruleForm.selfBiaoQian.forEach(tar => {
+                    if (item.id === tar) {
+                      huoqiData.selfDefiningTags.push({
+                        id: tar,
+                        name: item.name
+                      });
+                    }
+                  });
+                });
+              }
+              // 获取活动标签
+              if (this.ruleForm.actBiaoQian.length > 0) {
+                this.dictData.activityTags.forEach(item => {
+                  this.ruleForm.actBiaoQian.forEach(tar => {
+                    if (item.id === tar) {
+                      huoqiData.activityTags.push({
+                        id: tar,
+                        name: item.name
+                      });
+                    }
+                  });
+                });
+              }
+
               this.$api
                 .edit_HuoQi({
                   vm: this,
                   data: huoqiData
                 })
                 .then(res => {
-                  if (res.success) {
+                  if (res) {
                     this.$message.success("修改成功");
                     this.toClosebianjieDialog();
                     this.$emit("toReGetData", this.forEmit);
@@ -2780,40 +3204,6 @@ export default {
                   dingqiArr.push(item);
                 }
               });
-
-              // 验证利率列表里的数据是否有负数
-              for (let i = dingqiArr.length; i--; ) {
-                let arr = Object.keys(dingqiArr[i]);
-                for (let j = arr.length; j--; ) {
-                  let value = dingqiArr[i][arr[j]];
-                  if (typeof +value === "number" && value < 0) {
-                    isCanPost = false;
-                    this.isErrorMessage =
-                      "利率列表里有为负的数据，请正确填写数据！";
-                    this.isHasError = true;
-                    setTimeout(() => {
-                      this.isHasError = false;
-                      this.isErrorMessage = "";
-                    }, 5000);
-                    break;
-                  }
-                  if (arr[j] === "lilv" && value >= 100) {
-                    isCanPost = false;
-                    this.isErrorMessage =
-                      "利率列表里利率数据大于100，请正确填写数据！";
-                    this.isHasError = true;
-                    setTimeout(() => {
-                      this.isHasError = false;
-                      this.isErrorMessage = "";
-                    }, 5000);
-                    break;
-                  }
-                }
-              }
-              // 如果利率列表里存在为负的数据，则不进行下一步
-              if (!isCanPost) {
-                return;
-              }
               dingqiData = {
                 // 利率信息列表
                 id: this.serverData.id,
@@ -2846,17 +3236,18 @@ export default {
                   // 产品配置信息
                   id: +this.serverData.appInfo.id, // 主键
                   productId: this.serverData.productId, // 产品id
-                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO", //是否上架
+                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO", //上架状态
                   visaInterview: this.ruleForm.mianqian === "是" ? "YES" : "NO", // 是否面签
                   recommend: this.ruleForm.tuijian === "是" ? "YES" : "NO", //是否推荐
                   homePage: this.ruleForm.paihang === "是" ? "YES" : "NO", //是否首页排序
                   listAreaFlag: this.ruleForm.zhuanqubiaozhi, // 榜单专区标识
                   listAreaFlagLabel: "", // 榜单专区标识Label
-                  cooperationMode: this.ruleForm.hezuo, // 合作方式
+                  cooperationMode: this.ruleForm.hezuoType, // 合作方式
                   cooperationModeLabel: "", //合作方式Label
                   yearRate: +this.ruleForm.shoufeilv, // 年收费率
                   autoShelve: this.ruleForm.autoUpDown === "是" ? "YES" : "NO", //自动上架
-                  showBankPage: this.ruleForm.yihangTip === "是" ? "YES" : "NO", // 显示银行过渡页
+                  showBankPage:
+                    this.ruleForm.yinhangpage === "是" ? "YES" : "NO", // 显示银行过渡页
                   connectionMode: this.ruleForm.duijie, // 银行对接方式
                   connectionModeLabel: "", // 银行对接方式Label
                   h5Url: this.ruleForm.h5Url, //H5链接
@@ -2929,12 +3320,12 @@ export default {
               // 所属区域
               dingqiData.appInfo.areaName = this.ruleForm.quyu
                 ? this.dictData.quyu.filter(
-                    item => item.adcode === this.ruleForm.quyu
-                  )[0].name
+                    item => item.value === this.ruleForm.quyu
+                  )[0].label
                 : "";
 
               // 获取标签
-              if (this.ruleForm.marks.length > 0) {
+              if (this.ruleForm.biaoqian.length > 0) {
                 this.dictData.marks.forEach(item => {
                   this.ruleForm.marks.forEach(tar => {
                     if (item.id === tar) {
@@ -2946,70 +3337,59 @@ export default {
                   });
                 });
               }
-              if (this.addLilvTable.total != dingqiArr.length) {
-                this.isErrorMessage =
-                  "利率列表里有些必填项没有数据，请填好数据！";
-                this.isHasError = true;
-                setTimeout(() => {
-                  this.isErrorMessage = "";
-                  this.isHasError = false;
-                }, 5000);
-              } else {
-                let idArr = this.serverData.interestRates.map(item => item.id);
-                dingqiData.interestRates = dingqiArr.map(item => {
-                  if (idArr.some(tar => tar === item.id)) {
-                    return {
-                      id: item.id,
-                      spuId: item.spuId,
-                      deadline: +item.limit, // 期限
-                      timeUnitType: item.danwei, // 单位
-                      timeUnitLabel: "", // 期限单位Label
-                      interestRate: +item.lilv, // 利率
-                      lockinPeriod: +item.lockinPeriod, // 锁定期限
-                      remark: item.beizhu, // 备注
-                      showList: item.showList, // 榜单展示
-                      lockinShowList: item.lockinShowList // 锁定期榜单展示
-                    };
-                  } else {
-                    return {
-                      spuId: item.spuId,
-                      deadline: +item.limit, // 期限
-                      timeUnitType: item.danwei, // 单位
-                      timeUnitLabel: "", // 期限单位Label
-                      interestRate: +item.lilv, // 利率
-                      lockinPeriod: +item.lockinPeriod, // 锁定期限
-                      remark: item.beizhu, // 备注
-                      showList: item.showList, // 榜单展示
-                      lockinShowList: item.lockinShowList // 锁定期榜单展示
-                    };
+
+              dingqiData.interestRates = dingqiArr.map(item => {
+                if (idArr.some(tar => tar === item.id)) {
+                  return {
+                    id: item.id,
+                    spuId: item.spuId,
+                    deadline: +item.limit, // 期限
+                    timeUnitType: item.danwei, // 单位
+                    timeUnitLabel: "", // 期限单位Label
+                    interestRate: +item.lilv, // 利率
+                    lockinPeriod: +item.lockinPeriod, // 锁定期限
+                    remark: item.beizhu, // 备注
+                    showList: item.showList, // 榜单展示
+                    lockinShowList: item.lockinShowList // 锁定期榜单展示
+                  };
+                } else {
+                  return {
+                    spuId: item.spuId,
+                    deadline: +item.limit, // 期限
+                    timeUnitType: item.danwei, // 单位
+                    timeUnitLabel: "", // 期限单位Label
+                    interestRate: +item.lilv, // 利率
+                    lockinPeriod: +item.lockinPeriod, // 锁定期限
+                    remark: item.beizhu, // 备注
+                    showList: item.showList, // 榜单展示
+                    lockinShowList: item.lockinShowList // 锁定期榜单展示
+                  };
+                }
+              });
+              // 添加 期限单位Label
+              dingqiData.interestRates.forEach(item => {
+                for (let i = this.dictData.deadline_type.length; i--; ) {
+                  if (
+                    this.dictData.deadline_type[i].value == item.timeUnitType
+                  ) {
+                    item.timeUnitLabel = this.dictData.deadline_type[i].label;
+                    break;
+                  }
+                }
+              });
+
+              this.$api
+                .edit_DingQi({
+                  vm: this,
+                  data: dingqiData
+                })
+                .then(res => {
+                  if (res) {
+                    this.$message.success("修改成功");
+                    this.toClosebianjieDialog();
+                    this.$emit("toReGetData", this.forEmit);
                   }
                 });
-                // 添加 期限单位Label
-                dingqiData.interestRates.forEach(item => {
-                  for (let i = this.dictData.deadline_type.length; i--; ) {
-                    if (
-                      this.dictData.deadline_type[i].value == item.timeUnitType
-                    ) {
-                      item.timeUnitLabel = this.dictData.deadline_type[i].label;
-                      break;
-                    }
-                  }
-                });
-
-                this.$api
-                  .edit_DingQi({
-                    vm: this,
-                    data: dingqiData
-                  })
-                  .then(res => {
-                    if (res.success) {
-                      this.$message.success("修改成功");
-                      this.toClosebianjieDialog();
-                      this.$emit("toReGetData", this.forEmit);
-                    }
-                  });
-              }
-
               break;
 
             // 智能存款管理
@@ -3029,42 +3409,6 @@ export default {
                   zhinengArr.push(item);
                 }
               });
-
-              // 验证利率列表里的数据是否有负数
-              for (let i = zhinengArr.length; i--; ) {
-                let arr = Object.keys(zhinengArr[i]);
-                for (let j = arr.length; j--; ) {
-                  let value = zhinengArr[i][arr[j]];
-                  if (typeof +value === "number" && value < 0) {
-                    isCanPost = false;
-                    this.isErrorMessage =
-                      "利率列表里有为负的数据，请正确填写数据！";
-                    this.isHasError = true;
-                    setTimeout(() => {
-                      this.isHasError = false;
-                      this.isErrorMessage = "";
-                    }, 5000);
-                    break;
-                  }
-
-                  if (arr[j] === "lilv" && value >= 100) {
-                    isCanPost = false;
-                    this.isErrorMessage =
-                      "利率列表里利率数据大于100，请正确填写数据！";
-                    this.isHasError = true;
-                    setTimeout(() => {
-                      this.isHasError = false;
-                      this.isErrorMessage = "";
-                    }, 5000);
-                    break;
-                  }
-                }
-              }
-              // 如果利率列表里存在为负的数据，则不进行下一步
-              if (!isCanPost) {
-                return;
-              }
-
               zhinengData = {
                 // 利率信息列表
                 id: +this.serverData.id,
@@ -3081,6 +3425,7 @@ export default {
                 productSubtypeLabel: this.serverData.productSubtypeLabel, // 产品子类型Label
                 typeAlias: this.ruleForm.bieming, // 产品类型（类别别名）
                 interestRateAlias: this.ruleForm.interestRateAlias, // 利率别名
+
                 renewal: this.ruleForm.zhuancun === "是" ? "YES" : "NO", // 到期是否转存
                 withdrawalTime: this.ruleForm.zhiqu, // 支取时间
                 withdrawalTimeLabel: "", // 支取时间Label
@@ -3092,14 +3437,14 @@ export default {
                   // 产品配置信息
                   id: this.serverData.appInfo.id, // 主键
                   productId: this.serverData.productId, // 产品id
-                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO", //是否上架
+                  shelve: this.ruleForm.shangjia === "是" ? "YES" : "NO", //上架状态
                   visaInterview: this.ruleForm.mianqian === "是" ? "YES" : "NO", // 是否面签
                   recommend: this.ruleForm.tuijian === "是" ? "YES" : "NO", //是否推荐
                   homePage: this.ruleForm.paihang === "是" ? "YES" : "NO", //是否首页排序
                   listAreaFlag: this.ruleForm.zhuanqubiaozhi, // 榜单专区标识
                   listAreaFlagLabel: "", // 榜单专区标识Label
-                  defaultBuyNum: +this.ruleForm.goumaibishu, // 默认存款笔数
-                  defaultAmount: +this.ruleForm.goumaijine, // 默认存款金额
+                  defaultBuyNum: +this.ruleForm.cunkuanbishu, // 默认存款笔数
+                  defaultAmount: +this.ruleForm.cunkuanmorenjine, // 默认存款金额
                   sameProductFlag: this.ruleForm.chanpinbiaozhi // 同一产品标识
                 },
                 productTags: [] // 标签
@@ -3136,7 +3481,7 @@ export default {
                   )[0].label
                 : "";
               // 获取标签
-              if (this.ruleForm.marks.length > 0) {
+              if (this.ruleForm.biaoqian.length > 0) {
                 this.dictData.marks.forEach(item => {
                   this.ruleForm.marks.forEach(tar => {
                     if (item.id === tar) {
@@ -3149,68 +3494,58 @@ export default {
                 });
               }
 
-              if (this.addLilvTable.total != zhinengArr.length) {
-                this.isErrorMessage =
-                  "利率列表里有些必填项没有数据，请填好数据！";
-                this.isHasError = true;
-                setTimeout(() => {
-                  this.isErrorMessage = "";
-                  this.isHasError = false;
-                }, 5000);
-              } else {
-                let idArr = this.serverData.interestRates.map(item => item.id);
-                zhinengData.interestRates = zhinengArr.map(item => {
-                  if (idArr.some(tar => tar === item.id)) {
-                    return {
-                      id: item.id,
-                      spuId: item.spuId,
-                      deadline: +item.limit, // 期限
-                      timeUnitType: item.danwei, // 单位
-                      timeUnitLabel: "", // 期限单位Label
-                      interestRate: +item.lilv, // 利率
-                      lockinPeriod: +item.lockinPeriod, // 锁定期限
-                      remark: item.beizhu, // 备注
-                      showList: item.showList, // 榜单展示
-                      lockinShowList: item.lockinShowList // 锁定期榜单展示
-                    };
-                  } else {
-                    return {
-                      spuId: item.spuId,
-                      deadline: +item.limit, // 期限
-                      timeUnitType: item.danwei, // 单位
-                      timeUnitLabel: "", // 期限单位Label
-                      interestRate: +item.lilv, // 利率
-                      lockinPeriod: +item.lockinPeriod, // 锁定期限
-                      remark: item.beizhu, // 备注
-                      showList: item.showList, // 榜单展示
-                      lockinShowList: item.lockinShowList // 锁定期榜单展示
-                    };
+              zhinengData.interestRates = zhinengArr.map(item => {
+                if (idArr.some(tar => tar === item.id)) {
+                  return {
+                    id: item.id,
+                    spuId: item.spuId,
+                    deadline: +item.limit, // 期限
+                    timeUnitType: item.danwei, // 单位
+                    timeUnitLabel: "", // 期限单位Label
+                    interestRate: +item.lilv, // 利率
+                    lockinPeriod: +item.lockinPeriod, // 锁定期限
+                    remark: item.beizhu, // 备注
+                    showList: item.showList, // 榜单展示
+                    lockinShowList: item.lockinShowList // 锁定期榜单展示
+                  };
+                } else {
+                  return {
+                    spuId: item.spuId,
+                    deadline: +item.limit, // 期限
+                    timeUnitType: item.danwei, // 单位
+                    timeUnitLabel: "", // 期限单位Label
+                    interestRate: +item.lilv, // 利率
+                    lockinPeriod: +item.lockinPeriod, // 锁定期限
+                    remark: item.beizhu, // 备注
+                    showList: item.showList, // 榜单展示
+                    lockinShowList: item.lockinShowList // 锁定期榜单展示
+                  };
+                }
+              });
+              // 添加 期限单位Label
+              zhinengData.interestRates.forEach(item => {
+                for (let i = this.dictData.deadline_type.length; i--; ) {
+                  if (
+                    this.dictData.deadline_type[i].value == item.timeUnitType
+                  ) {
+                    item.timeUnitLabel = this.dictData.deadline_type[i].label;
+                    break;
+                  }
+                }
+              });
+              this.$api
+                .edit_ZhiNeng({
+                  vm: this,
+                  data: zhinengData
+                })
+                .then(res => {
+                  if (res) {
+                    this.$message.success("修改成功");
+                    this.toClosebianjieDialog();
+                    this.$emit("toReGetData", this.forEmit);
                   }
                 });
-                // 添加 期限单位Label
-                zhinengData.interestRates.forEach(item => {
-                  for (let i = this.dictData.deadline_type.length; i--; ) {
-                    if (
-                      this.dictData.deadline_type[i].value == item.timeUnitType
-                    ) {
-                      item.timeUnitLabel = this.dictData.deadline_type[i].label;
-                      break;
-                    }
-                  }
-                });
-                this.$api
-                  .edit_ZhiNeng({
-                    vm: this,
-                    data: zhinengData
-                  })
-                  .then(res => {
-                    if (res.success) {
-                      this.$message.success("修改成功");
-                      this.toClosebianjieDialog();
-                      this.$emit("toReGetData", this.forEmit);
-                    }
-                  });
-              }
+
               break;
             // 结构存款管理
             case "structured_deposit":
@@ -3304,7 +3639,7 @@ export default {
               });
 
               // 获取标签
-              if (this.ruleForm.marks.length > 0) {
+              if (this.ruleForm.biaoqian.length > 0) {
                 this.dictData.marks.forEach(item => {
                   this.ruleForm.marks.forEach(tar => {
                     if (item.id === tar) {
@@ -3322,7 +3657,7 @@ export default {
                   data: jiegouData
                 })
                 .then(res => {
-                  if (res.success) {
+                  if (res) {
                     this.$message.success("修改成功");
                     this.toClosebianjieDialog();
                     this.$emit("toReGetData", this.forEmit);
@@ -3363,81 +3698,7 @@ export default {
     // 关闭弹框
     toClosebianjieDialog() {
       this.bianjieDialog = false;
-      this.ruleForm = {
-        chanpinIds: "", // 产品id
-        // 纯债编辑按钮弹出框
-        product: "", // 产品名称
-        daima: "", // 基金代码
-        jigou_name: "", // 机构名称
-        gongsi: "", // 基金公司
-        jiaoyizhuangtai: "", // 交易状态
-        rizhangfu: "", // 日涨幅
-        shangjia: "", // 是否上架
-        mianqian: "", // 是否面签
-        tuijian: "", // 是否推荐
-        paihang: "", // 是否首页排行
-        goumaibishu: "", // 默认存款笔数
-        goumaijine: "", // 默认存款金额
-        goumaibishu2: "", //  默认购买笔数
-        goumaijine2: "", // 默认购买金额
-        qigou: "", // 起购金额
-        shuhui: "", // 到帐赎回日
-        suoding: "", // 锁定期
-        mairu: "", // 买入
-        shouxufei: "", // 手续费用
-        chanpinmiaoshu: "", // 产品描述
-        shouyiguize: "", // 收益规则
-        chanpinbiaozhi: "", // 同一产品标识
-        guanzhuNum: "", // 默认关注数量
-        zhuanqubiaozhi: "", // 榜单专区标识
-        xilie: "", // 产品系列
-        productjijin: "", // 基金产品名称
-        dizeng: "", // 递增金额
-        yuqinianhua: "", // 预期年化收益率
-        fengxian: "", // 风险等级
-        shengyuED: "", // 剩余额度
-        qixiri: "", // 起息日
-        qixian: "", // 期限
-        licairiqi: "", // 理财日期
-        muji: "", // 募集日期
-        jianguan: "", // 监管属性
-        productcunkuan: "", // 存款产品名称
-        bieming: "", // 产品类型(别名)
-        lilv: "", // 利率
-        interestRateAlias: "", // 利率别名
-        deadlineAlias: "", // 期限别名
-        qicunjine: "", // 起存金额
-        marks: "", // 标签
-        quyu: "", // 产品区域
-        fanhuan: "", // 收益返还方式
-        zhuancun: "", // 到期是否转存
-        fuxipinlv: "", // 付息频率
-        shiming: "", // 是否实名
-        qianyue: "", // 是否签约
-        shoufeilv: "", // 年收费率(%)
-        h5Url: "", // 产品H5链接
-        yihangTip: "", // 显示银行过渡页
-        duijie: "", // 银行对接方式
-        hezuo: "", // 银行合作方式
-        autoUpDown: "" // 自动上架
-      };
-      this.addLilvTable = {
-        pageNum: 0,
-        total: 0,
-        title: [
-          "序号",
-          "期限",
-          "期限单位",
-          "利率%",
-          "锁定期限(天)",
-          "备注",
-          "榜单展示",
-          "锁定期榜单展示",
-          "操作"
-        ],
-        dataTotal: [], //
-        datas: [] // 用来进行分页展示时的当前展示数据
-      };
+      this.ruleForm = null;
       this.$refs["ruleForm"].resetFields();
     }
   }

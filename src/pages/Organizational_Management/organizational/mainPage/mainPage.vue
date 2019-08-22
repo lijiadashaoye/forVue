@@ -22,16 +22,12 @@
           <el-input v-model="searchForm.name" placeholder="请输入机构名称"></el-input>
         </el-form-item>
 
-        <el-form-item label="所属省市">
-          <el-select v-model="searchForm.locationId" clearable placeholder="请选择">
-            <el-option
-              size="mini"
-              v-for="item in dictData.quyu"
-              :key="item.adcode"
-              :label="item.name"
-              :value="item.adcode"
-            ></el-option>
-          </el-select>
+        <el-form-item label="所属省市" v-if="dictData.quyu">
+          <el-cascader
+            v-model="location"
+            :options="dictData.quyu"
+            :props="{ expandTrigger: 'hover'}"
+          ></el-cascader>
         </el-form-item>
 
         <el-form-item label="机构类型" style="margin-bottom:5px;">
@@ -62,7 +58,7 @@
           <el-select v-model="searchForm.signedUp" clearable placeholder="请选择">
             <el-option
               size="mini"
-              v-for="item in shelveList"
+              v-for="item in dictData.qianyueList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -101,6 +97,7 @@ export default {
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
       pageName: "", // 当前页面名字
       riqi: [], // 创建时间
+      location: [], // 所属区域
       searchForm: {
         name: "", // 机构名称
         locationId: "", // 所属地/直辖市ID
@@ -124,286 +121,7 @@ export default {
           title: [], // 给表格表头
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
-      },
-      shelveList: [
-        {
-          label: "已签约",
-          value: "YES"
-        },
-        {
-          label: "未签约",
-          value: "NO"
-        }
-      ],
-      options: [
-        // 所属省市级联数据
-        {
-          value: "zhinan",
-          label: "指南",
-          children: [
-            {
-              value: "shejiyuanze",
-              label: "设计原则",
-              children: [
-                {
-                  value: "yizhi",
-                  label: "一致"
-                },
-                {
-                  value: "fankui",
-                  label: "反馈"
-                },
-                {
-                  value: "xiaolv",
-                  label: "效率"
-                },
-                {
-                  value: "kekong",
-                  label: "可控"
-                }
-              ]
-            },
-            {
-              value: "daohang",
-              label: "导航",
-              children: [
-                {
-                  value: "cexiangdaohang",
-                  label: "侧向导航"
-                },
-                {
-                  value: "dingbudaohang",
-                  label: "顶部导航"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "zujian",
-          label: "组件",
-          children: [
-            {
-              value: "basic",
-              label: "Basic",
-              children: [
-                {
-                  value: "layout",
-                  label: "Layout 布局"
-                },
-                {
-                  value: "color",
-                  label: "Color 色彩"
-                },
-                {
-                  value: "typography",
-                  label: "Typography 字体"
-                },
-                {
-                  value: "icon",
-                  label: "Icon 图标"
-                },
-                {
-                  value: "button",
-                  label: "Button 按钮"
-                }
-              ]
-            },
-            {
-              value: "form",
-              label: "Form",
-              children: [
-                {
-                  value: "radio",
-                  label: "Radio 单选框"
-                },
-                {
-                  value: "checkbox",
-                  label: "Checkbox 多选框"
-                },
-                {
-                  value: "input",
-                  label: "Input 输入框"
-                },
-                {
-                  value: "input-number",
-                  label: "InputNumber 计数器"
-                },
-                {
-                  value: "select",
-                  label: "Select 选择器"
-                },
-                {
-                  value: "cascader",
-                  label: "Cascader 级联选择器"
-                },
-                {
-                  value: "switch",
-                  label: "Switch 开关"
-                },
-                {
-                  value: "slider",
-                  label: "Slider 滑块"
-                },
-                {
-                  value: "time-picker",
-                  label: "TimePicker 时间选择器"
-                },
-                {
-                  value: "date-picker",
-                  label: "DatePicker 日期选择器"
-                },
-                {
-                  value: "datetime-picker",
-                  label: "DateTimePicker 日期时间选择器"
-                },
-                {
-                  value: "upload",
-                  label: "Upload 上传"
-                },
-                {
-                  value: "rate",
-                  label: "Rate 评分"
-                },
-                {
-                  value: "form",
-                  label: "Form 表单"
-                }
-              ]
-            },
-            {
-              value: "data",
-              label: "Data",
-              children: [
-                {
-                  value: "table",
-                  label: "Table 表格"
-                },
-                {
-                  value: "tag",
-                  label: "Tag 标签"
-                },
-                {
-                  value: "progress",
-                  label: "Progress 进度条"
-                },
-                {
-                  value: "tree",
-                  label: "Tree 树形控件"
-                },
-                {
-                  value: "pagination",
-                  label: "Pagination 分页"
-                },
-                {
-                  value: "badge",
-                  label: "Badge 标记"
-                }
-              ]
-            },
-            {
-              value: "notice",
-              label: "Notice",
-              children: [
-                {
-                  value: "alert",
-                  label: "Alert 警告"
-                },
-                {
-                  value: "loading",
-                  label: "Loading 加载"
-                },
-                {
-                  value: "message",
-                  label: "Message 消息提示"
-                },
-                {
-                  value: "message-box",
-                  label: "MessageBox 弹框"
-                },
-                {
-                  value: "notification",
-                  label: "Notification 通知"
-                }
-              ]
-            },
-            {
-              value: "navigation",
-              label: "Navigation",
-              children: [
-                {
-                  value: "menu",
-                  label: "NavMenu 导航菜单"
-                },
-                {
-                  value: "tabs",
-                  label: "Tabs 标签页"
-                },
-                {
-                  value: "breadcrumb",
-                  label: "Breadcrumb 面包屑"
-                },
-                {
-                  value: "dropdown",
-                  label: "Dropdown 下拉菜单"
-                },
-                {
-                  value: "steps",
-                  label: "Steps 步骤条"
-                }
-              ]
-            },
-            {
-              value: "others",
-              label: "Others",
-              children: [
-                {
-                  value: "dialog",
-                  label: "Dialog 对话框"
-                },
-                {
-                  value: "tooltip",
-                  label: "Tooltip 文字提示"
-                },
-                {
-                  value: "popover",
-                  label: "Popover 弹出框"
-                },
-                {
-                  value: "card",
-                  label: "Card 卡片"
-                },
-                {
-                  value: "carousel",
-                  label: "Carousel 走马灯"
-                },
-                {
-                  value: "collapse",
-                  label: "Collapse 折叠面板"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "ziyuan",
-          label: "资源",
-          children: [
-            {
-              value: "axure",
-              label: "Axure Components"
-            },
-            {
-              value: "sketch",
-              label: "Sketch Templates"
-            },
-            {
-              value: "jiaohu",
-              label: "组件交互文档"
-            }
-          ]
-        }
-      ]
+      }
     };
   },
   components: {
@@ -419,6 +137,7 @@ export default {
     sessionStorage.removeItem("organizational_step1");
     sessionStorage.removeItem("organizational_step2");
     sessionStorage.removeItem("organizational_http");
+    sessionStorage.removeItem("jigou_edit");
   },
   methods: {
     // 监听表格的操作
@@ -456,11 +175,11 @@ export default {
     // 表格里的switch事件
     switchAction(data) {
       this.$api
-        .product_chunzhai_UpDown({
+        .product_jigou_qianyue({
           vm: this,
           data: {
             id: data.id,
-            status: data.switch ? "YES" : "NO"
+            status: data.switch ? "NO" : "YES" // NO 为从已签约变成解约
           }
         })
         .then(res => {
@@ -555,6 +274,9 @@ export default {
           this.searchForm.createTimeStart = this.riqi[0];
           this.searchForm.createTimeEnd = this.riqi[1];
         }
+        if (this.location.length > 0) {
+          this.searchForm.locationId = this.location[this.location.length - 1];
+        }
         let arr = Object.keys(this.searchForm),
           obj = {};
         arr.forEach(tar => {
@@ -577,6 +299,7 @@ export default {
       } else {
         // 重置
         this.riqi = []; // 创建时间
+        this.location = []; // 所属区域
         this.searchForm = {
           name: "", // 机构名称
           locationId: "", // 所属地/直辖市ID
@@ -681,7 +404,7 @@ export default {
           },
           {
             title: "机构类型",
-            key: "typeLabel",
+            key: "subTypeLabel",
             minWidth: "160"
           },
           {

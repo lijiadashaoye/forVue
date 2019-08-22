@@ -44,10 +44,6 @@
     margin-left: 5px;
 }
 
-#chartWap {
-    margin: 5px 5px 0 0;
-}
-
 .isUpTime {
     color: rgb(149, 149, 149);
     font-size: 12px;
@@ -93,6 +89,8 @@
     font-size: 14px;
     color: rgb(41, 126, 151);
     margin: 0;
+    padding-right: 10px;
+    box-sizing: border-box
 }
 
 .withLink {
@@ -108,7 +106,7 @@
 }
 
 .isContentLong {
-    padding-top: 3px;
+    padding-top: 4px;
     font-size: 12px;
     width: 100%;
     display: flex;
@@ -129,12 +127,15 @@
     width: calc(100% - 30px);
     margin: 0;
     color: rgb(0, 134, 175);
+    box-sizing: border-box;
+    padding-right: 2px;
 }
 
 .isHidden {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    max-height: 80px;
 }
 
 .guizeTitle {
@@ -295,6 +296,7 @@
 }
 
 .isLink {
+    text-indent: 5px;
     text-decoration: underline !important;
     cursor: pointer;
 }
@@ -365,16 +367,23 @@
     margin: 0
 }
 
-.stepsTops {
+.stepsTops li {
     list-style: none;
-    text-align: center;
     font-weight: bold;
     font-size: 14px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: center
 }
 
 .stepsTops span {
-    margin: 0 10px
+    margin: 0 10px;
+    display: inline-block;
+    min-width: 60px
+}
+
+.stepsTops span:nth-of-type(2) {
+    color: rgb(54, 180, 238);
 }
 
 .demo-form-inline {
@@ -425,7 +434,7 @@ hr {
 
 .isForm {
     margin: 0 auto;
-    width: 90%;
+    width: 85%;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -777,7 +786,7 @@ ul {
     }
 
     25% {
-        background: red;
+        background: rgb(236, 149, 149);
         color: #fff;
     }
 
@@ -787,7 +796,7 @@ ul {
     }
 
     75% {
-        background: red;
+        background: rgb(236, 149, 149);
         color: #fff;
     }
 
@@ -796,3 +805,9 @@ ul {
         color: rgb(100, 123, 253);
     }
 }
+.bottomLiLv{
+    width:100%;
+    background: pink;
+   
+}
+

@@ -36,7 +36,7 @@ export default {
       if (jurisdiction.indexOf("black_list_add") > -1) {
         black_list_add(data).then(res=> {
           if(res) {
-            this.$router.push('/home/setting/member-black-list/list')
+            this.$router.push('/home/member/member-black-list/list')
           }
         }).catch(()=> {
           this.$alert(`${res.message}`, '保存失败', {

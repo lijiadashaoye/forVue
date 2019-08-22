@@ -4,17 +4,6 @@
       <h3>{{pageName}}</h3>
       <div style="margin-bottom:5px;">
         <el-button size="mini" type="primary" @click="addNew(true)">新增货币基金</el-button>
-        <!-- v-if="tableInputData.data.quanxian.includes('sys_user_add')" -->
-        <!-- <el-button
-          size="mini"
-          type="success"
-          @click="outPut(true)"
-        >导出</el-button>
-        <el-button
-          size="mini"
-          type="warning"
-          @click="inPut(true)"
-        >导入</el-button>-->
         <el-button size="mini" type="warning" @click="seachClick('search')">查询</el-button>
         <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
         <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
@@ -57,10 +46,10 @@
         </el-form-item>
 
         <el-form-item label="是否上架" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.shelve" clearable placeholder="请选择">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
             <el-option
               size="mini"
-              v-for="item in shelveList"
+              v-for="item in dictData.shelve_status"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -103,7 +92,7 @@ export default {
         institutionId: "", // 机构ID
         fundHouseId: "", // 基金公司ID
         status: "", // 交易状态
-        shelve: "", // 是否上架
+        shelveStatus: "", // 是否上架
         createTimeStart: "", // 创建时间（开始）
         createTimeEnd: "" // 创建时间（结束）
       }, // 搜索表单
@@ -121,17 +110,7 @@ export default {
           title: [], // 给表格表头
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
-      },
-      shelveList: [
-        {
-          label: "上架中",
-          value: "YES"
-        },
-        {
-          label: "已下架",
-          value: "NO"
-        }
-      ]
+      }
     };
   },
   components: {
@@ -178,7 +157,7 @@ export default {
               let step2 = {
                 sameProductFlag: res.data.appInfo.sameProductFlag, // 同一产品标识
                 flowNum: res.data.appInfo.defaultFlowNum, // 默认关注数量
-                shelve: res.data.appInfo.shelve === "YES" ? "是" : "否", // 是否上架
+                shelveStatus: res.data.appInfo.shelveStatus, // 是否上架
                 visaInterview:
                   res.data.appInfo.visaInterview === "YES" ? "是" : "否", // 是否面签
                 recommend: res.data.appInfo.recommend === "YES" ? "是" : "否", // 是否推荐
@@ -305,7 +284,7 @@ export default {
                 }
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
-                  callback: this.seachClick("search")
+                  callback: this.seachClick("reset")
                 });
               });
             })
@@ -336,7 +315,7 @@ export default {
             institutionId: "", // 机构ID
             fundHouseId: "", // 基金公司ID
             status: "", // 交易状态
-            shelve: "", // 是否上架
+            shelveStatus: "", // 是否上架
             createTimeStart: "", // 创建时间（开始）
             createTimeEnd: "" // 创建时间（结束）
           };
@@ -382,41 +361,7 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list.map(item => {
-          let obj = {},
-            arr = Object.keys(item);
-          arr.forEach(str => {
-            obj[str] = item[str];
-            // 将 shelfStatus 属性换成 action 属性
-            if (str === "shelve") {
-              delete obj[str];
-              switch (item[str]) {
-                case "YES":
-                  obj["switch"] = true;
-                  obj["action"] = "上架中";
-                  break;
-                case "NO":
-                  obj["switch"] = false;
-                  obj["action"] = "已下架";
-                  break;
-              }
-            }
-          });
-          return obj;
-        });
-        // 设置需要的额外设置字体颜色的
-        this.tableInputData.actions.setColor = {
-          label: "上架状态",
-          minWidth: 70,
-          from: "action",
-          with: "switch"
-        };
-        // 设置需要的额外switch事件
-        this.tableInputData.actions.switch = {
-          label: "上架/下架",
-          minWidth: 80,
-          from: "shelve" // 记录这个交互操作的原数据属性
-        };
+        this.tableInputData.data.list = data.list;
         // // 设置字体点击事件
         this.tableInputData.actions.click = {
           label: "产品名称",
@@ -458,6 +403,11 @@ export default {
             key: "redemptionDate",
             minWidth: "120",
             sortable: true
+          },
+          {
+            title: "上架状态",
+            key: "shelveStatusLabel",
+            minWidth: "80"
           },
           {
             title: "创建时间",

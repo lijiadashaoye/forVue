@@ -78,7 +78,7 @@ const actions = {
         commit
     }, id) {
         notice_delete(id).then((res) => {
-            if (res.success) {
+            if (res) {
                 commit('getNoticeListData')
             }
         })

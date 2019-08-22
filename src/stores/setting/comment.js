@@ -63,7 +63,7 @@ const actions = {
         commit
     }, id) {
         comment_del(id).then((res) => {
-            if (res.success) {
+            if (res) {
                 commit('getCommentListData', {
                     pageNum: state.commentList.pageNum,
                     pageSize: state.commentList.pageSize,

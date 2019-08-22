@@ -17,18 +17,26 @@
           <el-input clearable v-model="ruleForm.sameProductFlag" placeholder="请输入" class="isInput"></el-input>
         </el-form-item>
 
-        <el-form-item size="mini" label="是否上架" class="is50">
-          <el-radio-group v-model="ruleForm.shelve" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
+        <el-form-item label="是否上架" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+            <el-option
+              v-for="item in dictData.shelve_status"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
-        <el-form-item size="mini" label="是否面签" class="is50">
-          <el-radio-group v-model="ruleForm.visaInterview" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
+        <el-form-item label="是否面签" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+            <el-option
+              v-for="item in dictData.visa_interview_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item size="mini" label="是否推荐" class="is50">
@@ -43,6 +51,64 @@
             <el-radio-button label="是" class="isRadio"></el-radio-button>
             <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
+        </el-form-item>
+
+        <el-form-item size="mini" label="到期是否转存" class="is50">
+          <el-radio-group v-model="ruleForm.renewal" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item size="mini" label="是否实名" class="is50">
+          <el-radio-group v-model="ruleForm.realNameAuth" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item size="mini" label="是否签约" class="is50">
+          <el-radio-group v-model="ruleForm.signed" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item size="mini" label="自动上架" class="is50">
+          <el-radio-group v-model="ruleForm.autoShelve" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item size="mini" label="是否显示银行页" class="is50">
+          <el-radio-group v-model="ruleForm.showBankPage" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="合作方式" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
+            <el-option
+              size="mini"
+              v-for="item in dictData.cooperation_mode"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="银行对接方式" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+            <el-option
+              size="mini"
+              v-for="item in dictData.connection_mode"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="默认存款笔数" class="is50" prop="defaultNum">
@@ -73,6 +139,16 @@
           </span>
         </el-form-item>
 
+        <el-form-item label="默认关注数量" class="is50" prop="defaultFlowNum">
+          <el-input
+            type="number"
+            clearable
+            v-model="ruleForm.defaultFlowNum"
+            placeholder="请输入"
+            class="isInput"
+          ></el-input>
+        </el-form-item>
+
         <el-form-item prop="listAreaFlag" label="榜单专区标识" class="is50">
           <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
             <el-option
@@ -85,7 +161,9 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label class="is50"></el-form-item>
+        <el-form-item label="H5链接" style="width:100%;" prop="h5Url">
+          <el-input clearable v-model="ruleForm.h5Url" placeholder="请输入" class="isInput"></el-input>
+        </el-form-item>
       </el-form>
 
       <div class="nextButtons">
@@ -134,13 +212,22 @@ export default {
       pageName: "", // 当前页面名字
       ruleForm: {
         sameProductFlag: "", // 同一产品标识
-        shelve: "否", // 是否上架
-        visaInterview: "否", // 是否面签
+        shelveStatus: "", // 是否上架
+        visaInterview: "", // 是否面签
+        renewal: "否", // 到期是否转存
         recommend: "否", // 是否推荐
         homePage: "否", // 是否首页排行
         defaultNum: "", // 默认购买数量
         defaultAmount: "", // 默认购买金额
-        listAreaFlag: "" // 榜单专区标识
+        defaultFlowNum: "", // 默认关注数量
+        listAreaFlag: "", // 榜单专区标识
+        autoShelve: "否", // 自动上架
+        showBankPage: "否", //  显示银行过渡页
+        connectionMode: "", //  银行对接方式
+        cooperationMode: "", //  合作方式
+        h5Url: "", //  H5链接
+        realNameAuth: "是", // 实名认证
+        signed: "否" // 是否签约
       },
       //表单验证
       rules: {
@@ -148,7 +235,11 @@ export default {
           { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
         defaultNum: [{ validator: checkNum2, trigger: "blur" }],
-        defaultAmount: [{ validator: checkNum3, trigger: "blur" }]
+        defaultAmount: [{ validator: checkNum3, trigger: "blur" }],
+        defaultFlowNum: [{ validator: checkNum2, trigger: "blur" }],
+        h5Url: [
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
+        ]
       }
     };
   },
@@ -163,116 +254,252 @@ export default {
 
   methods: {
     next() {
-      let step1 = JSON.parse(sessionStorage.getItem("zhineng_step1"));
-      let type = JSON.parse(sessionStorage.getItem("dict")).deposit_type.filter(
-        item => {
-          return item.value === "intelligent_deposit";
-        }
-      )[0];
-      let xilieData = JSON.parse(sessionStorage.getItem("xilie_data"));
-      let obj = {
-        institutionId: step1.institutionId,
-        institutionName: "",
-        seriesId: step1.seriesId,
-        seriesName: "",
-        productSubtype: type.value,
-        productSubtypeLabel: type.label,
-        typeAlias: step1.typeAlias,
-        name: step1.name,
-        minAmount: +step1.purchaseAmount,
-        increaseAmount: +step1.increaseAmount,
-        interestRateAlias: step1.interestRateAlias,
-        renewal: step1.renewal === "是" ? "YES" : "NO",
-        withdrawalTime: step1.payTime,
-        withdrawalTimeLabel: "",
-        interestMode: step1.interestMode,
-        interestModeLabel: "",
-        description: step1.description,
-        interestRates: [],
-        appInfo: {
-          shelve: this.ruleForm.shelve === "是" ? "YES" : "NO",
-          visaInterview: this.ruleForm.visaInterview === "是" ? "YES" : "NO",
-          recommend: this.ruleForm.recommend === "是" ? "YES" : "NO",
-          homePage: this.ruleForm.homePage === "是" ? "YES" : "NO",
-          defaultBuyNum: +this.ruleForm.defaultNum,
-          defaultAmount: +this.ruleForm.defaultAmount,
-          listAreaFlag: this.ruleForm.listAreaFlag,
-          listAreaFlagLabel: "",
-          sameProductFlag: this.ruleForm.sameProductFlag
-        },
-        productTags: []
-      };
-      let jigou_d = xilieData.filter(
-        item => item.institutionId === obj.institutionId
-      )[0];
-      // 机构名称
-      obj.institutionName = jigou_d.institutionName;
-      // 产品系列名称
-      if (obj.seriesId != "") {
-        obj.seriesName = jigou_d.seriesList.filter(
-          item => item.id === obj.seriesId
-        )[0].institutionName;
-      }
-      // 支取时间Label
-      obj.withdrawalTimeLabel = obj.withdrawalTime
-        ? this.dictData.pay_time.filter(
-            item => item.value === obj.withdrawalTime
-          )[0].label
-        : "";
-      // 计息方式Label
-      obj.interestModeLabel = obj.interestMode
-        ? this.dictData.interest_mode.filter(
-            item => item.value === obj.interestMode
-          )[0].label
-        : "";
-      // 榜单专区标识Label
-      obj.appInfo.listAreaFlagLabel = obj.appInfo.listAreaFlag
-        ? this.dictData.list_area_type.filter(
-            item => item.value === obj.appInfo.listAreaFlag
-          )[0].label
-        : "";
-      // 利率列表
-      obj.interestRates = step1.lilv.map(item => {
-        let kk = {
-          deadline: +item.limit,
-          timeUnitType: +item.danwei,
-          timeUnitLabel: "",
-          lockinPeriod: +item.lockinPeriod,
-          interestRate: +item.lilv,
-          showList: item.showList,
-          lockinShowList: item.lockinShowList,
-          remark: item.beizhu
-        };
-        kk.timeUnitLabel = this.dictData.deadline_type.filter(
-          tar => tar.value === item.danwei
-        )[0].label;
-        return kk;
-      });
-      // 获取标签
-      if (step1.marks.length > 0) {
-        this.dictData.marks.forEach(item => {
-          step1.marks.forEach(tar => {
-            if (item.id === tar) {
-              obj.productTags.push({
-                id: tar,
-                name: item.name
-              });
-            }
-          });
-        });
-      }
-      this.isSaveIng = true;
-      this.$api
-        .save_zhineng({
-          vm: this,
-          data: obj
-        })
-        .then(res => {
-          this.isSaveIng = false;
-          if (res.success) {
-            this.isOk = true;
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          let step1 = JSON.parse(sessionStorage.getItem("zhineng_step1"));
+          let type = JSON.parse(
+            sessionStorage.getItem("dict")
+          ).deposit_type.filter(item => {
+            return item.value === "intelligent_deposit";
+          })[0];
+          let xilieData = JSON.parse(sessionStorage.getItem("xilie_data"));
+          let obj = {
+            institutionId: step1.institutionId,
+            institutionName: "",
+            seriesId: step1.seriesId,
+            seriesName: "",
+            name: step1.name,
+            minAmount: +step1.minAmount, // 最小起购金额
+            maxAmount: +step1.maxAmount, // 最大起购金额
+            amountRangeExplain: step1.amountRangeExplain, // 起购范围说明
+            increaseAmount: +step1.increaseAmount, // 递增金额
+            productSubtype: type.value,
+            productSubtypeLabel: type.label,
+            typeAlias: step1.typeAlias,
+            deadlineAlias: step1.deadlineAlias, // 期限别名
+            interestRateAlias: step1.interestRateAlias,
+            renewal: step1.renewal === "是" ? "YES" : "NO",
+            withdrawalTime: step1.payTime,
+            withdrawalTimeLabel: "",
+            interestMode: step1.interestMode,
+            interestModeLabel: "",
+            regulatoryProperty: step1.regulatoryProperty, // 监管属性
+            regulatoryPropertyLabel: "",
+            frequencyType: step1.frequencyType, // 付息频率
+            frequencyTypeLabel: "",
+            currencyCode: step1.currencyCode, // 币种编码
+            currencyName: "",
+            currencyUnit: "",
+            contentVersion: step1.contentVersion, // 内容版本号
+            description: step1.description,
+            interestRates: [],
+            appInfo: {
+              shelveStatus: this.ruleForm.shelveStatus,
+              shelveStatusLabel: "",
+              visaInterview: this.ruleForm.visaInterview, // 是否面签
+              visaInterviewLabel: "",
+              recommend: this.ruleForm.recommend === "是" ? "YES" : "NO",
+              homePage: this.ruleForm.homePage === "是" ? "YES" : "NO",
+              defaultBuyNum: +this.ruleForm.defaultNum,
+              defaultAmount: +this.ruleForm.defaultAmount,
+              listAreaFlag: this.ruleForm.listAreaFlag,
+              listAreaFlagLabel: "",
+              sameProductFlag: this.ruleForm.sameProductFlag,
+              realNameAuth: this.ruleForm.realNameAuth === "是" ? "YES" : "NO", // 是否实名
+              signed: this.ruleForm.signed === "是" ? "YES" : "NO", // 是否签约
+              defaultFlowNum: +this.ruleForm.defaultFlowNum, // 默认关注数量
+              connectionMode: this.ruleForm.connectionMode, // 银行对接方式
+              connectionModeLabel: "",
+              cooperationMode: this.ruleForm.cooperationMode, // 合作方式
+              cooperationModeLabel: "",
+              yearRate: +step1.yearRate, // 年收费率
+              autoShelve: this.ruleForm.autoShelve === "是" ? "YES" : "NO", // 自动上架
+              showBankPage: this.ruleForm.showBankPage === "是" ? "YES" : "NO", // 显示银行过渡页
+              h5Url: this.ruleForm.h5Url,
+              areaCode: step1.areaCode, // 区域编码
+              areaName: ""
+            },
+            productTags: [],
+            selfDefiningTags: [],
+            activityTags: []
+          };
+
+          let jigou_d = xilieData.filter(
+            item => item.institutionId === obj.institutionId
+          )[0];
+          // 机构名称
+          obj.institutionName = jigou_d.institutionName;
+          // 产品系列名称
+          if (obj.seriesId != "") {
+            obj.seriesName = jigou_d.seriesList.filter(
+              item => item.id === obj.seriesId
+            )[0].name;
           }
-        });
+          // 支取时间Label
+          obj.withdrawalTimeLabel = obj.withdrawalTime
+            ? this.dictData.pay_time.filter(
+                item => item.value === obj.withdrawalTime
+              )[0].label
+            : "";
+          // 上架状态
+          obj.appInfo.shelveStatusLabel = obj.appInfo.shelveStatus
+            ? this.dictData.shelve_status.filter(
+                item => item.value === obj.appInfo.shelveStatus
+              )[0].label
+            : "";
+          // 计息方式Label
+          obj.interestModeLabel = obj.interestMode
+            ? this.dictData.interest_mode.filter(
+                item => item.value === obj.interestMode
+              )[0].label
+            : "";
+          // 榜单专区标识Label
+          obj.appInfo.listAreaFlagLabel = obj.appInfo.listAreaFlag
+            ? this.dictData.list_area_type.filter(
+                item => item.value === obj.appInfo.listAreaFlag
+              )[0].label
+            : "";
+          // 监管属性Label
+          obj.regulatoryPropertyLabel = obj.regulatoryProperty
+            ? this.dictData.regulatory_property.filter(
+                item => item.value === obj.regulatoryProperty
+              )[0].label
+            : "";
+          // 币种
+          if (obj.currencyCode) {
+            let kk = this.dictData.bizhong.filter(
+              tar => tar.value === obj.currencyCode
+            )[0];
+            obj.currencyName = kk.label;
+            obj.currencyUnit = kk.unit;
+          }
+          // 付息频率Label
+          obj.frequencyTypeLabel = obj.frequencyType
+            ? this.dictData.frequency_type.filter(
+                item => item.value === obj.frequencyType
+              )[0].label
+            : "";
+          // 是否面签Label
+          obj.appInfo.visaInterviewLabel = obj.appInfo.visaInterview
+            ? this.dictData.visa_interview_type.filter(
+                item => item.value === obj.appInfo.visaInterview
+              )[0].label
+            : "";
+          // 银行对接方式Label
+          obj.appInfo.connectionModeLabel = obj.appInfo.connectionMode
+            ? this.dictData.connection_mode.filter(
+                item => item.value === obj.appInfo.connectionMode
+              )[0].label
+            : "";
+
+          // 银行合作方式Label
+          obj.appInfo.cooperationModeLabel = obj.appInfo.cooperationMode
+            ? this.dictData.cooperation_mode.filter(
+                item => item.value === obj.appInfo.cooperationMode
+              )[0].label
+            : "";
+
+          // 所属区域
+          obj.appInfo.areaName = step1.areaCode
+            ? this.dictData.quyu.filter(
+                item => item.value === step1.areaCode
+              )[0].label
+            : "";
+
+          // 利率列表
+          obj.interestRates = step1.lilv.map(item => {
+            let kk = {
+              fromTerm: +item.minDeadline, // 最小期限
+              fromTermUnitType: item.min_danwei, // 最小期限单位
+              fromTermUnitLabel: "",
+              fromTermSymbolType: item.min_symbol, // 限制条件符号
+              fromTermSymbolTypeLabel: "",
+
+              toTerm: +item.maxDeadline, // 最大期限
+              toTermUnitType: item.max_danwei, // 最大期限单位
+              toTermUnitLabel: "",
+              toTermSymbolType: item.max_symbol, // 限制条件符号
+              toTermSymbolTypeLabel: "",
+
+              lilv: item.lilv, // 利率
+              lockinPeriod: +item.lockinPeriod, // 锁定期限
+              showList: item.showList, // 榜单展示
+              lockinShowList: item.lockinShowList, // 锁定期榜单展示
+              remark: item.remark, // 备注
+              homepageCopywriting: item.homepageCopywriting, // 首页文案
+              detailCopywriting: item.detailCopywriting, // 详情页文案
+              detailCopywriting: item.detailCopywriting //  银行文案
+            };
+
+            kk.fromTermUnitLabel = this.dictData.deadline_type.filter(
+              tar => tar.value === kk.fromTermUnitType
+            )[0].label;
+            kk.fromTermSymbolTypeLabel = this.dictData.rule_symbol.filter(
+              tar => tar.value === kk.fromTermSymbolType
+            )[0].label;
+
+            kk.toTermUnitLabel = this.dictData.deadline_type.filter(
+              tar => tar.value === kk.toTermUnitType
+            )[0].label;
+            kk.toTermSymbolTypeLabel = this.dictData.rule_symbol.filter(
+              tar => tar.value === kk.toTermSymbolType
+            )[0].label;
+            return kk;
+          });
+
+          // 获取产品标签
+          if (step1.productTags.length > 0) {
+            this.dictData.productTags.forEach(item => {
+              step1.productTags.forEach(tar => {
+                if (item.id === tar) {
+                  obj.productTags.push({
+                    id: tar,
+                    name: item.name
+                  });
+                }
+              });
+            });
+          }
+          // 获取自定义标签
+          if (step1.selfDefiningTags.length > 0) {
+            this.dictData.selfDefiningTags.forEach(item => {
+              step1.selfDefiningTags.forEach(tar => {
+                if (item.id === tar) {
+                  obj.selfDefiningTags.push({
+                    id: tar,
+                    name: item.name
+                  });
+                }
+              });
+            });
+          }
+          // 获取活动标签
+          if (step1.activityTags.length > 0) {
+            this.dictData.activityTags.forEach(item => {
+              step1.activityTags.forEach(tar => {
+                if (item.id === tar) {
+                  obj.activityTags.push({
+                    id: tar,
+                    name: item.name
+                  });
+                }
+              });
+            });
+          }
+          this.isSaveIng = true;
+          this.$api
+            .save_zhineng({
+              vm: this,
+              data: obj
+            })
+            .then(res => {
+              this.isSaveIng = false;
+              if (res) {
+                this.isOk = true;
+              }
+            });
+        }
+      });
     },
     isOver(type) {
       sessionStorage.setItem("page", "存款管理 ");

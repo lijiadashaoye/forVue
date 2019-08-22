@@ -1,124 +1,127 @@
 <template>
   <div id="isTable">
-    <div v-if="loadEnd">
-      <el-table
-        :stripe="true"
-        :data="inputData.data.list"
-        :max-height="setMaxHeight"
-        :height="setMaxHeight"
-        tooltip-effect="dark"
-        @selection-change="handleSelectionChange"
-        @select="handleSelectionChange"
-        v-loading="inputData.loading"
-        size="mini"
+    <el-table
+      ref="isTable"
+      :stripe="true"
+      :data="inputData.data.list"
+      :max-height="setMaxHeight"
+      :height="setMaxHeight"
+      tooltip-effect="dark"
+      @selection-change="handleSelectionChange"
+      v-loading="inputData.loading"
+      size="mini"
+    >
+      <!-- checkbox -->
+      <el-table-column
+        v-if="inputData.checkBox"
+        padding="5px"
+        type="selection"
+        width="30"
+        fixed="left"
+      ></el-table-column>
+
+      <el-table-column v-if="!inputData.noIndex" label="序号" type="index" width="50" order="2"></el-table-column>
+
+      <el-table-column
+        v-if="inputData.actions['click']"
+        :label="inputData.actions['click'].label"
+        :min-width="inputData.actions['click'].minWidth"
       >
-        <!-- checkbox -->
-        <el-table-column
-          v-if="inputData.checkBox"
-          padding="5px"
-          type="selection"
-          width="30"
-          fixed="left"
-        ></el-table-column>
-
-        <el-table-column v-if="!inputData.noIndex" label="序号" type="index" width="50" order="2"></el-table-column>
-
-        <el-table-column
-          v-if="inputData.actions['click']"
-          :label="inputData.actions['click'].label"
-          :min-width="inputData.actions['click'].minWidth"
-        >
-          <template slot-scope="scope">
-            <el-tooltip
-              :content="`点击查看：${scope.row[inputData.actions['click']['from']]}`"
-              placement="top"
-            >
-              <el-button
-                @click="caozuo('textClick',scope.row)"
-                type="text"
-              >{{scope.row[inputData.actions['click']['from']]}}</el-button>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-
-        <!-- 每一列表格数据 -->
-
-        <el-table-column
-          v-for="(item,index) in inputData.data.title"
-          :key="index"
-          :sortable="item.sortable"
-          :label="item.title"
-          :minWidth="item.minWidth"
-          :prop="item.key"
-        >
-          <template slot-scope="scope">
-            <div v-if="!item.imgArr">
-              <img style="width:40px;" v-if="item.isImg" :src="scope.row[item.key]" />
-              <span
-                :style="{color:item.color?item.color:''}"
-                v-if="!item.isImg"
-              >{{ scope.row[item.key] }}</span>
-            </div>
-            <!--活动管理配置管理设置素材 -->
-            <ul v-if="item.imgArr" class="imgArr">
-              <li v-for="tar of scope.row[item.key]" :key="tar.text">
-                <img style="width:50px;" :src="tar.img" />
-                <span>{{ tar.text }}</span>
-              </li>
-            </ul>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          v-if="inputData.actions['setColor']"
-          :label="inputData.actions['setColor'].label"
-          :min-width="inputData.actions['setColor'].minWidth"
-        >
-          <template slot-scope="scope">
-            <p
-              :style="{color:scope.row[inputData.actions['setColor'].with]?'#13ce66':'#ff4949'}"
-            >{{scope.row[inputData.actions['setColor']['from']]}}</p>
-          </template>
-        </el-table-column>
-
-        <el-table-column
-          v-if="inputData.actions['switch']"
-          :label="inputData.actions['switch'].label"
-          :min-width="inputData.actions['switch'].minWidth"
-        >
-          <template slot-scope="scope">
-            <el-tooltip :content="''+scope.row.action" placement="top">
-              <el-switch
-                v-model="scope.row.switch"
-                active-color="#13ce66"
-                inactive-color="#909399"
-                @change="caozuo('switch',scope.row)"
-              ></el-switch>
-            </el-tooltip>
-          </template>
-        </el-table-column>
-
-        <!--操作 -->
-        <el-table-column
-          v-if="inputData.data.custom.length>0"
-          fixed="right"
-          label="操作"
-          :width="caozuoWith"
-        >
-          <template slot-scope="scope">
+        <template slot-scope="scope">
+          <el-tooltip
+            :content="`点击查看：${scope.row[inputData.actions['click']['from']]}`"
+            placement="top"
+          >
             <el-button
-              v-for="(item,index) in inputData.data.custom"
-              :key="index"
-              :disabled="seeWhichButton(scope.row,item)"
-              @click.native.prevent="caozuo(item.emit,scope.row)"
-              :type="item.type"
-              :plain="seeWhichButton(scope.row,item)"
-              size="mini"
-            >{{item.text}}</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+              @click="caozuo('textClick',scope.row)"
+              type="text"
+            >{{scope.row[inputData.actions['click']['from']]}}</el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+
+      <!-- 每一列表格数据 -->
+
+      <el-table-column
+        v-for="(item,index) in inputData.data.title"
+        :key="index"
+        :sortable="item.sortable"
+        :label="item.title"
+        :minWidth="item.minWidth"
+        :prop="item.key"
+      >
+        <template slot-scope="scope">
+          <div v-if="!item.imgArr">
+            <img
+              style="width:40px;"
+              v-if="item.isImg"
+              :src="ImgBaseUrl + scope.row[item.key]"
+            />
+            <span
+              :style="{color:item.color?item.color:''}"
+              v-if="!item.isImg"
+            >{{ scope.row[item.key] }}</span>
+          </div>
+          <!--活动管理配置管理设置素材 -->
+          <ul v-if="item.imgArr" class="imgArr">
+            <li v-for="tar of scope.row[item.key]" :key="tar.img">
+              <img style="width:30px;height:30px;" :src="tar.img" />
+              <p>{{ tar.text }}</p>
+            </li>
+          </ul>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        v-if="inputData.actions['setColor']"
+        :label="inputData.actions['setColor'].label"
+        :min-width="inputData.actions['setColor'].minWidth"
+      >
+        <template slot-scope="scope">
+          <p
+            :style="{color:scope.row[inputData.actions['setColor'].with]?'#13ce66':'#ff4949'}"
+          >{{scope.row[inputData.actions['setColor']['from']]}}</p>
+        </template>
+      </el-table-column>
+
+      <el-table-column
+        v-if="inputData.actions['switch']"
+        :label="inputData.actions['switch'].label"
+        :min-width="inputData.actions['switch'].minWidth"
+      >
+        <template slot-scope="scope">
+          <el-tooltip :content="''+scope.row.action" placement="top">
+            <el-switch
+              v-model="scope.row.switch"
+              active-color="#13ce66"
+              inactive-color="#909399"
+              @change="caozuo('switch',scope.row)"
+            ></el-switch>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+
+      <!--操作 -->
+      <el-table-column
+        v-if="inputData.data.custom.length>0"
+        fixed="right"
+        label="操作"
+        :width="caozuoWith"
+      >
+        <template slot-scope="scope">
+          <el-button
+            v-for="(item,index) in inputData.data.custom"
+            :key="index"
+            :disabled="seeWhichButton(scope.row,item)"
+            @click.native.prevent="caozuo(item.emit,scope.row)"
+            :type="item.type"
+            :plain="seeWhichButton(scope.row,item)"
+            size="mini"
+          >{{item.text}}</el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
     <div id="isFenYe" v-if="!inputData.fenye">
       <el-pagination
         :pager-count="5"
@@ -127,7 +130,7 @@
         :page-sizes="[10, 20, 30, 40]"
         :current-page="inputData.pageNum"
         :page-size="inputData.pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
+        layout="total, sizes, prev, pager, next"
         :total="inputData.total"
         background
       ></el-pagination>
@@ -143,11 +146,13 @@ export default {
     return {
       setMaxHeight: null, // 设置表格的 maxHeight
       caozuoWith: 0, // 操作那一栏的宽度
-      loadEnd: false
+      loadEnd: false,
+      isJiaZai: null,
+      ImgBaseUrl: '',
     };
   },
   created() {
-    // console.log(this.inputData);
+    this.ImgBaseUrl = this.$ImgBaseUrl;
   },
   methods: {
     // 用来判断按钮是否可用
@@ -219,21 +224,30 @@ export default {
       let num = this.inputData.pageNum - 1;
       this.handleCurrentChange(num);
     }
-    let isLiShi = sessionStorage.getItem("lishi");
     setTimeout(() => {
-      this.setWidth();
-      if (!isLiShi) {
-        this.setMaxHeightFn();
+      // 设置默认选中checkbox
+      if (this.inputData.data.setCheck) {
+        let digui = () => {
+          let ref = this.$refs.isTable;
+          if (ref) {
+            this.inputData.data.setCheck.forEach(row => {
+              ref.toggleRowSelection(row);
+            });
+          } else {
+            digui();
+          }
+        };
+        digui();
       }
-    },100);
+      this.setWidth();
+      this.setMaxHeightFn();
+    }, 100);
     // 动态设置表格的 max-height，并防抖
     let isTimeOut;
     window.addEventListener("resize", () => {
       clearTimeout(isTimeOut);
       isTimeOut = setTimeout(() => {
-        if (!isLiShi) {
-          this.setMaxHeightFn();
-        }
+        this.setMaxHeightFn();
       }, 500);
     });
   }
@@ -248,6 +262,9 @@ export default {
 .imgArr {
   display: flex;
   justify-content: space-between;
+}
+.imgArr > li {
+  margin-right: 3px;
 }
 .imgArr li img {
   vertical-align: middle;

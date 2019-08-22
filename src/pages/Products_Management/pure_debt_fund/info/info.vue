@@ -24,7 +24,6 @@ export default {
     };
   },
   created() {
-    sessionStorage.setItem("lishi", "lishi");
     this.pageName =
       sessionStorage.getItem("page") +
       ` > ${this.$route.query["institutionName"]}详情`; // 获取页面名称
@@ -39,8 +38,5 @@ export default {
       console.log(this.forEveryInfo);
     }
   },
-  beforeDestroy() {
-    sessionStorage.removeItem("lishi");
-  }
 };
 </script>

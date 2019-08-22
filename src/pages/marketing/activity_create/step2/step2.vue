@@ -62,7 +62,7 @@
               @click="toClose(1)"
             ></el-button>
           </div>
-        </div>]
+        </div>
 
         <el-dialog
           title="活动栏位管理"
@@ -278,8 +278,8 @@
               <el-button type="info" size="mini" @click="toSearch(false)">清除</el-button>
             </el-form-item>
           </el-form>
-          <div v-if="forForms.forForms">
-            <forms @tableAct="tableAct" style="with:100%;" :type="'lilv'" :pageData="forForms" />
+          <div v-if="forForms[forForms['type']]">
+            <forms @tableAct="tableAct" style="with:100%;" :pageData="forForms" />
           </div>
           <div class="editDialogButtons">
             <el-button type="danger" size="mini" @click="closeGuanLianTanKuang(false)">关闭</el-button>
@@ -680,7 +680,8 @@ export default {
               "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1563340268661&di=3e6aea9c6560893f2befa12a4fade287&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201610%2F31%2F20161031184439_JfVYm.thumb.700_0.jpeg"
           });
         }
-        this.$set(this.forForms, "forForms", forms);
+        this.forForms.type = "guanlianchanpin"; // 添加关联产品
+        this.$set(this.forForms, "guanlianchanpin", forms);
       } else {
         this.guanlianForm.search = "";
       }
@@ -690,12 +691,12 @@ export default {
       if (data.type === "use") {
         this.pageData.guanlian.push(data.data);
         // 选中的产品，就从当前列表中去除
-        let zz = JSON.parse(JSON.stringify(this.forForms.forForms));
+        let zz = JSON.parse(JSON.stringify(this.forForms["guanlianchanpin"]));
         zz.dataTotal = zz.dataTotal.filter(tar => tar.num != data.data.num);
-        this.$set(this.forForms, "forForms", null);
-        setTimeout(() => {
-          this.$set(this.forForms, "forForms", zz);
-        }, 0);
+        this.$set(this.forForms, "guanlianchanpin", null);
+        this.$nextTick(() => {
+          this.$set(this.forForms, "guanlianchanpin", zz);
+        });
       }
       if (data.type === "moreSelect") {
         this.hasSelectNum = data.data;
@@ -716,9 +717,9 @@ export default {
           });
 
           this.$set(this.forForms, "forForms", null);
-          setTimeout(() => {
+          this.$nextTick(() => {
             this.$set(this.forForms, "forForms", zz);
-          }, 0);
+          });
         } else {
           this.$message.error("请选择批量使用的产品！");
         }
@@ -898,6 +899,7 @@ export default {
   display: flex;
   justify-content: center;
 }
+
 .suolueWap {
   display: flex;
   flex-wrap: wrap;

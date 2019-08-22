@@ -408,7 +408,7 @@
             delete: function (data) {
                 this.$confirm('确认要删除'+ data.versionNo + '版本信息吗').then(() => {
                     clientVersion_del({id:data.id}).then((res)=>{
-                        if (res.success) {
+                        if (res) {
                             this.$message.success('删除成功')
                         } else {
                             this.$message.error('删除失败')
@@ -479,7 +479,7 @@
                         if (this.id) {
                             params.id = this.id
                             clientVersion_edit(params).then((res) => {
-                                if (res.success) {
+                                if (res) {
                                     this.dialogVisible = false
                                     this.getList({
                                         versionNo: this.versionNo,

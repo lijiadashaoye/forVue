@@ -3,7 +3,7 @@ import admin from './admin_use';
 import market from './market_use';
 import member from './member_use';
 import product from './product_center';
-import active_area from './active_area';
+import set_center from './set_center';
 
 export default {
     ...login,
@@ -11,5 +11,5 @@ export default {
     ...market,
     ...member,
     ...product,
-    ...active_area
+    ...set_center
 }

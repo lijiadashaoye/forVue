@@ -20,38 +20,45 @@
             <el-radio-button label="赎回"></el-radio-button>
           </el-radio-group>
         </el-form-item>
+        <hr style="margin:0 0 5px 0;" />
 
         <div v-show="ruleForm['type']==='认购'">
           <el-form-item label="金额">
             <div class="toFlex">
-              <el-form-item prop="amount">
-                <el-input
-                  style="margin-right:10px;"
-                  type="number"
-                  clearable
-                  v-model="ruleForm.amount"
-                  placeholder="最小金额"
-                ></el-input>
-              </el-form-item>
-
               <el-select
+                class="isInput"
                 style="margin-right:10px;"
-                v-model="ruleForm.amountUnit"
                 clearable
                 placeholder="请选择"
+                v-model="ruleForm.minAmountSymbol"
               >
                 <el-option
                   size="mini"
-                  v-for="item in dictData.monetary_unit"
+                  v-for="item in dictData.rule_symbol"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
               </el-select>
-              <el-select clearable placeholder="请选择" v-model="ruleForm.amountSymbol">
+
+              <el-form-item prop="minTransactionAmount" class="isInput">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="ruleForm.minTransactionAmount"
+                  placeholder="最小交易金额"
+                ></el-input>
+              </el-form-item>
+
+              <el-select
+                class="isInput"
+                clearable
+                placeholder="请选择"
+                v-model="ruleForm.minAmountUnit"
+              >
                 <el-option
                   size="mini"
-                  v-for="item in dictData.rule_symbol"
+                  v-for="item in dictData.currency_unit"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -59,7 +66,6 @@
               </el-select>
             </div>
           </el-form-item>
-
           <el-form-item label="交易金额">
             <div class="toFlex">
               <el-select
@@ -67,7 +73,7 @@
                 style="margin-right:10px;"
                 clearable
                 placeholder="请选择"
-                v-model="ruleForm.transactionUnit"
+                v-model="ruleForm.maxAmountSymbol"
               >
                 <el-option
                   size="mini"
@@ -78,27 +84,29 @@
                 ></el-option>
               </el-select>
 
-              <el-form-item prop="transaction" class="isInput">
-                <el-input type="number" clearable v-model="ruleForm.transaction" placeholder="最大金额"></el-input>
+              <el-form-item prop="maxTransactionAmount" class="isInput">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="ruleForm.maxTransactionAmount"
+                  placeholder="最大交易金额"
+                ></el-input>
               </el-form-item>
 
               <el-select
                 class="isInput"
                 clearable
                 placeholder="请选择"
-                v-model="ruleForm.transactionSymbol"
+                v-model="ruleForm.maxAmountUnit"
               >
                 <el-option
                   size="mini"
-                  v-for="item in dictData.monetary_unit"
+                  v-for="item in dictData.currency_unit"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
               </el-select>
-              <span class="isA1">
-                <i class="myIcon14px icon-wenhaoyuanyiwenxianxing isA1"></i>
-              </span>
             </div>
           </el-form-item>
 
@@ -110,7 +118,6 @@
               placeholder="请输入"
               type="number"
             ></el-input>
-            <span class="isA">%</span>
           </el-form-item>
 
           <el-form-item label="费率折扣" prop="rateDiscount">
@@ -121,7 +128,6 @@
               placeholder="请输入"
               type="number"
             ></el-input>
-            <span class="isA">%</span>
           </el-form-item>
 
           <el-form-item label="单笔费用" prop="cost">
@@ -138,33 +144,41 @@
         <div v-show="ruleForm['type']==='申购'">
           <el-form-item label="金额">
             <div class="toFlex">
-              <el-form-item prop="amount2">
-                <el-input
-                  style="margin-right:10px;"
-                  type="number"
-                  clearable
-                  v-model="ruleForm.amount2"
-                  placeholder="最小金额"
-                ></el-input>
-              </el-form-item>
               <el-select
+                class="isInput"
                 style="margin-right:10px;"
-                v-model="ruleForm.amountUnit2"
                 clearable
                 placeholder="请选择"
+                v-model="ruleForm.minAmountSymbol2"
               >
                 <el-option
                   size="mini"
-                  v-for="item in dictData.monetary_unit"
+                  v-for="item in dictData.rule_symbol"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
               </el-select>
-              <el-select clearable placeholder="请选择" v-model="ruleForm.amountSymbol2">
+
+              <el-form-item prop="minTransactionAmount2" class="isInput">
+                <el-input
+                  style="margin-right:10px;"
+                  type="number"
+                  clearable
+                  v-model="ruleForm.minTransactionAmount2"
+                  placeholder="最小金额"
+                ></el-input>
+              </el-form-item>
+
+              <el-select
+                class="isInput"
+                clearable
+                placeholder="请选择"
+                v-model="ruleForm.minAmountUnit2"
+              >
                 <el-option
                   size="mini"
-                  v-for="item in dictData.rule_symbol"
+                  v-for="item in dictData.currency_unit"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -180,7 +194,7 @@
                 style="margin-right:10px;"
                 clearable
                 placeholder="请选择"
-                v-model="ruleForm.transactionSymbol2"
+                v-model="ruleForm.maxAmountSymbol2"
               >
                 <el-option
                   size="mini"
@@ -191,32 +205,30 @@
                 ></el-option>
               </el-select>
 
-              <el-form-item prop="transaction2" class="isInput">
+              <el-form-item prop="maxTransactionAmount2" class="isInput">
                 <el-input
                   style="margin-right:10px;"
                   type="number"
                   clearable
-                  v-model="ruleForm.transaction2"
+                  v-model="ruleForm.maxTransactionAmount2"
                   placeholder="金额"
                 ></el-input>
               </el-form-item>
+
               <el-select
                 class="isInput"
                 clearable
                 placeholder="请选择"
-                v-model="ruleForm.transactionUnit2"
+                v-model="ruleForm.maxAmountUnit2"
               >
                 <el-option
                   size="mini"
-                  v-for="item in dictData.monetary_unit"
+                  v-for="item in dictData.currency_unit"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
               </el-select>
-              <span class="isA1">
-                <i class="myIcon14px icon-wenhaoyuanyiwenxianxing isA1"></i>
-              </span>
             </div>
           </el-form-item>
 
@@ -228,7 +240,6 @@
               placeholder="请输入"
               type="number"
             ></el-input>
-            <span class="isA">%</span>
           </el-form-item>
 
           <el-form-item label="费率折扣" prop="rateDiscount2">
@@ -239,7 +250,6 @@
               placeholder="请输入"
               type="number"
             ></el-input>
-            <span class="isA">%</span>
           </el-form-item>
 
           <el-form-item label="单笔费用" prop="cost2">
@@ -256,23 +266,12 @@
         <div v-show="ruleForm['type']==='赎回'">
           <el-form-item label="赎回期限">
             <div class="toFlex">
-              <el-form-item prop="timeLimit">
-                <el-input type="number" clearable v-model="ruleForm.timeLimit" placeholder="天数"></el-input>
-              </el-form-item>&nbsp;&nbsp;
-              <el-select v-model="ruleForm.timeLimitSymbol" clearable placeholder="请选择">
-                <el-option
-                  v-for="item in dictData.rule_symbol"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </div>
-          </el-form-item>
-
-          <el-form-item label="赎回天数">
-            <div class="toFlex">
-              <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.daysSymbol">
+              <el-select
+                class="isInput"
+                clearable
+                placeholder="请选择"
+                v-model="ruleForm.minTimeSymbol"
+              >
                 <el-option
                   v-for="item in dictData.rule_symbol"
                   :key="item.value"
@@ -280,8 +279,39 @@
                   :value="item.value"
                 ></el-option>
               </el-select>&nbsp;&nbsp;
-              <el-form-item prop="days">
-                <el-input type="number" clearable v-model="ruleForm.days" placeholder="天数"></el-input>
+              <el-form-item prop="minTimeLimit">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="ruleForm.minTimeLimit"
+                  placeholder="最大期限"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-form-item>
+
+          <el-form-item label="赎回天数">
+            <div class="toFlex">
+              <el-select
+                class="isInput"
+                clearable
+                placeholder="请选择"
+                v-model="ruleForm.maxTimeSymbol"
+              >
+                <el-option
+                  v-for="item in dictData.rule_symbol"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>&nbsp;&nbsp;
+              <el-form-item prop="maxTimeLimit">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="ruleForm.maxTimeLimit"
+                  placeholder="最大期限"
+                ></el-input>
               </el-form-item>
             </div>
           </el-form-item>
@@ -294,7 +324,6 @@
               placeholder="请输入"
               type="number"
             ></el-input>
-            <span class="isA">%</span>
           </el-form-item>
 
           <el-form-item label="费率折扣" prop="rateDiscount3">
@@ -305,7 +334,6 @@
               placeholder="请输入"
               type="number"
             ></el-input>
-            <span class="isA">%</span>
           </el-form-item>
 
           <el-form-item label="单笔费用" prop="cost3">
@@ -336,8 +364,20 @@ export default {
   components: { hasSuccess },
   data() {
     // 验证数字
-    var checkNum3 = (rule, value, callback) => {
+    var checkNum2 = (rule, value, callback) => {
       if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字
+    var checkNum3 = (rule, value, callback) => {
+      if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
         callback(new Error("请输入正数"));
       } else if (("" + value).length > 19) {
         callback(new Error("请输入1-19字符"));
@@ -355,57 +395,50 @@ export default {
         rate: "", // 费率
         rateDiscount: "", // 费率折扣
         cost: "", // 单笔费用
-        amount: "", // 金额
-        amountUnit: "", // 金额单位
-        amountSymbol: "", // 金额符号标识
-        transaction: "", // 交易金额
-        transactionUnit: "", // 交易金额单位
-        transactionSymbol: "", // 交易金额符号标识
+        minTransactionAmount: "", // 金额
+        minAmountUnit: "", // 金额单位
+        minAmountSymbol: "", // 金额符号标识
+        maxTransactionAmount: "", // 最大交易金额
+        maxAmountUnit: "", // 交易金额单位
+        maxAmountSymbol: "", // 交易金额符号标识
         // 申购
         rate2: "", // 费率
         rateDiscount2: "", // 费率折扣
         cost2: "", // 单笔费用
-        amount2: "", // 金额
-        amountUnit2: "", // 金额单位
-        amountSymbol2: "", // 金额符号标识
-        transaction2: "", // 交易金额
-        transactionUnit2: "", // 交易金额单位
-        transactionSymbol2: "", // 交易金额符号标识
+        minTransactionAmount2: "", // 金额
+        minAmountUnit2: "", // 金额单位
+        minAmountSymbol2: "", // 金额符号标识
+        maxTransactionAmount2: "", // 最大交易金额
+        maxAmountUnit2: "", // 交易金额单位
+        maxAmountSymbol2: "", // 交易金额符号标识
         // 赎回
         rate3: "", // 费率
         rateDiscount3: "", // 费率折扣
         cost3: "", // 单笔费用
-        timeLimit: "", // 期限
-        timeLimitSymbol: "", // 期限符号标识
-        days: "", // 天数
-        daysSymbol: "" // 天数符号标识
+        minTimeLimit: "", // 期限
+        minTimeSymbol: "", // 期限符号标识
+        maxTimeLimit: "", // 天数
+        maxTimeSymbol: "" // 天数符号标识
       },
-      shelveList: [
-        {
-          label: "上架中",
-          value: "YES"
-        },
-        {
-          label: "已下架",
-          value: "NO"
-        }
-      ],
       rules: {
         rate: [{ validator: checkNum3, trigger: "blur" }],
         rateDiscount: [{ validator: checkNum3, trigger: "blur" }],
-        cost: [{ validator: checkNum3, trigger: "blur" }],
+        cost: [{ validator: checkNum2, trigger: "blur" }],
+
         rate2: [{ validator: checkNum3, trigger: "blur" }],
         rateDiscount2: [{ validator: checkNum3, trigger: "blur" }],
-        cost2: [{ validator: checkNum3, trigger: "blur" }],
+        cost2: [{ validator: checkNum2, trigger: "blur" }],
+
         rate3: [{ validator: checkNum3, trigger: "blur" }],
         rateDiscount3: [{ validator: checkNum3, trigger: "blur" }],
-        cost3: [{ validator: checkNum3, trigger: "blur" }],
-        amount: [{ validator: checkNum3, trigger: "blur" }],
-        transaction: [{ validator: checkNum3, trigger: "blur" }],
-        amount2: [{ validator: checkNum3, trigger: "blur" }],
-        transaction2: [{ validator: checkNum3, trigger: "blur" }],
-        timeLimit: [{ validator: checkNum3, trigger: "blur" }],
-        days: [{ validator: checkNum3, trigger: "blur" }]
+        cost3: [{ validator: checkNum2, trigger: "blur" }],
+
+        minTransactionAmount: [{ validator: checkNum2, trigger: "blur" }],
+        maxTransactionAmount: [{ validator: checkNum2, trigger: "blur" }],
+        minTransactionAmount2: [{ validator: checkNum2, trigger: "blur" }],
+        maxTransactionAmount2: [{ validator: checkNum2, trigger: "blur" }],
+        minTimeLimit: [{ validator: checkNum2, trigger: "blur" }],
+        maxTimeLimit: [{ validator: checkNum2, trigger: "blur" }]
       }
     };
   },
@@ -419,155 +452,194 @@ export default {
   methods: {
     // 保存
     next() {
-      let step1 = JSON.parse(sessionStorage.getItem("chunzhai_step1"));
-      let step2 = JSON.parse(sessionStorage.getItem("chunzhai_step2"));
-      let obj = {
-        institutionId: step1.institutionId,
-        institutionName: "",
-        fundHouseId: step1.fundHouseId,
-        fundHouseName: "",
-        name: step1.name,
-        code: step1.code,
-        status: step1.status,
-        statusName: "",
-        // dailyIncrease: +step1.dailyIncrease,
-        appInfo: {
-          shelve: step2.shelve === "是" ? "YES" : "NO",
-          visaInterview: step2.visaInterview === "是" ? "YES" : "NO",
-          recommend: step2.recommend === "是" ? "YES" : "NO",
-          homePage: step2.homePage === "是" ? "YES" : "NO",
-          defaultBuyNum: +step2.defaultNum,
-          defaultAmount: +step2.defaultAmount
-        },
-        netValue: {
-          // 净值
-          netAccumulateValue: +step1.netValue.netAccumulateValue,
-          netAssetValue: +step1.netValue.netAssetValue
-        },
-        //  业绩
-        performance: {
-          oneDayIncrease: +step1.performance.oneDayIncrease,
-          oneYearIncrease: +step1.performance.oneYearIncrease,
-          sixMonthIncrease: +step1.performance.sixMonthIncrease,
-          threeMonthIncrease: +step1.performance.threeMonthIncrease
-        },
-        subscribe: {
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          let step1 = JSON.parse(sessionStorage.getItem("chunzhai_step1"));
+          let step2 = JSON.parse(sessionStorage.getItem("chunzhai_step2"));
+          let obj = {
+            institutionId: step1.institutionId,
+            institutionName: "",
+            fundHouseId: step1.fundHouseId,
+            fundHouseName: "",
+            name: step1.name,
+            code: step1.code,
+            status: step1.status,
+            statusName: "",
+            contentVersion: +step1.contentVersion, // 产品版本标识
+            appInfo: {
+              shelveStatus: step2.shelveStatus,
+              shelveStatusLabel: "",
+              recommend: step2.recommend === "是" ? "YES" : "NO",
+              visaInterview: step2.visaInterview,
+              visaInterviewLabel: "", // 是否面签Label
+              homePage: step2.homePage === "是" ? "YES" : "NO",
+              defaultBuyNum: +step2.defaultNum,
+              defaultAmount: +step2.defaultAmount,
+              realNameAuth: step2.realNameAuth === "是" ? "YES" : "NO",
+              h5Url: step2.h5Url, // 产品H5链接
+              showBankPage: step2.showBankPage === "是" ? "YES" : "NO" // 是否显示银行页
+            },
+            netValue: {
+              // 净值
+              netAccumulateValue: +step1.netValue.netAccumulateValue,
+              netAssetValue: +step1.netValue.netAssetValue
+            },
+            //  业绩
+            performance: {
+              oneDayIncrease: +step1.performance.oneDayIncrease,
+              oneYearIncrease: +step1.performance.oneYearIncrease,
+              sixMonthIncrease: +step1.performance.sixMonthIncrease,
+              threeMonthIncrease: +step1.performance.threeMonthIncrease
+            },
+            subscribe: {
+              // 认购
+              rate: +this.ruleForm.rate, //费率
+              rateDiscount: +this.ruleForm.rateDiscount, //费率折扣
+              cost: +this.ruleForm.cost, //费用
+              minTransactionAmount: +this.ruleForm.minTransactionAmount, // 最小交易金额
+              minAmountUnit: this.ruleForm.minAmountUnit, // 最小金额单位
+              minAmountUnitLabel: "", // 最小金额单位Label
+              minAmountSymbol: this.ruleForm.minAmountSymbol, // 最小金额规则符号
+              minAmountSymbolLabel: "", //最小金额规则符号
+
+              maxTransactionAmount: +this.ruleForm.maxTransactionAmount, // 最大交易金额
+              maxAmountUnit: this.ruleForm.maxAmountUnit, // 最大交易金额单位
+              maxAmountUnitLabel: "", //最大交易金额单位Label
+              maxAmountSymbol: this.ruleForm.maxAmountSymbol,
+              maxAmountSymbolLabel: "" // 最大交易金额规则符号Label
+            },
+            applyForPurchase: {
+              // 申购
+              rate: +this.ruleForm.rate2, //费率
+              rateDiscount: +this.ruleForm.rateDiscount2, //费率折扣
+              cost: +this.ruleForm.cost2, //费用
+
+              minTransactionAmount: +this.ruleForm.minTransactionAmount2, // 最小交易金额
+              minAmountUnit: this.ruleForm.minAmountUnit2, // 最小金额单位
+              minAmountUnitLabel: "", // 最小金额单位Label
+              minAmountSymbol: this.ruleForm.minAmountSymbol2, // 最小金额规则符号
+              minAmountSymbolLabel: "", //最小金额规则符号
+
+              maxTransactionAmount: +this.ruleForm.maxTransactionAmount2, // 最大交易金额
+              maxAmountUnit: this.ruleForm.maxAmountUnit2, // 最大交易金额单位
+              maxAmountUnitLabel: "", //最大交易金额单位Label
+              maxAmountSymbol: this.ruleForm.maxAmountSymbol2,
+              maxAmountSymbolLabel: "" // 最大交易金额规则符号Label
+            },
+            redemption: {
+              // 赎回
+              rate: +this.ruleForm.rate3, //费率
+              rateDiscount: +this.ruleForm.rateDiscount3, //费率折扣
+              cost: +this.ruleForm.cost3, //费用
+
+              minTimeLimit: +this.ruleForm.minTimeLimit,
+              minTimeSymbol: this.ruleForm.minTimeSymbol,
+              minTimeSymbolLabel: "", // 最小期限符号标识Label
+              maxTimeLimit: +this.ruleForm.maxTimeLimit,
+              maxTimeSymbol: this.ruleForm.maxTimeSymbol,
+              maxTimeSymbolLabel: "" // 最大期限符号标识Label
+            }
+          };
+          // 机构名称
+          obj.institutionName = this.dictData.jigou.filter(item => {
+            return item.id === obj.institutionId;
+          })[0].name;
+          // 基金公司名称
+          obj.fundHouseName = this.dictData.jijin.filter(item => {
+            return item.id === obj.fundHouseId;
+          })[0].name;
+          // 交易状态显示名
+          obj.statusName = this.dictData.transaction_state.filter(item => {
+            return item.value === obj.status;
+          })[0].label;
+
+          // 上架状态
+          obj.appInfo.shelveStatusLabel = step2.shelveStatus
+            ? this.dictData.shelve_status.filter(
+                item => item.value === obj.appInfo.shelveStatus
+              )[0].label
+            : "";
+          // 是否面签Label
+          obj.appInfo.visaInterviewLabel = step2.visaInterview
+            ? this.dictData.visa_interview_type.filter(
+                item => item.value === step2.visaInterview
+              )[0].label
+            : "";
           // 认购
-          rate: +this.ruleForm.rate, //费率
-          rateDiscount: +this.ruleForm.rateDiscount, //费率折扣
-          cost: +this.ruleForm.cost, //费用
-          amount: +this.ruleForm.amount,
-          amountSymbol: this.ruleForm.amountSymbol,
-          amountUnit: this.ruleForm.amountUnit,
-          transaction: +this.ruleForm.transaction,
-          transactionSymbol: this.ruleForm.transactionSymbol,
-          transactionUnit: this.ruleForm.transactionUnit,
-          amountUnitLabel: "", // 金额单位Label
-          amountSymbolLabel: "", // 金额规则符号Label
-          transactionUnitLabel: "", // 交易金额单位Label
-          transactionSymbolLabel: "" // 交易金额规则符号Label
-        },
-        applyForPurchase: {
-          // 申购
-          rate: +this.ruleForm.rate2, //费率
-          rateDiscount: +this.ruleForm.rateDiscount2, //费率折扣
-          cost: +this.ruleForm.cost2, //费用
-          amount: +this.ruleForm.amount2,
-          amountSymbol: this.ruleForm.amountSymbol2,
-          amountUnit: this.ruleForm.amountUnit2,
-          transaction: +this.ruleForm.transaction2,
-          transactionSymbol: this.ruleForm.transactionSymbol2,
-          transactionUnit: this.ruleForm.transactionUnit2,
-          amountUnitLabel: "", // 金额单位Label
-          amountSymbolLabel: "", // 金额规则符号Label
-          transactionUnitLabel: "", // 交易金额单位Label
-          transactionSymbolLabel: "" // 交易金额规则符号Label
-        },
-        redemption: {
-          // 赎回
-          rate: +this.ruleForm.rate3, //费率
-          rateDiscount: +this.ruleForm.rateDiscount3, //费率折扣
-          cost: +this.ruleForm.cost3, //费用
-          days: +this.ruleForm.days,
-          daysSymbol: this.ruleForm.daysSymbol,
-          daysSymbolLabel: "", // 天数符号标识Label
-          timeLimit: +this.ruleForm.timeLimit,
-          timeSymbol: this.ruleForm.timeLimitSymbol,
-          timeSymbolLabel: "" // 期限符号标识Label
-        }
-      };
-      obj.institutionName = this.dictData.jigou.filter(item => {
-        return item.id === obj.institutionId;
-      })[0].name;
-      obj.fundHouseName = this.dictData.jijin.filter(item => {
-        return item.id === obj.fundHouseId;
-      })[0].name;
-      obj.statusName = this.dictData.transaction_state.filter(item => {
-        return item.value === obj.status;
-      })[0].label;
-      // 认购
-      if (this.ruleForm.amountUnit) {
-        obj.subscribe.amountUnitLabel = this.dictData.monetary_unit.filter(
-          item => item.value == this.ruleForm.amountUnit
-        )[0].label;
-      }
-      if (this.ruleForm.amountSymbol) {
-        obj.subscribe.amountSymbolLabel = this.dictData.rule_symbol.filter(
-          item => item.value == this.ruleForm.amountSymbol
-        )[0].label;
-      }
-      if (this.ruleForm.transactionUnit) {
-        obj.subscribe.transactionUnitLabel = this.dictData.rule_symbol.filter(
-          item => item.value == this.ruleForm.transactionUnit
-        )[0].label;
-      }
-      if (this.ruleForm.transactionSymbol) {
-        obj.subscribe.transactionSymbolLabel = this.dictData.monetary_unit.filter(
-          item => item.value == this.ruleForm.transactionSymbol
-        )[0].label;
-      }
-      // 申购
-      if (this.ruleForm.amountUnit2) {
-        obj.applyForPurchase.amountUnitLabel = this.dictData.monetary_unit.filter(
-          item => item.value == this.ruleForm.amountUnit2
-        )[0].label;
-      }
-      if (this.ruleForm.amountSymbol2) {
-        obj.applyForPurchase.amountSymbolLabel = this.dictData.rule_symbol.filter(
-          item => item.value == this.ruleForm.amountSymbol2
-        )[0].label;
-      }
-      if (this.ruleForm.transactionUnit2) {
-        obj.applyForPurchase.transactionUnitLabel = this.dictData.monetary_unit.filter(
-          item => item.value == this.ruleForm.transactionUnit2
-        )[0].label;
-      }
-      if (this.ruleForm.transactionSymbol2) {
-        obj.applyForPurchase.transactionSymbolLabel = this.dictData.rule_symbol.filter(
-          item => item.value == this.ruleForm.transactionSymbol2
-        )[0].label;
-      }
-      // 赎回
-      if (this.ruleForm.daysSymbol) {
-        obj.redemption.daysSymbolLabel = this.dictData.rule_symbol.filter(
-          item => item.value == this.ruleForm.daysSymbol
-        )[0].label;
-      }
-      if (this.ruleForm.timeLimitSymbol) {
-        obj.redemption.timeSymbolLabel = this.dictData.rule_symbol.filter(
-          item => item.value == this.ruleForm.timeLimitSymbol
-        )[0].label;
-      }
-      this.$api
-        .add_chunzhai({
-          vm: this,
-          data: obj
-        })
-        .then(res => {
-          if (res) {
-            this.isOk = true;
+          // 最小金额单位Label
+          if (this.ruleForm.minAmountUnit) {
+            obj.subscribe.minAmountUnitLabel = this.dictData.currency_unit.filter(
+              item => item.value == this.ruleForm.minAmountUnit
+            )[0].label;
           }
-        });
+          // 最小金额规则符号
+          if (this.ruleForm.minAmountSymbol) {
+            obj.subscribe.minAmountSymbolLabel = this.dictData.rule_symbol.filter(
+              item => item.value == this.ruleForm.minAmountSymbol
+            )[0].label;
+          }
+          // 最大交易金额单位
+          if (this.ruleForm.maxAmountUnit) {
+            obj.subscribe.maxAmountUnitLabel = this.dictData.currency_unit.filter(
+              item => item.value == this.ruleForm.maxAmountUnit
+            )[0].label;
+          }
+          // 最大交易金额规则符号Label
+          if (this.ruleForm.maxAmountSymbol) {
+            obj.subscribe.maxAmountSymbolLabel = this.dictData.rule_symbol.filter(
+              item => item.value == this.ruleForm.maxAmountSymbol
+            )[0].label;
+          }
+          // 申购
+          // 最小金额单位Label
+          if (this.ruleForm.minAmountUnit2) {
+            obj.applyForPurchase.minAmountUnitLabel = this.dictData.currency_unit.filter(
+              item => item.value == this.ruleForm.minAmountUnit2
+            )[0].label;
+          }
+          // 最小金额规则符号
+          if (this.ruleForm.minAmountSymbol2) {
+            obj.applyForPurchase.minAmountSymbolLabel = this.dictData.rule_symbol.filter(
+              item => item.value == this.ruleForm.minAmountSymbol2
+            )[0].label;
+          }
+          // 最大交易金额单位Label
+          if (this.ruleForm.maxAmountUnit2) {
+            obj.applyForPurchase.maxAmountUnitLabel = this.dictData.currency_unit.filter(
+              item => item.value == this.ruleForm.maxAmountUnit2
+            )[0].label;
+          }
+          // 最大交易金额规则符号Label
+          if (this.ruleForm.maxAmountSymbol2) {
+            obj.applyForPurchase.maxAmountSymbolLabel = this.dictData.rule_symbol.filter(
+              item => item.value == this.ruleForm.maxAmountSymbol2
+            )[0].label;
+          }
+          // 赎回
+          // 最小期限符号标识Label
+          if (this.ruleForm.minTimeSymbol) {
+            obj.redemption.minTimeSymbolLabel = this.dictData.rule_symbol.filter(
+              item => item.value == this.ruleForm.minTimeSymbol
+            )[0].label;
+          }
+          // 最大期限符号标识Label
+          if (this.ruleForm.maxTimeSymbol) {
+            obj.redemption.maxTimeSymbolLabel = this.dictData.rule_symbol.filter(
+              item => item.value == this.ruleForm.maxTimeSymbol
+            )[0].label;
+          }
+          this.$api
+            .add_chunzhai({
+              vm: this,
+              data: obj
+            })
+            .then(res => {
+              if (res) {
+                this.isOk = true;
+              }
+            });
+        }
+      });
     },
     isOver(type) {
       sessionStorage.setItem("page", "纯债基金管理");

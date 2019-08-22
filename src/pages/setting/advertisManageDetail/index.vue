@@ -134,7 +134,7 @@
                             prop="advertisImageUrl"
                             label="广告图片"
                     >
-                        <img :src="ruleForm.advertisImageUrl" class="avatar">
+                        <img :src="ImgBaseUrl + ruleForm.advertisImageUrl" class="avatar">
                     </el-form-item>
                     <el-form-item
                             label="广告开始时间"
@@ -209,15 +209,15 @@
 </template>
 
 <script>
-    import { adverdis_detail, productUrl_list } from '../../../api/setting_use'
+    import { adverdis_detail, productUrl_list, productList } from '../../../api/setting_use'
     export default {
         props: {},
         components: {},
         data() {
             return {
                 appChannelCodeList: [ // app 标识
-                    { code: '比财', name: '比财' },
-                    { code: '安财', name: '安财' }
+                    { code: 'bicai', name: '比财' },
+                    { code: 'ancai', name: '安财' }
                 ],
                 inputFlag: false,
                 timeout:  null, // 关联延时
@@ -273,9 +273,11 @@
                     linkLocationEnum: '',
                     name: null
                 },
+                ImgBaseUrl: '',
             };
         },
         mounted() {
+            this.ImgBaseUrl = this.$ImgBaseUrl;
             productUrl_list().then(res=> {
                 if(res && res.success) {
                     this.advertisTypeList = res.data.list
@@ -370,7 +372,7 @@
                     id: this.$route.query.id
                 }
                 adverdis_detail(params).then(res => {
-                    if (res.success) {
+                    if (res) {
                         var val = res.data.productRelationDetailsVo.productType;
                         if(val == 'EXTERNAL_LINK') {
                             this.inputFlag = true;

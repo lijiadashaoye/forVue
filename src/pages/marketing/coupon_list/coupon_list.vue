@@ -328,12 +328,11 @@
     >
       <div style="display:flex;justify-content:space-between;">
         <div id="forHeader" style="width:49%;">
-          <h3 v-if="guanlianForm.forForms.dataTotal.length===0">暂时没有任何关联的数据，您可以从右侧添加关联</h3>
+          <h3 v-if="guanlianForm.guanlian.dataTotal.length===0">暂时没有任何关联的数据，您可以从右侧添加关联</h3>
           <forms
             @tableAct="tableAct"
-            :type="'lilv'"
             :pageData="guanlianForm"
-            v-if="guanlianForm.forForms.dataTotal.length>0"
+            v-if="guanlianForm.guanlian.dataTotal.length>0"
           />
         </div>
         <div style="width:50%;">
@@ -576,7 +575,8 @@ export default {
         id: "",
         // 弹出框的控制
         show: false,
-        forForms: {
+        type: "guanlian",
+        guanlian: {
           fenye: true, // 是否需要分页
           pageNum: 0, // 当前页码
           titleUp: {
@@ -1126,7 +1126,7 @@ export default {
     },
     // 设置已添加表格
     setTable(res) {
-      this.guanlianForm.forForms.dataTotal = res.data.map(item => {
+      this.guanlianForm.guanlian.dataTotal = res.data.map(item => {
         item.type = item.type === "PRD" ? "产品" : "银行";
         return item;
       });
@@ -1139,7 +1139,7 @@ export default {
       );
       this.guanlianForm.forForms.dataTotal = [];
       arr = arr.filter(item => item.targetId != data.data.targetId);
-      setTimeout(() => {
+      this.$nextTick(() => {
         this.guanlianForm.forForms.dataTotal = arr;
       });
     },

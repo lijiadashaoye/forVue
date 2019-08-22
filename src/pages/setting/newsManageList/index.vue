@@ -77,7 +77,7 @@
     <el-dialog :title="upDataSoft ? '修改软广告新闻' : '新增软广告新闻'" :visible.sync="softNewsVisible" :close-on-click-modal="false" >
         <el-form :model="softNewsForm" label-position="left" label-width="120px" :rules="rules" ref="ruleForm" class="newsForm">
             <el-form-item label="标题" prop="newsTitle" class="istopItem">
-                <el-input v-model="softNewsForm.newsTitle" placeholder="请输入新闻标题"></el-input>
+                <el-input v-model="softNewsForm.newsTitle" placeholder="请输入新闻标题" maxlength="60" show-word-limit></el-input>
             </el-form-item>
 
             <el-form-item label="位图" prop="newsImageUrl" class="itemImg">
@@ -292,7 +292,7 @@ export default {
             {
                 title: "新闻标题",
                 key: "newsTitle",
-                minWidth: "120",
+                minWidth: "320",
             },{
                 title: "新闻类型",
                 key: "newsTypeCN",

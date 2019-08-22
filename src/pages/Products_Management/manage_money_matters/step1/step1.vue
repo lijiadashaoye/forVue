@@ -58,6 +58,20 @@
           <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.name"></el-input>
         </el-form-item>
 
+        <el-form-item label="产品唯一标识" prop="uuid" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.uuid"></el-input>
+        </el-form-item>
+
+        <el-form-item label="起购金额" class="is50" prop="purchaseAmount">
+          <el-input
+            type="number"
+            class="isInput"
+            clearable
+            v-model="ruleForm.purchaseAmount"
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
+
         <el-form-item label="递增金额" prop="increaseAmount" class="is50">
           <el-input
             class="isInput"
@@ -90,6 +104,28 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item label="产品特性" class="is50" prop="productFeature">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.productFeature">
+            <el-option
+              size="mini"
+              v-for="item in dictData.product_feature_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="产品版本标识" prop="contentVersion" class="is50">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="ruleForm.contentVersion"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+        </el-form-item>
+
         <el-form-item label="剩余额度" prop="surplusQuota" class="is50">
           <el-select class="isInput" v-model="ruleForm.surplusQuota" clearable placeholder="请选择">
             <el-option
@@ -112,13 +148,16 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="起息日期" class="is50" prop="valueDate">
+        <el-form-item label="募集日期" prop="raiseDate">
           <el-date-picker
-            type="datetime"
             value-format="yyyy-MM-dd HH:mm:ss"
+            v-model="ruleForm.raiseDate"
+            type="datetimerange"
+            range-separator="~"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+           
             class="isInput"
-            v-model="ruleForm.valueDate"
-            placeholder="选择日期"
           ></el-date-picker>
         </el-form-item>
 
@@ -131,25 +170,22 @@
             range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size="mini"
+           
           ></el-date-picker>
         </el-form-item>
 
-        <el-form-item label="募集日期" prop="raiseDate">
+        <el-form-item label="起息日期" class="is50" prop="valueDate">
           <el-date-picker
+            type="datetime"
             value-format="yyyy-MM-dd HH:mm:ss"
-            v-model="ruleForm.raiseDate"
-            type="datetimerange"
-            range-separator="~"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            size="mini"
             class="isInput"
+            v-model="ruleForm.valueDate"
+            placeholder="选择日期"
           ></el-date-picker>
         </el-form-item>
 
         <el-form-item label="产品描述">
-          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
@@ -160,8 +196,10 @@
   </div>
 </template>
 <script>
+import isQuill from "@/components/quill.vue";
+
 export default {
-  props: {},
+  components: { isQuill },
   data() {
     // 验证数字
     var checkNum3 = (rule, value, callback) => {
@@ -190,15 +228,19 @@ export default {
         institutionId: "", // 机构名称
         seriesId: "", // 产品系列ID
         name: "", // 产品名称
+        uuid: "", // 产品唯一标识
+        purchaseAmount: "", // 起购金额
         increaseAmount: "", // 递增金额
         interestRate: "", // 预期年化收益率
         riskLevel: "", // 风险等级
+        productFeature: "", // 产品特性
         surplusQuota: "", // 剩余额度
         valueDate: "", // 起息日
         timeLimit: "", // 期限
         managementDate: "", // 理财日期
         raiseDate: "", // 募集日期
-        description: "" //  产品描述
+        description: "", //  产品描述
+        contentVersion: "" //  内容版本号
       },
       xilie: [], // 从服务器返回的产品系列数据
       //表单验证
@@ -215,6 +257,10 @@ export default {
         raiseDate: [
           { required: true, message: "请输入募集日期", trigger: "blur" }
         ],
+        uuid: [
+          { required: true, message: "产品唯一标识", trigger: "blur" },
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
+        ],
         name: [
           { required: true, message: "请输入产品名称", trigger: "blur" },
           { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
@@ -222,6 +268,10 @@ export default {
         increaseAmount: [
           { validator: checkNum3, trigger: "blur" },
           { required: true, message: "请输入递增金额", trigger: "blur" }
+        ],
+        purchaseAmount: [
+          { validator: checkNum3, trigger: "blur" },
+          { required: true, message: "请输入起购金额", trigger: "blur" }
         ],
         interestRate: [
           { validator: checkNumLilv, trigger: "blur" },
@@ -241,7 +291,7 @@ export default {
       }
     };
   },
-  mounted() {
+  created() {
     this.pageName = sessionStorage.getItem("page") + " > 新增理财产品第一步"; // 获取页面名称
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
 
@@ -303,6 +353,8 @@ export default {
           this.$router.push({
             name: "manage_money_matters_step2"
           });
+        } else {
+          this.$message.error("请输入必填数据！");
         }
       });
     },

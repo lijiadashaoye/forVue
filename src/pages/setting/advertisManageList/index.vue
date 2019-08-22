@@ -177,7 +177,7 @@
             delete: function (id) {
                 this.$confirm("确认要删除吗").then(() => {
                     adverdis_del({id:id}).then((res)=>{
-                        if (res.success) {
+                        if (res) {
                             this.$message.success('删除成功')
                         } else {
                             this.$message.error('删除失败')

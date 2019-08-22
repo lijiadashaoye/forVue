@@ -52,7 +52,7 @@ export default {
       },
       dialogVisible: false,//弹框开关
       isWxFlag: true,//点击修改判断是不是wx
-      upData: false
+      upData: false,
     };
   },
   created() {
@@ -61,7 +61,8 @@ export default {
     //请求表格数据
     this.getTableMenudata({
       pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
-      pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+      pageSize: this.$store.state.app_button_add.tableMenu.pageSize,
+      url: this.$ImgBaseUrl
     })
     this.pageName = this.$route.name;
     this.$store.state.app_button_add.tableMenu.data.title = [
@@ -150,7 +151,8 @@ export default {
         this.dialogVisible = false;
         this.getTableMenudata({
           pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
-          pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+          pageSize: this.$store.state.app_button_add.tableMenu.pageSize,
+          url: this.$ImgBaseUrl
         });
       }).catch((res) => {
         this.$alert(`${res.message}`, '保存失败', {
@@ -179,7 +181,8 @@ export default {
             });
             this.getTableMenudata({
               pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
-              pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+              pageSize: this.$store.state.app_button_add.tableMenu.pageSize,
+              url: this.$ImgBaseUrl
             });
           }
         }).catch(res => {
@@ -199,7 +202,8 @@ export default {
           }).then(res => {
             this.getTableMenudata({
               pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
-              pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+              pageSize: this.$store.state.app_button_add.tableMenu.pageSize,
+              url: this.$ImgBaseUrl
             })
           })
       } else {
@@ -209,7 +213,8 @@ export default {
           }).then(res=> {
               this.getTableMenudata({
                 pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
-                pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+                pageSize: this.$store.state.app_button_add.tableMenu.pageSize,
+                url: this.$ImgBaseUrl
               })
           })
       }
@@ -220,7 +225,8 @@ export default {
         case "regetData": // 分页的emit
             this.getTableMenudata({
               pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
-              pageSize: this.$store.state.app_button_add.tableMenu.pageSize
+              pageSize: this.$store.state.app_button_add.tableMenu.pageSize,
+              url: this.$ImgBaseUrl
             });
           break;
         case "edit": // 编辑按钮

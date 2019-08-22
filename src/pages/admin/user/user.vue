@@ -294,7 +294,7 @@ export default {
         phone: this.phoneForm.phone
       };
       this.$api.admin_user_updatePhone({ vm: this, data: obj }).then(res => {
-        if (res.success) {
+        if (res) {
           this.$message.success("修改成功！");
           this.getUserData();
           this.closePhone();

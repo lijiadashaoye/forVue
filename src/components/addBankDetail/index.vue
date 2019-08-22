@@ -7,12 +7,9 @@
                 <el-input v-model="organizationCode" placeholder="请输入机构代码" :disabled="detailFlag"></el-input>
             </div>
         </div> -->
-
-        <div class="card-item">
-            <span class="item-text">*银行名称:</span>
-            <div class="item-input">
-                <!-- <el-input v-model="prodectBankId" placeholder="请输入名称" :disabled="detailFlag"></el-input> -->
-                <el-select v-model="prodectBankId" placeholder="请输入名称" :disabled="detailFlag">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
+            <el-form-item label="银行名称:" prop="prodectBankId">
+                <el-select v-model="ruleForm.prodectBankId" placeholder="请输入名称" :disabled="detailFlag">
                     <el-option
                     v-for="(item,ind) in options"
                     :key="ind"
@@ -20,59 +17,48 @@
                     :value="item.value">
                     </el-option>
                 </el-select>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*银行LOGO:</span>
-            <div class="item-img">
-                <!-- <upImg
-                    :datas="logoOpt"
-                    @selectImg="upLogoImg($event)"
-                /> -->
-                
+            </el-form-item>
+            <el-form-item label="银行LOGO:" prop="LogoUrl">
                 <el-upload
                     class="avatar-uploader"
                     action="customize"
                     :show-file-list="false"
                     :http-request="uploadLogo"
                     :disabled="detailFlag"
+                    :on-change="uploadLogoProcess"
                     >
-                    <img v-if="LogoUrl" :src="ImgBaseUrl + LogoUrl" class="avatar">
-                    <div v-else>
+                    <img v-if="ruleForm.LogoUrl != '' && logoFlag == false" :src="ImgBaseUrl + ruleForm.LogoUrl" class="avatar">
+                    <div v-else-if='ruleForm.LogoUrl == "" && logoFlag == false'>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
+                    <el-progress v-if="logoFlag == true" type="circle" :percentage="logoUploadPercent" style="margin-top:30px;"></el-progress>
                 </el-upload>
-            </div>
-        </div>
-
-
-        <div class="card-item">
-            <span class="item-text">*银行背景图:</span>
-            <div class="item-img">
+            </el-form-item>
+            <el-form-item label="银行背景图:" prop="bgUrl">
                 <el-upload
                     class="avatar-uploader"
                     action="customize"
                     :show-file-list="false"
                     :http-request="uploadBgFile"
                     :disabled="detailFlag"
+                    :on-change="uploadBgProcess"
                     >
-                    <img v-if="bgUrl" :src="ImgBaseUrl + bgUrl" class="avatar">
-                    <div v-else>
+                    <img v-if="ruleForm.bgUrl !='' && bgFlag == false" :src="ImgBaseUrl + ruleForm.bgUrl" class="avatar">
+                    <div v-else-if="ruleForm.bgUrl =='' && bgFlag == false">
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
+                    <el-progress v-if="bgFlag == true" type="circle" :percentage="bgUploadPercent" style="margin-top:30px;"></el-progress>
                 </el-upload>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-footer" v-if="!detailFlag">
-            <el-button @click="cancel">取消</el-button>
-            <el-button type="primary" @click="save">保存</el-button>
-        </div>
-
-        <div class="card-footer" v-else>
-            <el-button @click="close">关闭</el-button>
-        </div>
+            <el-form-item v-if="!detailFlag">
+                <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+                <el-button @click="cancel('ruleForm')">取消</el-button>
+            </el-form-item>
+            <el-form-item v-else>
+                <el-button @click="close('ruleForm')">关闭</el-button>
+            </el-form-item>
+        </el-form>
     </el-card>
 </template>
 
@@ -84,14 +70,25 @@ export default {
     props:['detailFlag', 'opts'],
     data() {
         return {
-            prodectBankId: "",//产品关联银行id
-            LogoUrl: "",//logo路径
-            bgUrl: "",//背景图路径
             closeFlag: true,//关闭按钮
             organizationCode: "",//机构代码
+            logoFlag: false,
+            logoUploadPercent: 0,
+            bgFlag: false,
+            bgUploadPercent: 0,
             options: [],
             bankName: '',//银行名称,
-            ImgBaseUrl: ''
+            ImgBaseUrl: '',
+            ruleForm: {
+                prodectBankId: "",//产品关联银行id
+                LogoUrl: "",//logo路径
+                bgUrl: "",//背景图路径
+            },
+            rules: {
+                prodectBankId:[{ required: true, message: '请选择银行名称', trigger: 'blur' },],
+                LogoUrl:[{ required: true, message: '请上传图片', trigger: 'blur' },],
+                bgUrl:[{ required: true, message: '请上传图片', trigger: 'blur' },],
+            }
         }
     },
     mounted() {
@@ -108,9 +105,9 @@ export default {
             }
         })
         if(this.opts){
-            this.LogoUrl = this.opts.logoPhoto;
-            this.bgUrl = this.opts.background;
-            this.prodectBankId = this.opts.prodectBankId;
+            this.ruleForm.LogoUrl = this.opts.logoPhoto;
+            this.ruleForm.bgUrl = this.opts.background;
+            this.ruleForm.prodectBankId = this.opts.prodectBankId;
             this.bankName = this.opts.bankName;
         }
 
@@ -119,9 +116,7 @@ export default {
         //点击取消
         cancel(){
             this.id = '';
-            this.LogoUrl = '';
-            this.bgUrl = '';
-            this.prodectBankId = '';
+            this.$refs[formName].resetFields();
             this.$emit('cancel')
         },
         //1--10000随机数，代替机构代码
@@ -146,9 +141,28 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.LogoUrl = res.data
+                    this.logoFlag = false;
+                    this.ruleForm.LogoUrl = res.data
                 }
             })
+        },
+        uploadLogoProcess(file, fileList){
+            if(file.status === 'ready') {
+                this.logoUploadPercent = 0;
+                this.logoFlag = true;
+                const interval = setInterval(() => {
+                this.logoUploadPercent += 1;
+                if(this.logoUploadPercent >= 99) {
+                    window.clearInterval(interval)
+                    return
+                }
+                }, 200);
+            }
+            if(file.status === 'success') {
+                window.clearInterval(interval)
+                this.logoFlag = false;
+                this.logoUploadPercent = 100;
+            }
         },
         //上传背景图
         uploadBgFile(params) {
@@ -167,89 +181,74 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.bgUrl = res.data
+                    this.bgFlag = false;
+                    this.ruleForm.bgUrl = res.data
                 }
             })
         },
-        //点击保存
-        save(){
-            this.organizationCode = this.randomNum()
-            if(this.prodectBankId && this.LogoUrl && this.bgUrl){
-                this.options && this.options.forEach(v=> {
-                    if(this.prodectBankId == v.value) {
-                        this.bankName = v.label
-                    }
-                })
-                let obj = {
-                    id: this.opts ? this.opts.id : '',
-                    organizationCode: this.organizationCode,
-                    prodectBankId: this.prodectBankId,
-                    logoPhoto: this.LogoUrl,
-                    background: this.bgUrl,
-                    bankName: this.bankName
+        uploadBgProcess(file,fileList) {
+            if(file.status === 'ready') {
+                this.bgUploadPercent = 0;
+                this.bgFlag = true;
+                const interval = setInterval(() => {
+                this.bgUploadPercent += 1;
+                if(this.bgUploadPercent >= 99) {
+                    window.clearInterval(interval)
+                    return
                 }
-                //向父组件传递数据
-                this.$emit('send',obj)
-            }else{
-                this.$alert('*号是必填项', '提交失败', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-                        this.$message({
-                        type: 'info',
-                        message: `action: ${ action }`
-                        });
-                    }
-                })
+                }, 200);
+            }
+            if(file.status === 'success') {
+                window.clearInterval(interval)
+                this.bgFlag = false;
+                this.bgUploadPercent = 100;
             }
         },
+        //点击保存
+        save(formName){
+            this.organizationCode = this.randomNum()
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.options && this.options.forEach(v=> {
+                        if(this.ruleForm.prodectBankId == v.value) {
+                            this.bankName = v.label
+                        }
+                    })
+                    let obj = {
+                        id: this.opts ? this.opts.id : '',
+                        organizationCode: this.organizationCode,
+                        prodectBankId: this.ruleForm.prodectBankId,
+                        logoPhoto: this.ruleForm.LogoUrl,
+                        background: this.ruleForm.bgUrl,
+                        bankName: this.bankName
+                    }
+                    //向父组件传递数据
+                    this.$emit('send',obj)
+                } else {
+                    return false;
+                }
+            });
+        },
         //点击取消
-        close(){
+        close(formName){
+            this.$refs[formName].resetFields();
             this.$emit('cancel')
         },
         
     },
     watch: {
         'opts.id'() {
-            // this.id = this.opts.id;
-            this.LogoUrl = this.opts.logoPhoto;
-            this.bgUrl = this.opts.background;
-            this.prodectBankId = this.opts.prodectBankId;
-            this.bankName = this.opts.bankName
+            this.ruleForm.LogoUrl = this.opts.logoPhoto;
+            this.ruleForm.bgUrl = this.opts.background;
+            this.ruleForm.prodectBankId = this.opts.prodectBankId;
+            this.bankName = this.opts.bankName;
         }
     }
 }
 </script>
 
 <style scoped="true" lang="scss">
-    .card-item{
+    img{
         width:100%;
-        // height:100px;
-        padding:10px;
-        box-sizing:border-box;
-        display:flex;
-        align-items: center;
-        .item-text{
-            width:200px;
-        }
-        .item-input{
-            width:400px;
-        }
-        .item-img{
-            width:100px;
-            height:80px;
-            display:flex;
-            align-items: center;
-            img{
-                width:80px;
-                height:80px;
-            }
-        }
-    }
-    .card-footer{
-        width:100%;
-        display:flex;
-        justify-content: center;
-        height:100px;
-        align-items: center;
     }
 </style>

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "vue-cli-service serve --open",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --mode development",
     "build:release": "vue-cli-service build --mode release",
     "build:demo": "vue-cli-service build --mode demo",
     "build:dev": "vue-cli-service build --mode dev",
@@ -49,7 +49,9 @@
       "plugin:vue/essential",
       "eslint:recommended"
     ],
-    "rules": {},
+    "rules": {
+      "no-console": "off"
+    },
     "parserOptions": {
       "parser": "babel-eslint"
     }

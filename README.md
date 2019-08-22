@@ -16,4 +16,3 @@ baseURL = 'https://gateway.bicai365.com/';<br>
 
 终端：npm run build:demo<br>
 baseURL = 'https://gatewaydemo.bicai365.com/';<br>
- 

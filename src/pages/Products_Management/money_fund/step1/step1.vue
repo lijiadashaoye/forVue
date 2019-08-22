@@ -119,11 +119,11 @@
         </el-form-item>
 
         <el-form-item label="产品描述" prop="description">
-          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
 
         <el-form-item label="收益规则" prop="yieldRule">
-          <quill-editor class="isInput" v-model="ruleForm.yieldRule"></quill-editor>
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.yieldRule"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
@@ -134,8 +134,10 @@
   </div>
 </template>
 <script>
+import isQuill from "@/components/quill.vue";
+
 export default {
-  props: {},
+  components: { isQuill },
   data() {
     // 验证数字
     var checkNum3 = (rule, value, callback) => {
@@ -195,17 +197,11 @@ export default {
         commission: [{ validator: checkNum3, trigger: "blur" }],
         redemptionDate: [{ validator: checkNum3, trigger: "blur" }],
         onThe7thOfTheYearYield: [{ validator: checkNum4, trigger: "blur" }],
-        thousandsOfYearsYields: [{ validator: checkNum4, trigger: "blur" }],
-        description: [
-          { min: 1, max: 140, message: "最多输入140个字", trigger: "blur" }
-        ],
-        yieldRule: [
-          { min: 1, max: 500, message: "最多输入140个字", trigger: "blur" }
-        ]
+        thousandsOfYearsYields: [{ validator: checkNum4, trigger: "blur" }]
       }
     };
   },
-  mounted() {
+  created() {
     this.pageName = sessionStorage.getItem("page") + " > 新增货币基金第一步"; // 获取页面名称
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
 

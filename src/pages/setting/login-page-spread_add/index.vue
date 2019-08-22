@@ -11,6 +11,8 @@
     <div id="forTable">
       <loginSpread
       :appChannel.sync="this.$store.state.protocol.appChannel"
+      :addFlag='addFlag'
+      :updataFlag='updataFlag'
       @req="req"
       />
     </div>
@@ -30,7 +32,9 @@ export default {
   },
   data() {
     return {
-      pageName: "" // 当前页面名字
+      pageName: "", // 当前页面名字
+      addFlag: true,
+      updataFlag: true,
     };
   },
   mounted() {

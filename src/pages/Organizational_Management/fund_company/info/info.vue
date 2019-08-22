@@ -1,9 +1,9 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <everyInfo :forJiGouInfo='pageData' />
+    <everyInfo :pageData="pageData" />
   </div>
 </template>
 <script>
@@ -14,19 +14,16 @@ export default {
   data() {
     return {
       pageName: "", // 当前页面名字
-      pageData: {},
+      pageData: {}
     };
   },
-  mounted() {
+  created() {
     this.pageName =
-      sessionStorage.getItem("page") +
-      ` > ${this.$route.query["institutionName"]}详情`; // 获取页面名称
+      sessionStorage.getItem("page") + ` > ${this.$route.query["name"]}详情`; // 获取页面名称
     this.pageData = {
-      page: "fund_company",   // 基金公司管理
-      id:this.$route.query["id"]
+      page: "fund_company", // 基金公司管理
+      id: this.$route.query["id"]
     };
-  },
-
-  methods: {}
+  }
 };
 </script>

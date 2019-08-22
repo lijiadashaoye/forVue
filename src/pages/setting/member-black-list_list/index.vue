@@ -135,7 +135,7 @@ export default {
       let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
       //有权限  跳转到创建页面
       if (jurisdiction.indexOf("black_list_add") > -1) {
-        this.$router.push(`/home/setting/member-black-list/add`);
+        this.$router.push(`/home/member/member-black-list/add`);
       } else {
         //弹出消息提示用户
         this.$alert("您没有这个权限", {

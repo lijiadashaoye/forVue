@@ -136,6 +136,7 @@ export default {
     req(data){
       protocol_upd(data).then(res=> {
         if(res && res.success){
+          this.$message.success('保存成功')
           this.dialogFormVisible = false;
           this.upd = false;
           this.getProtocolListData({
@@ -165,7 +166,7 @@ export default {
     //点击取消
     cancle() {
       this.dialogFormVisible = false;
-      this.opts = {};
+      this.opts = null;
     },
     //点击修改
     edit(data){

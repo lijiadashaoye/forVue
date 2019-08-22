@@ -14,7 +14,7 @@
       <div class="card-item">
         <span class="item-text">*标题:</span>
         <div class="item-input">
-          <el-input v-model="newsTitle" placeholder="请输入新闻标题"></el-input>
+          <el-input v-model="newsTitle" placeholder="请输入新闻标题" maxlength="60" show-word-limit></el-input>
         </div>
       </div>
 
@@ -64,7 +64,7 @@
       <div class="card-item">
         <span class="item-text">*初始点赞量:</span>
         <div class="item-input">
-          <el-input v-model="fabulousNumber" placeholder="请输入初始点赞量" type="number"></el-input>
+          <el-input v-model="fabulousNumber" placeholder="请输入初始点赞量" type="number" @input='fabNumContrast'></el-input>
         </div>
       </div>
 
@@ -111,38 +111,14 @@
     <div class="stepItemSec" v-if="active == 1">
 
       <div class="card-item item-quill">
-        <span class="item-text">*内容:</span>
+        <span class="item-text">内容:</span>
         <div class="item-input input-quill">
-          <quill-editor
-            v-model="content"
-            ref="myQuillEditor"
-            :options="editorOption"
-            @change="onEditorChange($event)"
-          ></quill-editor>
-          <el-upload
-            class="upload-demo"
-            action="customize"
-            :show-file-list="false"
-            :http-request="uploadMsg"
-            style="display:none"
-          >
-            <el-button
-              size="small"
-              type="primary"
-              id="imgInput"
-              v-loading.lock="Loading"
-              element-loading-text="插入中,请稍候"
-            >点击上传</el-button>
-          </el-upload>
-          <video width="100%" height="300" controls="controls" v-if="videoUrl">
-            <source :src="videoUrl">
-          </video>
+          <quill :url="'/admin/file/up/setting'" v-model="content"/>
         </div>
-
       </div>
 
       <div class="card-item">
-        <span class="item-text">*内容链接:</span>
+        <span class="item-text">内容链接:</span>
         <div class="item-input">
           <el-input v-model="contentUrl" placeholder="请输入内容链接"></el-input>
         </div>
@@ -231,82 +207,14 @@
 
 <script>
 import { upLoadImg, productList, productUrl_list } from "../../api/setting_use.js";
-
-const toolbarOptions = [
-  ["bold", "italic", "underline", "strike"], // toggled buttons
-  ["blockquote", "code-block"],
-  [
-    {
-      header: 1
-    },
-    {
-      header: 2
-    }
-  ], // custom button values
-  [
-    {
-      list: "ordered"
-    },
-    {
-      list: "bullet"
-    }
-  ],
-  [
-    {
-      script: "sub"
-    },
-    {
-      script: "super"
-    }
-  ], // superscript/subscript
-  [
-    {
-      indent: "-1"
-    },
-    {
-      indent: "+1"
-    }
-  ], // outdent/indent
-  [
-    {
-      direction: "rtl"
-    }
-  ], // text direction
-  [
-    {
-      size: ["small", false, "large", "huge"]
-    }
-  ], // custom dropdown
-  [
-    {
-      header: [1, 2, 3, 4, 5, 6, false]
-    }
-  ],
-  [
-    {
-      color: []
-    },
-    {
-      background: []
-    }
-  ], // dropdown with defaults from theme
-  [
-    {
-      font: []
-    }
-  ],
-  [
-    {
-      align: []
-    }
-  ],
-  ["link", "image", "video"],
-  ["clean"] // remove formatting button
-];
+import quill from '../../components/quill';
 
 export default {
   name: "newsManager",
   props: ['opts', 'success'],
+  components: {
+    quill
+  },
   data() {
     return {
       id: '',
@@ -343,7 +251,6 @@ export default {
       source: "", //来源
       startTime: "", //开始时间
       endTime: "", //结束时间
-      Loading: true,
       signOpt: [
         {
             label: '全部',
@@ -362,31 +269,6 @@ export default {
           value: "BICAISKILL"
         }
       ],
-      editorOption: {
-        placeholder: "请输入内容",
-        theme: "snow",
-        modules: {
-          toolbar: {
-            container: toolbarOptions, // 工具栏
-            handlers: {
-              image: function(value) {
-                if (value) {
-                  document.querySelector("#imgInput").click();
-                } else {
-                  this.quill.format("image", false);
-                }
-              },
-              video: function(value) {
-                if (value) {
-                  document.querySelector("#imgInput").click();
-                } else {
-                  this.quill.format("video", false);
-                }
-              }
-            }
-          }
-        }
-      },
       ImgBaseUrl: ''
     };
   },
@@ -448,6 +330,13 @@ export default {
         }
         this.productForm.linkLocationEnum = row.productType;
         this.getproList(this.productForm);
+      }
+    },
+    //比较出示点赞量小于访问量
+    fabNumContrast() {
+      if(this.fabulousNumber > this.visitNumber) {
+        this.$message.error('初始点赞量不能大于初始访问量');
+        this.fabulousNumber = '';
       }
     },
     loadmore() {
@@ -542,33 +431,6 @@ export default {
         }
       });
     },
-    // 文本框上传图片或者视频
-    uploadMsg(params) {
-      this.Loading = false;
-      const _file = params.file;
-      var formData = new FormData();
-      formData.append("file", _file);
-      let url = "";
-      upLoadImg(formData).then(res => {
-        if (res && res.success) {
-          url = res.data;
-        }
-        if (url != null && url.length > 0) {
-          // 将文件上传后的URL地址插入到编辑器文本中
-          if (_file.type.indexOf("image") != -1) {
-            this.content += `<img style="wid" src="${this.ImgBaseUrl}${url}" alt=""/>`;
-          } else if (_file.type.indexOf("video") != -1) {
-            this.videoUrl = url;
-            var bq=` <video width="320" height="240" controls="controls">
-              <source :src="${this.videoUrl}">
-            </video>`;
-            this.content += bq;
-          }
-        } else {
-          this.$message.error(`插入失败`);
-        }
-      });
-    },
 
     clickStep(data) {
       if (data === "prev") {//点击上一步
@@ -603,7 +465,6 @@ export default {
           this.source = ""; //来源
           this.startTime = ""; //开始时间
           this.endTime = ""; //结束时间
-          this.Loading = true;
         }
       } else {//点击下一步
         if(this.active < 3) {
@@ -639,10 +500,10 @@ export default {
         this.nextStep = "保存";
       } else if (this.active > 2) {
         this.save();
-        this.active = 0
         if(this.success) {
           // this.prevStep = "上一步";
           // this.nextStep = "下一步";
+          this.active = 0
           this.prevStep = "取消"
           this.nextStep = "下一步"
           this.newsTitle = "" //新闻标题
@@ -657,13 +518,13 @@ export default {
           this.source = ""; //来源
           this.startTime = ""; //开始时间
           this.endTime = ""; //结束时间
-          this.Loading = true;
+        } else {
+          this.active = 2;
+          this.prevStep = "上一步";
+          this.nextStep = "保存";
         }
         // this.active = 2;
       }
-    },
-    onEditorChange() {
-      // console.log(this.content);
     },
     //点击保存
     save() {
@@ -684,7 +545,7 @@ export default {
             })
           }
         })
-      if( this.newsTitle && this.newsImageUrl && this.source && this.summary && this.visitNumber && this.fabulousNumber && this.startTime && this.endTime && this.content && this.contentUrl ) {
+      if( this.newsTitle && this.newsImageUrl && this.source && this.summary && this.visitNumber && this.fabulousNumber && this.startTime && this.endTime ) {
         let obj = {
           id: this.id != '' && this.id != null ? this.id : '',
           newsTitle: this.newsTitle,
@@ -717,7 +578,7 @@ export default {
     }
   },
   watch: {
-    'id'() {
+    'opts.id'() {
       if(this.opts != null && this.opts != undefined) {
         this.id = this.opts.id !=null && this.opts.id != '' ? this.opts.id : '';
         this.newsTitle = this.opts.newsTitle;

@@ -4,6 +4,9 @@ import {
     AxiosPost,
     AxiosPut
 } from '../sets/axiosMethods';
+import {
+    join
+} from 'path';
 
 //获取渠道
 export const getAppChannel = (type) => {
@@ -21,7 +24,7 @@ export const institutionList = (data) => {
 
 //查询产品
 export const productList = (data) => {
-    return AxiosGet(`/setting/manager/confing-url/product-list`,data)
+    return AxiosGet(`/setting/manager/confing-url/product-list`, data)
 }
 
 //app按钮列表数据
@@ -230,30 +233,30 @@ export const bank_list_upd = (data) => {
 
 //黑名单列表
 export const black_list = (obj) => {
-    return AxiosGet(`setting/manager/member-black-list`, obj)
+    return AxiosGet(`member/manager/member-black-list`, obj)
 }
 
 //黑名单删除
 export const black_list_del = (id) => {
-    return AxiosDelete(`setting/manager/member-black-list/${id}`)
+    return AxiosDelete(`member/manager/member-black-list/${id}`)
 }
 
 
 //黑名单编辑
 export const black_list_upd = (data) => {
-    return AxiosPut(`setting/manager/member-black-list/`, data)
+    return AxiosPut(`member/manager/member-black-list/`, data)
 }
 
 
 //黑名单添加
 export const black_list_add = (data) => {
-    return AxiosPost(`setting/manager/member-black-list/`, data)
+    return AxiosPost(`member/manager/member-black-list/`, data)
 }
 
 
 //黑名单详情
 export const black_list_detail = (id) => {
-    return AxiosGet(`setting/manager/member-black-list/${id}`)
+    return AxiosGet(`member/manager/member-black-list/${id}`)
 }
 
 
@@ -324,12 +327,12 @@ export const news_manager_list = (data) => {
 
 //新增新闻
 export const news_manger_add = (data) => {
-    return AxiosPost(`/setting/manager/news-manage`,data)
+    return AxiosPost(`/setting/manager/news-manage`, data)
 }
 
 //是否置顶
 export const news_isTop = (data) => {
-    return AxiosPut(`/setting/manager/news-manage/status`,data)
+    return AxiosPut(`/setting/manager/news-manage/status`, data)
 }
 
 //删除
@@ -339,64 +342,64 @@ export const news_delete = (id) => {
 
 //修改
 export const news_upData = (data) => {
-    return AxiosPut(`/setting/manager/news-manage/`,data)
+    return AxiosPut(`/setting/manager/news-manage/`, data)
 }
 
 
 //广告管理
 
 //列表
-export const adverdis_list = (data)=> {
+export const adverdis_list = (data) => {
     return AxiosGet(`setting/manager/advertis-manage`, data)
 }
 // 新增
-export const adverdis_add = (data)=> {
+export const adverdis_add = (data) => {
     return AxiosPost(`setting/manager/advertis-manage`, data)
 }
 // 详情
-export const adverdis_detail = (data)=> {
+export const adverdis_detail = (data) => {
     return AxiosGet(`setting/manager/advertis-manage/${data.id}`)
 }
 // 修改
-export const adverdis_edit = (data)=> {
+export const adverdis_edit = (data) => {
     return AxiosPut(`setting/manager/advertis-manage`, data)
 }
 // 删除
-export const adverdis_del = (data)=> {
+export const adverdis_del = (data) => {
     return AxiosDelete(`setting/manager/advertis-manage/${data.id}`)
 }
 
 //版本管理
 
 //列表
-export const clientVersion_list = (data)=> {
+export const clientVersion_list = (data) => {
     return AxiosGet(`setting/manager/client-version`, data)
 }
 // 新增
-export const clientVersion_add = (data)=> {
+export const clientVersion_add = (data) => {
     return AxiosPost(`setting/manager/client-version`, data)
 }
 // 详情
-export const clientVersion_detail = (data)=> {
+export const clientVersion_detail = (data) => {
     return AxiosGet(`setting/manager/client-version/${data.id}`)
 }
 // 修改
-export const clientVersion_edit = (data)=> {
+export const clientVersion_edit = (data) => {
     return AxiosPut(`setting/manager/client-version`, data)
 }
 // 删除
-export const clientVersion_del = (data)=> {
+export const clientVersion_del = (data) => {
     return AxiosDelete(`setting/manager/client-version/${data.id}`)
 }
 
 // 建议与反馈
 //列表
-export const proposal_list = (data)=> {
+export const proposal_list = (data) => {
     return AxiosGet(`setting/manager/proposal`, data)
 }
 
 // 删除
-export const proposal_del = (data)=> {
+export const proposal_del = (data) => {
     return AxiosDelete(`setting/manager/proposal/${data.id}`)
 }
 
@@ -405,7 +408,7 @@ export const proposal_del = (data)=> {
 
 //列表
 export const getAdverdisList = (data) => {
-    return AxiosGet(`/setting/manager/advertis`,data)
+    return AxiosGet(`/setting/manager/advertis`, data)
 }
 
 //新增
@@ -420,12 +423,12 @@ export const adverdis_Page_del = (id) => {
 
 //停用启用
 export const adverdis_list_status = (data) => {
-    return AxiosPut(`/setting/manager/advertis/status`,data)
+    return AxiosPut(`/setting/manager/advertis/status`, data)
 }
 
 //修改
-export const adverdis_list_upData = (data)=> {
-    return AxiosPut(`/setting/manager/advertis`,data)
+export const adverdis_list_upData = (data) => {
+    return AxiosPut(`/setting/manager/advertis`, data)
 }
 
 
@@ -433,34 +436,34 @@ export const adverdis_list_upData = (data)=> {
 
 //列表数据
 export const slider_list = (data) => {
-    return AxiosGet(`/setting/manager/sidebar`,data)
+    return AxiosGet(`/setting/manager/sidebar`, data)
 }
 
 //增加
 export const slider_add = (data) => {
-    return AxiosPost(`/setting/manager/sidebar`,data)
+    return AxiosPost(`/setting/manager/sidebar`, data)
 }
 
 //修改
 export const slider_updata = (data) => {
-    return AxiosPut(`/setting/manager/sidebar`,data)
+    return AxiosPut(`/setting/manager/sidebar`, data)
 }
 
 //首页期限
 
 //列表
 export const peroid_list = (data) => {
-    return AxiosGet(`/setting/manager/index-peroid/page`,data)
+    return AxiosGet(`/setting/manager/index-peroid/page`, data)
 }
 
 //新增 
 export const peroid_add = (data) => {
-    return AxiosPost(`/setting/manager/index-peroid`,data)
+    return AxiosPost(`/setting/manager/index-peroid`, data)
 }
 
 //修改
 export const peroid_updata = (data) => {
-    return AxiosPut(`/setting/manager/index-peroid`,data)
+    return AxiosPut(`/setting/manager/index-peroid`, data)
 }
 
 //删除
@@ -471,22 +474,22 @@ export const peroid_delete = (id) => {
 //公告
 
 //列表
-export const notice_list = (data)=> {
-    return AxiosGet(`/setting/manager/notice`,data)
+export const notice_list = (data) => {
+    return AxiosGet(`/setting/manager/notice`, data)
 }
 
-export const notice_add = (data)=> {
-    return AxiosPost(`/setting/manager/notice`,data)
+export const notice_add = (data) => {
+    return AxiosPost(`/setting/manager/notice`, data)
 }
 
 //删除
-export const notice_delete = (id)=> {
+export const notice_delete = (id) => {
     return AxiosDelete(`/setting/manager/notice/${id}`)
 }
 
 //修改
 export const notice_updata = (data) => {
-    return AxiosPut(`/setting/manager/notice/`,data)
+    return AxiosPut(`/setting/manager/notice/`, data)
 }
 
 export const notice_list_status = (data) => {
@@ -496,12 +499,12 @@ export const notice_list_status = (data) => {
 
 //列表
 export const comment_list = (data) => {
-    return AxiosGet(`/setting/manager/comment`,data)
+    return AxiosGet(`/setting/manager/comment`, data)
 }
 
 //新增
-export const comment_add = (data)=> {
-    return AxiosPost(`/setting/manager/comment`,data)
+export const comment_add = (data) => {
+    return AxiosPost(`/setting/manager/comment`, data)
 }
 
 
@@ -518,17 +521,17 @@ export const productUrl_list = (data) => {
 }
 
 //新增
-export const productUrl_add = (data)=> {
-    return AxiosPost(`/setting/manager/confing-url`,data)
+export const productUrl_add = (data) => {
+    return AxiosPost(`/setting/manager/confing-url`, data)
 }
 
 //修改
-export const productUrl_uopdate = (data)=> {
+export const productUrl_uopdate = (data) => {
     return AxiosPut(`/setting/manager/confing-url`, data)
 }
 
 //删除
-export const productUrl_delete = (id)=> {
+export const productUrl_delete = (id) => {
     return AxiosDelete(`/setting/manager/confing-url/${id}`)
 }
 
@@ -542,34 +545,34 @@ export const productUrl_delete = (id)=> {
 //提现管理
 
 //列表数据
-export const cash_out_list = (data)=> {
+export const cash_out_list = (data) => {
     return AxiosPost(`/member/manager/member-wallet/cash-orders`, data)
 }
 
 //确认付款
 
-export const cash_out_payment = (data)=> {
-    return AxiosPost('/member/manager/member-wallet/confirm-pay',data)
+export const cash_out_payment = (data) => {
+    return AxiosPost('/member/manager/member-wallet/confirm-pay', data)
 }
 
 //申请付款
-export const cash_out_applyFor = (id)=> {
+export const cash_out_applyFor = (id) => {
     return AxiosPost(`/member/manager/member-wallet/cash-pay/${id}`)
 }
 
 //驳回申请
-export const cash_out_turnDown = (id)=> {
+export const cash_out_turnDown = (id) => {
     return AxiosPost(`member/manager/member-wallet/reject-pay/${id}`)
 }
 
 //手动查单
-export const cash_out_operation = (id)=> {
+export const cash_out_operation = (id) => {
     return AxiosPost(`/member/manager/member-wallet/pay-status/${id}`)
 }
 
 //导出
-export const cash_out_export = (data)=> {
-    return AxiosGet(`/member/manager/member-wallet/excel`,data)
+export const cash_out_export = (data) => {
+    return AxiosGet(`/member/manager/member-wallet/excel`, data)
 }
 
 
@@ -578,11 +581,76 @@ export const cash_out_export = (data)=> {
 //榜单置顶
 
 //列表
-export const top_product_list = (data)=> {
-    return AxiosGet(`/product/topProduct/page`,data)
+export const top_product_list = (data) => {
+    return AxiosGet(`/product/topProduct/page`, data)
 }
 
 //币种
 export const currency_Code = (data) => {
-    return AxiosGet(`/admin/dict/type/currency_type`,data)
+    return AxiosGet(`/product/product_currency/list/${data}`)
+}
+
+//期限
+export const period_Code = (data) => {
+    return AxiosPost(`/setting/index/select`, data)
+}
+
+//产品列表
+export const product_list = (data) => {
+    return AxiosGet(`/product/topProduct/period_product_page`, data)
+}
+
+//榜单删除
+export const top_product_delete = (id) => {
+    return AxiosDelete(`/product/topProduct/product/${id}`)
+}
+
+//榜单修改
+export const top_product_upData = (data) => {
+    return AxiosPut(`/product/topProduct/product`, data)
+}
+
+//新增置顶
+export const top_product_add = (data) => {
+    return AxiosPost(`/product/topProduct/product`, data)
+}
+// 短信列表
+export const sms_manage = (data) => {
+    return AxiosGet(`/message/sms-manage`, data)
+}
+// 短信模板列表获取 
+export const get_sms_list = (id) => {
+    return AxiosGet(`/message/sms-template/${id}`)
+}
+// 新增短信
+export const add_sms_manage = (data) => {
+    return AxiosPost(`/message/sms-manage`,data)
+}
+// 短信上传模板
+export const upload_file = (data,type) => {
+    return AxiosPost(`/admin/file/up/${type}`, data)
+}
+// 删除短信
+export const delete_sms_manage = (id) => {
+    return AxiosDelete(`/message/sms-manage/${id}`)
+}
+// 推送信息列表
+export const push_message = (data) => {
+    return AxiosGet(`/message/push-message`,data)
+}
+// 获取推送信息详情
+export const get_message_detail = (id) => {
+    return AxiosGet(`/message/push-message/${id}`)
+}
+// 新增推送信息
+export const add_push_message = (data) => {
+    return AxiosPost(`/message/push-message`, data)
+}
+// 修改推送消息
+export const change_push_manage = (data) => {
+    return AxiosPut(`/message/push-message`,data)
+}
+// 删除推送信息
+export const delete_push_message = (data) => {
+    return AxiosPost(`/message/push-message/deletes`,data)
 }

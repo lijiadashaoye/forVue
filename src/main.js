@@ -24,16 +24,16 @@ Vue.use(everyApi)
 
 //禁止输入特殊字符
 Vue.prototype.validForbid = function (value) {
-    var reg = /[`~!@#$%^&*()_\-+=<>?:"{}|,/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g;
-    if(reg.test(value)) {
-      this.$message({
-        type: 'warning',
-        message: `不能输入特殊字符`
-      })
-      value = value.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|,/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g, '').replace(/\s/g, "");
-    }
-    return value;
+  var reg = /[`~!@#$%^&*()\-+=<>?:"{}|,/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g;
+  if (reg.test(value)) {
+    this.$message({
+      type: 'warning',
+      message: `不能输入特殊字符`
+    })
+    value = value.replace(/[`~!@#$%^&*()_\-+=<>?:"{}|,/;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/g, '').replace(/\s/g, "");
   }
+  return value;
+}
 // 富文本编辑器
 import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
@@ -45,10 +45,10 @@ Vue.use(VueQuillEditor)
 if (process.env.NODE_ENV == "development") {
   Vue.prototype.$ImgBaseUrl =
     "https://bicai-architecture-test.oss-cn-beijing.aliyuncs.com/";
-  } else {
-    Vue.prototype.$ImgBaseUrl =
+} else {
+  Vue.prototype.$ImgBaseUrl =
     "https://bicai-architecture-test.oss-cn-beijing.aliyuncs.com/";
-    // "https://bicai-architecture.oss-cn-beijing.aliyuncs.com/";
+  // "https://bicai-architecture.oss-cn-beijing.aliyuncs.com/";
 }
 
 let isApp = new Vue({
@@ -58,3 +58,6 @@ let isApp = new Vue({
 }).$mount('#app');
 
 export default isApp
+
+
+

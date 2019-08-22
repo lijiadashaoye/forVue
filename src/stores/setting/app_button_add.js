@@ -19,8 +19,13 @@ const state = {
 const mutations = {
     //获取列表数据
     getTableMenudata(state,data){
-        getMenuData(data).then(res => {
+        console.log()
+        getMenuData({
+            pageNum: data.pageNum,
+            pageSize: data.pageSize
+        }).then(res => {
             if(res.success){
+                console.log(data.url)
                 state.tableMenu.data.list = res.data.list;
                 state.tableMenu.total = res.data.total;
                 state.tableMenu.data.list.forEach(v => {
@@ -33,6 +38,12 @@ const mutations = {
                         v.action = '停用'
                         v.switch = false;
                     }
+                    // if (v.buttonSelectedIcon) {
+                    //     v.buttonSelectedIconUrl = data.url + v.buttonSelectedIcon
+                    // }
+                    // if (v.buttonUnselectedIcon) {
+                    //     v.buttonUnselectedIconUrl = data.url + v.buttonUnselectedIcon
+                    // }
                 })
                 state.tableMenu.actions.switch = {
                     label: "停用/启用",

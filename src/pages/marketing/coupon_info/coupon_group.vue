@@ -14,16 +14,14 @@
           <el-button size="mini" type="warning" @click="addCoupon(team)">添加券</el-button>
           <!-- <el-button size="mini" type="primary" @click="seeGroup(team.groupId)">查看组详情</el-button> -->
           <forms
-            v-if="team"
+            v-if="team[team['type']]"
             @tableAct="tableAct"
             style="with:100%;"
-            :type="'lilv'"
             :pageData="team"
           />
         </div>
       </div>
     </div>
-
     <!--新建组、添加卡券弹出框 -->
     <el-dialog
       :close-on-click-modal="false"
@@ -55,13 +53,7 @@
           </table>
         </el-form-item>
       </el-form>
-      <forms
-        v-if="kaquanTable.forForms!=null"
-        @tableAct="tableAct"
-        style="with:100%;"
-        :type="'lilv'"
-        :pageData="add_Newgroup.list"
-      />
+      <forms @tableAct="tableAct" style="with:100%;" :pageData="add_Newgroup.kaquanList" />
 
       <span slot="footer" class="dialog-footer" v-if="!add_Newgroup.notUse">
         <el-button size="mini" @click="addNewgroup(false)">取 消</el-button>
@@ -90,7 +82,7 @@ export default {
         show: false,
         notUse: false, // 组名不可编辑
         title: "",
-        list: {}, // 待选表格数据
+        forForms: {}, // 待选表格数据
         data: {
           groupName: "",
           couponIds: []
@@ -110,7 +102,7 @@ export default {
         show: false,
         notUse: false, // 组名不可编辑
         title: "",
-        list: {}, // 待选表格数据
+        forForms: {}, // 待选表格数据
         data: {
           groupName: "",
           couponIds: []
@@ -131,9 +123,10 @@ export default {
         })
         .then(res => {
           let kk = res.data.list;
-          this.$set(this.kaquanTable, "forForms", null);
-          setTimeout(() => {
-            this.kaquanTable.forForms = {
+          this.$set(this.kaquanTable, "kaquanList", null);
+          this.$nextTick(() => {
+            this.kaquanTable.type = "kaquanList";
+            this.kaquanTable.kaquanList = {
               fenye: true, // 是否需要分页
               pageNum: 0, // 当前页码
               titleUp: {
@@ -169,7 +162,7 @@ export default {
           });
         });
     },
-    // 卡券弹框中删除一天家的卡券
+    // 卡券弹框中删除已家的卡券
     removeKaQuan(data) {
       this.add_Newgroup.data.couponIds = this.add_Newgroup.data.couponIds.filter(
         tar => tar.couponId != data.couponId
@@ -213,7 +206,7 @@ export default {
           show: true,
           notUse: false, // 组名不可编辑
           title: "添加分组",
-          list: this.kaquanTable,
+          kaquanList: this.kaquanTable,
           data: {
             groupName: "",
             couponIds: []
@@ -229,7 +222,7 @@ export default {
           show: true,
           notUse: true, // 组名不可编辑
           title: "添加卡券",
-          list: this.kaquanTable,
+          kaquanList: this.kaquanTable,
           data: {
             groupId: item.groupId,
             groupName: item.groupName,
@@ -252,7 +245,7 @@ export default {
     //     });
     // },
     // 往已存在的组内添加卡券
-    addCou(id) {
+    addToHasBuild(id) {
       this.$api
         .add_group({
           vm: this,
@@ -264,7 +257,6 @@ export default {
         })
         .then(res => {
           if (res) {
-            this.$set(this, "group", []);
             this.getGroup();
             this.$message.success("添加成功！");
           } else {
@@ -278,7 +270,7 @@ export default {
       switch (data.type) {
         case "use":
           if (this.add_Newgroup.notUse) {
-            this.addCou(item.couponId); // 添加卡券
+            this.addToHasBuild(item.couponId); // 添加卡券
           } else {
             // 新建组中的添加卡券
             let kk = this.add_Newgroup.data.couponIds.some(
@@ -301,7 +293,6 @@ export default {
             })
             .then(res => {
               if (res) {
-                this.$set(this, "group", []);
                 this.getGroup();
               }
             });
@@ -318,39 +309,43 @@ export default {
         })
         .then(res => {
           if (res) {
-            this.group = res.data.map(item => {
-              return {
-                groupId: item.groupId,
-                groupName: item.groupName,
-                forForms: {
-                  fenye: true, // 是否需要分页
-                  pageNum: 0, // 当前页码
-                  titleUp: {
-                    pointName: "当前分组包含的卡券"
-                  },
-                  // 表格头部
-                  title: [
-                    {
-                      prop: "couponId", // 要显示的属性
-                      label: "ID", // 要显示的文字
-                      width: "50" // 当前项的宽度
+            this.$set(this, "group", []);
+            this.$nextTick(() => {
+              this.group = res.data.map(item => {
+                return {
+                  groupId: item.groupId,
+                  groupName: item.groupName,
+                  type: "group",
+                  group: {
+                    fenye: true, // 是否需要分页
+                    pageNum: 0, // 当前页码
+                    titleUp: {
+                      pointName: "当前分组包含的卡券"
                     },
-                    {
-                      prop: "couponName", // 要显示的属性
-                      label: "卡券名称", // 要显示的文字
-                      width: "140" // 当前项的宽度
-                    }
-                  ],
-                  handle: [
-                    {
-                      click: "delete", // 表格操作栏的点击事件
-                      text: "删除" // 表格操作栏的点击事件
-                    }
-                  ],
-                  // 表格数据
-                  dataTotal: [...item.couponList]
-                }
-              };
+                    // 表格头部
+                    title: [
+                      {
+                        prop: "couponId", // 要显示的属性
+                        label: "ID", // 要显示的文字
+                        width: "50" // 当前项的宽度
+                      },
+                      {
+                        prop: "couponName", // 要显示的属性
+                        label: "卡券名称", // 要显示的文字
+                        width: "140" // 当前项的宽度
+                      }
+                    ],
+                    handle: [
+                      {
+                        click: "delete", // 表格操作栏的点击事件
+                        text: "删除" // 表格操作栏的点击事件
+                      }
+                    ],
+                    // 表格数据
+                    dataTotal: [...item.couponList]
+                  }
+                };
+              });
             });
           }
         });

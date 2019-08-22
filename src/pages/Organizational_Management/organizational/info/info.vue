@@ -1,9 +1,9 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <everyInfo :pageData='pageData'/>
+    <everyInfo :pageData="pageData" />
   </div>
 </template>
 <script>
@@ -14,7 +14,7 @@ export default {
   data() {
     return {
       pageName: "", // 当前页面名字
-      pageData: {}  // 传给 everyInfo 组件的数据
+      pageData: {} // 传给 everyInfo 组件的数据
     };
   },
   created() {
@@ -25,8 +25,6 @@ export default {
       page: "organizational", // 机构管理
       id: this.$route.query["id"]
     };
-  },
-
-  methods: {}
+  }
 };
 </script>

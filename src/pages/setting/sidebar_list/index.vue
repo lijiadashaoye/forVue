@@ -49,9 +49,10 @@ export default {
     },
     mounted() {
         this.pageName = this.$route.name;
+        this.$store.state.slider.sliderList.pageNum = 1;
         this.userDo();
         this.getList({
-            pageNum: 1,
+            pageNum: this.$store.state.slider.sliderList.pageNum,
             pageSize: this.$store.state.slider.sliderList.pageSize,
         });
         this.getAppChannel();

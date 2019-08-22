@@ -245,12 +245,12 @@ let setting = [{
     },
     {
         name: '创建黑名单',
-        path: '/home/setting/member-black-list/add',
+        path: '/home/member/member-black-list/add',
         component: resolve => require(['./pages/setting/member-black-list_add'], resolve),
     },
     {
         name: '黑名单列表',
-        path: '/home/setting/member-black-list/list',
+        path: '/home/member/member-black-list/list',
         component: resolve => require(['./pages/setting/member-black-list_list'], resolve),
 
     },
@@ -283,6 +283,32 @@ let setting = [{
         component: resolve => require(['./pages/setting/advertisManageDetail'], resolve),
 
     },
+    // 消息评论管理
+    {
+        name: '短信列表',
+        path: '/setting/sms/manager/list',
+        component: resolve => require(['./pages/setting/short-message-list'], resolve),
+    }, 
+    {
+        name: '批量发送短信',
+        path: '/setting/sms/manager/list/send-message',
+        component: resolve => require(['./pages/setting/short-message-list/sendMessage'], resolve),
+    }, 
+    {
+        name: '消息管理',
+        path: '/setting/push/message/list',
+        component: resolve => require(['./pages/setting/message-management'], resolve),
+    }, 
+    {
+        name: '新增消息',
+        path: '/setting/push/message/list/new-news',
+        component: resolve => require(['./pages/setting/message-management/newNews'], resolve),
+    }, 
+    {
+        name: '消息详情',
+        path: '/setting/push/message/list/message-details',
+        component: resolve => require(['./pages/setting/message-management/messageDetails'], resolve),
+    }, 
     // 版本管理
     {
         name: '版本管理列表',
@@ -348,9 +374,9 @@ let setting = [{
     },
 ]
 
-// Products_Management 模块路由
-let Products_Management = [{
-        name: 'deposit', // 存款管理
+// 产品中心 模块路由
+let Products_Management = [{ // 存款管理
+        name: 'deposit',
         path: '/home/Products_Management/deposit',
         redirect: '/home/Products_Management/deposit/mainPage',
         component: resolve => require(['./pages/Products_Management/deposit/deposit.vue'], resolve),
@@ -501,7 +527,7 @@ let Products_Management = [{
         name: 'organizational',
         path: '/home/Organizational_Management/organizational',
         redirect: '/home/Organizational_Management/organizational/mainPage',
-        component: resolve => require(['./pages/Organizational_Management/organizational/organizational.vue'], resolve),
+        component: resolve => require(['./pages/Organizational_Management/Organizational_Management.vue'], resolve),
         children: [{
                 name: 'organizational_mainPage',
                 path: '/home/Organizational_Management/organizational/mainPage',
@@ -528,7 +554,7 @@ let Products_Management = [{
         name: 'fund_company',
         path: '/home/Organizational_Management/fund_company',
         redirect: '/home/Organizational_Management/fund_company/mainPage',
-        component: resolve => require(['./pages/Organizational_Management/fund_company/fund_company.vue'], resolve),
+        component: resolve => require(['./pages/Organizational_Management/Organizational_Management.vue'], resolve),
         children: [{
                 name: 'fund_company_mainPage',
                 path: '/home/Organizational_Management/fund_company/mainPage',
@@ -547,23 +573,23 @@ let Products_Management = [{
         ]
     }
 ]
-// 异业后端管理
-let channel = [{
-        name: 'channel_index',
-        path: '/home/channel/index',
-        component: resolve => require(['./pages/channel/channel_index/channel_index.vue'], resolve)
-    },
-    {
-        name: 'channel_opening',
-        path: '/home/channel/opening',
-        component: resolve => require(['./pages/channel/channel_opening/channel_opening.vue'], resolve)
-    },
-    {
-        name: 'home/channel_transaction',
-        path: '/home/channel/transaction',
-        component: resolve => require(['./pages/channel/channel_transaction/channel_transaction.vue'], resolve)
-    }
-]
+// // 异业后端管理
+// let channel = [{
+//         name: 'channel_index',
+//         path: '/home/channel/index',
+//         component: resolve => require(['./pages/channel/channel_index/channel_index.vue'], resolve)
+//     },
+//     {
+//         name: 'channel_opening',
+//         path: '/home/channel/opening',
+//         component: resolve => require(['./pages/channel/channel_opening/channel_opening.vue'], resolve)
+//     },
+//     {
+//         name: 'home/channel_transaction',
+//         path: '/home/channel/transaction',
+//         component: resolve => require(['./pages/channel/channel_transaction/channel_transaction.vue'], resolve)
+//     }
+// ]
 // member 模块路由
 let member = [{
         name: 'badgewall_create',
@@ -700,12 +726,12 @@ let router = new Router({
                     component: resolve => require(['./pages/setting/setting.vue'], resolve),
                     children: [...setting]
                 },
-                {
-                    name: 'channel',
-                    path: '/home/channel',
-                    component: resolve => require(['./pages/channel/channel.vue'], resolve),
-                    children: [...channel]
-                },
+                // {
+                //     name: 'channel',
+                //     path: '/home/channel',
+                //     component: resolve => require(['./pages/channel/channel.vue'], resolve),
+                //     children: [...channel]
+                // },
                 {
                     name: 'log',
                     path: '/log',

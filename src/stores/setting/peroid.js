@@ -26,16 +26,16 @@ const mutations = {
                 state.peroidList.data.list = res.data.list;
                 state.peroidList.total = res.data.total;
                 state.peroidList.data.list && state.peroidList.data.list.forEach(v => {
-                    if (v.peroidType === 'PETTY') {
-                        v.peroidTypeCN = '小额'
-                    } else if (v.peroidType === 'FINANCING') {
-                        v.peroidTypeCN = '理财'
+                    if (v.peroidType == 0) {
+                        v.peroidTypeCN = '内地'
+                    } else if (v.peroidType == 1) {
+                        v.peroidTypeCN = '香港'
                     }
-                    if (v.showType === 'TABLE') {
-                        v.showTypeCN = '表格'
-                    } else if (v.showType === 'PORTRAIT') {
-                        v.showTypeCN = '竖版'
-                    }
+                    // if (v.showType === 'TABLE') {
+                    //     v.showTypeCN = '表格'
+                    // } else if (v.showType === 'PORTRAIT') {
+                    //     v.showTypeCN = '竖版'
+                    // }
                     if (v.validStatus === 'VALID') {
                         v.validStatusCN = '有效 '
                     } else if (v.validStatus === 'INVALID') {

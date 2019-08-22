@@ -18,22 +18,18 @@
         </el-form-item>
 
         <el-form-item label="所属省市" style="margin-bottom:5px;">
-          <el-select v-model="ruleForm.locationId" clearable placeholder="请选择">
-            <el-option
-              size="mini"
-              v-for="item in dictData.quyu"
-              :key="item.adcode"
-              :label="item.name"
-              :value="item.adcode"
-            ></el-option>
-          </el-select>
+          <el-cascader
+            v-model="location"
+            :options="dictData.quyu"
+            :props="{ expandTrigger: 'hover'}"
+          ></el-cascader>
         </el-form-item>
 
-        <el-form-item prop="type" label="机构类型" style="position:relative" class="isWith">
+        <el-form-item prop="type" label="银行类型" style="position:relative" class="isWith">
           <el-select clearable placeholder="请选择" v-model="ruleForm.type">
             <el-option
               size="mini"
-              v-for="item in dictData.institution_type"
+              v-for="item in dictData.bank_type"
               :key="item.id"
               :label="item.label"
               :value="item.id"
@@ -63,8 +59,56 @@
 
         <el-form-item label="银行logo" class="forLogo" v-if="this.hasImg">
           <div style="width:100px;">
-            <imgUpload :datas="hasImg" @selectImg="getImg('actImg',$event)" />
+            <imgUpload :datas="hasImg.logoUrl" @selectImg="getImg('logoUrl',$event)" />
           </div>
+        </el-form-item>
+
+        <el-form-item label="背景图" class="forLogo" v-if="this.hasImg">
+          <div style="width:100px;">
+            <imgUpload :datas="hasImg.backUrl" @selectImg="getImg('backUrl',$event)" />
+          </div>
+        </el-form-item>
+
+        <el-form-item label="半圆背景图" class="forLogo" v-if="this.hasImg">
+          <div style="width:100px;">
+            <imgUpload :datas="hasImg.banyuanUrl" @selectImg="getImg('banyuanUrl',$event)" />
+          </div>
+        </el-form-item>
+        <el-form-item label="文字商标" class="forLogo" v-if="this.hasImg">
+          <div style="width:100px;">
+            <imgUpload :datas="hasImg.shangbiao" @selectImg="getImg('shangbiao',$event)" />
+          </div>
+        </el-form-item>
+
+        <el-form-item label="维护时间" style="margin-bottom:5px;">
+          <el-time-picker
+            size="mini"
+            value-format="HH:mm:ss"
+            is-range
+            arrow-control
+            v-model="weihu"
+            range-separator="~"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+          ></el-time-picker>
+        </el-form-item>
+        <el-form-item label="版本标识" prop="version">
+          <el-input clearable placeholder="请输入" v-model="ruleForm.version"></el-input>
+        </el-form-item>
+
+        <el-form-item label="客服服务时间" style="margin-bottom:5px;">
+          <el-time-picker
+            size="mini"
+            value-format="HH:mm:ss"
+            is-range
+            arrow-control
+            v-model="ruleForm.serviceTime"
+            range-separator="~"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+          ></el-time-picker>
         </el-form-item>
 
         <el-form-item label="银行星级" style="margin-bottom:5px;">
@@ -80,11 +124,11 @@
         </el-form-item>
 
         <el-form-item label="星级评定描述" style="text-align:left;" prop="starRatingDesc">
-          <quill-editor v-model="ruleForm.starRatingDesc"></quill-editor>
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.starRatingDesc"></isQuill>
         </el-form-item>
 
         <el-form-item label="银行描述" style="text-align:left;" prop="description">
-          <quill-editor v-model="ruleForm.description"></quill-editor>
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
@@ -96,9 +140,10 @@
 </template>
 <script>
 import imgUpload from "../../../../components/upImg.vue";
+import isQuill from "@/components/quill.vue";
 
 export default {
-  components: { imgUpload },
+  components: { imgUpload, isQuill },
   data() {
     // 验证资产规模
     var checkNum = (rule, value, callback) => {
@@ -113,7 +158,9 @@ export default {
     return {
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
-      hasImg: null,
+      hasImg: null, // 如果有图片数据，要显示出来
+      location: [], // 所属区域
+      weihu: [], // 保存维护时间
       ruleForm: {
         name: "", //  机构名称
         locationId: [], // 所属省/直辖市ID
@@ -124,301 +171,28 @@ export default {
         logo: "",
         star: "", // 星级
         starRatingDesc: "", // 星级评定描述
-        description: "" // 银行描述
+        description: "", // 银行描述
+
+        backgroundImage: "", // 背景图
+        semicircleBackgroundImage: "", // 半圆背景图
+        textLogo: "", // 文字商标
+        maintainStartTime: "", // 维护开始时间
+        maintainEndTime: "", // 维护结束时间
+        serviceTime: [], // 客服服务时间
+        version: "" //版本标识
       },
-      shelveList: [
-        {
-          label: "上架中",
-          value: "YES"
-        },
-        {
-          label: "已下架",
-          value: "NO"
-        }
-      ],
-      options: [
-        // 所属省市级联数据
-        {
-          value: "zhinan",
-          label: "指南",
-          children: [
-            {
-              value: "shejiyuanze",
-              label: "设计原则",
-              children: [
-                {
-                  value: "yizhi",
-                  label: "一致"
-                },
-                {
-                  value: "fankui",
-                  label: "反馈"
-                },
-                {
-                  value: "xiaolv",
-                  label: "效率"
-                },
-                {
-                  value: "kekong",
-                  label: "可控"
-                }
-              ]
-            },
-            {
-              value: "daohang",
-              label: "导航",
-              children: [
-                {
-                  value: "cexiangdaohang",
-                  label: "侧向导航"
-                },
-                {
-                  value: "dingbudaohang",
-                  label: "顶部导航"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "zujian",
-          label: "组件",
-          children: [
-            {
-              value: "basic",
-              label: "Basic",
-              children: [
-                {
-                  value: "layout",
-                  label: "Layout 布局"
-                },
-                {
-                  value: "color",
-                  label: "Color 色彩"
-                },
-                {
-                  value: "typography",
-                  label: "Typography 字体"
-                },
-                {
-                  value: "icon",
-                  label: "Icon 图标"
-                },
-                {
-                  value: "button",
-                  label: "Button 按钮"
-                }
-              ]
-            },
-            {
-              value: "form",
-              label: "Form",
-              children: [
-                {
-                  value: "radio",
-                  label: "Radio 单选框"
-                },
-                {
-                  value: "checkbox",
-                  label: "Checkbox 多选框"
-                },
-                {
-                  value: "input",
-                  label: "Input 输入框"
-                },
-                {
-                  value: "input-number",
-                  label: "InputNumber 计数器"
-                },
-                {
-                  value: "select",
-                  label: "Select 选择器"
-                },
-                {
-                  value: "cascader",
-                  label: "Cascader 级联选择器"
-                },
-                {
-                  value: "switch",
-                  label: "Switch 开关"
-                },
-                {
-                  value: "slider",
-                  label: "Slider 滑块"
-                },
-                {
-                  value: "time-picker",
-                  label: "TimePicker 时间选择器"
-                },
-                {
-                  value: "date-picker",
-                  label: "DatePicker 日期选择器"
-                },
-                {
-                  value: "datetime-picker",
-                  label: "DateTimePicker 日期时间选择器"
-                },
-                {
-                  value: "upload",
-                  label: "Upload 上传"
-                },
-                {
-                  value: "rate",
-                  label: "Rate 评分"
-                },
-                {
-                  value: "form",
-                  label: "Form 表单"
-                }
-              ]
-            },
-            {
-              value: "data",
-              label: "Data",
-              children: [
-                {
-                  value: "table",
-                  label: "Table 表格"
-                },
-                {
-                  value: "tag",
-                  label: "Tag 标签"
-                },
-                {
-                  value: "progress",
-                  label: "Progress 进度条"
-                },
-                {
-                  value: "tree",
-                  label: "Tree 树形控件"
-                },
-                {
-                  value: "pagination",
-                  label: "Pagination 分页"
-                },
-                {
-                  value: "badge",
-                  label: "Badge 标记"
-                }
-              ]
-            },
-            {
-              value: "notice",
-              label: "Notice",
-              children: [
-                {
-                  value: "alert",
-                  label: "Alert 警告"
-                },
-                {
-                  value: "loading",
-                  label: "Loading 加载"
-                },
-                {
-                  value: "message",
-                  label: "Message 消息提示"
-                },
-                {
-                  value: "message-box",
-                  label: "MessageBox 弹框"
-                },
-                {
-                  value: "notification",
-                  label: "Notification 通知"
-                }
-              ]
-            },
-            {
-              value: "navigation",
-              label: "Navigation",
-              children: [
-                {
-                  value: "menu",
-                  label: "NavMenu 导航菜单"
-                },
-                {
-                  value: "tabs",
-                  label: "Tabs 标签页"
-                },
-                {
-                  value: "breadcrumb",
-                  label: "Breadcrumb 面包屑"
-                },
-                {
-                  value: "dropdown",
-                  label: "Dropdown 下拉菜单"
-                },
-                {
-                  value: "steps",
-                  label: "Steps 步骤条"
-                }
-              ]
-            },
-            {
-              value: "others",
-              label: "Others",
-              children: [
-                {
-                  value: "dialog",
-                  label: "Dialog 对话框"
-                },
-                {
-                  value: "tooltip",
-                  label: "Tooltip 文字提示"
-                },
-                {
-                  value: "popover",
-                  label: "Popover 弹出框"
-                },
-                {
-                  value: "card",
-                  label: "Card 卡片"
-                },
-                {
-                  value: "carousel",
-                  label: "Carousel 走马灯"
-                },
-                {
-                  value: "collapse",
-                  label: "Collapse 折叠面板"
-                }
-              ]
-            }
-          ]
-        },
-        {
-          value: "ziyuan",
-          label: "资源",
-          children: [
-            {
-              value: "axure",
-              label: "Axure Components"
-            },
-            {
-              value: "sketch",
-              label: "Sketch Templates"
-            },
-            {
-              value: "jiaohu",
-              label: "组件交互文档"
-            }
-          ]
-        }
-      ],
+
       //表单验证
       rules: {
         name: [
           { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" },
           { required: true, message: "请选择机构名称", trigger: "blur" }
         ],
+        version: [
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
+        ],
         hotLine: [
           { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
-        ],
-        starRatingDesc: [
-          { min: 1, max: 2000, message: "最多输入2000个字", trigger: "blur" }
-        ],
-        description: [
-          { min: 1, max: 2000, message: "最多输入2000个字", trigger: "blur" }
         ],
         aum: [{ validator: checkNum, trigger: "blur" }],
         locationId: [
@@ -428,24 +202,86 @@ export default {
       }
     };
   },
-  mounted() {
+  created() {
     this.hasImg = {
-      url: "admin/file/up/member",
-      imgUrl: ""
+      logoUrl: {
+        url: "admin/file/up/setting",
+        imgUrl: ""
+      },
+      backUrl: {
+        url: "admin/file/up/setting",
+        imgUrl: ""
+      },
+      banyuanUrl: {
+        url: "admin/file/up/setting",
+        imgUrl: ""
+      },
+      shangbiao: {
+        url: "admin/file/up/setting",
+        imgUrl: ""
+      }
     };
-    this.pageName = sessionStorage.getItem("page") + " > 新增机构第一步"; // 获取页面名称
+    let isEdit = sessionStorage.getItem("jigou_edit");
+    if (isEdit) {
+      this.pageName = sessionStorage.getItem("page") + " > 编辑机构第一步"; // 获取页面名称
+    } else {
+      this.pageName = sessionStorage.getItem("page") + " > 新增机构第一步"; // 获取页面名称
+    }
+
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
     let step1 = sessionStorage.getItem("organizational_step1");
     if (step1) {
       this.ruleForm = JSON.parse(step1);
-      this.hasImg.imgUrl = this.ruleForm.logo;
+      this.weihu = this.ruleForm.weihu;
+
+      this.hasImg.logoUrl.imgUrl = this.ruleForm.logo;
+      this.hasImg.backUrl.imgUrl = this.ruleForm.backgroundImage;
+      this.hasImg.banyuanUrl.imgUrl = this.ruleForm.semicircleBackgroundImage;
+      this.hasImg.shangbiao.imgUrl = this.ruleForm.textLogo;
+
+      if (this.ruleForm.maintainStartTime) {
+        this.weihu = [
+          this.ruleForm.maintainStartTime,
+          this.ruleForm.maintainEndTime
+        ];
+      }
+
+      // 查询区域数据，填充location数组
+      if (this.ruleForm.locationId) {
+        wap: for (let i = this.dictData.quyu.length; i--; ) {
+          if (this.dictData.quyu[i].value == this.ruleForm.locationId) {
+            this.location = ["" + this.ruleForm.locationId];
+            break wap;
+          } else {
+            let child = this.dictData.quyu[i].children;
+            if (child) {
+              for (let j = child.length; j--; ) {
+                if (child[j].value == this.ruleForm.locationId) {
+                  this.location = [
+                    "" + child[j].paren,
+                    "" + this.ruleForm.locationId
+                  ];
+                  break wap;
+                }
+              }
+            }
+          }
+        }
+      }
+     
     }
   },
-
   methods: {
     next() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
+          if (this.location.length > 0) {
+            this.ruleForm.locationId = this.location[this.location.length - 1];
+          }
+          if (this.weihu.length > 0) {
+            this.ruleForm.maintainStartTime = this.weihu[0];
+            this.ruleForm.maintainEndTime = this.weihu[1];
+          }
           sessionStorage.setItem(
             "organizational_step1",
             JSON.stringify(this.ruleForm)
@@ -464,7 +300,20 @@ export default {
     },
     // 添加图标
     getImg(type, data) {
-      this.ruleForm.logo = data.url;
+      switch (type) {
+        case "logoUrl":
+          this.ruleForm.logo = data.url;
+          break;
+        case "backUrl":
+          this.ruleForm.backgroundImage = data.url;
+          break;
+        case "banyuanUrl":
+          this.ruleForm.semicircleBackgroundImage = data.url;
+          break;
+        case "shangbiao":
+          this.ruleForm.textLogo = data.url;
+          break;
+      }
     }
   }
 };

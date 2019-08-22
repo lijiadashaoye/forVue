@@ -23,12 +23,11 @@
             ></el-date-picker>
           </el-form-item>
 
-          <el-form-item label="活动类型" required>
+          <el-form-item label="活动类型" prop="activityType">
             <el-select
               v-model="formData.activityType"
               placeholder="请选择活动类型"
               style="width:100%;"
-              clearable
               @change="changeActType"
             >
               <el-option
@@ -41,7 +40,7 @@
           </el-form-item>
 
           <el-form-item label="活动状态">
-            <el-select v-model="formData.UP" placeholder="请选择活动状态" style="width:100%;" clearable>
+            <el-select v-model="formData.UP" placeholder="请选择活动状态" style="width:100%;">
               <el-option
                 v-for="item in up_down"
                 :key="item.value"
@@ -60,6 +59,7 @@
           </el-form-item>
         </el-form>
       </div>
+
       <div class="tables" v-if="formData.activityType">
         <!-- 签到-连续 -->
         <div v-if="setQIANDAO">
@@ -89,10 +89,10 @@
                 </td>
               </tr>
               <tr>
-                <th>奖品名称</th>
-                <th>中奖概率</th>
-                <th>模拟概率</th>
-                <th>奖品操作</th>
+                <th v-if="formData.awardList[0].jiangpin.length">奖品名称</th>
+                <th v-if="formData.awardList[0].jiangpin.length">中奖概率</th>
+                <th v-if="formData.awardList[0].jiangpin.length">模拟概率</th>
+                <th v-if="formData.awardList[0].jiangpin.length">奖品操作</th>
               </tr>
               <tr v-for="jp in formData.awardList[0].jiangpin" :key="jp.num">
                 <td>{{jp.name}}</td>
@@ -130,10 +130,10 @@
                 </td>
               </tr>
               <tr>
-                <th>奖品名称</th>
-                <th>中奖概率</th>
-                <th>模拟概率</th>
-                <th>奖品操作</th>
+                <th v-if="formData.awardList[1].jiangpin.length">奖品名称</th>
+                <th v-if="formData.awardList[1].jiangpin.length">中奖概率</th>
+                <th v-if="formData.awardList[1].jiangpin.length">模拟概率</th>
+                <th v-if="formData.awardList[1].jiangpin.length">奖品操作</th>
               </tr>
               <tr v-for="jp in formData.awardList[1].jiangpin" :key="jp.num">
                 <td>{{jp.name}}</td>
@@ -179,10 +179,10 @@
               </td>
             </tr>
             <tr>
-              <th>奖品名称</th>
-              <th>中奖概率</th>
-              <th>模拟概率</th>
-              <th>奖品操作</th>
+              <th v-if="formData.awardList[0].jiangpin.length">奖品名称</th>
+              <th v-if="formData.awardList[0].jiangpin.length">中奖概率</th>
+              <th v-if="formData.awardList[0].jiangpin.length">模拟概率</th>
+              <th v-if="formData.awardList[0].jiangpin.length">奖品操作</th>
             </tr>
 
             <tr v-for="jp in formData.awardList[0].jiangpin" :key="jp.num">
@@ -220,10 +220,10 @@
               </td>
             </tr>
             <tr>
-              <th>奖品名称</th>
-              <th>中奖概率</th>
-              <th>模拟概率</th>
-              <th>奖品操作</th>
+              <th v-if="formData.awardList[1].jiangpin.length">奖品名称</th>
+              <th v-if="formData.awardList[1].jiangpin.length">中奖概率</th>
+              <th v-if="formData.awardList[1].jiangpin.length">模拟概率</th>
+              <th v-if="formData.awardList[1].jiangpin.length">奖品操作</th>
             </tr>
             <tr v-for="jp in formData.awardList[1].jiangpin" :key="jp.num">
               <td>{{jp.name}}</td>
@@ -261,10 +261,10 @@
               </td>
             </tr>
             <tr>
-              <th>奖品名称</th>
-              <th>中奖概率</th>
-              <th>模拟概率</th>
-              <th>奖品操作</th>
+              <th v-if="formData.awardList[2].jiangpin.length">奖品名称</th>
+              <th v-if="formData.awardList[2].jiangpin.length">中奖概率</th>
+              <th v-if="formData.awardList[2].jiangpin.length">模拟概率</th>
+              <th v-if="formData.awardList[2].jiangpin.length">奖品操作</th>
             </tr>
             <tr v-for="jp in formData.awardList[2].jiangpin" :key="jp.num">
               <td>{{jp.name}}</td>
@@ -302,10 +302,10 @@
               </td>
             </tr>
             <tr>
-              <th>奖品名称</th>
-              <th>中奖概率</th>
-              <th>模拟概率</th>
-              <th>奖品操作</th>
+              <th v-if="formData.awardList[3].jiangpin.length">奖品名称</th>
+              <th v-if="formData.awardList[3].jiangpin.length">中奖概率</th>
+              <th v-if="formData.awardList[3].jiangpin.length">模拟概率</th>
+              <th v-if="formData.awardList[3].jiangpin.length">奖品操作</th>
             </tr>
             <tr v-for="jp in formData.awardList[3].jiangpin" :key="jp.num">
               <td>{{jp.name}}</td>
@@ -341,10 +341,10 @@
               </td>
             </tr>
             <tr>
-              <th>奖品名称</th>
-              <th>中奖概率</th>
-              <th>模拟概率</th>
-              <th>奖品操作</th>
+              <th v-if="formData.awardList[4].jiangpin.length">奖品名称</th>
+              <th v-if="formData.awardList[4].jiangpin.length">中奖概率</th>
+              <th v-if="formData.awardList[4].jiangpin.length">模拟概率</th>
+              <th v-if="formData.awardList[4].jiangpin.length">奖品操作</th>
             </tr>
             <tr v-for="jp in formData.awardList[4].jiangpin" :key="jp.num">
               <td>{{jp.name}}</td>
@@ -371,6 +371,7 @@
       <el-button @click="reset" type="info">重 置</el-button>
     </div>
 
+    <!-- 添加奖励 -->
     <el-dialog
       :before-close="toCloseTable"
       :close-on-click-modal="false"
@@ -438,7 +439,7 @@
         </div>
       </div>
     </el-dialog>
-
+    <!-- 编辑奖品 -->
     <el-dialog
       :before-close="toCloseTable"
       :close-on-click-modal="false"
@@ -513,7 +514,7 @@ export default {
       toShowEdit: false, // 编辑奖励的
       setQIANDAO: false, // 签到奖励列表
       setLIANLIAN: false, // 连连看奖励列表
-      whichAddJP: null, // 用来记录当前点击添加奖品的
+      whichAddJP: null, // 用来记录当前点击添加奖品的行为
       editForm: {
         // 点击编辑奖励时的弹框
         text1: "",
@@ -557,8 +558,9 @@ export default {
       },
       // 红包列表的搜索
       PACKET_tableSearch: {
-        name: "",
+        name: ""
       },
+      before_actName: "", // 保存切换活动类型前的活动名称
       // 新建活动表单
       formData: {
         activityNo: "", // 活动编号
@@ -567,6 +569,69 @@ export default {
         description: "", // 活动规则说明
         awardList: [], // 保存奖励数据
         link: "" // 活动链接
+      },
+      // 活动类型奖品表格
+      active_jiangli: {
+        qiandao: [
+          {
+            name: "大转盘", // 行为名称
+            renshu: "", // 人数
+            jine: "", // 金额
+            tianshu: "", // 天数
+            isUse: false, // 行为操作(立即使用)
+            jiangpin: [] // 添加的奖品
+          },
+          {
+            name: "签到-连续",
+            renshu: "",
+            jine: "",
+            tianshu: "",
+            isUse: false,
+            jiangpin: []
+          }
+        ],
+        lianlianzhuan: [
+          {
+            name: "邀新实名-每人",
+            renshu: "",
+            jine: "",
+            tianshu: "",
+            isUse: false,
+            jiangpin: []
+          },
+          {
+            name: "邀新实名-累计",
+            renshu: "",
+            jine: "",
+            tianshu: "",
+            isUse: false,
+            jiangpin: []
+          },
+          {
+            name: "邀新实名-累计",
+            renshu: "",
+            jine: "",
+            tianshu: "",
+            isUse: false,
+            jiangpin: []
+          },
+          {
+            name: "邀新投资-每人",
+            renshu: "",
+            jine: "",
+            tianshu: "",
+            isUse: false,
+            jiangpin: []
+          },
+          {
+            name: "邀新注册-循环",
+            renshu: "",
+            jine: "",
+            tianshu: "",
+            isUse: false,
+            jiangpin: []
+          }
+        ]
       },
       // 活动奖励选项数据
       methodData: [
@@ -599,6 +664,9 @@ export default {
         activityNo: [
           { min: 1, max: 32, message: "最多输入32个字", trigger: "blur" },
           { required: true, message: "请输入活动编号", trigger: "blur" }
+        ],
+        activityType: [
+          { required: true, message: "请选择活动类型", trigger: "change" }
         ],
         time: [{ required: true, message: "请输入活动时间", trigger: "blur" }],
         description: [
@@ -694,14 +762,20 @@ export default {
           }
           break;
         case "toUse": // 添加活动奖励
-          let obj = {
-            num: +this.forNum++,
-            name: type.data.name,
-            zhongjiang: 4,
-            moni: 6,
-            data: type.data // 保存所选的卡券、红包的完整数据
-          };
-          this.whichAddJP.jiangpin.push(obj);
+          let arr = this.whichAddJP.jiangpin.map(tar => tar.id);
+          if (!arr.includes(type.data.id)) {
+            let obj = {
+              num: +this.forNum++,
+              id: type.data.id,
+              name: type.data.name,
+              zhongjiang: 0,
+              moni: 0,
+              data: type.data // 保存所选的卡券、红包的完整数据
+            };
+            this.whichAddJP.jiangpin.push(obj);
+          } else {
+            this.$message.error("已经添加过这个奖品！");
+          }
           break;
       }
     },
@@ -820,83 +894,62 @@ export default {
           }
         });
     },
-    // 奖励类型切换
+    // 活动类型切换
     changeActType() {
-      this.setQIANDAO = false;
-      this.setLIANLIAN = false;
-      this.formData.awardList = [];
-      switch (this.formData.activityType) {
-        case "qiandao":
-          this.setQIANDAO = true;
-          let obj1 = {
-            name: "大转盘",
-            renshu: 5,
-            jine: 3,
-            tianshu: 7,
-            isUse: false,
-            jiangpin: []
-          };
-          let obj2 = {
-            name: "签到-连续",
-            renshu: 2,
-            jine: 2,
-            tianshu: 2,
-            isUse: false,
-            jiangpin: []
-          };
+      if (this.formData.awardList.length) {
+        this.$confirm(
+          "切换活动类型，当前奖品表格数据将不被保存，是否继续切换？"
+        )
+          .then(() => {
+            this.setQIANDAO = false;
+            this.setLIANLIAN = false;
+            this.formData.awardList = [];
 
-          this.formData.awardList.push(obj1, obj2);
-          break;
-        case "lianlianzhuan":
-          this.setLIANLIAN = true;
-          let obj3 = {
-            name: "邀新实名-每人",
-            renshu: 2,
-            jine: 2,
-            tianshu: 2,
-            isUse: false,
-            jiangpin: []
-          };
-          let obj4 = {
-            name: "邀新实名-累计",
-            renshu: 2,
-            jine: 3,
-            tianshu: 3,
-            isUse: false,
-            jiangpin: []
-          };
-          let obj5 = {
-            name: "邀新实名-累计",
-            renshu: 5,
-            jine: 4,
-            tianshu: 6,
-            isUse: false,
-            jiangpin: []
-          };
-          let obj6 = {
-            name: "邀新投资-每人",
-            renshu: 7,
-            jine: 8,
-            tianshu: 5,
-            isUse: false,
-            jiangpin: []
-          };
-          let obj7 = {
-            name: "邀新注册-循环",
-            renshu: 9,
-            jine: 3,
-            tianshu: 8,
-            isUse: false,
-            jiangpin: []
-          };
-
-          this.formData.awardList.push(obj3, obj4, obj5, obj6, obj7);
-          break;
-      }
-      if (this.formData.activityType) {
-        this.$store.commit("set_asideState", { data: false });
+            switch (this.formData.activityType) {
+              case "qiandao":
+                this.setQIANDAO = true;
+                break;
+              case "lianlianzhuan":
+                this.setLIANLIAN = true;
+                break;
+            }
+            this.active_jiangli[this.formData.activityType].forEach(item => {
+              item.jiangpin = [];
+            });
+            this.formData.awardList = [
+              ...this.active_jiangli[this.formData.activityType]
+            ];
+            if (this.formData.activityType) {
+              this.$store.commit("set_asideState", { data: false });
+            } else {
+              this.$store.commit("set_asideState", { data: true });
+            }
+            this.before_actName = this.formData.activityType;
+          })
+          .catch(() => {
+            this.formData.activityType = this.before_actName;
+          });
       } else {
-        this.$store.commit("set_asideState", { data: true });
+        this.setQIANDAO = false;
+        this.setLIANLIAN = false;
+
+        switch (this.formData.activityType) {
+          case "qiandao":
+            this.setQIANDAO = true;
+            break;
+          case "lianlianzhuan":
+            this.setLIANLIAN = true;
+            break;
+        }
+        this.formData.awardList = [
+          ...this.active_jiangli[this.formData.activityType]
+        ];
+        if (this.formData.activityType) {
+          this.$store.commit("set_asideState", { data: false });
+        } else {
+          this.$store.commit("set_asideState", { data: true });
+        }
+        this.before_actName = this.formData.activityType;
       }
     },
     // 点击添加奖品
@@ -946,7 +999,7 @@ export default {
       };
       // 红包列表的搜索
       this.PACKET_tableSearch = {
-        name: "",
+        name: ""
       };
       this.setQIANDAO = false;
       this.setLIANLIAN = false;

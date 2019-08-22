@@ -13,41 +13,26 @@
         class="isForm"
         :rules="rules"
       >
-        <el-form-item size="mini" label="是否上架" class="is50">
-          <el-radio-group v-model="ruleForm.shelve" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
+        <el-form-item label="上下架状态" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+            <el-option
+              v-for="item in dictData.shelve_status"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
-        <el-form-item size="mini" label="是否面签" class="is50">
-          <el-radio-group v-model="ruleForm.visaInterview" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
-          <span class="isA">
-            <i class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
-          </span>
-        </el-form-item>
-
-        <el-form-item size="mini" label="是否推荐" class="is50">
-          <el-radio-group v-model="ruleForm.recommend" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
-          <span class="isA">
-            <i class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
-          </span>
-        </el-form-item>
-
-        <el-form-item size="mini" label="是否首页排行" class="is50">
-          <el-radio-group v-model="ruleForm.homePage" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
-          <span class="isA">
-            <i class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
-          </span>
+        <el-form-item label="是否面签" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+            <el-option
+              v-for="item in dictData.visa_interview_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="默认购买笔数" class="is50" prop="defaultNum">
@@ -77,6 +62,43 @@
             <i class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
           </span>
         </el-form-item>
+
+        <el-form-item size="mini" label="是否推荐" class="is50">
+          <el-radio-group v-model="ruleForm.recommend" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+          <span class="isA">
+            <i class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
+          </span>
+        </el-form-item>
+
+        <el-form-item size="mini" label="是否首页排行" class="is50">
+          <el-radio-group v-model="ruleForm.homePage" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+          <span class="isA">
+            <i class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
+          </span>
+        </el-form-item>
+        <el-form-item size="mini" label="是否实名" class="is50">
+          <el-radio-group v-model="ruleForm.realNameAuth" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item size="mini" label="是否显示银行页" class="is50">
+          <el-radio-group v-model="ruleForm.showBankPage" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <div style="width:100%;">
+          <el-form-item label="产品H5链接" prop="h5Url">
+            <el-input clearable v-model="ruleForm.h5Url" placeholder="请输入" class="isInput"></el-input>
+          </el-form-item>
+        </div>
       </el-form>
     </div>
     <div class="nextButtons">
@@ -101,14 +123,18 @@ export default {
       }
     };
     return {
+      dictData: null,
       pageName: "", // 当前页面名字
       ruleForm: {
-        shelve: "否", // 是否上架
+        shelveStatus: "", // 是否上架
         recommend: "否", // 是否推荐
-        visaInterview: "否", // 是否面签
+        visaInterview: "", // 是否面签
         homePage: "否", // 是否首页排行
+        realNameAuth: "否", // 是否实名
         defaultNum: "", // 默认购买数量
-        defaultAmount: "" // 默认购买金额
+        defaultAmount: "", // 默认购买金额
+        h5Url: "", // 产品H5链接
+        showBankPage: "否" // 是否显示银行页
       },
       //表单验证
       rules: {
@@ -117,8 +143,9 @@ export default {
       }
     };
   },
-  mounted() {
+  created() {
     this.pageName = sessionStorage.getItem("page") + " > 新增纯债基金第二步"; // 获取页面名称
+    this.dictData = JSON.parse(sessionStorage.getItem("dict"));
     if (sessionStorage.getItem("chunzhai_step2")) {
       this.ruleForm = JSON.parse(sessionStorage.getItem("chunzhai_step2"));
     }

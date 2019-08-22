@@ -62,6 +62,63 @@
           <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.typeAlias"></el-input>
         </el-form-item>
 
+        <el-form-item label="期限别名" prop="deadlineAlias" class="is50">
+          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.deadlineAlias"></el-input>
+        </el-form-item>
+
+        <el-form-item label="利率别名" class="is50" prop="interestRateAlias">
+          <el-input
+            class="isInput"
+            clearable
+            placeholder="请输入"
+            v-model="ruleForm.interestRateAlias"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="产品版本标识" prop="contentVersion" class="is50">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="ruleForm.contentVersion"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+        </el-form-item>
+
+        <el-form-item label="所属区域" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.areaCode">
+            <el-option
+              size="mini"
+              v-for="item in dictData.quyu"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="币种" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
+            <el-option
+              size="mini"
+              v-for="item in dictData.bizhong"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="年收费率" class="is50" prop="yearRate">
+          <el-input
+            type="number"
+            clearable
+            v-model="ruleForm.yearRate"
+            placeholder="请输入"
+            class="isInput"
+          ></el-input>
+        </el-form-item>
+
         <el-form-item label="计息方式" style="position:relative" class="is50">
           <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.interestMode">
             <el-option
@@ -74,49 +131,16 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="起存金额" class="is50" prop="purchaseAmount">
-          <el-input
-            type="number"
-            class="isInput"
-            clearable
-            v-model="ruleForm.purchaseAmount"
-            placeholder="请输入"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="递增金额" class="is50" prop="increaseAmount">
-          <el-input
-            class="isInput"
-            clearable
-            v-model="ruleForm.increaseAmount"
-            placeholder="请输入"
-            type="number"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="标签" class="is50">
-          <el-select class="isInput" v-model="ruleForm.marks" clearable placeholder="请选择" multiple>
+        <el-form-item label="付息频率" style="position:relative" class="is50">
+          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
             <el-option
               size="mini"
-              v-for="item in dictData.marks"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
+              v-for="item in dictData.frequency_type"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
             ></el-option>
           </el-select>
-          <span class="isA">
-            <i
-              title="标签：标签默认在首页排行榜单显示，活期存款展示前两个标签，智能存款展示前四个标签"
-              class="myIcon14px icon-wenhaoyuanyiwenxianxing"
-            ></i>
-          </span>
-        </el-form-item>
-
-        <el-form-item size="mini" label="到期是否转存" class="is50">
-          <el-radio-group v-model="ruleForm.renewal" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
         </el-form-item>
 
         <el-form-item label="支取时间" class="is50">
@@ -131,98 +155,123 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="利率别名" class="is50" prop="interestRateAlias">
+        <el-form-item label="监管属性" style="position:relative" class="is50">
+          <el-select
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.regulatoryProperty"
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.regulatory_property"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="产品标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.productTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.productTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+          <span class="isA">
+            <i
+              title="标签：标签默认在首页排行榜单显示，活期存款展示前两个标签，智能存款展示前四个标签"
+              class="myIcon14px icon-wenhaoyuanyiwenxianxing"
+            ></i>
+          </span>
+        </el-form-item>
+
+        <el-form-item label="自定义标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.selfDefiningTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.selfDefiningTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="活动标签" class="is50">
+          <el-select
+            class="isInput"
+            v-model="ruleForm.activityTags"
+            clearable
+            placeholder="请选择"
+            multiple
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.activityTags"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="递增金额" class="is50" prop="increaseAmount">
           <el-input
             class="isInput"
             clearable
+            v-model="ruleForm.increaseAmount"
             placeholder="请输入"
-            v-model="ruleForm.interestRateAlias"
+            type="number"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="产品描述" prop="description">
-          <quill-editor class="isInput" v-model="ruleForm.description"></quill-editor>
+        <el-form-item label="最大起购金额(元)" prop="maxAmount" class="is50">
+          <el-input
+            type="number"
+            class="isInput"
+            clearable
+            v-model="ruleForm.maxAmount"
+            placeholder="请输入"
+          ></el-input>
         </el-form-item>
 
-        <el-form-item style="width:100%;" label="利率" required>
-          <div class="toaddlilv">
-            <span @click="addNewLilv">新增利率(点击添加,备注以外全必填)</span>
-            <span
-              style="padding-left:30px;color:red;font-size:14px;"
-              v-if="isHasError"
-            >{{isErrorMessage}}</span>
-          </div>
-          <ul :class="{'hasAddTitleTip':isHasError}">
-            <li class="isLi">
-              <span v-for="(tit,ind) in addLilvTable.title" :key="ind">{{tit}}</span>
-            </li>
-            <li
-              class="isLi2"
-              :class="index%2!==0?'isOdd':''"
-              v-for="(data,index) in addLilvTable.datas"
-              :key="index"
-            >
-              <span style="width:150px;">{{index+1}}</span>
-              <span>
-                <el-input type="number" v-model="data.limit" size="mini" placeholder="请输入"></el-input>
-              </span>
-              <span>
-                <el-select size="mini" placeholder="请选择" v-model="data.danwei">
-                  <el-option
-                    size="mini"
-                    v-for="item in dictData.deadline_type"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </span>
-              <span>
-                <el-input type="number" v-model="data.lilv" size="mini" placeholder="请输入"></el-input>
-              </span>
+        <el-form-item label="最小起购金额(元)" prop="minAmount" class="is50">
+          <el-input
+            type="number"
+            class="isInput"
+            clearable
+            v-model="ruleForm.minAmount"
+            placeholder="请输入"
+          ></el-input>
+        </el-form-item>
 
-              <span>
-                <el-input v-model="data.lockinPeriod" type="number" size="mini" placeholder="请输入"></el-input>
-              </span>
+        <el-form-item label="起购范围说明">
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.amountRangeExplain"></isQuill>
+        </el-form-item>
 
-              <span>
-                <el-input v-model="data.beizhu" size="mini" placeholder="请输入"></el-input>
-              </span>
-
-              <span>
-                <el-select size="mini" placeholder="请选择" v-model="data.showList">
-                  <el-option
-                    size="mini"
-                    v-for="item in shelveList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </span>
-              <span>
-                <el-select size="mini" placeholder="请选择" v-model="data.lockinShowList">
-                  <el-option
-                    size="mini"
-                    v-for="item in shelveList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </span>
-
-              <div style="width:30px;cursor: pointer;flex-shrink: 0" @click="toShowProp(data)">删除</div>
-            </li>
-            <li class="nextPage">
-              <span>总共：{{addLilvTable.total}}</span>
-              <span>第{{addLilvTable.pageNum+1}}页</span>
-              <span @click="pageStep(true)">上一页</span>
-              <span @click="pageStep(false)">下一页</span>
-            </li>
-          </ul>
+        <el-form-item label="产品描述" prop="description">
+          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
+
+      <addLiLv :addLiLvProp="addLiLvProp"></addLiLv>
 
       <div class="nextButtons">
         <el-button size="mini" type="primary" @click="next">下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -232,9 +281,24 @@
   </div>
 </template>
 <script>
+import isQuill from "@/components/quill.vue";
+import addLiLv from "@/components/addLiLv.vue";
+
 export default {
-  props: {},
+  components: { isQuill, addLiLv },
   data() {
+    // 验证数字 14字长
+    var checkNum1 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请正确输入"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
     // 验证数字
     var checkNum3 = (rule, value, callback) => {
       if (value < 0) {
@@ -245,9 +309,37 @@ export default {
         callback();
       }
     };
+    // 验证数字 最大起购额
+    var checkNum4 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请正确输入"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (value && +value <= +this.ruleForm.minAmount) {
+        callback(new Error("不能小于或等于最小起购额"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字 最小起购额
+    var checkNum5 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请正确输入"));
+      } else if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (value && +value >= +this.ruleForm.maxAmount) {
+        callback(new Error("不能大于或等于最大起购额"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
+
     return {
-      isHasError: false, // 利率列表是否有错误
-      isErrorMessage: "", // 利率列表错误提示文字
+      addLiLvProp: {}, // 传给利率表单的数据
       xilie: [], // 从服务器返回的产品系列数据
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
@@ -255,44 +347,26 @@ export default {
         institutionId: "", // 机构名称
         seriesId: "", // 产品系列ID
         name: "", // 产品名称
+        minAmount: "", // 默认最小存款金额
+        maxAmount: "", // 默认最大存款金额
+        amountRangeExplain: "", // 默认存款金额说明
         typeAlias: "", // 产品类型（类别别名）
-        interestMode: "", // 计息方式
-        purchaseAmount: "", // 起存金额
-        increaseAmount: "", // 递增金额
-        marks: "", // 标签
-        renewal: "否", // 到期是否转存
+        deadlineAlias: "", // 期限别名
         payTime: "", // 支取时间
+        interestMode: "", // 计息方式
+        yearRate: "", //  年收费率
+        increaseAmount: "", // 递增金额
+        productTags: [], // 产品标签
+        selfDefiningTags: [], // 自定义标签
+        activityTags: [], // 活动标签
+        regulatoryProperty: "", // 监管属性
+        currencyCode: "", // 币种编码
+        contentVersion: "", // 内容版本号
+        frequencyType: "", // 付息频率
         description: "", // 产品描述
         lilv: [], // 利率表格
-        interestRateAlias: "" // 利率别名
-      },
-      shelveList: [
-        {
-          label: "是",
-          value: "YES"
-        },
-        {
-          label: "否",
-          value: "NO"
-        }
-      ],
-      // 新建智能存款底下的利率选项
-      addLilvTable: {
-        pageNum: 0,
-        total: 0,
-        title: [
-          "序号",
-          "期限",
-          "期限单位",
-          "利率%",
-          "锁定期限(天)",
-          "备注",
-          "榜单展示",
-          "锁定期榜单展示",
-          "操作"
-        ],
-        dataTotal: [], //
-        datas: [] // 用来进行分页展示时的当前展示数据
+        interestRateAlias: "", // 利率别名
+        areaCode: "" // 所属区域
       },
 
       //表单验证
@@ -310,17 +384,20 @@ export default {
         typeAlias: [
           { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
         ],
-        purchaseAmount: [{ validator: checkNum3, trigger: "blur" }],
+        yearRate: [{ validator: checkNum3, trigger: "blur" }],
+        deadlineAlias: [
+          { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
+        ],
         increaseAmount: [{ validator: checkNum3, trigger: "blur" }],
-        description: [
-          { min: 1, max: 140, message: "最多输入140个字", trigger: "blur" }
-        ]
+        minAmount: [{ required: true, validator: checkNum5, trigger: "blur" }],
+        maxAmount: [{ required: true, validator: checkNum4, trigger: "blur" }]
       }
     };
   },
-  mounted() {
+  created() {
     this.pageName = sessionStorage.getItem("page") + " > 新增智能存款第一步"; // 获取页面名称
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
+
     // 如果有数据，则表示是编辑过的，如果没有，那就是从mainpage过来的
     let zhineng_step1 = sessionStorage.getItem("zhineng_step1");
     // 获取选定的机构
@@ -329,15 +406,19 @@ export default {
 
     if (zhineng_step1) {
       this.ruleForm = JSON.parse(zhineng_step1);
-      this.addLilvTable.total = this.ruleForm.lilv.length;
-      this.addLilvTable.dataTotal = this.ruleForm.lilv;
-      this.addLilvTable.datas = this.ruleForm.lilv.slice(0, 5);
     } else {
       this.ruleForm.institutionId = jigouData.institutionId;
       if (jigouData.id) {
         this.ruleForm.seriesId = jigouData.id;
       }
     }
+    this.addLiLvProp = {
+      isInput: false, // 记录表单是否发生数据输入
+      lilv_data: this.ruleForm.lilv,
+      num: this.ruleForm.lilv.length
+        ? Math.max(...this.ruleForm.lilv.map(tar => tar.num)) + 1
+        : 0
+    };
   },
 
   methods: {
@@ -361,50 +442,24 @@ export default {
     /*****************************************************************************************************/
     // 下一步
     next() {
-      let isAllok = false; // 用来判断利率列表是否有负数
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          if (this.addLilvTable.dataTotal.length) {
-            let arr = [];
-            // 检查利率列表是否必填项已经填写
-            this.addLilvTable.dataTotal.forEach(item => {
-              if (
-                item.limit < 0 ||
-                +item.lilv > 100 ||
-                item.lilv < 0 ||
-                item.lockinPeriod < 0
-              ) {
-                isAllok = true;
-              }
-              if (
-                item.limit &&
-                item.danwei &&
-                item.lilv &&
-                item.showList &&
-                item.lockinShowList &&
-                item.lockinPeriod
-              ) {
-                arr.push(item);
-              }
-            });
-
-            if (this.addLilvTable.total != arr.length) {
-              this.isErrorMessage =
-                "利率列表里有些必填项没有数据，请填好数据！";
-              this.isHasError = true;
-              setTimeout(() => {
-                this.isHasError = false;
-              }, 5000);
-            } else if (isAllok) {
-              this.isErrorMessage =
-                "利率列表里有为负的数据，或者利率数据大于100了，请正确填写数据！";
-              this.isHasError = true;
-              setTimeout(() => {
-                this.isHasError = false;
-                this.isErrorMessage = "";
-              }, 5000);
+          if (this.ruleForm.lilv.length) {
+            if (this.addLiLvProp.isInput) {
+              this.$confirm(
+                `利率表单已经填过数据，但不完整，是否抛弃已填数据从而进入下一步？`
+              )
+                .then(() => {
+                  sessionStorage.setItem(
+                    "zhineng_step1",
+                    JSON.stringify(this.ruleForm)
+                  );
+                  this.$router.push({
+                    name: "zhineng_step2"
+                  });
+                })
+                .catch(() => {});
             } else {
-              this.ruleForm.lilv = arr;
               sessionStorage.setItem(
                 "zhineng_step1",
                 JSON.stringify(this.ruleForm)
@@ -416,98 +471,17 @@ export default {
           } else {
             this.$message.error("请填写利率数据！");
           }
+        } else {
+          this.$message.error("请正确填写表单数据！");
         }
       });
     },
+
     // 取消
     back() {
       this.$router.push({
         name: "deposit_mainPage"
       });
-    },
-
-    // 新增利率(点击添加)
-    addNewLilv() {
-      let i = this.addLilvTable.total;
-      let obj = {
-        id: i,
-        limit: "", // 期限
-        danwei: "", // 单位
-        lilv: "", // 利率
-        lockinPeriod: "", // 锁定期限
-        beizhu: "", // 备注
-        showList: "", // 榜单展示
-        lockinShowList: "" // 锁定期榜单展示
-      };
-
-      this.addLilvTable.dataTotal.unshift(obj);
-      this.addLilvTable.total += 1;
-      let num = this.addLilvTable.dataTotal.length;
-      if (num <= 5) {
-        this.addLilvTable.datas = this.addLilvTable.dataTotal.slice();
-      } else {
-        this.addLilvTable.datas = this.addLilvTable.dataTotal.slice(0, 5);
-      }
-    },
-    // 显示删除确认框
-    toShowProp(tar) {
-      this.$confirm(`确定要删除吗？`)
-        .then(_ => {
-          this.toDelete(tar);
-        })
-        .catch(() => {});
-    },
-    // 删除利率
-    toDelete(item) {
-      let num = item;
-      let obj = this.addLilvTable;
-
-      obj.dataTotal = obj.dataTotal.filter(item => item.id != num.id); // 从总数据中删除要删除的
-      obj.datas = obj.datas.filter(item => item.id != num.id); // 更新当前页显示的
-      obj.total = obj.dataTotal.length; // 更新总量数
-
-      let arr = [];
-      let isShowd = obj.datas;
-      // 如果总数大于当前显示的数量，将删除项后边一位的数据补充到datas进行显示
-      if (obj.dataTotal.length > isShowd.length) {
-        for (let i = isShowd.length; i--; ) {
-          arr.push(isShowd[i].id);
-        }
-
-        let ids = Math.max(...arr) + 1; // 旧的显示列表id最大的一项的后一项，以索引评判
-        let item = null;
-        for (let i = obj.dataTotal.length; i--; ) {
-          if (obj.dataTotal[i].id === ids) {
-            item = obj.dataTotal[i]; // 找到要进行补位的项
-          }
-        }
-        if (item) {
-          obj.datas.push(item);
-        }
-      }
-    },
-    // 上一页 true、下一页 false
-    pageStep(type) {
-      if (type) {
-        if (this.addLilvTable.pageNum > 0) {
-          this.addLilvTable.pageNum -= 1;
-          this.addLilvTable.datas = this.addLilvTable.dataTotal.slice(
-            this.addLilvTable.pageNum * 5,
-            this.addLilvTable.pageNum * 5 + 5
-          );
-        }
-      } else {
-        let num1 = this.addLilvTable.total / 5;
-        let num2 = this.addLilvTable.pageNum + 1;
-
-        if (this.addLilvTable.total > 5 && num1 > num2) {
-          this.addLilvTable.pageNum += 1;
-          this.addLilvTable.datas = this.addLilvTable.dataTotal.slice(
-            this.addLilvTable.pageNum * 5,
-            this.addLilvTable.pageNum * 5 + 5
-          );
-        }
-      }
     },
     toJiGou() {
       sessionStorage.setItem("page", "机构管理");

@@ -25,7 +25,7 @@
         :remote-method="fuzzySearch"
         placeholder="请选择">
             <el-option
-              v-for="(item,ind) in this.productNameList"
+              v-for="(item,ind) in productNameList"
               :key="ind"
               :label="item.name"
               :value="item.id"
@@ -53,11 +53,13 @@
         action="customize"
         :show-file-list="false"
         :http-request="upload"
+        :on-change="uploadProcess"
         >
-        <img v-if="ruleForm.imageUrl" :src="ImgBaseUrl + ruleForm.imageUrl" class="avatar">
-        <div v-else>
+        <img v-if="ruleForm.imageUrl!= '' && videoFlag == false" :src="ImgBaseUrl + ruleForm.imageUrl" class="avatar">
+        <div v-else-if='ruleForm.imageUrl == "" && videoFlag == false'>
           <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
         </div>
+        <el-progress v-if="videoFlag == true" type="circle" :percentage="videoUploadPercent" style="margin-top:30px;"></el-progress>
       </el-upload>
     </el-form-item>
 
@@ -75,12 +77,15 @@
 
 <script>
 import { upLoadImg, productUrl_list, productList } from '../../api/setting_use.js';
+import { clearInterval } from 'timers';
 export default {
   name:'SettingExplosiveCommend',
   props:['opts', 'dataType'],
   data() {
     return {
       flag: true,
+      videoFlag: false,
+      videoUploadPercent: 0,
       productForm: {
         pageSize: 200,
         pageNum: 1,
@@ -142,7 +147,7 @@ export default {
     productUrl_list().then(res=> {
       if(res && res.success) {
         this.productTypeList = res.data.list.filter(v=> {
-          return v.linkUrl != '' && v.linkUrl != null && v.linkUrl != 0;
+          return v.linkUrl != '' && v.linkUrl != null && v.linkUrl != 0 && v.remarks == 'news';
         });
       }
     });
@@ -153,13 +158,17 @@ export default {
       this.ruleForm.productId = this.opts.productId;
       this.ruleForm.timeVal = [this.opts.startTime,this.opts.endTime];
       this.ruleForm.imageUrl = this.opts.productImageUrl;
+      if(this.ruleForm.productType != '' && this.ruleForm.productType != null) {
+        this.productForm.linkLocationEnum = this.ruleForm.productType;
+        this.getproList(this.productForm)
+      }
     }
   },
   methods:{
     upload(params) {
       const _file = params.file;
       const isLt2M = _file.size / 1024 / 1024 < 2;
-      const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+      const idJPG = _file.type === "image/jpeg" || _file.type === "image/gif" || _file.type === "image/png" || _file.type === "image/jpg";
       var formData = new FormData();
       formData.append("file", _file);
       if(!idJPG) {
@@ -172,6 +181,7 @@ export default {
       }
       upLoadImg(formData).then(res=> {
           if(res && res.success){
+              this.videoFlag = false;
               this.ruleForm.imageUrl = res.data
           }
       })
@@ -182,28 +192,46 @@ export default {
         this.getproList(this.productForm);
       }
     },
+    uploadProcess(file, fileList){
+      if(file.status === 'ready') {
+        this.videoUploadPercent = 0;
+        this.videoFlag = true;
+        const interval = setInterval(() => {
+          this.videoUploadPercent += 1;
+          if(this.videoUploadPercent >= 99) {
+            window.clearInterval(interval)
+            return
+          }
+        }, 200);
+      }
+      if(file.status === 'success') {
+        window.clearInterval(interval)
+        this.videoFlag = false;
+        this.videoUploadPercent = 100;
+      }
+    },
     getproList(form) {
+      console.log(1)
+      this.productNameList = [];
       productList(form).then(res=> {
         if(res && res.success) {
           this.productPageCount = res.data && Math.ceil(res.data.total/this.productForm.pageSize)
           if(res.data && res.data.list != null && res.data.list != []) {
             const _res = res.data.list
             this.productNameList = [...this.productNameList,..._res]
+            console.log(this.productNameList)
           }
         }
-      }).catch(res=> {
-        this.$message.error(`${res.message}`)
       })
     },
     fuzzySearch(query) {
+      this.productNameList = [];
       if(query!= '' && this.ruleForm.productType != '') {
-          this.productNameList = [];
           this.productForm.name = query;
           this.productForm.linkLocationEnum = this.ruleForm.productType;
           this.getproList(this.productForm)
       } else {
-          this.productNameList = [];
-          this.productForm.name = null;
+        this.productForm.name = null;
           this.productForm.linkLocationEnum = this.ruleForm.productType;
           this.getproList(this.productForm)
       }
@@ -219,8 +247,8 @@ export default {
     },
     save(formName){
       this.$refs[formName].validate((valid) => {
-          if (valid) {
-            let id;
+        if (valid) {
+          let id;
             this.productNameList.forEach((v, i)=> {
               if(v.id === this.ruleForm.productId){
                 this.productName = v.name
@@ -253,12 +281,12 @@ export default {
         });
       // if(this.ruleForm.productType && this.ruleForm.productId && this.ruleForm.timeVal && this.ruleForm.imageUrl){
         
-      // }else{
-      //   this.$alert('*号是必填项', '提交失败', {
-      //     confirmButtonText: '确定',
+        // }else{
+          //   this.$alert('*号是必填项', '提交失败', {
+            //     confirmButtonText: '确定',
       //     callback: action => {
-      //       this.$message({
-      //         type: 'info',
+        //       this.$message({
+          //         type: 'info',
       //         message: `action: ${ action }`
       //       });
       //     }
@@ -268,7 +296,6 @@ export default {
     //选择产品类型
     typeSelect(val) {
       if(val != '') {
-        this.productNameList = [];
         this.ruleForm.productId = '';
         this.productForm = {
           pageSize: 200,
@@ -290,12 +317,16 @@ export default {
       this.ruleForm.productId = this.opts.productId;
       this.ruleForm.timeVal = [this.opts.startTime,this.opts.endTime];
       this.ruleForm.imageUrl = this.opts.productImageUrl;
-    },
-    'ruleForm.productType'() {
       if(this.ruleForm.productType != '' && this.ruleForm.productType != null) {
         this.productForm.linkLocationEnum = this.ruleForm.productType;
         this.getproList(this.productForm)
       }
+    },
+    'ruleForm.productType'() {
+      // if(this.ruleForm.productType != '' && this.ruleForm.productType != null) {
+      //   this.productForm.linkLocationEnum = this.ruleForm.productType;
+      //   this.getproList(this.productForm)
+      // }
     }
     // 'opts.productTypeName'(){
     //   this.ruleForm.productType = this.opts.productTypeName;

@@ -34,16 +34,35 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="客户分类" class="is50" prop="kehufenlei">
-          <el-select clearable placeholder="请选择" v-model="ruleForm.customerClassification">
-            <el-option
-              size="mini"
-              v-for="item in dictData.customer_classification"
-              :key="item.id"
-              :label="item.label"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+        <el-form-item size="mini" label="是否同卡进出" class="is50">
+          <el-radio-group v-model="ruleForm.sameCardIo" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item size="mini" label="是否支持绑定多张卡" class="is50">
+          <el-radio-group v-model="ruleForm.multipleCards" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item size="mini" label="是否可换绑卡" class="is50">
+          <el-radio-group v-model="ruleForm.replacementCard" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item size="mini" label="是否列表展示" class="is50">
+          <el-radio-group v-model="ruleForm.listView" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item size="mini" label="是否需要认证授权" class="is50">
+          <el-radio-group v-model="ruleForm.needAuthentication" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
         </el-form-item>
 
         <div class="form_middle">
@@ -91,18 +110,28 @@
           <el-input clearable placeholder="请输入" v-model="ruleForm.iosH5Link"></el-input>
         </el-form-item>
 
-        <el-form-item size="mini" label="是否打通OpenApi" class="is50">
-          <el-radio-group v-model="ruleForm.directConnect" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
+        <el-form-item label="银行对接方式" class="is50" prop="connectionMode">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+            <el-option
+              size="mini"
+              v-for="item in dictData.connection_mode"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
-        <el-form-item size="mini" label="是否列表展示" class="is50">
-          <el-radio-group v-model="ruleForm.listView" class="isInput">
-            <el-radio-button label="是" class="isRadio"></el-radio-button>
-            <el-radio-button label="否" class="isRadio"></el-radio-button>
-          </el-radio-group>
+        <el-form-item label="客户分类" class="is50" prop="customerClassification">
+          <el-select clearable placeholder="请选择" v-model="ruleForm.customerClassification">
+            <el-option
+              size="mini"
+              v-for="item in dictData.customer_classification"
+              :key="item.id"
+              :label="item.label"
+              :value="item.id"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="排序号" class="is50" prop="topNo">
@@ -111,14 +140,28 @@
       </el-form>
 
       <div class="nextButtons">
-        <el-button size="mini" type="primary" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="warning" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
         <el-button size="mini" type="primary" @click="next" :disabled="isSaveIng">保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-        <el-button size="mini" type="info" @click="back">取消</el-button>
+        <el-button size="mini" type="danger" @click="back" v-if="!fromHttp">取消</el-button>
+        <el-button size="mini" type="info" @click="to_xiangqing" v-if="fromHttp">到详情</el-button>
       </div>
     </div>
 
-    <div id="forTable" v-if="isOk">
+    <div id="forTable" v-if="isOk&&!editOver">
       <hasSuccess @isOver="isOver" />
+    </div>
+
+    <div id="forTable" v-if="isOk&&editOver">
+      <div class="successWaper">
+        <div class="isOk">
+          <span class="myIcon icon-success setText"></span>
+          <p class="okText">完成！</p>
+        </div>
+        <div class="buttons">
+          <el-button size="mini" type="primary" @click="to_xiangqing">到详情</el-button>
+          <el-button size="mini" type="warning" @click="back">到列表</el-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -138,13 +181,15 @@ export default {
       }
     };
     return {
+      editOver: false, // 如果是编辑，则要退回到详情页面
+      fromHttp: null, // 如果是编辑，则会有值
       isSaveIng: false, // 切换保存按钮的可点击状态
       isOk: false,
       pageName: "", // 当前页面名字
       ruleForm: {
-        signedUp: "", // 是否签约
-        openedAccount: "", // 是否在线开户
-        buyable: "", // 是否可购买
+        signedUp: "否", // 是否签约
+        openedAccount: "否", // 是否在线开户
+        buyable: "否", // 是否可购买
         customerClassification: "", // 客户分类
         channel_coverage: [], // 渠道覆盖类型
         product_coverage: [], //产品覆盖类型
@@ -154,15 +199,22 @@ export default {
         iosPkgName: "", // IOS包名
         androidH5Link: "", // 安卓H5链接
         iosH5Link: "", // IOS H5链接
-        directConnect: "", // 是否银行直连（OpenAPI）
-        listView: "", // 是否列表展示
-        topNo: "" // 排序号
+        listView: "否", // 是否列表展示
+        topNo: "", // 排序号
+        connectionMode: "", // 银行对接方式
+        sameCardIo: "否", // 是否同卡进出
+        multipleCards: "否", // 是否支持绑定多张卡
+        replacementCard: "否", // 是否可换绑卡
+        needAuthentication: "否" // 是否需要认证授权
       },
       dictData: {}, // 数据字典
       //表单验证
       rules: {
-        kehufenlei: [
-          { required: true, message: "请选择机构客户分类", trigger: "blur" }
+        customerClassification: [
+          { required: true, message: "请选择机构客户分类", trigger: "change" }
+        ],
+        connectionMode: [
+          { required: true, message: "请选择银行对接方式", trigger: "change" }
         ],
         androidOpeningAddress: [
           { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
@@ -184,8 +236,15 @@ export default {
     };
   },
   mounted() {
-    this.pageName = sessionStorage.getItem("page") + " > 新增机构第二步"; // 获取页面名称
+    let isEdit = sessionStorage.getItem("jigou_edit");
+    if (isEdit) {
+      this.pageName = sessionStorage.getItem("page") + " > 编辑机构第一步"; // 获取页面名称
+    } else {
+      this.pageName = sessionStorage.getItem("page") + " > 新增机构第一步"; // 获取页面名称
+    }
+
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
+    this.fromHttp = sessionStorage.getItem("organizational_http");
     let step2 = sessionStorage.getItem("organizational_step2");
     if (step2) {
       this.ruleForm = JSON.parse(step2);
@@ -194,173 +253,268 @@ export default {
 
   methods: {
     next() {
-      let step1 = JSON.parse(sessionStorage.getItem("organizational_step1"));
-      let fromHttp = sessionStorage.getItem("organizational_http");
-      let httpType = "",
-        obj = {};
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          let step1 = JSON.parse(
+            sessionStorage.getItem("organizational_step1")
+          );
+          let httpType = "",
+            obj = {};
+          if (this.fromHttp) {
+            // 编辑
+            httpType = "put";
+            let httpData = JSON.parse(this.fromHttp);
+            obj = {
+              id: httpData.id,
+              uuid: httpData.uuid,
+              institutionId: httpData.institutionId,
+              locationId: step1.locationId,
+              locationName: "",
+              name: step1.name,
+              subType: step1.type,
+              subTypeLabel: "",
+              aum: step1.aum,
+              logo: step1.logo,
+              starRatingDesc: step1.starRatingDesc,
+              description: step1.description,
+              operator: httpData.operator,
+              contentVersion: httpData.contentVersion,
+              parentId: step1.parentId ? step1.parentId : "-1",
+              parentName: "",
+              configuration: {
+                id: httpData.configuration.id,
+                signedUp: this.ruleForm.signedUp === "是" ? "YES" : "NO",
+                customerClassification: this.ruleForm.customerClassification,
+                customerClassificationLabel: "",
+                openedAccount:
+                  this.ruleForm.openedAccount === "是" ? "YES" : "NO",
+                buyable: this.ruleForm.buyable === "是" ? "YES" : "NO",
+                androidOpeningAddress: this.ruleForm.androidOpeningAddress,
+                iosOpeningAddress: this.ruleForm.iosOpeningAddress,
+                androidPkgName: this.ruleForm.androidPkgName,
+                iosPkgName: this.ruleForm.iosPkgName,
+                androidH5Link: this.ruleForm.androidH5Link,
+                iosH5Link: this.ruleForm.iosH5Link,
+                listView: this.ruleForm.listView === "是" ? "YES" : "NO",
+                topNo: this.ruleForm.topNo,
+                connectionMode: this.ruleForm.connectionMode,
+                connectionModeLabel: "",
 
-      if (fromHttp) {
-        // 编辑
-        httpType = "put";
-        let httpData = JSON.parse(fromHttp);
-        obj = {
-          id: httpData.id,
-          institutionId: httpData.institutionId,
-          locationId: step1.locationId,
-          locationName: "",
-          name: step1.name,
-          type: step1.type,
-          typeLabel: "",
-          aum: step1.aum,
-          logo: step1.logo,
-          starRatingDesc: step1.starRatingDesc,
-          description: step1.description,
-          operator: httpData.operator,
-          contentVersion: httpData.contentVersion,
-          parentId: step1.parentId ? step1.parentId : "-1",
-          parentName: "",
-          configuration: {
-            id: httpData.configuration.id,
-            signedUp: this.ruleForm.signedUp === "是" ? "YES" : "NO",
-            customerClassification: this.ruleForm.customerClassification,
-            customerClassificationLabel: "",
-            openedAccount: this.ruleForm.openedAccount === "是" ? "YES" : "NO",
-            buyable: this.ruleForm.buyable === "是" ? "YES" : "NO",
-            androidOpeningAddress: this.ruleForm.androidOpeningAddress,
-            iosOpeningAddress: this.ruleForm.iosOpeningAddress,
-            androidPkgName: this.ruleForm.androidPkgName,
-            iosPkgName: this.ruleForm.iosPkgName,
-            androidH5Link: this.ruleForm.androidH5Link,
-            iosH5Link: this.ruleForm.iosH5Link,
-            directConnect: this.ruleForm.directConnect === "是" ? "YES" : "NO",
-            listView: this.ruleForm.listView === "是" ? "YES" : "NO",
-            topNo: this.ruleForm.topNo
-          },
-          channelCoverageList: [],
-          productCoverageList: []
-        };
+                sameCardIo: this.ruleForm.sameCardIo === "是" ? "YES" : "NO", // 是否同卡进出
+                multipleCards:
+                  this.ruleForm.multipleCards === "是" ? "YES" : "NO", // 是否支持绑定多张卡
+                replacementCard:
+                  this.ruleForm.replacementCard === "是" ? "YES" : "NO", // 是否可换绑卡
+                needAuthentication:
+                  this.ruleForm.needAuthentication === "是" ? "YES" : "NO", // 是否需要认证授权
+                backgroundImage: step1.backgroundImage, // 背景图
+                semicircleBackgroundImage: step1.semicircleBackgroundImage, // 半圆背景图
+                textLogo: step1.textLogo, // 文字商标
+                maintainStartTime: step1.maintainStartTime, // 维护开始时间
+                maintainEndTime: step1.maintainEndTime, // 维护结束时间
+                serviceTime: "", // 客服服务时间
+                version: step1.version //版本标识
+              },
+              channelCoverageList: [],
+              productCoverageList: []
+            };
 
-        this.dictData.channel_coverage_type.forEach(item => {
-          this.ruleForm.channel_coverage.forEach(str => {
-            if (item.label === str) {
-              obj.channelCoverageList.push({
-                institutionId: httpData.institutionId,
-                channelName: item.label,
-                channelCode: item.value
-              });
+            if (step1.serviceTime.length) {
+              obj.configuration.serviceTime =
+                step1.serviceTime[0] + " " + step1.serviceTime[1];
             }
-          });
-        });
-        this.dictData.product_coverage_type.forEach(item => {
-          this.ruleForm.product_coverage.forEach(str => {
-            if (item.label === str) {
-              obj.productCoverageList.push({
-                institutionId: httpData.institutionId,
-                productName: item.label,
-                productCode: item.value
-              });
-            }
-          });
-        });
-      } else {
-        // 新建
-        httpType = "post";
-        obj = {
-          name: step1.name,
-          locationId: step1.locationId,
-          locationName: "",
-          type: step1.type,
-          typeLabel: "",
-          parentId: step1.parentId ? step1.parentId : "-1",
-          parentName: "",
-          aum: step1.aum,
-          logo: step1.logo,
-          star: step1.star,
-          starLabel: "",
-          hotLine: step1.hotLine,
-          starRatingDesc: step1.starRatingDesc,
-          description: step1.description,
-          configuration: {
-            signedUp: this.ruleForm.signedUp === "是" ? "YES" : "NO",
-            customerClassification: this.ruleForm.customerClassification,
-            customerClassificationLabel: "",
-            openedAccount: this.ruleForm.openedAccount === "是" ? "YES" : "NO",
-            buyable: this.ruleForm.buyable === "是" ? "YES" : "NO",
-            androidOpeningAddress: this.ruleForm.androidOpeningAddress,
-            iosOpeningAddress: this.ruleForm.iosOpeningAddress,
-            androidPkgName: this.ruleForm.androidPkgName,
-            iosPkgName: this.ruleForm.iosPkgName,
-            androidH5Link: this.ruleForm.androidH5Link,
-            iosH5Link: this.ruleForm.iosH5Link,
-            directConnect: this.ruleForm.directConnect === "是" ? "YES" : "NO",
-            listView: this.ruleForm.listView === "是" ? "YES" : "NO",
-            topNo: this.ruleForm.topNo
-          },
-          channelCoverageList: [],
-          productCoverageList: []
-        };
-        this.dictData.channel_coverage_type.forEach(item => {
-          this.ruleForm.channel_coverage.forEach(str => {
-            if (item.label === str) {
-              obj.channelCoverageList.push({
-                channelName: item.label,
-                channelCode: item.value
-              });
-            }
-          });
-        });
-        this.dictData.product_coverage_type.forEach(item => {
-          this.ruleForm.product_coverage.forEach(str => {
-            if (item.label === str) {
-              obj.productCoverageList.push({
-                productName: item.label,
-                productCode: item.value
-              });
-            }
-          });
-        });
-      }
 
-      this.dictData.institution_type.forEach(item => {
-        if (item.id === step1.type) {
-          obj.typeLabel = item.label;
-        }
-      });
+            this.dictData.channel_coverage_type.forEach(item => {
+              this.ruleForm.channel_coverage.forEach(str => {
+                if (item.label === str) {
+                  obj.channelCoverageList.push({
+                    institutionId: httpData.institutionId,
+                    channelName: item.label,
+                    channelCode: item.value
+                  });
+                }
+              });
+            });
+            this.dictData.product_coverage_type.forEach(item => {
+              this.ruleForm.product_coverage.forEach(str => {
+                if (item.label === str) {
+                  obj.productCoverageList.push({
+                    institutionId: httpData.institutionId,
+                    productName: item.label,
+                    productCode: item.value
+                  });
+                }
+              });
+            });
+          } else {
+            // 新建
+            httpType = "post";
+            obj = {
+              name: step1.name,
+              locationId: step1.locationId,
+              locationName: "",
+              type: step1.type,
+              typeLabel: "",
+              parentId: step1.parentId ? step1.parentId : "-1",
+              parentName: "",
+              aum: step1.aum,
+              logo: step1.logo,
+              star: step1.star,
+              starLabel: "",
+              hotLine: step1.hotLine,
+              starRatingDesc: step1.starRatingDesc,
+              description: step1.description,
+              configuration: {
+                signedUp: this.ruleForm.signedUp === "是" ? "YES" : "NO",
+                customerClassification: this.ruleForm.customerClassification,
+                customerClassificationLabel: "",
+                openedAccount:
+                  this.ruleForm.openedAccount === "是" ? "YES" : "NO",
+                buyable: this.ruleForm.buyable === "是" ? "YES" : "NO",
+                androidOpeningAddress: this.ruleForm.androidOpeningAddress,
+                iosOpeningAddress: this.ruleForm.iosOpeningAddress,
+                androidPkgName: this.ruleForm.androidPkgName,
+                iosPkgName: this.ruleForm.iosPkgName,
+                androidH5Link: this.ruleForm.androidH5Link,
+                iosH5Link: this.ruleForm.iosH5Link,
+                listView: this.ruleForm.listView === "是" ? "YES" : "NO",
+                topNo: this.ruleForm.topNo,
+                connectionMode: this.ruleForm.connectionMode,
+                connectionModeLabel: "",
 
-      this.dictData.institution_star.forEach(item => {
-        if (item.id === step1.star) {
-          obj.starLabel = item.label;
-        }
-      });
-      this.dictData.customer_classification.forEach(item => {
-        if (item.id === this.ruleForm.customerClassification) {
-          obj.configuration.customerClassificationLabel = item.label;
-        }
-      });
-      this.dictData.paren.forEach(item => {
-        if (item.id === step1.parentId) {
-          obj.parentName = item.name;
-        }
-      });
-      this.isSaveIng = true;
-      this.$api
-        .add_newJiGou({
-          vm: this,
-          data: obj,
-          httpType: httpType
-        })
-        .then(res => {
-          this.isSaveIng = false;
-          if (res) {
-            sessionStorage.removeItem("dict");
-            this.$store.dispatch("get_dict", this).then(res => {
-              this.isOk = true;
+                sameCardIo: this.ruleForm.sameCardIo === "是" ? "YES" : "NO", // 是否同卡进出
+                multipleCards:
+                  this.ruleForm.multipleCards === "是" ? "YES" : "NO", // 是否支持绑定多张卡
+                replacementCard:
+                  this.ruleForm.replacementCard === "是" ? "YES" : "NO", // 是否可换绑卡
+                needAuthentication:
+                  this.ruleForm.needAuthentication === "是" ? "YES" : "NO", // 是否需要认证授权
+                backgroundImage: step1.backgroundImage, // 背景图
+                semicircleBackgroundImage: step1.semicircleBackgroundImage, // 半圆背景图
+                textLogo: step1.textLogo, // 文字商标
+                maintainStartTime: step1.maintainStartTime, // 维护开始时间
+                maintainEndTime: step1.maintainEndTime, // 维护结束时间
+                serviceTime: "", // 客服服务时间
+                version: step1.version //版本标识
+              },
+              channelCoverageList: [],
+              productCoverageList: []
+            };
+            if (step1.serviceTime.length) {
+              obj.configuration.serviceTime =
+                step1.serviceTime[0] + " " + step1.serviceTime[1];
+            }
+            this.dictData.channel_coverage_type.forEach(item => {
+              this.ruleForm.channel_coverage.forEach(str => {
+                if (item.label === str) {
+                  obj.channelCoverageList.push({
+                    channelName: item.label,
+                    channelCode: item.value
+                  });
+                }
+              });
+            });
+            this.dictData.product_coverage_type.forEach(item => {
+              this.ruleForm.product_coverage.forEach(str => {
+                if (item.label === str) {
+                  obj.productCoverageList.push({
+                    productName: item.label,
+                    productCode: item.value
+                  });
+                }
+              });
             });
           }
-        });
+
+          // 查询区域数据，填充location数组
+          if (step1.locationId) {
+            wap: for (let i = this.dictData.quyu.length; i--; ) {
+              if (this.dictData.quyu[i].value == step1.locationId) {
+                obj.locationName = this.dictData.quyu[i].label;
+                break wap;
+              } else {
+                let child = this.dictData.quyu[i].children;
+                if (child) {
+                  for (let j = child.length; j--; ) {
+                    if (child[j].value == step1.locationId) {
+                      obj.locationName =
+                        this.dictData.quyu[i].label + "/" + child[j].label;
+                      break wap;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          this.dictData.connection_mode.forEach(item => {
+            if (item.id === this.ruleForm.connectionMode) {
+              obj.configuration.connectionModeLabel = item.label;
+            }
+          });
+
+          this.dictData.bank_type.forEach(item => {
+            if (item.id === step1.type) {
+              obj.typeLabel = item.label;
+            }
+          });
+
+          this.dictData.institution_star.forEach(item => {
+            if (item.id === step1.star) {
+              obj.starLabel = item.label;
+            }
+          });
+          this.dictData.customer_classification.forEach(item => {
+            if (item.id === this.ruleForm.customerClassification) {
+              obj.configuration.customerClassificationLabel = item.label;
+            }
+          });
+          this.dictData.paren.forEach(item => {
+            if (item.id === step1.parentId) {
+              obj.parentName = item.name;
+            }
+          });
+          this.isSaveIng = true;
+          this.$api
+            .add_newJiGou({
+              vm: this,
+              data: obj,
+              httpType: httpType
+            })
+            .then(res => {
+              this.isSaveIng = false;
+              if (res) {
+                this.$store.dispatch("get_dict", this).then(res => {
+                  sessionStorage.setItem("dict", JSON.stringify(res));
+                  this.isOk = true;
+                  if (this.fromHttp) {
+                    this.editOver = true;
+                  }
+                });
+              }
+            });
+        }
+      });
     },
+    // 返回到详情页
+    to_xiangqing() {
+      let httpData = JSON.parse(this.fromHttp);
+      sessionStorage.removeItem("jigou_edit");
+      sessionStorage.removeItem("organizational_step1");
+      sessionStorage.removeItem("organizational_step2");
+      sessionStorage.removeItem("organizational_http");
+      this.$router.push({
+        name: "organizational_info",
+        query: {
+          id: httpData.id,
+          institutionName: httpData.name
+        }
+      });
+    },
+    // 新增的保存完毕
     isOver(type) {
       sessionStorage.setItem("page", "机构管理 ");
+      sessionStorage.removeItem("jigou_edit");
       if (type === "back") {
         this.$router.push({ name: `organizational_mainPage` });
       } else {

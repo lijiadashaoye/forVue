@@ -40,7 +40,7 @@ export default {
       if (pagename === "activity_create") {
         sessionStorage.clear(); // 既然是创建，那之前点击编辑过来的数据就不要了
         sessionStorage.setItem("page", kk);
-        setTimeout(() => {
+        this.$nextTick(() => {
           this.$router.push({
             name: "activity_create_step1"
           });

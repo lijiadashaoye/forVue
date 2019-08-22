@@ -60,16 +60,15 @@
           </el-select>
         </el-form-item>
 
-        <!-- <el-form-item label="日涨幅" prop="dailyIncrease" class="is50">
+        <el-form-item label="产品版本标识" prop="contentVersion" class="is50">
           <el-input
             class="isInput"
             clearable
-            v-model="ruleForm.dailyIncrease"
+            v-model="ruleForm.contentVersion"
             placeholder="请输入"
             type="number"
           ></el-input>
-          <span class="isA">%</span>
-        </el-form-item>-->
+        </el-form-item>
 
         <el-form-item label="单位净值" class="is50">
           <el-input
@@ -177,6 +176,7 @@ export default {
         name: "", // 产品名称
         code: "", // 代码
         status: "", // 交易状态
+        contentVersion: "", // 版本
         netValue: {
           netAssetValue: "", // 单位净值
           netAccumulateValue: "" // 累计净值
@@ -207,11 +207,10 @@ export default {
         status: [
           { required: true, message: "请选择交易状态", trigger: "change" }
         ],
-        // dailyIncrease: [
-        //   // { validator: checkNum3, trigger: "blur" },
-        //   { required: true, message: "请输入日涨幅", trigger: "blur" },
-        //   { min: 1, max: 10, message: "最多输入10个字", trigger: "blur" }
-        // ],
+        contentVersion: [
+          { required: true, message: "请输入版本标识", trigger: "blur" },
+          { validator: checkNum3, trigger: "blur" }
+        ],
         netAssetValue: [{ validator: checkNum4, trigger: "blur" }],
         netAccumulateValue: [{ validator: checkNum4, trigger: "blur" }],
         oneDayIncrease: [{ validator: checkNum3, trigger: "blur" }],

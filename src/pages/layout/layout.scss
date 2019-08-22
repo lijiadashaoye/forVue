@@ -1,4 +1,4 @@
-@import '../../assets/fonts/iconfont.css';
+@import '../../assets/iconfont.css';
 
 .myIcon12px {
     font-family: "myIcon" !important;
@@ -119,8 +119,7 @@ ul {
     overflow-y: auto;
     box-sizing: border-box;
     height: 100%;
-    width: 100%;
-    margin: 6px;
+    padding: 3px;
     border-radius: 6px
 }
 
