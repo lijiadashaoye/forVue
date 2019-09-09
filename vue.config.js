@@ -5,14 +5,13 @@ module.exports = {
     publicPath: "./",
     configureWebpack: (config) => {
         // if (process.env.NODE_ENV === 'release') {
-            console.log(path)
-            config.plugins.push(
-                new ZipPlugin({
-                    path: path.join(__dirname),
-                    filename: 'dist.zip',
-                    pathPrefix: 'dist',  // 定义打包文件再次包含在什么文件夹内
-                })
-            );
+        config.plugins.push(
+            new ZipPlugin({
+                path: path.join(__dirname),
+                filename: 'dist.zip',
+                pathPrefix: 'dist', // 定义打包文件再次包含在什么文件夹内
+            })
+        );
         // }
     }
 };
