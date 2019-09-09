@@ -25,10 +25,13 @@ import notice from './setting/notice';//公告
 import comment from './setting/comment';//评论
 import productUrl from './setting/productUrl';//通用地址
 import message from './setting/message';//信息和短信列表
+import relation from './setting/relation';//父子依赖关系
+import smsRuleTemplate from './setting/smsRuleTemplate';//短信权限/模版
 import cashOut from './member/cashOut';//提现管理
 import devicePosition from './log/devicePosition';//log 设备定位
 import pointLocation from './log/pointLocation';//log 点位
 import topProduct from './product/topProduct'; //榜单置顶
+import promptMsg from './product/promptMsg'; //榜单置顶
 
 const store = new Vuex.Store({
     modules: { // 使用状态整合来区分
@@ -55,10 +58,13 @@ const store = new Vuex.Store({
         comment,
         productUrl,
         message,
+        relation,
+        smsRuleTemplate,
         cashOut,
         devicePosition,
         pointLocation,
-        topProduct
+        topProduct,
+        promptMsg
     }
 });
 

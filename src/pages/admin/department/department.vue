@@ -102,7 +102,7 @@ export default {
     this.getAllTree();
   },
   methods: {
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let sys_dept_add = quanxian.includes("sys_dept_add");
@@ -168,11 +168,11 @@ export default {
     addMenuFn() {
       this.$refs.menuData.validate(valid => {
         if (valid) {
-          this.menuData.parentId = this.menuData.deptId;
-          let datas = this.menuData;
-          delete datas.updateTime;
-          delete datas.createTime;
-          delete datas.deptId;
+          let datas = {
+            code: this.menuData.code,
+            name: this.menuData.name,
+            parentId: this.menuData.deptId
+          };
           // 保存新增节点
           this.$api
             .admin_department_savePoint({
@@ -214,7 +214,7 @@ export default {
     updateMenuFn() {
       this.$refs.menuData.validate(valid => {
         if (valid) {
-          let datas = this.menuData;
+          let datas = { ...this.menuData };
           delete datas.updateTime;
           this.$api
             .admin_department_upPoint({
@@ -233,6 +233,7 @@ export default {
     },
     // 重置按钮
     clearData() {
+      this.$refs.menuData.resetFields();
       this.menuData = {};
       this.isAdd = false;
       this.canChange = false;

@@ -144,16 +144,6 @@ export default {
             pageSize: this.$store.state.protocol.protocolList.pageSize
           })
         }
-      }).catch((res)=>{
-        this.$alert(`${res.message}`, '保存失败', {
-          confirmButtonText: '确定',
-          callback: action => {
-            this.$message({
-              type: 'info',
-              message: `action: ${ action }`
-            });
-          }
-        });
       })
     },
 

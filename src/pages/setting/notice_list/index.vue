@@ -197,6 +197,7 @@ export default {
                     if( res && res.success) {
                         this.dialogFormVisible = false;
                         this.overFlag = true;
+                        this.$message.success('保存成功')
                         this.getList({
                             pageNum: this.$store.state.notice.noticeList.pageNum,
                             pageSize: this.$store.state.notice.noticeList.pageSize,

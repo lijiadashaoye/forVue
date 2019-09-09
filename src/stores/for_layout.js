@@ -57,9 +57,9 @@ const actions = {
             });
 
         return Promise.all([userInfo, asideData]).then(res => {
-            let userDatas = res[0] || [];
-            let asideData = res[1] || [];
-            if (userDatas && asideData) {
+            if (res.length===2) {
+                let userDatas = res[0];
+                let asideData = res[1];
                 localStorage.setItem("userData", JSON.stringify(userDatas));
                 localStorage.setItem("asideData", JSON.stringify(asideData));
                 return true
@@ -94,7 +94,6 @@ const actions = {
         let promiseArr1 = [];
         let arr = [
             "cooperation_mode", // 银行合作方式
-            "connection_mode", // 对接方式
             "risk_level", // 风险等级
             "deposit_type", //  存款类型
             "surplus_quota", // 剩余额度
@@ -103,7 +102,7 @@ const actions = {
             "rule_symbol", // <、<=等等 规则符号
             'visa_interview_type', // 是否面签
             "transaction_state", // 交易状态
-            'bank_type',  // 银行类型
+            'bank_type', // 银行类型
             'product_feature_type' // 产品特性
         ];
 

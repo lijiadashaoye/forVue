@@ -1,62 +1,47 @@
 <template>
     <el-card class="box-card">
-
-        <div class="card-item">
-            <span class="item-text">*APP标识:</span>
-            <div class="item-input">
-                <el-radio-group v-model="appChannelCode">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
+            <el-form-item label="APP标识:" prop="appChannelCode">
+                 <el-radio-group v-model="ruleForm.appChannelCode">
                     <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
-
-        <div class="card-item quill">
-            <span class="item-text">*内容:</span>
-            <div class="item-input input-quill">
+            </el-form-item>
+            
+            <el-form-item label="内容:" prop="content">
                 <el-input
                     type="textarea"
                     :autosize="{ minRows: 6, maxRows: 6}"
                     placeholder="请输入内容"
-                    v-model="content">
+                    v-model="ruleForm.content">
                 </el-input>
-            </div>
-        </div> 
-
-        <div class="card-item">
-            <span class="item-text">*系统:</span>
-            <div class="item-input">
-                <el-radio-group v-model="platformCode">
+            </el-form-item>
+            
+            <el-form-item label="系统:" prop="platformCode">
+                <el-radio-group v-model="ruleForm.platformCode">
                     <el-radio :label="'ios'">苹果</el-radio>
                     <el-radio :label="'android'">安卓</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*公告时间:</span>
-            <div class="item-input">
+            </el-form-item>
+            
+            <el-form-item label="公告时间:" prop="noticeTime">
                 <el-date-picker
-                    v-model="noticeTime"
+                    v-model="ruleForm.noticeTime"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期">
                 </el-date-picker>
-            </div>
-        </div>
+            </el-form-item>
+            
+            <el-form-item label="排序值:" prop="sort">
+                <el-input v-model.number="ruleForm.sort"  placeholder="只允许填入数字"></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*排序值:</span>
-            <div class="item-input">
-                <el-input v-model="sort" type="number" placeholder="只允许填入数字"></el-input>
-            </div>
-        </div>
-
-        <div class="card-footer">
-            <el-button @click="cancel">取消</el-button>
-            <el-button @click="save">保存</el-button>
-        </div>
-
+            <el-form-item>
+                <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+                <el-button @click="cancel('ruleForm')">取消</el-button>
+            </el-form-item>
+        </el-form>
     </el-card>
 </template>
 
@@ -67,102 +52,104 @@ export default {
         return {
             pageName: '',
             id: '',
-            content: '',//内容
-            appChannelCode: '',//app标识
-            platformCode: '',//项目标识
             appChannelName: '',//app名称
             platformName: '',//app标识
-            sort: '',//排序值
-            noticeTime: [],
+            ruleForm: {
+                content: '',//内容
+                appChannelCode: '',//app标识
+                platformCode: '',//项目标识
+                sort: '',//排序值
+                noticeTime: [],
+            },
+            rules: {
+                appChannelCode: [{required: true, message: '请选择App', trigger: 'blur'}],
+                platformCode: [{required: true, message: '请选择系统', trigger: 'blur'}],
+                sort: [
+                    {required: true, message: '请输入排序值', trigger: 'blur'},
+                    { pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' },
+                ],
+                noticeTime: [{required: true, message: '请选择时间', trigger: 'blur'}],
+                content: [{required: true, message: '请输入内容', trigger: 'blur'}],
+            },
         }
     },
     mounted() {
         this.pageName = this.$route.name;
         if(this.params) {
-            this.id = this.params.id;
-            this.content = this.params.content;
-            this.appChannelCode = this.params.appChannelCode;
-            this.platformCode = this.params.platformCode;
-            this.sort = this.params.sort;
-            this.noticeTime = [this.params.startTime,this.params.endTime]
+            this.id = this.params.id ? this.params.id : null;
+            this.ruleForm.content = this.params.content;
+            this.ruleForm.appChannelCode = this.params.appChannelCode;
+            this.ruleForm.platformCode = this.params.platformCode;
+            this.ruleForm.sort = this.params.sort;
+            this.ruleForm.noticeTime = [this.params.startTime,this.params.endTime]
         } else {
             this.id = '';
-            this.content = '';
-            this.appChannelCode = '';
-            this.platformCode = '';
-            this.sort = '';
-            this.noticeTime = [];
+            this.ruleForm.content = '';
+            this.ruleForm.appChannelCode = '';
+            this.ruleForm.platformCode = '';
+            this.ruleForm.sort = '';
+            this.ruleForm.noticeTime = [];
         }
     }, 
     methods: {
         //点击取消
-        cancel() {
+        cancel(formName) {
             this.id = '';
-            this.content = '';
-            this.appChannelCode = '';
-            this.platformCode = '';
-            this.sort = '';
-            this.noticeTime = [];
+            this.$refs[formName].resetFields();
             this.$emit('cancel')
         },
         //点击保存
-        save() {
-            if(this.appChannelCode && this.platformCode && this.sort && this.noticeTime.length > 0 && this.content) {
+        save(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
                     //  渠道
-                this.appChannel.forEach(v=> {
-                    if(this.appChannelCode == v.label){
-                        this.appChannelName = v.value
+                    this.appChannel.forEach(v=> {
+                        if(this.ruleForm.appChannelCode == v.label){
+                            this.appChannelName = v.value
+                        }
+                    })
+                    //平台
+                    if(this.ruleForm.platformCode === 'android') {
+                        this.platformName = '安卓'
+                    } else if(this.ruleForm.platformCode === 'ios') {
+                        this.platformName = '苹果'
                     }
-                })
-                //平台
-                if(this.platformCode === 'android') {
-                    this.platformName = '安卓'
-                } else if(this.platformCode === 'ios') {
-                    this.platformName = '苹果'
-                }
-                let obj = {
-                    id: this.id,
-                    content: this.content,
-                    appChannelName: this.appChannelName,
-                    platformCode: this.platformCode,
-                    appChannelCode: this.appChannelCode,
-                    platformName: this.platformName,
-                    startTime: new Date(this.noticeTime[0]).getTime(),
-                    endTime: new Date(this.noticeTime[1]).getTime(),
-                    sort: this.sort
-                }
-                this.$emit('send',obj)
-            } else {
-                this.$alert('*号是必填项', '提交失败', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-                        this.$message({
-                        type: 'info',
-                        message: `action: ${ action }`
-                        });
+                    let obj = {
+                        id: this.id,
+                        content: this.ruleForm.content,
+                        appChannelName: this.appChannelName,
+                        platformCode: this.ruleForm.platformCode,
+                        appChannelCode: this.ruleForm.appChannelCode,
+                        platformName: this.platformName,
+                        startTime: new Date(this.ruleForm.noticeTime[0]).getTime(),
+                        endTime: new Date(this.ruleForm.noticeTime[1]).getTime(),
+                        sort: this.ruleForm.sort
                     }
-                })
-            }
+                    this.$emit('send',obj)
+                } else {
+                    return false;
+                }
+            });
         }
     },
     watch: {
         'params.id'() {
-            this.id = this.params.id;
-            this.content = this.params.content;
-            this.appChannelCode = this.params.appChannelCode;
-            this.platformCode = this.params.platformCode;
-            this.sort = this.params.sort;
-            this.noticeTime = [this.params.startTime,this.params.endTime]
+            this.id = this.params.id ? this.params.id : null;
+            this.ruleForm.content = this.params.content;
+            this.ruleForm.appChannelCode = this.params.appChannelCode;
+            this.ruleForm.platformCode = this.params.platformCode;
+            this.ruleForm.sort = this.params.sort;
+            this.ruleForm.noticeTime = [this.params.startTime,this.params.endTime]
         },
         'overFlag' (){
             console.log(this.overFlag)
             if(this.overFlag) {
                 this.id = '';
-                this.content = '';
-                this.appChannelCode = '';
-                this.platformCode = '';
-                this.sort = '';
-                this.noticeTime = [];
+                this.ruleForm.content = '';
+                this.ruleForm.appChannelCode = '';
+                this.ruleForm.platformCode = '';
+                this.ruleForm.sort = '';
+                this.ruleForm.noticeTime = [];
             }
         }
     }

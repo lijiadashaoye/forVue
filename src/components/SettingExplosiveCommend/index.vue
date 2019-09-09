@@ -2,7 +2,7 @@
 <el-card class="box-card">
   <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" class="demo-ruleForm">
      <el-form-item label="产品类型:" prop="productType">
-        <el-select v-model="ruleForm.productType"  clearable  @change="typeSelect(ruleForm.productType)" placeholder="请选择">
+        <el-select filterable v-model="ruleForm.productType"  clearable  @change="typeSelect(ruleForm.productType)" placeholder="请选择">
           <el-option
             v-for="(item,ind) in productTypeList"
             :key="ind"
@@ -14,11 +14,11 @@
      </el-form-item>
      
     <el-form-item label="产品名称:" prop="productId">
-      <el-select
+      <el-select filterable
         v-model="ruleForm.productId"
         :disabled="changeFlag"
         clearable 
-        filterable
+        
         v-loadmore='loadmore'
         remote
         reserve-keyword
@@ -249,12 +249,12 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           let id;
-            this.productNameList.forEach((v, i)=> {
+            this.productNameList && this.productNameList.forEach((v, i)=> {
               if(v.id === this.ruleForm.productId){
                 this.productName = v.name
               }
             })
-            this.productTypeList.forEach(v=> {
+            this.productNameList && this.productTypeList.forEach(v=> {
               if(this.ruleForm.productType == v.linkModel) {
                 this.productTypeName = v.linkName
               }

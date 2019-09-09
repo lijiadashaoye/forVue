@@ -49,31 +49,8 @@ let admin = [{
 ]
 
 // marketing 模块路由
-let marketing = [{
-        name: 'new_create', // 创建活动
-        path: '/home/marketing/activity/new_create',
-        component: resolve => require(['./pages/marketing/new_create/zong.vue'], resolve),
-        children: [{
-                name: 'pzgl',
-                path: '/home/marketing/new_create/pzgl',
-                component: resolve => require(['./pages/marketing/new_create/pzgl.vue'], resolve)
-            }, {
-                name: 'scbj',
-                path: '/home/marketing/new_create/scbj',
-                component: resolve => require(['./pages/marketing/new_create/scbj.vue'], resolve)
-            },
-            {
-                name: 'scyl',
-                path: '/home/marketing/new_create/scyl',
-                component: resolve => require(['./pages/marketing/new_create/scyl.vue'], resolve)
-            },
-            {
-                name: 'sczj',
-                path: '/home/marketing/new_create/sczj',
-                component: resolve => require(['./pages/marketing/new_create/sczj.vue'], resolve)
-            }
-        ]
-    },
+let marketing = [
+   
     {
         name: 'activity_create', // 创建活动
         path: '/home/marketing/activity/create',
@@ -136,7 +113,35 @@ let marketing = [{
 ]
 
 // setting 模块路由
-let setting = [{
+let setting = [
+    {
+        name: 'new_create', // 创建活动
+        path: '/home/setting/config/solution/list',
+        redirect:'/home/setting/config/solution/list/pzgl',
+        component: resolve => require(['./pages/setting/solution_list/zong.vue'], resolve),
+        children: [{
+                name: 'pzgl',
+                path: '/home/setting/config/solution/list/pzgl',
+                component: resolve => require(['./pages/setting/solution_list/pzgl.vue'], resolve)
+            }, {
+                name: 'scbj',
+                path: '/home/setting/config/solution/list/scbj',
+                component: resolve => require(['./pages/setting/solution_list/scbj.vue'], resolve)
+            },
+            {
+                name: 'scyl',
+                path: '/home/setting/config/solution/list/scyl',
+                component: resolve => require(['./pages/setting/solution_list/scyl.vue'], resolve)
+            },
+            {
+                name: 'sczj',
+                path: '/home/setting/config/solution/list/sczj',
+                component: resolve => require(['./pages/setting/solution_list/sczj.vue'], resolve)
+            }
+        ]
+    },
+    
+    {
         name: '创建app按钮', // 创建app按钮
         path: '/home/setting/app-button/add',
         component: resolve => require(['./pages/setting/app-button_add'], resolve),
@@ -295,6 +300,11 @@ let setting = [{
         component: resolve => require(['./pages/setting/short-message-list/sendMessage'], resolve),
     }, 
     {
+        name: '短息详情',
+        path: '/setting/sms/manager/list/sms-details',
+        component: resolve => require(['./pages/setting/short-message-list/smsDetails'], resolve),
+    }, 
+    {
         name: '消息管理',
         path: '/setting/push/message/list',
         component: resolve => require(['./pages/setting/message-management'], resolve),
@@ -308,6 +318,24 @@ let setting = [{
         name: '消息详情',
         path: '/setting/push/message/list/message-details',
         component: resolve => require(['./pages/setting/message-management/messageDetails'], resolve),
+    }, 
+    // 父子级列表
+    {
+        name: '关联列表',
+        path: '/home/setting/parent/tree/list',
+        component: resolve => require(['./pages/setting/relation-list'], resolve),
+    }, 
+    // 短信规则列表
+    {
+        name: '短信规则列表',
+        path: '/home/setting/sms/rule/list',
+        component: resolve => require(['./pages/setting/sms-rule-list'], resolve),
+    }, 
+    //短信模版列表
+    {
+        name: '短信模版列表',
+        path: '/home/setting/sms/template/list',
+        component: resolve => require(['./pages/setting/sms-template-list'], resolve),
     }, 
     // 版本管理
     {
@@ -522,6 +550,11 @@ let Products_Management = [{ // 存款管理
         name: '榜单置顶管理',
         path: '/home/Products_Management/topProduct/list',
         component: resolve => require(['./pages/Products_Management/topProduct'], resolve),
+    },
+    {
+        name: '产品支取提示',
+        path: '/home/product/prompt/message/list',
+        component: resolve => require(['./pages/Products_Management/promptMsg'], resolve),
     },
     { // 机构管理
         name: 'organizational',

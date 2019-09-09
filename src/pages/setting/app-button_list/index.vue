@@ -66,7 +66,15 @@ export default {
     })
     this.pageName = this.$route.name;
     this.$store.state.app_button_add.tableMenu.data.title = [
-      {
+       {
+        title: "App",
+        key: "appChannelName",
+        minWidth: "120"
+      }, {
+        title: "显示类型",
+        key: "buttonTypeName",
+        minWidth: "120"
+      },{
         title: "按钮名称",
         key: "buttonText",
         minWidth: "100"
@@ -83,11 +91,13 @@ export default {
       },{
         title: "选中后文字颜色",
         key: "buttonSelectedTextColor",
-        minWidth: "120"
+        minWidth: "120",
+        isColor: true
       },{
         title: "未选中文字颜色",
         key: "buttonUnselectedTextColor",
-        minWidth: "120"
+        minWidth: "120",
+        isColor: true
       },{
         title: "平台",
         key: "platformName",
@@ -99,7 +109,7 @@ export default {
         sortable:true
       },{
         title:"创建人",
-        key:"modifier",
+        key:"modifierName",
         minWidth:"100"
       },{
         title: "状态",
@@ -149,6 +159,7 @@ export default {
     send(data){
       app_button_upd(data).then((res)=> {
         this.dialogVisible = false;
+        this.$message.success('保存成功')
         this.getTableMenudata({
           pageNum: this.$store.state.app_button_add.tableMenu.pageNum,
           pageSize: this.$store.state.app_button_add.tableMenu.pageSize,
@@ -160,7 +171,7 @@ export default {
           callback: action => {
             this.$message({
               type: 'info',
-              message: `action: ${ action }`
+              message: `${res.message}`
             });
           }
         });

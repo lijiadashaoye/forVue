@@ -24,7 +24,7 @@
           </el-form-item>
 
           <el-form-item label="活动类型" prop="activityType">
-            <el-select
+            <el-select filterable
               v-model="formData.activityType"
               placeholder="请选择活动类型"
               style="width:100%;"
@@ -40,7 +40,7 @@
           </el-form-item>
 
           <el-form-item label="活动状态">
-            <el-select v-model="formData.UP" placeholder="请选择活动状态" style="width:100%;">
+            <el-select filterable v-model="formData.UP" placeholder="请选择活动状态" style="width:100%;">
               <el-option
                 v-for="item in up_down"
                 :key="item.value"
@@ -462,7 +462,7 @@
           <imgUpload
             v-if="toShowEdit"
             :datas="{
-                  url:'admin/file/up/member',
+                  url:'admin/file/up/market',
                   imgUrl:editForm.imgUrl1
                 }"
             @selectImg="sharePageImg(1,$event)"
@@ -472,7 +472,7 @@
           <imgUpload
             v-if="toShowEdit"
             :datas="{
-                  url:'admin/file/up/member',
+                  url:'admin/file/up/market',
                   imgUrl:editForm.imgUrl2
                 }"
             @selectImg="sharePageImg(2,$event)"

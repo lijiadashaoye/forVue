@@ -26,7 +26,7 @@
           </el-form-item>
 
           <el-form-item label="卡券类别">
-            <el-select v-model="ruleForm.type" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.type" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in typeList"
@@ -38,7 +38,7 @@
           </el-form-item>
 
           <el-form-item label="关联的活动">
-            <el-select v-model="ruleForm.activityId" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.activityId" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in activityIdList"
@@ -50,7 +50,7 @@
           </el-form-item>
 
           <el-form-item label="关联银行">
-            <el-select v-model="ruleForm.bankId" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.bankId" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in bankList_search"
@@ -62,7 +62,7 @@
           </el-form-item>
 
           <el-form-item label="关联产品">
-            <el-select v-model="ruleForm.productId" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.productId" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in productList_search"
@@ -74,7 +74,7 @@
           </el-form-item>
 
           <el-form-item label="是否为补发券">
-            <el-select v-model="ruleForm.isReplacement" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.isReplacement" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in isReplacementList"
@@ -86,7 +86,7 @@
           </el-form-item>
 
           <el-form-item label="是否达到预警">
-            <el-select v-model="ruleForm.isWarning" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.isWarning" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in isReplacementList"
@@ -98,7 +98,7 @@
           </el-form-item>
 
           <el-form-item label="状态">
-            <el-select v-model="ruleForm.status" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.status" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in statueList"
@@ -130,7 +130,7 @@
     >
       <el-form size="small" :model="changeStateForm.data" label-width="110px">
         <el-form-item label="修改状态">
-          <el-select v-model="changeStateForm.data.status" clearable placeholder="请选择">
+          <el-select filterable v-model="changeStateForm.data.status" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in statueList"
@@ -198,7 +198,7 @@
         </el-form-item>
 
         <el-form-item label="收益发放类型" prop="incomeGrantType">
-          <el-select
+          <el-select filterable
             v-model="editForm.incomeGrantType"
             placeholder="请选择收益发放类型"
             style="width:100%;"
@@ -224,7 +224,7 @@
         </el-form-item>
 
         <el-form-item label="适用渠道" prop="applyChannel">
-          <el-select
+          <el-select filterable
             v-model="editForm.applyChannel"
             placeholder="请选择适用渠道"
             style="width:100%;"

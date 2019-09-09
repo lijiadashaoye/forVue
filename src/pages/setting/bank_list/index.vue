@@ -117,8 +117,9 @@ export default {
     }),
     //点击保存
     send(data) {
-      this.dialogVisible = false;
       bank_list_upd(data).then((res)=> {
+        this.dialogVisible = false;
+        this.$message.success('保存成功')
         this.getList({
           pageNum: 1,
           pageSize: this.$store.state.bank.bankList.pageSize,

@@ -47,12 +47,6 @@ const mutations = {
             }
         })
     },
-
-    //删除例表数据
-    deleteList(){
-        
-    },
-
      // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.newsMangerList.data.custom = [];

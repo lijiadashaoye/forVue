@@ -202,8 +202,9 @@ export default {
     },
     //点击保存
     send(data) {
-      this.dialogVisible = false;
       bank_support_upd(data).then((res)=>{
+        this.dialogVisible = false;
+        this.$message.success('保存成功')
         this.getBankSupportList({
             pageNum : this.$store.state.bankSupport.bankSupportList.pageNum,
             pageSize : this.$store.state.bankSupport.bankSupportList.pageSize 

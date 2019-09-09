@@ -60,7 +60,7 @@
         :close-on-click-modal="false"
         :title="dialog.title"
         :visible.sync="dialog.show1"
-        width="750px"
+        width="1100px"
         :before-close="roleclear"
         show-checkbox
         ref="tree1"
@@ -241,15 +241,19 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `角色名称：${item.data[0].roleName} \n`;
+                    failName += `<li>角色名称：${item.data[0].roleName}</li>`;
                   }
                 });
-                let str = `共操作${arr.length}条数据，成功${numSucces}个，失败${numFail}个 \n`;
+                let str = `<p>共操作${arr.length}条数据，成功${numSucces}个，失败${numFail}个</p>`;
 
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.getUserData
                 });
@@ -341,7 +345,7 @@ export default {
         .admin_role_getRole({ vm: this, data: inData.roleId })
         .then(res => {
           if (res) {
-            let obj = Object.assign(this.updataUser, res.data);
+            let obj = { ...this.updataUser, ...res.data };
             delete obj.roleDeptId;
             this.updataUser = { ...obj };
             return res.data;
@@ -364,22 +368,28 @@ export default {
             });
           };
           digui(this.deptdata);
-          // 获取所属部门的联动层级id
-          let arrChose = [],
-            ids = resArr[0].roleDeptId;
-          for (let i = arrBig.length; i--; ) {
-            let item = arrBig[i];
-            if (item.value == ids) {
-              arrChose.unshift("" + ids);
-              ids = item.parentId;
+          if (resArr[0]) {
+            // 获取所属部门的联动层级id
+            let arrChose = [],
+              ids = resArr[0].roleDeptId;
+            for (let i = arrBig.length; i--; ) {
+              let item = arrBig[i];
+              if (item.value == ids) {
+                arrChose.unshift("" + ids);
+                ids = item.parentId;
+              }
             }
+            return arrChose;
+          } else {
+            return false;
           }
-          return arrChose;
         })
         .then(arrchose => {
-          this.dialog.title = "编辑";
-          this.updataUser.roleDeptId = arrchose; // 所属部门
-          this.dialog.show = true;
+          if (arrchose) {
+            this.dialog.title = "编辑";
+            this.updataUser.roleDeptId = arrchose; // 所属部门
+            this.dialog.show = true;
+          }
         });
     },
     // 弹出框的操作
@@ -572,6 +582,9 @@ export default {
             arr = Object.keys(item);
           arr.forEach(str => {
             obj[str] = item[str];
+            if (str == "roleCode") {
+              obj[str] = item[str].split("_")[1];
+            }
           });
           return obj;
         });

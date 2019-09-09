@@ -16,7 +16,7 @@
       <div>
        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm searchForm">
           <el-form-item label="产品名称" prop="productName">
-            <!-- <el-select v-model="ruleForm.productName" placeholder="请选择" filterable clearable> -->
+            <!-- <el-select filterable v-model="ruleForm.productName" placeholder="请选择" filterable clearable> -->
               <!-- <el-option
                 v-for="item in this.$store.state.explosive.explosiveList.productNameList"
                 :key="item.value"
@@ -282,6 +282,7 @@ export default {
       explosive_updata(data).then(res=> {
         if(res && res.success){
           this.flag = false;
+          this.$message.success('保存成功')
           this.getExplosiveListData({
             dataType:"EXPLOSIVE",
             startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,

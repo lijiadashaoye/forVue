@@ -49,7 +49,12 @@
           </el-form-item>
         </div>
         <el-form-item label="积分类型" prop="expireType">
-          <el-select v-model="menuData.expireType" placeholder="请选择" @change="selectExpireType">
+          <el-select
+            filterable
+            v-model="menuData.expireType"
+            placeholder="请选择"
+            @change="selectExpireType"
+          >
             <el-option
               v-for="item in options"
               :key="item.value"
@@ -91,6 +96,8 @@ export default {
       let patrn = /\./g;
       if (patrn.test(value)) {
         callBack(new Error("只能输入正整数数字"));
+      } else if (value.length > 10 || +value < 0) {
+        callBack(new Error("只能输入1-10正整数数字"));
       } else {
         callBack();
       }
@@ -168,12 +175,10 @@ export default {
         ],
         resetMonth: [
           { required: true, message: "请输入数值", trigger: "blur" },
-          { min: 1, max: 10, message: "请输入1-10个字符", trigger: "blur" },
           { validator: checkNum, trigger: "blur" }
         ],
         effectiveDay: [
           { required: true, message: "请输入天数", trigger: "blur" },
-          { min: 1, max: 10, message: "请输入1-10个字符", trigger: "blur" },
           { validator: checkNum, trigger: "blur" }
         ]
       }
@@ -389,15 +394,19 @@ export default {
                       numSucces++;
                     } else {
                       numFail++;
-                      failName += `名称：${item.data[0].name} \n`;
+                      failName += `<li>名称：${item.data[0].name}</li>`;
                     }
                   });
-                  let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                  let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
                   if (numFail > 0) {
-                    str += titleText + failName;
+                    str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                   }
                   this.$alert(str, "操作结果提示", {
                     confirmButtonText: "确定",
+                    dangerouslyUseHTMLString: true,
                     callback: this.getUserData
                   });
                 });
@@ -462,26 +471,29 @@ export default {
                   break;
               }
             }
-            if (str === "expireType") {
-              delete obj[str];
-              // 有效期类型(EVEY:永久有效 LATERMONTH:每多少个月重置
-              //  LATERDAY:发卡/升降级之后多少天)
-              switch (item[str]) {
-                case "EVEY":
-                  obj[str] = "永久有效";
-                  break;
-                case "LATERMONTH":
-                  obj[str] = "每多少个月重置";
-                  break;
-                case "LATERDAY":
-                  obj[str] = "发卡/升降级之后多少天";
-                  break;
-              }
-            }
             if (str === "icon") {
               obj[str] = this.$ImgBaseUrl + item[str];
             }
           });
+          for (let str in obj) {
+            if (str === "expireType") {
+              switch (item[str]) {
+                case "EVEY":
+                  obj[str] = "永久有效";
+                  obj["effectiveDay"] = null;
+                  obj["resetMonth"] = null;
+                  break;
+                case "LATERMONTH":
+                  obj[str] = "每多少个月重置";
+                  obj["effectiveDay"] = null;
+                  break;
+                case "LATERDAY":
+                  obj[str] = "发卡/升降级之后多少天";
+                  obj["resetMonth"] = null;
+                  break;
+              }
+            }
+          }
           return obj;
         });
         this.tableInputData.data.title = [

@@ -4,7 +4,7 @@
         <div class="card-item">
             <span class="item-text">*APP标识:</span>
             <div class="item-input">
-                <el-select v-model="appChannelCode" placeholder="请选择APP">
+                <el-select filterable v-model="appChannelCode" placeholder="请选择APP">
                     <el-option
                         v-for="(item,ind) in AppOpt"
                         :key="ind"
@@ -26,7 +26,7 @@
         <div class="card-item">
             <span class="item-text">*活动名称:</span>
             <div class="item-input">
-                <el-select v-model.trim="activityName" placeholder="请选择活动名称">
+                <el-select filterable v-model.trim="activityName" placeholder="请选择活动名称">
                     <el-option
                         v-for="(item,ind) in activityOpt"
                         :key="ind"
@@ -41,7 +41,7 @@
         <div class="card-item">
             <span class="item-text">*显示类型:</span>
             <div class="item-input">
-                <el-select v-model="showTypeCode" placeholder="请选择显示类型">
+                <el-select filterable v-model="showTypeCode" placeholder="请选择显示类型">
                     <el-option
                         v-for="(item,ind) in showTypeOpt"
                         :key="ind"
@@ -72,7 +72,7 @@
         
         <!-- 选中后得图片 -->
         <div class="card-item">
-            <span class="item-text">选中后按钮图片:</span>
+            <span class="item-text">收缩后按钮图片:</span>
             <div class="item-img">
                 <el-upload
                     class="avatar-uploader"
@@ -300,7 +300,7 @@ export default {
         uploadbuttonImage(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {
@@ -321,7 +321,7 @@ export default {
         uploadshrinkImage(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {
@@ -342,7 +342,7 @@ export default {
         uploadfloatImage(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {
@@ -363,7 +363,7 @@ export default {
         uploadbuttonTitleImage(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {

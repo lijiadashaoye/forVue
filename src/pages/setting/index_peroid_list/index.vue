@@ -152,9 +152,10 @@ export default {
         },
         //点击保存
         send(data) {
-            this.dialogFormVisible = false;
             peroid_updata(data).then(res=> {
-                if(res.success) {
+                if(res && res.success) {
+                    this.dialogFormVisible = false;
+                    this.$message.success('保存成功')
                     this.getList({
                         pageNum: this.$store.state.peroid.peroidList.pageNum,
                         pageSize: this.$store.state.peroid.peroidList.pageSize

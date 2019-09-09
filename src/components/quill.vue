@@ -75,7 +75,7 @@ export default {
                               refXingJi.insertEmbed(
                                 zuobiao,
                                 "image",
-                                thisVue.$ImgBaseUrl + url
+                                thisVue.$ImgBaseUrl + url,
                               );
                               refXingJi.setSelection(zuobiao + 1);
                               thisVue.$emit("toEmit", thisVue.valueD);
@@ -117,3 +117,8 @@ export default {
   }
 };
 </script>
+<style lang="scss" scoped>
+.ql-snow .ql-editor img {
+  width:100%!important;
+}
+</style>

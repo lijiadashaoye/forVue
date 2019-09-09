@@ -25,8 +25,9 @@
       >
         <el-form size="small" ref="menuData" :model="menuData" :rules="rules" label-width="80px">
           <el-form-item label="用户名" prop="username">
-            <el-input v-model="menuData.username"></el-input>
+            <el-input placeholder="请输入3-15个字符" v-model="menuData.username"></el-input>
           </el-form-item>
+
           <el-form-item prop="deptId" label="所属部门">
             <el-cascader
               @change="getRoleData"
@@ -38,7 +39,13 @@
           </el-form-item>
 
           <el-form-item label="角色" prop="roles">
-            <el-select v-model="menuData.roles" style="width:100%" placeholder="请选择" multiple>
+            <el-select
+              filterable
+              v-model="menuData.roles"
+              style="width:100%"
+              placeholder="请选择"
+              multiple
+            >
               <el-option
                 v-for="item in ruleList"
                 :key="item.roleId"
@@ -51,7 +58,7 @@
             <el-input v-model="menuData.phone"></el-input>
           </el-form-item>
           <el-form-item label="是否有效" prop="lockFlag">
-            <el-select v-model="menuData.lockFlag" style="width:100%" placeholder="请选择">
+            <el-select filterable v-model="menuData.lockFlag" style="width:100%" placeholder="请选择">
               <el-option label="有效" value="0"></el-option>
               <el-option label="无效" value="9"></el-option>
             </el-select>
@@ -62,7 +69,11 @@
           </el-form-item>
 
           <el-form-item label="密码" prop="password" v-if="menuData.setPassWord">
-            <el-input v-model="menuData.password"></el-input>
+            <el-input v-model="menuData.password" type="password"></el-input>
+          </el-form-item>
+
+          <el-form-item label="确认密码" prop="sure_password" v-if="menuData.setPassWord">
+            <el-input v-model="menuData.sure_password" type="password"></el-input>
           </el-form-item>
         </el-form>
 
@@ -162,14 +173,14 @@ export default {
       rules: {
         username: [
           { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 1, max: 64, message: "请输入1-64个字符", trigger: "blur" }
+          { min: 3, max: 15, message: "请输入3-15个字符", trigger: "blur" }
         ],
         phone: [{ required: true, validator: checkPhone, trigger: "blur" }],
         lockFlag: [{ required: true, trigger: "blur" }],
         deptId: [
-          { required: true, message: "所属部门必须选择", trigger: "blur" }
+          { required: true, message: "所属部门必须选择", trigger: "change" }
         ],
-        roles: [{ required: true, message: "角色必须填写", trigger: "blur" }]
+        roles: [{ required: true, message: "角色必须填写", trigger: "change" }]
       }
     };
   },
@@ -230,12 +241,23 @@ export default {
             let kk = { ...this.menuData }; // 上传服务器要求的格式数据
             delete kk.actType;
             delete kk.setPassWord;
+            delete kk.sure_password;
             // 编辑
             if (!this.menuData.setPassWord) {
               delete kk.password;
             }
 
             kk.deptId = +this.menuData.deptId[this.menuData.deptId.length - 1];
+
+            var reg = /[`~!@#$%^&*()\\+=<>?:"{}|,/;'[\]·！￥……（）——\\《》？：“”【】；‘’，。、]/g;
+            if (reg.test(kk.username)) {
+              this.$message({
+                type: "warning",
+                message: `用户名中不能使用特殊字符`
+              });
+              return;
+            }
+
             this.$api
               .admin_user_aboutUser({
                 vm: this,
@@ -370,15 +392,19 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `用户名称：${item.data[0].username} \n`;
+                    failName += `<li>用户名称：${item.data[0].username}</li>`;
                   }
                 });
-                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
 
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.getUserData
                 });
@@ -404,19 +430,34 @@ export default {
         callback();
       }
     },
+    surePassword(rule, value, callback) {
+      if (!value) {
+        callback(new Error("请再次输入密码"));
+      } else if (value != this.menuData.password) {
+        callback(new Error("两次密码输入不一致"));
+      } else {
+        callback();
+      }
+    },
     // 重设密码复选框切换
     setNewPossword(e) {
       let kk = { ...this.menuData };
       if (e) {
         kk.setPassWord = true;
         kk["password"] = "";
+        kk["sure_password"] = "";
         this.rules["password"] = [
           { required: true, validator: this.checkChinese, trigger: "blur" }
+        ];
+        this.rules["sure_password"] = [
+          { required: true, validator: this.surePassword, trigger: "blur" }
         ];
       } else {
         kk.setPassWord = false;
         delete kk.password;
+        delete kk.sure_password;
         delete this.rules.password;
+        delete this.rules.sure_password;
       }
       this.menuData = kk;
     },
@@ -424,7 +465,7 @@ export default {
     buttonRowUpdata(type, inData) {
       let promiseArr = [];
       if (type === "edit") {
-        // 编辑
+        // 编辑，获取用户数据
         let promise1 = this.$api
           .admin_user_getUser({
             vm: this,
@@ -484,10 +525,14 @@ export default {
               roles: [],
               phone: "",
               lockFlag: "0",
-              password: ""
+              password: "",
+              sure_password: ""
             };
             this.rules["password"] = [
               { required: true, validator: this.checkChinese, trigger: "blur" }
+            ];
+            this.rules["sure_password"] = [
+              { required: true, validator: this.surePassword, trigger: "blur" }
             ];
           } else {
             this.dialog.title = "用户修改";
@@ -529,6 +574,7 @@ export default {
               .then(depIds => {
                 let roleArr = resData[0].roleList;
                 delete this.rules.password;
+                delete this.rules.sure_password;
                 // 如果是编辑，可以选择是否重设密码
                 this.menuData = {
                   actType: "edit", // 显示重设密码checkbox

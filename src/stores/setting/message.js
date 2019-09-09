@@ -10,7 +10,8 @@ import {
     get_sms_list,
     add_sms_manage,
     change_push_manage,
-    upload_file
+    upload_file,
+    get_sms_detail
 } from '../../api/setting_use'
 const state = {
     newsDoArr: ['push_message_add', 'push_message_detail', 'push_message_del', 'push_message_upd'], //消息推送所需要的权限
@@ -181,9 +182,7 @@ const actions = {
         })
     },
     // 获取短信模板
-    getSmsTemplate({
-        commit
-    }, data) {
+    getSmsTemplate({commit}, data) {
         return new Promise((resolve) => {
             get_sms_list(data).then(res => {
                 if (res && res.success) {
@@ -194,9 +193,7 @@ const actions = {
     },
 
     // 新增短信
-    addSmsManage({
-        commit
-    }, data) {
+    addSmsManage({commit}, data) {
         return new Promise((resolve) => {
             add_sms_manage(data).then(res => {
                 if (res && res.success) {
@@ -206,10 +203,19 @@ const actions = {
         })
 
     },
+    // 获取短信详情
+    getSmsDetail({commit}, data) {
+        return new Promise((resolve) => {
+            get_sms_detail(data).then(res => {
+                if (res && res.success) {
+                    resolve(res.data);
+                }
+            })
+        })
+
+    },
     // 上传短信模板
-    upLoadFile({
-        commit
-    }, data) {
+    upLoadFile({commit}, data) {
         return new Promise((resolve) => {
             upload_file(data, 'message').then(res => {
                 if (res && res.success) {
@@ -220,9 +226,7 @@ const actions = {
 
     },
     // 删除短信
-    deleteSmsManage({
-        commit
-    }, data) {
+    deleteSmsManage({commit}, data) {
         return new Promise((resolve) => {
             delete_sms_manage(data).then(res => {
                 if (res && res.success) {
@@ -233,9 +237,7 @@ const actions = {
 
     },
     // 获取消息推送列表
-    getNewsList({
-        commit
-    }, data) {
+    getNewsList({commit}, data) {
         return new Promise(() => {
             push_message(data).then(res => {
                 if (res && res.success) {
@@ -260,9 +262,7 @@ const actions = {
 
     },
     // 推送消息产品类型获取
-    getProductTypeList({
-        commit
-    }, data) {
+    getProductTypeList({commit}, data) {
         return new Promise((resolve) => {
             getAppChannel(data).then(res => {
                 if (res && res.success) {
@@ -272,9 +272,7 @@ const actions = {
         })
     },
     // 关联产品获取
-    getProductList({
-        commit
-    }, data) {
+    getProductList({commit}, data) {
         return new Promise((resolve) => {
             productList(data).then(res => {
                 if (res && res.success) {
@@ -284,9 +282,7 @@ const actions = {
         })
     },
     // 新增推送信息
-    addProduct({
-        commit
-    }, data) {
+    addProduct({commit}, data) {
         return new Promise((resolve) => {
             add_push_message(data).then(res => {
                 if (res && res.success) {
@@ -296,9 +292,7 @@ const actions = {
         })
     },
     // 修改推送消息 
-    changePushManage({
-        commit
-    }, data) {
+    changePushManage({commit}, data) {
         return new Promise((resolve) => {
             change_push_manage(data).then(res => {
                 if (res && res.success) {
@@ -309,9 +303,7 @@ const actions = {
 
     },
     // 删除推送信息
-    deleteProduct({
-        commit
-    }, data) {
+    deleteProduct({commit}, data) {
         return new Promise((resolve) => {
             delete_push_message(data).then(res => {
                 if (res && res.success) {

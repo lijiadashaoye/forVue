@@ -12,14 +12,17 @@
       <div>
         <el-button size="mini" @click="buttonClick('bianji')">编辑</el-button>
         <el-button v-if="pageType===1" size="mini" @click="buttonClick('qianyue')">{{buttonText}}</el-button>
-        <el-button size="mini" @click="buttonClick('shangchu')">删除</el-button>
+        <el-button size="mini" @click="buttonClick('shanchu')">删除</el-button>
       </div>
     </div>
 
     <div class="isContentWaper" v-if="pageType===2">
       <div class="isContent">
         <span class="isTitle">资产规模：</span>
-        <p>{{pageInfos.zichan}}</p>
+        <p>
+          {{pageInfos.zichan}}
+          <span>亿</span>
+        </p>
       </div>
       <div class="isContentLong">
         <span class="isTitleLong">旗下基金数：</span>
@@ -30,7 +33,10 @@
     <div class="isContentWaper" v-if="pageType===1">
       <div class="isContent">
         <span class="isTitle">资产规模：</span>
-        <p>{{pageInfos.zichan}}</p>
+        <p>
+          {{pageInfos.zichan}}
+          <span>亿</span>
+        </p>
       </div>
       <div class="isContent">
         <span class="isTitle">银行星级：</span>
@@ -103,6 +109,10 @@
         <div class="isContentLong">
           <span class="isTitleLong">是否需要认证授权：</span>
           <p>{{pageInfos.renzheng}}</p>
+        </div>
+        <div class="isContentLong">
+          <span class="isTitleLong">是否热门：</span>
+          <p>{{pageInfos.hotRecommend}}</p>
         </div>
 
         <div class="isContentLong">
@@ -186,8 +196,6 @@
   </div>
 </template>
 <script>
-import xiangqingDatas from "./isData.js";
-
 export default {
   props: ["forJiGouInfo"],
   data() {
@@ -209,7 +217,7 @@ export default {
         institutionId: infoData.institutionId,
         id: infoData.id,
         name: infoData.name, // 机构名称
-        logo: this.$ImgBaseUrl + infoData.configuration.logo,
+        logo: this.$ImgBaseUrl + infoData.logo,
         where: infoData.locationName, // 地址
         zichan: infoData.aum, // 资产规模
         xingji: infoData.starLabel, // 银行星级
@@ -249,7 +257,9 @@ export default {
         bangding: infoData.configuration.multipleCards === "YES" ? "是" : "否", // 是否支持绑定多张卡
         huanka: infoData.configuration.replacementCard === "YES" ? "是" : "否", // 是否可换绑卡
         renzheng:
-          infoData.configuration.needAuthentication === "YES" ? "是" : "否" // 是否需要认证授权
+          infoData.configuration.needAuthentication === "YES" ? "是" : "否", // 是否需要认证授权
+        hotRecommend:
+          infoData.configuration.hotRecommend === "YES" ? "是" : "否" // 是否热门
       };
       if (infoData.productCoverageList.length > 0) {
         infoData.productCoverageList.forEach(item => {
@@ -309,7 +319,7 @@ export default {
 
             let organizational_step1 = {
               name: infoData.name, //  机构名称
-              locationId: infoData.locationId, // 所属省/直辖市ID
+              locationId: [], // 所属省/直辖市ID
               type: infoData.subType,
               aum: infoData.aum, // 资产规模
               parentId: infoData.parentId == "-1" ? "" : infoData.parentId, // 隶属机构ID
@@ -323,23 +333,60 @@ export default {
                 infoData.configuration.semicircleBackgroundImage, // 半圆背景图
               textLogo: infoData.configuration.textLogo, // 文字商标
               version: infoData.configuration.version, //版本标识
+              serviceTime: "",
+              uuid: infoData.uuid,
+              weihu: infoData.configuration.maintainStartTime
+                ? [
+                    infoData.configuration.maintainStartTime,
+                    infoData.configuration.maintainEndTime
+                  ]
+                : [],
               serviceTime: infoData.configuration.serviceTime
                 ? infoData.configuration.serviceTime.split(" ")
-                : [],
-              weihu: [
+                : []
+            };
+
+            // 查询区域数据，填充location数组
+            if (infoData.locationId) {
+              let quyu = JSON.parse(sessionStorage.getItem("dict")).quyu;
+              wap: for (let i = quyu.length; i--; ) {
+                if (quyu[i].value == infoData.locationId) {
+                  organizational_step1.locationId = ["" + infoData.locationId];
+                  break wap;
+                } else {
+                  let child = quyu[i].children;
+                  if (child) {
+                    for (let j = child.length; j--; ) {
+                      if (child[j].value == infoData.locationId) {
+                        organizational_step1.locationId = [
+                          "" + quyu[i].value,
+                          "" + infoData.locationId
+                        ];
+                        break wap;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+
+            if (
+              infoData.configuration.maintainStartTime &&
+              infoData.configuration.maintainEndTime
+            ) {
+              organizational_step1.weihu = [
                 infoData.configuration.maintainStartTime,
                 infoData.configuration.maintainEndTime
-              ],
-              uuid: infoData.uuid
-            };
+              ];
+            }
 
             let organizational_step2 = {
               signedUp: infoData.configuration.signedUp === "YES" ? "是" : "否", // 是否签约
               openedAccount:
                 infoData.configuration.openedAccount === "YES" ? "是" : "否", // 是否在线开户
               buyable: infoData.configuration.buyable === "YES" ? "是" : "否", // 是否可购买
-              customerClassification: +infoData.configuration
-                .customerClassification, // 客户分类
+              customerClassification:
+                infoData.configuration.customerClassification, // 客户分类
               channel_coverage: infoData.channelCoverageList.map(
                 item => item.channelName
               ), // 渠道覆盖类型
@@ -356,6 +403,8 @@ export default {
               listView: infoData.configuration.listView === "YES" ? "是" : "否", // 是否列表展示
               topNo: infoData.configuration.topNo, // 置顶序号
               connectionMode: infoData.configuration.connectionMode,
+              hotRecommend:
+                infoData.configuration.hotRecommend === "YES" ? "是" : "否", // 是否同卡进出
               sameCardIo:
                 infoData.configuration.sameCardIo === "YES" ? "是" : "否", // 是否同卡进出
               multipleCards:
@@ -365,16 +414,7 @@ export default {
               needAuthentication:
                 infoData.configuration.needAuthentication === "YES"
                   ? "是"
-                  : "否", // 是否需要认证授权
-              weihu: infoData.configuration.maintainStartTime
-                ? [
-                    infoData.configuration.maintainStartTime,
-                    infoData.configuration.maintainEndTime
-                  ]
-                : [],
-              kefu: infoData.configuration.serviceTime
-                ? infoData.configuration.serviceTime.split(" ")
-                : ""
+                  : "否" // 是否需要认证授权
             };
             sessionStorage.setItem(
               "organizational_step1",
@@ -384,10 +424,10 @@ export default {
               "organizational_step2",
               JSON.stringify(organizational_step2)
             );
+
             this.$router.push({
               name: "organizational_step1"
             });
-          
           }
           break;
         case "qianyue":
@@ -412,7 +452,7 @@ export default {
             })
             .catch(() => {});
           break;
-        case "shangchu":
+        case "shanchu":
           if (this.page === "organizational") {
             this.$confirm(`确定要删除吗？`)
               .then(() => {

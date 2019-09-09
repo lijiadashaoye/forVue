@@ -18,7 +18,7 @@
         </el-form-item>
 
         <el-form-item label="是否上架" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
             <el-option
               v-for="item in dictData.shelve_status"
               :key="item.value"
@@ -29,7 +29,7 @@
         </el-form-item>
 
         <el-form-item label="是否面签" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
             <el-option
               v-for="item in dictData.visa_interview_type"
               :key="item.value"
@@ -40,7 +40,7 @@
         </el-form-item>
 
         <el-form-item label="所属区域" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.areaCode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.areaCode">
             <el-option
               size="mini"
               v-for="item in dictData.quyu"
@@ -80,7 +80,7 @@
         </el-form-item>
 
         <el-form-item label="榜单专区标识" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
             <el-option
               size="mini"
               v-for="item in dictData.list_area_type"
@@ -92,7 +92,7 @@
         </el-form-item>
 
         <el-form-item label="合作方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
             <el-option
               size="mini"
               v-for="item in dictData.cooperation_mode"
@@ -104,10 +104,10 @@
         </el-form-item>
 
         <el-form-item label="银行对接方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
             <el-option
               size="mini"
-              v-for="item in dictData.connection_mode"
+              v-for="item in dictData.bank_connection_mode"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -198,6 +198,16 @@ export default {
   components: { hasSuccess },
   data() {
     // 验证数字
+    var checkNum1 = (rule, value, callback) => {
+      if (+value < 0 || +value > 100) {
+        callback(new Error("请输入0--100"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字
     var checkNum2 = (rule, value, callback) => {
       let reg = /\./;
       if (reg.test(value)) {
@@ -255,7 +265,7 @@ export default {
           { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
         ],
         defaultFlowNum: [{ validator: checkNum2, trigger: "blur" }],
-        yearRate: [{ validator: checkNum3, trigger: "blur" }]
+        yearRate: [{ validator: checkNum1, trigger: "blur" }]
       }
     };
   },
@@ -309,7 +319,7 @@ export default {
         description: step1.description,
         contentVersion: +step1.contentVersion, // 内容版本号
         interest: {
-          deadline: +step1.qixian,
+          fromTerm: +step1.qixian,
           interestRate: +step1.interestRate,
           maxInterestRate: +step1.max,
           expireInterestRate: +step1.end
@@ -337,7 +347,8 @@ export default {
           showBankPage: this.ruleForm.showBankPage === "是" ? "YES" : "NO", // 显示银行过渡页
           h5Url: this.ruleForm.h5Url,
           areaCode: this.ruleForm.areaCode, // 区域编码
-          areaName: ""
+          areaName: "",
+          realNameAuth: this.ruleForm.realNameAuth === "是" ? "YES" : "NO"
         },
         productTags: [],
         selfDefiningTags: [],
@@ -355,6 +366,7 @@ export default {
           item => item.id === obj.seriesId
         )[0].name;
       }
+
       // 付息频率Label
       obj.frequencyTypeLabel = obj.frequencyType
         ? this.dictData.frequency_type.filter(
@@ -411,7 +423,7 @@ export default {
         : "";
       // 银行对接方式Label
       obj.appInfo.connectionModeLabel = obj.appInfo.connectionMode
-        ? this.dictData.connection_mode.filter(
+        ? this.dictData.bank_connection_mode.filter(
             item => item.value === obj.appInfo.connectionMode
           )[0].label
         : "";
@@ -479,6 +491,8 @@ export default {
         .then(res => {
           this.isSaveIng = false;
           if (res) {
+            sessionStorage.removeItem("jiegou_step1");
+            sessionStorage.removeItem("jiegou_step2");
             this.isOk = true;
           }
         });

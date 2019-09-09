@@ -22,7 +22,7 @@
         <el-dialog :title="addDialogTitle ? '添加地址' : '修改地址'" :visible.sync="dialogFormVisible" :close-on-press-escape="false" :close-on-click-modal='false'>
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
                 <el-form-item label="地址类型" prop="linkModel">
-                    <el-select v-model="ruleForm.linkModel" placeholder="请选择" :disabled="linkModelFlag">
+                    <el-select filterable v-model="ruleForm.linkModel" placeholder="请选择" :disabled="linkModelFlag">
                         <el-option
                         v-for="item in channelData"
                         :key="item.id"
@@ -153,6 +153,7 @@ export default {
                             if(res && res.success) {
                                 this.dialogFormVisible = false;
                                 this.$refs.ruleForm.resetFields();
+                                this.$message.success('保存成功')
                                 this.getList({
                                     pageNum: this.$store.state.productUrl.productUrlList.pageNum,
                                     pageSize: this.$store.state.productUrl.productUrlList.pageSize,
@@ -169,6 +170,7 @@ export default {
                             if(res && res.success) {
                                 this.dialogFormVisible = false;
                                 this.$refs.ruleForm.resetFields();
+                                this.$message.success('保存成功')
                                 this.getList({
                                     pageNum: this.$store.state.productUrl.productUrlList.pageNum,
                                     pageSize: this.$store.state.productUrl.productUrlList.pageSize,

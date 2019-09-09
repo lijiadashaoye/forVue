@@ -15,7 +15,7 @@
                     <el-input clearable placeholder="点位标识" size="mini" v-model="functionId"></el-input>
                 </div>
                 <div class="addBtn">
-                    <el-select clearable size="mini" v-model="appChannelCode" placeholder="应用渠道标识码">
+                    <el-select filterable clearable size="mini" v-model="appChannelCode" placeholder="应用渠道标识码">
                         <el-option
                                 v-for="item in appChannelCodeList"
                                 :key="item.code"
@@ -26,7 +26,7 @@
                     </el-select>
                 </div>
                 <div class="addBtn">
-                    <el-select clearable size="mini" v-model="platformCode" placeholder="客户端平台标识码">
+                    <el-select filterable clearable size="mini" v-model="platformCode" placeholder="客户端平台标识码">
                         <el-option
                                 v-for="item in platformCodeList"
                                 :key="item.code"

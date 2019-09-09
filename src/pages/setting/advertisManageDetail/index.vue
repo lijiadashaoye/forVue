@@ -14,7 +14,7 @@
                               { required: true, message: '请选择app标识', trigger: 'change' }
                              ]"
                     >
-                        <el-select disabled v-model="ruleForm.appChannelCode">
+                        <el-select filterable disabled v-model="ruleForm.appChannelCode">
                             <el-option
                                     v-for="item in appChannelCodeList"
                                     :key="item.code"
@@ -62,7 +62,7 @@
                             label="广告位置"
                             prop="advertisLocation"
                     >
-                        <el-select disabled v-model="ruleForm.advertisLocation" placeholder="请选择">
+                        <el-select filterable disabled v-model="ruleForm.advertisLocation" placeholder="请选择">
                             <el-option
                                     v-for="item in advertisLocationList"
                                     :key="item.key"
@@ -85,7 +85,7 @@
                         label="广告类型"
                         prop="advertisType"
                     >
-                        <el-select v-model="ruleForm.advertisType" clearable placeholder="请选择广告类型"  @change="typeSelect(ruleForm.advertisType)">
+                        <el-select filterable v-model="ruleForm.advertisType" clearable placeholder="请选择广告类型"  @change="typeSelect(ruleForm.advertisType)">
                             <el-option
                                 v-for="(item,ind) in advertisTypeList"
                                 :key="ind"
@@ -111,9 +111,8 @@
                         label="关联产品"
                         prop="associatedProducts"
                     >
-                        <el-select
+                        <el-select filterable
                         v-model="ruleForm.associatedProducts"
-                        filterable
                         clearable
                         remote
                         reserve-keyword
@@ -167,7 +166,7 @@
                         </template>
                     </el-form-item>
                     <el-form-item label="添加关联组" v-if="ruleForm.spreadUser != 'TOTAL'">
-                        <el-select disabled v-model="ruleForm.linkGroup" placeholder="请选择">
+                        <el-select filterable disabled v-model="ruleForm.linkGroup" placeholder="请选择">
                             <el-option
                                     v-for="item in linkGroupList"
                                     :key="item.key"
@@ -183,7 +182,7 @@
                         </template>
                     </el-form-item>
                     <el-form-item label="选择省份" v-if="ruleForm.spreadUser != 'TOTAL'">
-                        <el-select disabled v-model="ruleForm.spreadLocation" multiple placeholder="请选择">
+                        <el-select filterable disabled v-model="ruleForm.spreadLocation" multiple placeholder="请选择">
                             <el-option
                                     v-for="item in spreadLocationList"
                                     :key="item.id"

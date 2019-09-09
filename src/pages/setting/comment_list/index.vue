@@ -63,10 +63,6 @@ export default {
                 key: "composeId",
                 minWidth: "80"
             },{
-                title: "作品标题",
-                key: "composeTitle",
-                minWidth: "120"
-            },{
                 title: "作品类型",
                 key: "composeTypeCN",
                 minWidth: "100"
@@ -135,10 +131,11 @@ export default {
         },
         //点击保存
         send(data) {
-            this.dialogFormVisible = false;
             if(this.updataFlag) {
                 notice_updata(data).then(res=> {
-                    if(res.success) {
+                    if(res && res.success) {
+                        this.dialogFormVisible = false;
+                        this.$message.success('保存成功')
                         this.getList({
                             pageNum:  this.$store.state.comment.commentList.pageNum,
                             pageSize:  this.$store.state.comment.commentList.pageSize,

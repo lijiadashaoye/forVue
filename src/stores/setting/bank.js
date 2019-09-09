@@ -20,7 +20,7 @@ const mutations = {
     //获取银行列表数据
     getBankListData(state,data){
         bank_list(data).then(res=> {
-            if(res.success){
+            if(res && res.success){
                 state.bankList.data.list = res.data.list;
                 state.bankList.total = res.data.total;
             }

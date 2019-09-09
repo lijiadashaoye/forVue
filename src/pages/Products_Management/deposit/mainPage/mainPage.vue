@@ -2,7 +2,6 @@
   <div class="withTree">
     <div class="forTree">
       <h3>{{pageName}}</h3>
-
       <div class="treeTop">
         <span>存款系列</span>
         <el-button size="mini" @click="toAdd_xilie">新增</el-button>
@@ -63,7 +62,7 @@
             label-position="right"
           >
             <el-form-item label="* 机构">
-              <el-select
+              <el-select filterable
                 :disabled="addXiLieForm.type=='edit'"
                 v-model="addXiLieForm.jigou"
                 clearable
@@ -97,17 +96,6 @@
     <div class="forRight">
       <div style="margin-bottom:5px;">
         <el-button size="mini" type="primary" @click="addNew()">新增存款产品</el-button>
-        <!-- v-if="tableInputData.data.quanxian.includes('sys_user_add')" -->
-        <!-- <el-button
-          size="mini"
-          type="success"
-          @click="outPut(true)"
-        >导出</el-button>
-        <el-button
-          size="mini"
-          type="warning"
-          @click="inPut(true)"
-        >导入</el-button>-->
         <el-button size="mini" type="warning" @click="seachClick('search')">查询</el-button>
         <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
         <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
@@ -116,7 +104,7 @@
       <el-form
         :inline="true"
         :model="searchForm"
-        label-width="80px"
+        label-width="85px"
         label-suffix=":"
         label-position="right"
         size="mini"
@@ -127,7 +115,7 @@
         </el-form-item>
 
         <el-form-item label="是否上架" style="margin-bottom:5px;">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
             <el-option
               size="mini"
               v-for="item in dictData.shelve_status"
@@ -139,7 +127,7 @@
         </el-form-item>
 
         <el-form-item label="产品类型" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.productSubtype" clearable placeholder="请选择">
+          <el-select filterable v-model="searchForm.productSubtype" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.deposit_type"
@@ -752,21 +740,24 @@ export default {
                 let numSucces = 0;
                 let numFail = 0;
                 let failName = "";
-                let titleText = `失败的数据为：\n `;
                 arr.forEach(item => {
                   if (item.ok) {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `名称：${item.data[0].name} \n`;
+                    failName += `<li>产品名称：${item.data[0].name}</li>`;
                   }
                 });
-                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
-
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
+
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.seachClick("reset")
                 });

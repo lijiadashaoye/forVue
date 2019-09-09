@@ -49,7 +49,7 @@
           <br />
           <br />
           <el-form-item label="产品类型" prop="linkLocationEnum">
-            <el-select
+            <el-select filterable
               v-loadmore="loadmore"
               @change="typeChange"
               v-model="ruleForm.linkLocationEnum"
@@ -69,8 +69,7 @@
             prop="linkId"
             label="产品名称"
           >
-            <el-select
-              filterable
+            <el-select filterable
               clearable
               remote
               reserve-keyword
@@ -151,7 +150,7 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item multiple label="选择省份" prop="sendLocationList">
-              <el-select multiple v-model="ruleForm.sendLocationList" placeholder="请选择">
+              <el-select filterable multiple v-model="ruleForm.sendLocationList" placeholder="请选择">
                 <el-option
                   v-for="(item,index) in locationList"
                   :key="index"
@@ -193,6 +192,7 @@ export default {
       }
     };
     return {
+      ruleMiddleForm:{},//中转的数据
       locationList: [],
       title: "推送列表",
       sendType: 0, //设定发送时间为立即发送
@@ -372,13 +372,14 @@ export default {
     saveFn(ruleForm) {
       this.$refs[ruleForm].validate(valid => {
         if (valid) {
+          this.ruleMiddleForm = Object.assign({},this.ruleForm);
           // 删除time的中转数据
-          delete this.ruleForm["selectTime"];
+          delete this.ruleMiddleForm["selectTime"];
           // 避免自定义发送时间参数 干扰
           if (this.sendType == 0) {
-            delete this.ruleForm["sendTimeList"];
+            delete this.ruleMiddleForm["sendTimeList"];
           } else {
-            this.ruleForm.sendTimeList = this.ruleForm.sendTimeList.map(
+            this.ruleMiddleForm.sendTimeList = this.ruleMiddleForm.sendTimeList.map(
               item => {
                 return new Date(item).getTime();
               }
@@ -386,25 +387,25 @@ export default {
           }
           // 产品类型判断
           if (!this.productInfo.defaultType) {
-            delete this.ruleForm["linkId"];
-            delete this.ruleForm["linkUrl"];
-            delete this.ruleForm["linkName"];
+            delete this.ruleMiddleForm["linkId"];
+            delete this.ruleMiddleForm["linkUrl"];
+            delete this.ruleMiddleForm["linkName"];
           } else if (
             this.productInfo.defaultType &&
             this.productInfo.inputType
           ) {
-            delete this.ruleForm["linkId"];
-            delete this.ruleForm["linkName"];
+            delete this.ruleMiddleForm["linkId"];
+            delete this.ruleMiddleForm["linkName"];
           } else {
-            delete this.ruleForm["linkUrl"];
+            delete this.ruleMiddleForm["linkUrl"];
           }
           // 部分用户才有选择地区
-          if (this.ruleForm.sendTarget == "TOTAL_USER") {
-            delete this.ruleForm["sendLocationList"];
-            delete this.ruleForm["changeLocation"];
+          if (this.ruleMiddleForm.sendTarget == "TOTAL_USER") {
+            delete this.ruleMiddleForm["sendLocationList"];
+            delete this.ruleMiddleForm["changeLocation"];
           }
           if (this.$route.query.title) {
-            this.changePushManage(this.ruleForm).then(() => {
+            this.changePushManage(this.ruleMiddleForm).then(() => {
               this.$message({
                 message: "修改成功",
                 type: "success"
@@ -412,7 +413,7 @@ export default {
               this.$router.back();
             });
           } else {
-            this.addProduct(this.ruleForm).then(() => {
+            this.addProduct(this.ruleMiddleForm).then(() => {
               this.$message({
                 message: "添加成功",
                 type: "success"

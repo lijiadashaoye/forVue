@@ -17,7 +17,7 @@
           <el-input clearable v-model="ruleForm.sameProductFlag" placeholder="请输入" class="isInput"></el-input>
         </el-form-item>
         <el-form-item label="产品区域" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.quyu">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.quyu">
             <el-option
               v-for="item in dictData.quyu"
               :key="item.value"
@@ -28,7 +28,13 @@
         </el-form-item>
 
         <el-form-item label="是否上架" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.shelveStatus"
+          >
             <el-option
               v-for="item in dictData.shelve_status"
               :key="item.value"
@@ -39,7 +45,13 @@
         </el-form-item>
 
         <el-form-item label="是否面签" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.visaInterview"
+          >
             <el-option
               v-for="item in dictData.visa_interview_type"
               :key="item.value"
@@ -108,7 +120,7 @@
             <i class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
           </span>
         </el-form-item>
-        
+
         <el-form-item label="默认关注数量" class="is50" prop="defaultFlowNum">
           <el-input
             type="number"
@@ -120,7 +132,13 @@
         </el-form-item>
 
         <el-form-item prop="listAreaFlag" label="榜单专区标识" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.listAreaFlag"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.list_area_type"
@@ -142,7 +160,13 @@
           <span class="isA">%</span>
         </el-form-item>
         <el-form-item label="合作方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.cooperationMode"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.cooperation_mode"
@@ -154,7 +178,13 @@
         </el-form-item>
 
         <el-form-item label="银行对接方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.connectionMode"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.bank_connection_mode"
@@ -255,6 +285,7 @@ export default {
         ],
         defaultBuyNum: [{ validator: checkNum2, trigger: "blur" }],
         defaultAmount: [{ validator: checkNum3, trigger: "blur" }],
+        defaultFlowNum: [{ validator: checkNum3, trigger: "blur" }],
         yearRate: [{ validator: checkNum1, trigger: "blur" }]
       }
     };
@@ -460,6 +491,8 @@ export default {
               this.isSaveIng = false;
               if (res) {
                 this.isOk = true;
+                sessionStorage.removeItem("huoqi_step1");
+                sessionStorage.removeItem("huoqi_step2");
               }
             });
         } else {
@@ -495,7 +528,7 @@ export default {
 </script>
 
 
- <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+ <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
             <el-option
               size="mini"
               v-for="item in dictData.shelve_status"

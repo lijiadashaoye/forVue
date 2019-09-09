@@ -1,6 +1,6 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <div class="toCreateBtn">
         <el-button
@@ -9,11 +9,7 @@
           type="warning"
           @click="buttonRowUpdata(true)"
         >创建徽章</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="toDelete('more')"
-        >批量删除</el-button>
+        <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       </div>
       <div>
         <!-- 搜索 -->
@@ -21,43 +17,24 @@
           :inline="true"
           :model="ruleForm"
           label-width="80px"
-          label-suffix=':'
-          label-position='right'
-          size='mini'
+          label-suffix=":"
+          label-position="right"
+          size="mini"
           ref="ruleForm"
         >
           <el-form-item label="红包名称">
-            <el-input
-              v-model="ruleForm.badgeWallName"
-              placeholder="请输入"
-            ></el-input>
+            <el-input v-model="ruleForm.badgeWallName" placeholder="请输入"></el-input>
           </el-form-item>
 
           <el-form-item>
-            <el-button
-              size="mini"
-              type="primary"
-              @click="seachClick(true)"
-            >查询</el-button>
-            <el-button
-              size="mini"
-              type="info"
-              @click="seachClick(false)"
-            >重置</el-button>
+            <el-button size="mini" type="primary" @click="seachClick(true)">查询</el-button>
+            <el-button size="mini" type="info" @click="seachClick(false)">重置</el-button>
           </el-form-item>
         </el-form>
-
       </div>
-
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
   </div>
 </template>
@@ -230,16 +207,18 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `名称为：${item.data[0].badgeWallName} \n`;
+                    failName += `<li>名称为：${item.data[0].badgeWallName}</li>`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.getUserData
                 });
@@ -297,7 +276,7 @@ export default {
         });
       }
     },
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let market_packet_add = quanxian.includes("market_packet_add");

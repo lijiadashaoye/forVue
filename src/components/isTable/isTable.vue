@@ -65,10 +65,11 @@
           <!--活动管理配置管理设置素材 -->
           <ul v-if="item.imgArr" class="imgArr">
             <li v-for="tar of scope.row[item.key]" :key="tar.img">
-              <img style="width:30px;height:30px;" :src="tar.img" />
+              <img style="width:30px;height:30px;" :src="ImgBaseUrl + tar.img" />
               <p>{{ tar.text }}</p>
             </li>
           </ul>
+          <div v-if='item.isColor' :style="{'background':scope.row[item.key],'width':'100px','padding':'4px 5px'}"></div>
         </template>
       </el-table-column>
 
@@ -209,7 +210,7 @@ export default {
             if (this.inputData.fenye) {
               this.setMaxHeight = getH.offsetHeight;
             } else {
-              this.setMaxHeight = getH.offsetHeight - 35;
+              this.setMaxHeight = getH.offsetHeight - 37;
             }
           } else {
             t();
@@ -248,7 +249,7 @@ export default {
       clearTimeout(isTimeOut);
       isTimeOut = setTimeout(() => {
         this.setMaxHeightFn();
-      }, 500);
+      });
     });
   }
 };

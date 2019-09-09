@@ -15,6 +15,7 @@
       >
         <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
           <el-select
+            filterable
             class="isInput"
             @change="change_xilie(ruleForm.institutionId)"
             clearable
@@ -35,6 +36,7 @@
 
         <el-form-item label="产品系列" class="is50">
           <el-select
+            filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -93,7 +95,13 @@
         </el-form-item>
 
         <el-form-item label="风险等级" class="is50" prop="riskLevel">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.riskLevel">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.riskLevel"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.risk_level"
@@ -105,7 +113,13 @@
         </el-form-item>
 
         <el-form-item label="产品特性" class="is50" prop="productFeature">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.productFeature">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.productFeature"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.product_feature_type"
@@ -127,7 +141,13 @@
         </el-form-item>
 
         <el-form-item label="剩余额度" prop="surplusQuota" class="is50">
-          <el-select class="isInput" v-model="ruleForm.surplusQuota" clearable placeholder="请选择">
+          <el-select
+            filterable
+            class="isInput"
+            v-model="ruleForm.surplusQuota"
+            clearable
+            placeholder="请选择"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.surplus_quota"
@@ -156,9 +176,26 @@
             range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-           
             class="isInput"
           ></el-date-picker>
+        </el-form-item>
+
+        <el-form-item label="币种" style="position:relative" class="is50">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.currencyCode"
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.bizhong"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
 
         <el-form-item label="理财日期" prop="managementDate">
@@ -170,7 +207,6 @@
             range-separator="~"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-           
           ></el-date-picker>
         </el-form-item>
 
@@ -185,7 +221,7 @@
         </el-form-item>
 
         <el-form-item label="产品描述">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
@@ -240,6 +276,7 @@ export default {
         managementDate: "", // 理财日期
         raiseDate: "", // 募集日期
         description: "", //  产品描述
+        currencyCode: "",
         contentVersion: "" //  内容版本号
       },
       xilie: [], // 从服务器返回的产品系列数据

@@ -61,6 +61,7 @@
           >
             <el-form-item label="* 机构">
               <el-select
+                filterable
                 :disabled="addXiLieForm.type=='edit'"
                 v-model="addXiLieForm.jigou"
                 clearable
@@ -113,7 +114,7 @@
         </el-form-item>
 
         <el-form-item label="是否上架" style="margin-bottom:5px;">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
             <el-option
               size="mini"
               v-for="item in dictData.shelve_status"
@@ -139,7 +140,7 @@
       <el-form
         :inline="true"
         :model="searchForm"
-        label-width="75px"
+        label-width="85px"
         label-suffix=":"
         label-position="right"
         size="mini"
@@ -149,7 +150,7 @@
           <el-input v-model="searchForm.name" placeholder="请输入产品名称"></el-input>
         </el-form-item>
         <el-form-item label="交易状态" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.status" clearable placeholder="请选择">
+          <el-select filterable v-model="searchForm.status" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.transaction_state"
@@ -161,7 +162,7 @@
         </el-form-item>
 
         <el-form-item label="机构" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.institutionId" clearable placeholder="请选择">
+          <el-select filterable v-model="searchForm.institutionId" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.jigou"
@@ -173,7 +174,7 @@
         </el-form-item>
 
         <el-form-item label="基金公司" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.fundHouseId" clearable placeholder="请选择">
+          <el-select filterable v-model="searchForm.fundHouseId" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.jijin"
@@ -185,7 +186,13 @@
         </el-form-item>
 
         <el-form-item label="是否上架" style="margin-bottom:5px;">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="searchForm.shelveStatus"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.shelve_status"
@@ -592,16 +599,20 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `名称：${item.data[0].institutionName} \n`;
+                    failName += `<li>名称：${item.data[0].institutionName}</li>`;
                   }
                 });
-                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
 
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
+                  dangerouslyUseHTMLString: true,
                   callback: this.seachClick("reset")
                 });
               });

@@ -3,7 +3,7 @@
     <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <div v-if="!isOk">
+    <div v-if="!isOk" style="overflow:auto;">
       <el-form
         ref="ruleForm"
         size="normal"
@@ -28,7 +28,13 @@
         </el-form-item>
 
         <el-form-item label="是否上架" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.shelveStatus"
+          >
             <el-option
               v-for="item in dictData.shelve_status"
               :key="item.value"
@@ -39,7 +45,13 @@
         </el-form-item>
 
         <el-form-item label="是否面签" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.visaInterview"
+          >
             <el-option
               v-for="item in dictData.visa_interview_type"
               :key="item.value"
@@ -78,7 +90,13 @@
         </el-form-item>
 
         <el-form-item label="榜单专区标识" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.listAreaFlag"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.list_area_type"
@@ -100,7 +118,13 @@
         </el-form-item>
 
         <el-form-item label="合作方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.cooperationMode"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.cooperation_mode"
@@ -160,11 +184,11 @@
           </el-form-item>
         </div>
       </el-form>
-    </div>
-    <div v-if="!isOk" class="nextButtons">
-      <el-button size="mini" type="primary" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-      <el-button size="mini" type="primary" @click="next">保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-      <el-button size="mini" type="info" @click="back">取消</el-button>
+      <div v-if="!isOk" class="nextButtons">
+        <el-button size="mini" type="primary" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="primary" @click="next">保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
+      </div>
     </div>
 
     <hasSuccess @isOver="isOver" v-if="isOk" />
@@ -204,20 +228,20 @@ export default {
 
       ruleForm: {
         sameProductFlag: "", // 同一产品标识
-        flowNum: "", // 默认关注数量
+        flowNum: "0", // 默认关注数量
         shelveStatus: "", // 是否上架
         visaInterview: "", // 是否面签
         recommend: "否", // 是否推荐
         homePage: "否", // 是否首页排行
-        defaultNum: "", // 默认购买数量
-        defaultAmount: "", // 默认购买金额
+        defaultNum: "0", // 默认购买数量
+        defaultAmount: "0.00", // 默认购买金额
         listAreaFlag: "", // 榜单专区标识
 
         contentVersion: "", // 内容版本号
         realNameAuth: "否", // 是否实名认证
         signed: "否", // 是否签约
         cooperationMode: "", // 合作方式
-        yearRate: "", // 年收费率
+        yearRate: "0.0000", // 年收费率
         h5Url: "", // h5链接
         showBankPage: "否" // 是否显示银行页
       },
@@ -258,6 +282,11 @@ export default {
             commission: +step1.commission,
             description: step1.description,
             yieldRule: step1.yieldRule,
+            contentVersion: +this.ruleForm.contentVersion, // 内容版本号
+            accountingDate: step1.redemptionDate, // 到账赎回日
+            currencyCode: step1.currencyCode, // 币种编码
+            currencyName: "",
+            currencyUnit: "",
             yield: {
               onThe7thOfTheYearYield: +step1.onThe7thOfTheYearYield,
               thousandsOfYearsYields: +step1.thousandsOfYearsYields
@@ -275,14 +304,15 @@ export default {
               defaultAmount: +this.ruleForm.defaultAmount,
               listAreaFlag: this.ruleForm.listAreaFlag,
               listAreaFlagLabel: "",
-              contentVersion: this.ruleForm.contentVersion, // 内容版本号
               realNameAuth: this.ruleForm.realNameAuth === "否" ? "NO" : "YES", // 是否实名认证
               signed: this.ruleForm.signed === "否" ? "NO" : "YES", // 是否签约
               cooperationMode: this.ruleForm.cooperationMode, // 合作方式
               cooperationModeLabel: "",
               yearRate: +this.ruleForm.yearRate, // 年收费率
               h5Url: this.ruleForm.h5Url, // h5链接
-              showBankPage: this.ruleForm.showBankPage === "否" ? "NO" : "YES" // 是否显示银行页
+              showBankPage: this.ruleForm.showBankPage === "否" ? "NO" : "YES", // 是否显示银行页
+              areaCode: step1.areaCode, // 区域编码
+              areaName: ""
             }
           };
           // 榜单专区标识Label
@@ -314,13 +344,26 @@ export default {
             ? this.dictData.jijin.filter(item => item.id === obj.fundHouseId)[0]
                 .name
             : "";
+          // 币种
+          if (obj.currencyCode) {
+            let kk = this.dictData.bizhong.filter(
+              tar => tar.value === obj.currencyCode
+            )[0];
+            obj.currencyName = kk.label;
+            obj.currencyUnit = kk.unit;
+          }
+          // 所属区域
+          obj.appInfo.areaName = step1.areaCode
+            ? this.dictData.quyu.filter(
+                item => item.value === step1.areaCode
+              )[0].label
+            : "";
           // 是否面签Label
           obj.appInfo.visaInterviewLabel = obj.appInfo.visaInterview
             ? this.dictData.visa_interview_type.filter(
                 item => item.value === obj.appInfo.visaInterview
               )[0].label
             : "";
-         
           this.$api
             .add_huobijijin({
               vm: this,
@@ -328,6 +371,8 @@ export default {
             })
             .then(res => {
               if (res) {
+                sessionStorage.removeItem("huobijijin_step1");
+                sessionStorage.removeItem("huobijijin_step2");
                 this.isOk = true;
               }
             });
@@ -339,9 +384,9 @@ export default {
       if (type === "back") {
         this.$router.push({ name: `money_fund_mainPage` });
       } else {
-        this.$router.push({ name: `money_fund_step1` });
         sessionStorage.removeItem("huobijijin_step1");
         sessionStorage.removeItem("huobijijin_step2");
+        this.$router.push({ name: `money_fund_step1` });
       }
     },
     // 取消

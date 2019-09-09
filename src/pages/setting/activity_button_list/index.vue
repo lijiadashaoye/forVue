@@ -174,6 +174,7 @@ export default {
         send(data){
             this.dialogVisible = false;
             activity_button_upd(data).then(()=> {
+                this.$message.success('保存成功')
                 this.getList({
                     pageNum: this.$store.state.activityButton.activityButtonList.pageNum,
                     pageSize: this.$store.state.activityButton.activityButtonList.pageSize,

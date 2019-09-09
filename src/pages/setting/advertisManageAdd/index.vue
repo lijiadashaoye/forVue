@@ -12,7 +12,7 @@
               { required: true, message: '请选择app标识', trigger: 'change' }
             ]"
           >
-            <el-select v-model="ruleForm.appChannelCode">
+            <el-select filterable v-model="ruleForm.appChannelCode">
               <el-option
                 v-for="(item,index) in appChannelCodeList"
                 :key="index"
@@ -28,7 +28,7 @@
             { required: true, message: '请输入广告标题', trigger: 'blur' }
             ]"
           >
-            <el-input placeholder="请输入" v-model="ruleForm.advertisTitle"></el-input>
+            <el-input placeholder="请输入" v-model="ruleForm.advertisTitle" maxlength="18" show-word-limit></el-input>
           </el-form-item>
           <el-form-item
             label="广告副标题"
@@ -37,16 +37,17 @@
                               { required: true, message: '请输入广告副标题', trigger: 'blur' }
                              ]"
           >
-            <el-input placeholder="请输入" v-model="ruleForm.advertisViceTitle"></el-input>
+            <el-input placeholder="请输入" v-model="ruleForm.advertisViceTitle" maxlength="18" show-word-limit></el-input>
           </el-form-item>
           <el-form-item
             label="广告排序"
             prop="sort"
             :rules="[
-                              { required: true, message: '请输入广告排序', trigger: 'blur' },
-                             ]"
+              { required: true, message: '请输入广告排序', trigger: 'blur' },
+              { pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' }
+            ]"
           >
-            <el-input placeholder="请输入" v-model="ruleForm.sort"></el-input>
+            <el-input placeholder="请输入" v-model.number="ruleForm.sort" maxlength="6" show-word-limit></el-input>
           </el-form-item>
     
           <el-form-item
@@ -71,7 +72,7 @@
             { required: true, message: '请选择广告位置', trigger: 'change' }
             ]"
           >
-            <el-select v-model="ruleForm.advertisLocation" placeholder="请选择">
+            <el-select filterable v-model="ruleForm.advertisLocation" placeholder="请选择">
               <el-option
                 v-for="item in advertisLocationList"
                 :key="item.key"
@@ -105,7 +106,7 @@
             { required: true, message: '请选择广告类型', trigger: 'change' }
             ]"
           >
-            <el-select v-model="ruleForm.advertisType" clearable placeholder="请选择广告类型"  @change="typeSelect(ruleForm.advertisType)">
+            <el-select filterable v-model="ruleForm.advertisType" clearable placeholder="请选择广告类型"  @change="typeSelect(ruleForm.advertisType)">
               <el-option
                 v-for="(item,ind) in advertisTypeList"
                 :key="ind"
@@ -132,10 +133,9 @@
             label="关联产品"
             prop="associatedProducts"
           >
-            <el-select
+            <el-select filterable
               v-model="ruleForm.associatedProducts"
               v-loadmore='loadmore'
-              filterable
               clearable
               remote
               reserve-keyword
@@ -202,7 +202,7 @@
             </template>
           </el-form-item>
           <el-form-item label="添加关联组" v-if="ruleForm.spreadUser != 'TOTAL'">
-            <el-select v-model="ruleForm.linkGroup" placeholder="请选择">
+            <el-select filterable v-model="ruleForm.linkGroup" placeholder="请选择">
               <el-option
                 v-for="item in linkGroupList"
                 :key="item.key"
@@ -218,7 +218,7 @@
             </template>
           </el-form-item>
           <el-form-item label="选择省份" v-if="ruleForm.spreadUser != 'TOTAL'">
-            <el-select v-model="ruleForm.spreadLocation" multiple placeholder="请选择">
+            <el-select filterable v-model="ruleForm.spreadLocation" multiple placeholder="请选择">
               <el-option
                 v-for="item in spreadLocationList"
                 :key="item.id"
@@ -421,10 +421,10 @@ export default {
       advertisLocationList: [
         { key: "BANNER", value: "发现横幅广告" },
         { key: "FIND_FINANCING", value: "发现理财圈广告" },
-        { key: "ADD_FINANCING", value: "新增理财圈列表广告" },
-        { key: "ADD_RANKING", value: "新增排行榜横幅广告" },
-        { key: "ADD_SIDE", value: "新增侧边栏Banner" },
-        { key: "ADD_HOME", value: "新增首页Banner" }
+        { key: "ADD_FINANCING", value: "理财圈列表广告" },
+        { key: "ADD_RANKING", value: "排行榜横幅广告" },
+        { key: "ADD_SIDE", value: "侧边栏Banner" },
+        { key: "ADD_HOME", value: "首页Banner" }
       ], // 广告位置list
       ruleForm: {
         // 表单数据
@@ -461,10 +461,11 @@ export default {
   watch: {
     ruleForm: {
       handler() {
-        if (this.ruleForm.advertisLocation != null && this.ruleForm.advertisLocation == "ADD_FINANCING") {
-          this.isAdvertisType = false;
-        } else {
+        if (this.ruleForm.advertisLocation != null && this.ruleForm.advertisLocation !== "ADD_FINANCING") {
+          this.ruleForm.showType = 'BANNER'
           this.isAdvertisType = true;
+        } else {
+          this.isAdvertisType = false;
         }
         if (
           this.ruleForm.spreadLocation &&
@@ -569,11 +570,7 @@ export default {
     upload(params) {
       const _file = params.file;
       const isLt2M = _file.size / 1024 / 1024 < 2;
-      const idJPG =
-        _file.type === "image/jpeg" ||
-        "image/gif" ||
-        "image/png" ||
-        "image/jpg";
+      const idJPG = _file.type === "image/jpeg" || _file.type === "image/gif" || _file.type === "image/png" || _file.type === "image/jpg";
       var formData = new FormData();
       formData.append("file", _file);
       if (!idJPG) {
@@ -687,7 +684,6 @@ export default {
               }
             });
           } else {
-            console.log(params,'add')
             adverdis_add(params).then(res => {
               if (res && res.success) {
                 this.$message.success("新增成功");

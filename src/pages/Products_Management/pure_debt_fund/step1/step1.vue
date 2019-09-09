@@ -14,7 +14,7 @@
         :rules="rules"
       >
         <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.institutionId">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.institutionId">
             <el-option
               size="mini"
               v-for="item in dictData.jigou"
@@ -28,7 +28,7 @@
         </el-form-item>
 
         <el-form-item prop="fundHouseId" label="基金公司" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.fundHouseId">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.fundHouseId">
             <el-option
               size="mini"
               v-for="item in dictData.jijin"
@@ -37,7 +37,7 @@
               :value="item.id"
             ></el-option>
           </el-select>
-          <a class="isAClick" @click="toJiGou">无基金公司？</a>
+          <a class="isAClick" @click="toJiJin">无基金公司？</a>
         </el-form-item>
         <hr />
         <el-form-item label="产品名称" prop="name" class="is50">
@@ -45,11 +45,17 @@
         </el-form-item>
 
         <el-form-item label="基金代码" prop="code" class="is50">
-          <el-input class="isInput" clearable placeholder="请输入" v-model="ruleForm.code"></el-input>
+          <el-input
+            class="isInput"
+            clearable
+            placeholder="请输入"
+            type="number"
+            v-model="ruleForm.code"
+          ></el-input>
         </el-form-item>
 
         <el-form-item label="交易状态" prop="status" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.status">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.status">
             <el-option
               size="mini"
               v-for="item in dictData.transaction_state "
@@ -70,64 +76,64 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="单位净值" class="is50">
+        <el-form-item label="单位净值" class="is50" prop="netAssetValue">
           <el-input
             class="isInput"
             type="number"
             clearable
-            v-model="ruleForm.netValue.netAssetValue"
+            v-model="ruleForm.netAssetValue"
             placeholder="请输入"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="累计净值" class="is50">
+        <el-form-item label="累计净值" class="is50" prop="netAccumulateValue">
           <el-input
             type="number"
             class="isInput"
             clearable
-            v-model="ruleForm.netValue.netAccumulateValue"
+            v-model="ruleForm.netAccumulateValue"
             placeholder="请输入"
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="单日涨幅" class="is50">
+        <el-form-item label="单日涨幅" class="is50" prop="oneDayIncrease">
           <el-input
             class="isInput"
             clearable
-            v-model="ruleForm.performance.oneDayIncrease"
-            placeholder="请输入"
-            type="number"
-          ></el-input>
-          <span class="isA">%</span>
-        </el-form-item>
-
-        <el-form-item label="近三月涨幅" class="is50">
-          <el-input
-            class="isInput"
-            clearable
-            v-model="ruleForm.performance.threeMonthIncrease"
+            v-model="ruleForm.oneDayIncrease"
             placeholder="请输入"
             type="number"
           ></el-input>
           <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="近六月涨幅" class="is50">
+        <el-form-item label="近三月个涨幅" class="is50" prop="threeMonthIncrease">
           <el-input
             class="isInput"
             clearable
-            v-model="ruleForm.performance.sixMonthIncrease"
+            v-model="ruleForm.threeMonthIncrease"
             placeholder="请输入"
             type="number"
           ></el-input>
           <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="近一年涨幅" class="is50">
+        <el-form-item label="近六个月涨幅" class="is50" prop="sixMonthIncrease">
           <el-input
             class="isInput"
             clearable
-            v-model="ruleForm.performance.oneYearIncrease"
+            v-model="ruleForm.sixMonthIncrease"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">%</span>
+        </el-form-item>
+
+        <el-form-item label="近一年涨幅" class="is50" prop="oneYearIncrease">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="ruleForm.oneYearIncrease"
             placeholder="请输入"
             type="number"
           ></el-input>
@@ -177,16 +183,12 @@ export default {
         code: "", // 代码
         status: "", // 交易状态
         contentVersion: "", // 版本
-        netValue: {
-          netAssetValue: "", // 单位净值
-          netAccumulateValue: "" // 累计净值
-        },
-        performance: {
-          oneDayIncrease: "", // 单日涨幅
-          threeMonthIncrease: "", // 近三个月涨幅
-          sixMonthIncrease: "", // 近六个月涨幅
-          oneYearIncrease: "" // 近一年涨幅
-        }
+        netAssetValue: "0.0000", // 单位净值
+        netAccumulateValue: "0.0000", // 累计净值
+        oneDayIncrease: "0.00", // 单日涨幅
+        threeMonthIncrease: "0.00", // 近三个月涨幅
+        sixMonthIncrease: "0.00", // 近六个月涨幅
+        oneYearIncrease: "0.00" // 近一年涨幅
       },
       //表单验证
       rules: {
@@ -201,7 +203,7 @@ export default {
           { required: true, message: "请输入产品名称", trigger: "blur" }
         ],
         code: [
-          { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" },
+          { min: 1, max: 6, message: "最多输入6个字", trigger: "blur" },
           { required: true, message: "请输入基金代码", trigger: "blur" }
         ],
         status: [
@@ -211,8 +213,14 @@ export default {
           { required: true, message: "请输入版本标识", trigger: "blur" },
           { validator: checkNum3, trigger: "blur" }
         ],
-        netAssetValue: [{ validator: checkNum4, trigger: "blur" }],
-        netAccumulateValue: [{ validator: checkNum4, trigger: "blur" }],
+        netAssetValue: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { validator: checkNum4, trigger: "blur" }
+        ],
+        netAccumulateValue: [
+          { required: true, message: "请输入", trigger: "blur" },
+          { validator: checkNum4, trigger: "blur" }
+        ],
         oneDayIncrease: [{ validator: checkNum3, trigger: "blur" }],
         threeMonthIncrease: [{ validator: checkNum3, trigger: "blur" }],
         sixMonthIncrease: [{ validator: checkNum3, trigger: "blur" }],

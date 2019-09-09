@@ -17,7 +17,7 @@
         <div class="card-item">
             <span class="item-text">*加入类型:</span>
             <div class="item-input">
-                <el-select v-model="joinType" placeholder="请选择被加入类型" filterable :disabled="this.detailFlag">
+                <el-select filterable v-model="joinType" placeholder="请选择被加入类型"  :disabled="this.detailFlag">
                     <el-option
                     v-for="(item,ind) in joinTypeOpt"
                     :key="ind"
@@ -31,7 +31,7 @@
         <div class="card-item">
             <span class="item-text">*处理类型:</span>
             <div class="item-input">
-                <el-select v-model="dealType" placeholder="请选择处理类型" filterable :disabled="this.detailFlag">
+                <el-select filterable v-model="dealType" placeholder="请选择处理类型"  :disabled="this.detailFlag">
                     <el-option
                     v-for="(item,ind) in dealTypeOpt"
                     :key="ind"

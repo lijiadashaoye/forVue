@@ -93,9 +93,7 @@ export default {
         grant_type: "password",
         scope: "server"
       };
-      setTimeout(() => {
-        this.$loading().close();
-      }, 5000);
+    
       this.login({
         vm: this,
         data: loginData

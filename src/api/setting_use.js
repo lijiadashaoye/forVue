@@ -614,6 +614,42 @@ export const top_product_upData = (data) => {
 export const top_product_add = (data) => {
     return AxiosPost(`/product/topProduct/product`, data)
 }
+
+
+//   产品支取提示
+//产品所属银行
+export const productBank = (data)=> {
+    return AxiosGet(`/product/institution/page`,data)
+}
+//列表
+export const prompt_list = (data)=> {
+    return AxiosGet(`/product/prompt-message`,data)
+}
+
+//根据机构id获取产品
+export const getProList = (id)=> {
+    return AxiosGet(`/product/institution/searchPro/${id}`)
+}
+
+//新增提示
+export const prompt_add = (data)=> {
+    return AxiosPost(`/product/prompt-message`,data)
+}
+//修改提示
+export const prompt_upd = (data) => {
+    return AxiosPut(`/product/prompt-message`, data)
+}
+
+//删除提示
+export const prompt_delete = (id) => {
+    return AxiosDelete(`/product/prompt-message/${id}`)
+}
+
+
+
+
+//      短信模块
+
 // 短信列表
 export const sms_manage = (data) => {
     return AxiosGet(`/message/sms-manage`, data)
@@ -626,6 +662,10 @@ export const get_sms_list = (id) => {
 export const add_sms_manage = (data) => {
     return AxiosPost(`/message/sms-manage`,data)
 }
+// 获取短信详情
+export const get_sms_detail = (id) => {
+    return AxiosGet(`/message/sms-manage/${id}`)
+}
 // 短信上传模板
 export const upload_file = (data,type) => {
     return AxiosPost(`/admin/file/up/${type}`, data)
@@ -634,6 +674,10 @@ export const upload_file = (data,type) => {
 export const delete_sms_manage = (id) => {
     return AxiosDelete(`/message/sms-manage/${id}`)
 }
+
+
+//      推送信息模块
+
 // 推送信息列表
 export const push_message = (data) => {
     return AxiosGet(`/message/push-message`,data)
@@ -653,4 +697,79 @@ export const change_push_manage = (data) => {
 // 删除推送信息
 export const delete_push_message = (data) => {
     return AxiosPost(`/message/push-message/deletes`,data)
+}
+
+
+//      依赖配置模块
+
+// 分页查询父子集依赖
+export const get_relation_list = (data) => {
+    return AxiosGet(`/setting/manager/parent-tree`,data)
+}
+// 新增父子级依赖
+export const add_relation = (data) => {
+    return AxiosPost(`/setting/manager/parent-tree`,data)
+}
+// 修改父子集配置
+export const modify_relation = (data) => {
+    return AxiosPut(`/setting/manager/parent-tree`,data)
+}
+// 删除父子级配置
+export const delete_relation = (id) => {
+    return AxiosDelete(`/setting/manager/parent-tree/${id}`)
+}
+// 查询父子级详情
+export const relation_detail = (id) => {
+    return AxiosGet(`/setting/manager/parent-tree/${id}`)
+}
+
+
+// 短信权限模块
+
+// 短信权限分页列表
+export const get_smsRule_list = (data) => {
+    return AxiosGet(`/message/manager/sms-rule`,data)
+}
+// 获取短信权限详情
+export const smsRule_detail = (id) => {
+    return AxiosGet(`/message/manager/sms-rule/${id}`)
+}
+// 新增短信规则
+export const add_smsRule = (data) => {
+    return AxiosPost(`/message/manager/sms-rule`,data)
+}
+// 修改短信规则
+export const modify_smsRule = (data) => {
+    return AxiosPut(`/message/manager/sms-rule`,data)
+}
+// 删除短信规则
+export const delete_smsRule = (id) => {
+    return AxiosDelete(`/message/manager/sms-rule/${id}`)
+}
+
+// 短信模版模块
+
+// 短信模版分页列表
+export const get_templateRule_list = (data) => {
+    return AxiosGet(`/message/manager/sms-template`,data)
+}
+// 获取短信模版详情
+export const smsTemplate_detail = (id) => {
+    return AxiosGet(`/message/manager/sms-template/detail/${id}`)
+}
+// 新增短信模版
+export const add_smsTemplate = (data) => {
+    return AxiosPost(`/message/manager/sms-template`,data)
+}
+// 修改短信模版
+export const modify_smsTemplate = (data) => {
+    return AxiosPut(`/message/manager/sms-template`,data)
+}
+// 删除短信模版
+export const delete_smsTemplate = (id) => {
+    return AxiosDelete(`/message/manager/sms-template/${id}`)
+}
+// 获取短信渠道列表
+export const get_sms_channel = (data) => {
+    return AxiosGet(`/message/manager/sms-channel`,data)
 }

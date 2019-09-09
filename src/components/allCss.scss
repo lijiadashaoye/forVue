@@ -37,11 +37,7 @@
 }
 
 #simpleWaper {
-    margin: 0 0 5px 5px;
-}
-
-#formsWap {
-    margin-left: 5px;
+    margin-bottom: 5px;
 }
 
 .isUpTime {
@@ -149,8 +145,8 @@
     padding-left: 10px;
     display: flex;
     justify-content: space-between;
-    background: rgba(241, 243, 243, 0.6);
-    margin: 0 5px
+    background: white;
+    margin-top: 5px
 }
 
 .table_top1 {
@@ -189,6 +185,7 @@
 #chartWap {
     overflow: hidden;
     position: relative;
+    margin-right: 5px;
 }
 
 .chartWaper {
@@ -213,22 +210,6 @@
     top: -2px;
     left: 5px;
     right: 16px;
-}
-
-.showNum1 {
-    display: inline-block;
-    font-size: 12px;
-    left: 30%;
-    position: absolute;
-    top: 32px;
-}
-
-.showNum2 {
-    display: inline-block;
-    font-size: 12px;
-    left: 52%;
-    position: absolute;
-    top: 32px;
 }
 
 .radioGroup {
@@ -310,7 +291,7 @@
     justify-content: flex-end;
     position: absolute;
     right: 5px;
-    top: 2px;
+    bottom: 2px;
 }
 
 .show_time2 {
@@ -599,12 +580,14 @@ ul {
 .nextPage span {
     margin: 0 5px;
     font-size: 12px;
+    padding:0 2px;
 }
 
-.nextPage span:hover {
-    color: red;
+.nextPage>span:nth-child(3):hover,
+.nextPage>span:nth-child(4):hover {
     cursor: pointer;
-    margin: 0 5px;
+    color: rgb(247, 244, 244);
+    background: rgb(44, 165, 235);
 }
 
 .toaddlilv {
@@ -805,9 +788,9 @@ ul {
         color: rgb(100, 123, 253);
     }
 }
-.bottomLiLv{
-    width:100%;
-    background: pink;
-   
-}
 
+.bottomLiLv {
+    width: 100%;
+    background: pink;
+
+}

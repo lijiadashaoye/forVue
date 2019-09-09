@@ -14,7 +14,7 @@
         :rules="rules"
       >
         <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -34,7 +34,7 @@
         </el-form-item>
 
         <el-form-item label="产品系列" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -97,7 +97,7 @@
         </el-form-item>
 
         <el-form-item label="监管属性" style="position:relative" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -114,7 +114,7 @@
         </el-form-item>
 
         <el-form-item label="付息频率" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
             <el-option
               size="mini"
               v-for="item in dictData.frequency_type"
@@ -126,7 +126,7 @@
         </el-form-item>
 
         <el-form-item label="币种" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
             <el-option
               size="mini"
               v-for="item in dictData.bizhong"
@@ -148,7 +148,7 @@
         </el-form-item>
 
         <el-form-item label="产品标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.productTags"
             clearable
@@ -172,7 +172,7 @@
         </el-form-item>
 
         <el-form-item label="自定义标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.selfDefiningTags"
             clearable
@@ -190,7 +190,7 @@
         </el-form-item>
 
         <el-form-item label="活动标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.activityTags"
             clearable
@@ -228,11 +228,11 @@
         </el-form-item>
 
         <el-form-item label="起购范围说明">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.amountRangeExplain"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.amountRangeExplain"></isQuill>
         </el-form-item>
 
         <el-form-item label="产品描述">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">

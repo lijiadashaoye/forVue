@@ -44,6 +44,7 @@ export default {
     props: [ 'appChannel', 'opts', 'updataFlag', 'detailFlag', 'addFlag'],
     data(){
         return {
+            id: '',
             ruleForm: {
                 spreadContent: "",//推广内容
                 fontSize: "",//显示字体大小
@@ -69,6 +70,7 @@ export default {
         }
         //更改  详情  传入初始化数据
         if(this.opts){
+            this.id = this.opts.id;
             this.ruleForm.spreadContent = this.opts.spreadContent;
             this.ruleForm.fontSize = this.opts.fontSize;
             this.ruleForm.fontColor = this.opts.fontColor;
@@ -117,12 +119,15 @@ export default {
         }
     },
     watch: {//监听传入的参数变化   data变化
-        'opts.id'(){
-            this.ruleForm.spreadContent = this.opts.spreadContent;
-            this.ruleForm.fontSize = this.opts.fontSize;
-            this.ruleForm.fontColor = this.opts.fontColor;
-            this.ruleForm.appChannelVal = this.opts.appChannelName;
-            this.ruleForm.appChannelCode = this.opts.appChannelCode;
+        'opts'(){
+            if(this.opts) {
+                this.id = this.opts.id;
+                this.ruleForm.spreadContent = this.opts.spreadContent;
+                this.ruleForm.fontSize = this.opts.fontSize;
+                this.ruleForm.fontColor = this.opts.fontColor;
+                this.ruleForm.appChannelVal = this.opts.appChannelName;
+                this.ruleForm.appChannelCode = this.opts.appChannelCode;
+            }
         },
         'addFlag'() {
             if(this.addFlag){

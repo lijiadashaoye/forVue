@@ -2,30 +2,15 @@
   <div class="componentWaper">
     <div id="forHeader">
       <h3>{{pageName}}</h3>
-      <!-- <el-input
-        size="mini"
-        v-model="seachInput"
-        placeholder=""
-        style="width:180px;"
-      ></el-input>
-      <el-button
-        size="mini"
-        type="primary"
-        style="margin-left:20px"
-        @click="seachClick(true)"
-      >搜索</el-button>
-      <el-button
-        size="mini"
-        type="info"
-        @click="seachClick(false)"
-      >重置</el-button>-->
+      <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
+      <el-button size="mini" type="info" @click="seachClick(false)">重置</el-button>
       <el-button size="mini" :disabled="true" type="warning" @click="moreDengJi()">批量修改等级</el-button>
       <el-button size="mini" type="info" @click="moreStatue()">批量修改状态</el-button>
       <el-button size="mini" :disabled="true" type="danger" @click="moreJiFen()">批量调整积分</el-button>
       <el-button size="mini" type="primary" @click="moreMark()">批量打标签</el-button>
-      <div class="forTableTitle">
+      <!-- <div class="forTableTitle">
         <span>配置表头</span>
-        <el-select v-model="tableTitle" placeholder="请选择" size="small" @change="setTableTitle">
+        <el-select filterable v-model="tableTitle" placeholder="请选择" size="small" @change="setTableTitle">
           <el-option
             v-for="item in options"
             :key="item.type"
@@ -33,7 +18,115 @@
             :value="item.type"
           ></el-option>
         </el-select>
-      </div>
+      </div>-->
+
+      <el-form
+        :inline="true"
+        :model="searchForm"
+        label-width="105px"
+        label-suffix=":"
+        label-position="right"
+        size="mini"
+        ref="searchForm"
+        :rules="rules"
+        style="margin-top:5px;"
+      >
+        <el-form-item label="会员等级" style="margin-bottom:5px;">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="searchForm.levelId"
+          >
+            <el-option
+              size="mini"
+              v-for="item in dengjiList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="会员名称">
+          <el-input v-model="searchForm.memberName" placeholder="会员名称"></el-input>
+        </el-form-item>
+
+        <el-form-item label="性别">
+          <el-select filterable v-model="searchForm.sex" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item in sexList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="手机" prop="memberPhone">
+          <el-input v-model="searchForm.memberPhone"></el-input>
+        </el-form-item>
+
+        <el-form-item label="会员标签">
+          <el-select filterable v-model="searchForm.labelIds" multiple placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item in markList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item style="margin-bottom:5px;" label="剩余开始积分">
+          <el-input v-model="searchForm.surplusStartIntegral" type="number"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom:5px;" label="剩余结束积分">
+          <el-input v-model="searchForm.surplusEndIntegral" type="number"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom:5px;" label="获取开始积分">
+          <el-input v-model="searchForm.gainStartIntegral" type="number"></el-input>
+        </el-form-item>
+        <el-form-item style="margin-bottom:5px;" label="获取结束积分">
+          <el-input v-model="searchForm.gainEndIntegral" type="number"></el-input>
+        </el-form-item>
+
+        <el-form-item label="年龄范围">
+          <div class="forAge">
+            <el-input v-model="searchForm.startAge" min="0" type="number"></el-input>
+            <span>&nbsp;~&nbsp;</span>
+            <el-input v-model="searchForm.endAge" min="0" type="number"></el-input>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="加入时间范围">
+          <el-date-picker
+            value-format="yyyy-MM-dd HH:mm:ss"
+            v-model="searchForm.joinTime"
+            type="datetimerange"
+            range-separator="~"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            size="mini"
+            style="width:100%"
+          ></el-date-picker>
+        </el-form-item>
+
+        <el-form-item label="生日范围">
+          <el-date-picker
+            value-format="yyyy-MM-dd"
+            v-model="searchForm.birthday"
+            type="daterange"
+            range-separator="~"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            size="mini"
+            style="width:100%"
+          ></el-date-picker>
+        </el-form-item>
+      </el-form>
     </div>
     <div id="forTable" v-if="loadEnd">
       <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
@@ -62,7 +155,7 @@
         :before-close="dengjiDialogClose"
         style="padding:0;"
       >
-        <el-select style="width:100%;" v-model="dengjiDialog.ids" placeholder="请选择">
+        <el-select filterable style="width:100%;" v-model="dengjiDialog.ids" placeholder="请选择">
           <el-option
             v-for="item in dengjiDialog.levelList"
             :key="item.id"
@@ -85,7 +178,7 @@
         :before-close="dengjiDialogClose"
         style="padding:0;"
       >
-        <el-select style="width:100%;" v-model="statueDialog.ids" placeholder="请选择">
+        <el-select filterable style="width:100%;" v-model="statueDialog.ids" placeholder="请选择">
           <el-option
             v-for="item in statueDialog.levelList"
             :key="item.value"
@@ -108,7 +201,13 @@
         :before-close="dengjiDialogClose"
         style="padding:0;"
       >
-        <el-select style="width:100%;" v-model="marksDialog.ids" placeholder="请选择" multiple>
+        <el-select
+          filterable
+          style="width:100%;"
+          v-model="marksDialog.ids"
+          placeholder="请选择"
+          multiple
+        >
           <el-option
             v-for="item in marksDialog.levelList"
             :key="item.id"
@@ -131,26 +230,71 @@ import makeTag from "../../../components/makeTag.vue";
 export default {
   props: {},
   data() {
+    // 验证手机号
+    var checkPhone = (rule, value, callback) => {
+      if (value === "") {
+        callback();
+      } else if (!/^1[34578]\d{9}$/.test(value)) {
+        callback(new Error("手机号码有误，请重填"));
+      } else {
+        callback();
+      }
+    };
     return {
-      options: [
-        // 配置表头下拉
-        {
-          type: "jifen",
-          title: "累计积分"
-        },
-        {
-          type: "grow",
-          title: "累计成长值"
-        },
-        {
-          type: "time",
-          title: "最近登录时间"
-        }
-      ],
-      tableTitle: "", // 表格表头配置类型
+      // options: [
+      //   // 配置表头下拉
+      //   {
+      //     type: "jifen",
+      //     title: "累计积分"
+      //   },
+      //   {
+      //     type: "grow",
+      //     title: "累计成长值"
+      //   },
+      //   {
+      //     type: "time",
+      //     title: "最近登录时间"
+      //   }
+      // ],
+      // tableTitle: "", // 表格表头配置类型
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
       pageName: "", // 当前页面名字
-      seachInput: "", // 搜索框输入的内容
+      sexList: [
+        {
+          label: "男",
+          value: "MAN"
+        },
+        {
+          label: "女",
+          value: "WOMAN"
+        },
+        {
+          label: "未知",
+          value: "UNKNOW"
+        }
+      ],
+      dengjiList: [
+        // 会员等级下拉
+      ],
+      markList: [
+        // 会员标签使用
+      ],
+      searchForm: {
+        levelId: "", // 等级id
+        memberName: "", // 会员名称
+        memberPhone: "", // 会员手机
+        labelIds: [], // 标签id列表
+        joinTime: [], // 加入时间
+        sex: "", // 性别
+        startAge: "", // 开始年龄
+        endAge: "", // 结束年龄
+        birthday: [], //生日
+        surplusStartIntegral: "", // 剩余开始积分
+        surplusEndIntegral: "", // 剩余结束积分
+        gainStartIntegral: "", // 获取开始积分
+        gainEndIntegral: "" // 获取结束积分
+      }, // 搜索表单
+
       moreAction: [],
       tableInputData: {
         // 传给table子组件的数据
@@ -214,6 +358,9 @@ export default {
         show: false,
         title: "批量修改状态",
         ids: [] // 存储要进行变更的id
+      },
+      rules: {
+        memberPhone: [{ validator: checkPhone, trigger: "blur" }]
       }
     };
   },
@@ -225,14 +372,23 @@ export default {
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
-    this.getUserData();
+    this.seachClick(false);
+
+    let aa = sessionStorage.getItem("huiyuan_mark"),
+      bb = sessionStorage.getItem("huiyuan_dengji");
+    if (!(aa && bb)) {
+      this.getSearchData();
+    } else {
+      this.markList = JSON.parse(aa);
+      this.dengjiList = JSON.parse(bb);
+    }
   },
   methods: {
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.getUserData();
+          this.seachClick(true);
           break;
         case "switch": // switch 变换
           this.switchAction(data.data);
@@ -266,7 +422,7 @@ export default {
         })
         .then(res => {
           if (res) {
-            this.getUserData();
+            this.seachClick(true);
           }
         });
     },
@@ -450,7 +606,7 @@ export default {
             .then(res => {
               if (res) {
                 this.$message.success("操作成功！");
-                this.getUserData();
+                this.seachClick(true);
                 this.dengjiDialogClose();
               }
             });
@@ -486,7 +642,7 @@ export default {
             .then(res => {
               if (res) {
                 this.$message.success("操作成功！");
-                this.getUserData();
+                this.seachClick(true);
                 this.dengjiDialogClose();
               }
             });
@@ -559,21 +715,55 @@ export default {
     },
     // 搜索框、重置
     seachClick(type) {
-      let searchText = "";
+      let obj = {};
       if (type) {
-        searchText = this.seachInput;
-      }
-      // 查询用户
-      this.$api
-        .member_manager_getListData({
-          vm: this,
-          data: searchText
-        })
-        .then(res => {
-          if (res) {
-            this.afterGetData(res.data);
+        // 规范查询数据格式
+        Object.keys(this.searchForm).forEach(str => {
+          if (this.searchForm[str]) {
+            if (str == "joinTime" && this.searchForm[str].length) {
+              obj["joinStartTime"] = this.searchForm[str][0];
+              obj["joinEndTime"] = this.searchForm[str][1];
+            } else if (str == "birthday" && this.searchForm[str].length) {
+              obj["startBirthday"] = this.searchForm[str][0] + " 00:00:00";
+              obj["endBirthday"] = this.searchForm[str][1] + " 23:59:59";
+            } else if (str == "labelIds" && this.searchForm[str].length) {
+              obj[str] = this.searchForm[str];
+            } else {
+              if (str != "joinTime" && str != "birthday" && str != "labelIds") {
+                obj[str] = isNaN(+this.searchForm[str])
+                  ? this.searchForm[str]
+                  : +this.searchForm[str];
+              }
+              if (str == "memberPhone" || str == "memberName") {
+                obj[str] = this.searchForm[str];
+              }
+            }
           }
         });
+      } else {
+        this.searchForm = {
+          levelId: "", // 等级id
+          memberName: "", // 会员名称
+          memberPhone: "", // 会员手机
+          labelIds: [], // 标签id列表
+          joinTime: [], // 加入时间
+          sex: "", // 性别
+          startAge: "", // 开始年龄
+          endAge: "", // 结束年龄
+          birthday: [], //生日
+          surplusStartIntegral: "", // 剩余开始积分
+          surplusEndIntegral: "", // 剩余结束积分
+          gainStartIntegral: "", // 获取开始积分
+          gainEndIntegral: "" // 获取结束积分
+        };
+        this.$refs.searchForm.resetFields();
+        this.tableInputData.pageSize = 10;
+        this.tableInputData.pageNum = 1;
+      }
+
+      obj.pageSize = this.tableInputData.pageSize;
+      obj.pageNum = this.tableInputData.pageNum;
+      this.getUserData(obj);
     },
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
@@ -631,10 +821,6 @@ export default {
         this.tableInputData.data.quanxian.push("batch_add_label");
       }
     },
-    // 配置表头
-    setTableTitle() {
-      console.log(this.tableTitle);
-    },
     // 获取数据后的处理
     afterGetData(data) {
       new Promise(resolve => {
@@ -680,25 +866,25 @@ export default {
             key: "nickname",
             minWidth: "90"
           },
-          {
-            title: "会员等级",
-            key: "levelName",
-            minWidth: "90"
-          },
+          // {
+          //   title: "会员等级",
+          //   key: "levelName",
+          //   minWidth: "90"
+          // },
           {
             title: "会员手机号",
             key: "phone",
-            minWidth: "120"
+            minWidth: "110"
           },
           {
             title: "来源",
-            key: "source",
+            key: "appChannelCode",
             minWidth: "90"
           },
           {
             title: "创建时间",
-            key: "createTime",
-            minWidth: "120"
+            key: "gmtCreated",
+            minWidth: "140"
           }
         ];
         this.tableInputData.actions.setColor = {
@@ -719,23 +905,72 @@ export default {
       });
     },
     // 获取用户表格数据
-    getUserData() {
-      console.log(9);
-      this.$api
-        .member_manager_getListData({
+    getUserData(data) {
+      // 获取列表数据
+      this.$refs.searchForm.validate(valid => {
+        if (valid) {
+          if (data.startAge || data.endAge) {
+            if (
+              !(data.startAge && data.endAge) ||
+              +data.startAge > +data.endAge
+            ) {
+              this.$message.error("年龄范围输入错误");
+              return;
+            }
+          }
+          this.$api
+            .member_manager_getListData({
+              vm: this,
+              data: data
+            })
+            .then(res => {
+              if (res) {
+                this.afterGetData(res.data);
+              }
+            });
+        }
+      });
+    },
+    // 获取搜索下拉的数据
+    getSearchData() {
+      // 获取标签数据 0 获取等级数据 1
+      Promise.all([
+        this.$api.member_manager_getMarkLise({
           vm: this,
-          data: {
-            levelId: this.seachInput,
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum
-          }
+          data: {}
+        }),
+        this.$api.member_level_getList({
+          vm: this,
+          data: {}
         })
-        .then(res => {
-          if (res) {
-            this.afterGetData(res.data);
-          }
-        });
+      ]).then(datas => {
+        if (datas[0]) {
+          datas[0].data.list.forEach(item => {
+            if (item.status == "ENABLE") {
+              this.markList.push({ label: item.name, value: item.id });
+            }
+          });
+          sessionStorage.setItem("huiyuan_mark", JSON.stringify(this.markList));
+        }
+        if (datas[1]) {
+          this.dengjiList = datas[1].data.list.map(item => ({
+            label: item.name,
+            value: item.id
+          }));
+          sessionStorage.setItem(
+            "huiyuan_dengji",
+            JSON.stringify(this.dengjiList)
+          );
+        }
+      });
     }
   }
 };
 </script>
+<style >
+.forAge {
+  width: 200px;
+  display: flex !important;
+  justify-content: space-between !important;
+}
+</style>

@@ -1,10 +1,8 @@
 <template>
     <el-card class="box-card">
-        
-        <div class="card-item">
-            <span class="item-text">*开户银行:</span>
-            <div class="item-input">
-                <el-select v-model="bankName" filterable placeholder="请选择银行" :disabled="detailFlag" >
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="180px" label-position="left" class="demo-ruleForm">
+            <el-form-item label="开户银行:" prop="bankName">
+                <el-select filterable v-model="ruleForm.bankName"  placeholder="请选择银行" :disabled="detailFlag" >
                     <el-option
                     v-for="(item,ind) in bankOption"
                     :key="ind"
@@ -12,13 +10,10 @@
                     :value="item.value">
                     </el-option>
                 </el-select>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*直销银行:</span>
-            <div class="item-input">
-                <el-select v-model="directName" filterable placeholder="选择直销银行" :disabled="detailFlag" >
+            <el-form-item label="直销银行:" prop="directName">
+                <el-select filterable v-model="ruleForm.directName"  placeholder="选择直销银行" :disabled="detailFlag" >
                     <el-option
                     v-for="(item,ind) in directOption"
                     :key="ind"
@@ -26,61 +21,42 @@
                     :value="item.value">
                     </el-option>
                 </el-select>
-            </div>
-        </div>
+            </el-form-item>
+            
+            <el-form-item label="日累计限额:" prop="dailyCumulativeLimit">
+                <el-input v-model.number="ruleForm.dailyCumulativeLimit" min="0" placeholder="输入每日额度" :disabled="detailFlag" maxlength="10" show-word-limit></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*日累计限额:</span>
-            <div class="item-input">
-                <el-input v-model="dailyCumulativeLimit" min="0" placeholder="输入每日额度" :disabled="detailFlag" maxlength="10"></el-input>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*单笔额度:</span>
-            <div class="item-input">
-                <el-input v-model="eachQuota" min="0" placeholder="输入单笔额度" :disabled="detailFlag"  maxlength="10"></el-input>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*绑卡时是否输入取款密码:</span>
-            <div class="item-input">
-                <el-radio-group v-model="bindingCardIsPassword" :disabled="detailFlag">
+            <el-form-item label="单笔额度:" prop="eachQuota">
+                <el-input v-model="ruleForm.eachQuota" min="0" placeholder="输入单笔额度" :disabled="detailFlag"  maxlength="10" show-word-limit></el-input>
+            </el-form-item>
+            <el-form-item label="绑卡时是否输入取款密码:" prop="bindingCardIsPassword">
+                <el-radio-group v-model="ruleForm.bindingCardIsPassword" :disabled="detailFlag">
                     <el-radio :label="'YES'">YES</el-radio>
                     <el-radio :label="'NO'">NO</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*充值时是否输入取款密码:</span>
-            <div class="item-input">
-                <el-radio-group v-model="transactionIsPassword" :disabled="detailFlag" >
+            </el-form-item>
+            <el-form-item label="充值时是否输入取款密码:" prop="transactionIsPassword">
+                <el-radio-group v-model="ruleForm.transactionIsPassword" :disabled="detailFlag" >
                     <el-radio :label="'YES'">YES</el-radio>
                     <el-radio :label="'NO'">NO</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*是否本行卡:</span>
-            <div class="item-input">
-                <el-radio-group v-model="nowBankCard" :disabled="detailFlag">
+            </el-form-item>
+            <el-form-item label="是否本行卡:" prop="nowBankCard">
+                <el-radio-group v-model="ruleForm.nowBankCard" :disabled="detailFlag">
                     <el-radio :label="'YES'">YES</el-radio>
                     <el-radio :label="'NO'">NO</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-footer" v-if="!detailFlag">
-            <el-button @click="cancel">取消</el-button>
-            <el-button type="primary" @click="save">保存</el-button>
-        </div>
-
-        <div class="card-footer" v-else>
-            <el-button @click="close">关闭</el-button>
-        </div>
+            <el-form-item v-if="!detailFlag">
+                <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+                <el-button @click="cancel('ruleForm')">取消</el-button>
+            </el-form-item>
+            <el-form-item  v-else>
+                <el-button @click="close('ruleForm')">关闭</el-button>
+            </el-form-item>
+        </el-form>
     </el-card>
 </template>
 
@@ -93,8 +69,6 @@ export default {
         return {
             states: [],
             bankOption: [],//开户行列表
-            bankName: "",//开户行名称 !!!
-            directName: "",//直销银行名称 !!!
             directOption: [],//直销银行
             directId: "",//直销银行id ===
             bankCardId: "",//开户银行id ===
@@ -114,11 +88,31 @@ export default {
                 id: 5,
                 name: "三叶草银行"
             }],
-            dailyCumulativeLimit: "",//日限额 !!!
-            eachQuota: "",//单笔限额 !!!
-            bindingCardIsPassword: "YES",//绑卡是否要密码 !!!
-            transactionIsPassword: "YES",//充值时是否要密码 !!!
-            nowBankCard: "YES",//是否是本行卡 !!!
+            
+            ruleForm: {
+                bankName: "",//开户行名称 !!!
+                directName: "",//直销银行名称 !!!
+                dailyCumulativeLimit: "",//日限额 !!!
+                eachQuota: "",//单笔限额 !!!
+                bindingCardIsPassword: "YES",//绑卡是否要密码 !!!
+                transactionIsPassword: "YES",//充值时是否要密码 !!!
+                nowBankCard: "YES",//是否是本行卡 !!!,
+            },
+            rules: {
+                bankName: [{ required: true, message: '请选择开户行', trigger: 'blur' },],
+                directName: [{ required: true, message: '请选择直销银行', trigger: 'blur' },],
+                dailyCumulativeLimit: [
+                    { required: true, message: '请填写日限额', trigger: 'blur' },
+                    { pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' },
+                ],
+                eachQuota: [
+                    { required: true, message: '请填写单笔限额', trigger: 'blur' },
+                    { pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' },
+                ],
+                bindingCardIsPassword: [{ required: true, message: '请选择', trigger: 'blur' },],
+                transactionIsPassword: [{ required: true, message: '请选择', trigger: 'blur' },],
+                nowBankCard: [{ required: true, message: '请选择', trigger: 'blur' },],
+            }
         }
     },
     mounted() {
@@ -140,118 +134,80 @@ export default {
 
         //编辑  详情传入opts数据  初始化
         if(this.opts){
-            this.bankName = this.opts.bankName;
+            this.ruleForm.bankName = this.opts.bankName;
             this.bankCardId = this.opts.bankCardId;
-            this.directName = this.opts.directName;
-            this.dailyCumulativeLimit = this.opts.dailyCumulativeLimit;
-            this.eachQuota =this.opts.eachQuota;
-            this.bindingCardIsPassword = this.opts.bindingCardIsPassword;
-            this.transactionIsPassword = this.opts.transactionIsPassword;
-            this.nowBankCard = this.opts.nowBankCard;
+            this.ruleForm.directName = this.opts.directName;
+            this.ruleForm.dailyCumulativeLimit = this.opts.dailyCumulativeLimit;
+            this.ruleForm.eachQuota =this.opts.eachQuota;
+            this.ruleForm.bindingCardIsPassword = this.opts.bindingCardIsPassword;
+            this.ruleForm.transactionIsPassword = this.opts.transactionIsPassword;
+            this.ruleForm.nowBankCard = this.opts.nowBankCard;
         }
     },
     methods: {
         //点击保存
-        save() {
-            if(this.bankName && this.directName && this.dailyCumulativeLimit &&
-            this.eachQuota && this.bindingCardIsPassword && this.transactionIsPassword &&
-            this.nowBankCard){
-                //取bankCardId
-                this.bankOption && this.bankOption.forEach(v=> {
-                    if(v.value === this.bankName) {
-                        this.bankCardId = v.id
+        save(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                        //取bankCardId
+                    this.bankOption && this.bankOption.forEach(v=> {
+                        if(v.value === this.ruleForm.bankName) {
+                            this.bankCardId = v.id
+                        }
+                    })
+                    //取directId
+                    this.directBankLIst.forEach(v=> {
+                        if(this.ruleForm.directName === v.name){
+                            this.directId = v.id
+                        }
+                    })
+                    //整理params
+                    let obj = {
+                        id: this.opts ? this.opts.id : null,
+                        bankCardId: this.bankCardId,
+                        directId: this.directId,
+                        directName: this.ruleForm.directName,
+                        dailyCumulativeLimit: this.ruleForm.dailyCumulativeLimit,
+                        eachQuota: this.ruleForm.eachQuota,
+                        bindingCardIsPassword: this.ruleForm.bindingCardIsPassword,
+                        transactionIsPassword: this.ruleForm.transactionIsPassword,
+                        nowBankCard: this.ruleForm.nowBankCard
                     }
-                })
-                //取directId
-                this.directBankLIst.forEach(v=> {
-                    if(this.directName === v.name){
-                        this.directId = v.id
-                    }
-                })
-                //整理params
-                let obj = {
-                    id: this.opts ? this.opts.id : "",
-                    bankCardId: this.bankCardId,
-                    directId: this.directId,
-                    directName: this.directName,
-                    dailyCumulativeLimit: this.dailyCumulativeLimit,
-                    eachQuota: this.eachQuota,
-                    bindingCardIsPassword: this.bindingCardIsPassword,
-                    transactionIsPassword: this.transactionIsPassword,
-                    nowBankCard: this.nowBankCard
+                    this.$emit('send',obj)
+                } else {
+                    return false;
                 }
-                
-                this.$emit('send',obj)
-
-            } else {
-                this.$alert('*号是必填项', '提交失败', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-                        this.$message({
-                            type: 'info',
-                            message: `action: ${ action }`
-                        });
-                    }
-                })
-            }
+            });
         },
 
         //点击取消
-        cancel() {
-            this.bankName = '';
-            this.directName = '';
-            this.dailyCumulativeLimit = '';
-            this.eachQuota = "";
-            this.bindingCardIsPassword = "YES";
-            this.transactionIsPassword = "YES";
-            this.nowBankCard = "YES";
+        cancel(formName) {
+            this.$refs[formName].resetFields();
             this.$emit('cancel')
         },
         //点击关闭
-        close() {
+        close(formName) {
+            this.$refs[formName].resetFields();
             this.$emit('close')
         },
     },
     watch: {
         'opts.id'() {
-            this.bankName = this.opts.bankName;
-            this.directName = this.opts.directName;
+            this.ruleForm.bankName = this.opts.bankName;
             this.bankCardId = this.opts.bankCardId;
-            this.dailyCumulativeLimit = this.opts.dailyCumulativeLimit;
-            this.eachQuota =this.opts.eachQuota;
-            this.bindingCardIsPassword = this.opts.bindingCardIsPassword;
-            this.transactionIsPassword = this.opts.transactionIsPassword;
-            this.nowBankCard = this.opts.nowBankCard;
+            this.ruleForm.directName = this.opts.directName;
+            this.ruleForm.dailyCumulativeLimit = this.opts.dailyCumulativeLimit;
+            this.ruleForm.eachQuota =this.opts.eachQuota;
+            this.ruleForm.bindingCardIsPassword = this.opts.bindingCardIsPassword;
+            this.ruleForm.transactionIsPassword = this.opts.transactionIsPassword;
+            this.ruleForm.nowBankCard = this.opts.nowBankCard;
         }
     }
 }
 </script>
 
 <style scoped="true" lang="scss">
-.card-item{
-        width:100%;
-        // height:100px;
-        padding:10px;
-        box-sizing:border-box;
-        display:flex;
-        align-items: center;
-        .item-text{
-            width:220px;
-        }
-        .item-input{
-            width:400px;
-            .msg{
-                width:100%;
-                padding:10px;
-                color:red;
-            }
-        }
-    }
-    .card-footer{
-        width:100%;
-        display:flex;
-        justify-content: center;
-        height:100px;
-        align-items: center;
-    }
+.el-input{
+    width:220px!important;
+}
 </style>

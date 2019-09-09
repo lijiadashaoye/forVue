@@ -20,7 +20,7 @@ const mutations = {
     //获取银行列表数据
     getbankCardListData(state,data){
         bank_card_list(data).then(res=> {
-            if(res.success){
+            if (res && res.success) {
                 state.bankCardList.data.list = res.data.list;
                 state.bankCardList.total = res.data.total;
                 state.bankCardList.data.list.forEach((v)=> {
@@ -38,12 +38,12 @@ const mutations = {
     //删除例表数据
     deleteList(state,id){
         bank_card_del(id).then(res=> {
-            if(res.success){
+            if(res && res.success){
                 bank_card_list({
                     pageNum : state.bankCardList.pageNum,
                     pageSize : state.bankCardList.pageSize 
                 }).then(res=> {
-                    if(res.success){
+                    if (res && res.success) {
                         state.bankCardList.data.list = res.data.list;
                         state.bankCardList.total = res.data.total;
                         state.bankCardList.data.list.forEach((v)=> {

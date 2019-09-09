@@ -64,6 +64,16 @@
             <el-radio-button label="否" class="isRadio"></el-radio-button>
           </el-radio-group>
         </el-form-item>
+        <el-form-item size="mini" label="是否热门" class="is50">
+          <el-radio-group v-model="ruleForm.hotRecommend" class="isInput">
+            <el-radio-button label="是" class="isRadio"></el-radio-button>
+            <el-radio-button label="否" class="isRadio"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
+        <el-form-item label="排序号" class="is50" prop="topNo">
+          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.topNo"></el-input>
+        </el-form-item>
 
         <div class="form_middle">
           <p>渠道覆盖类型:</p>
@@ -111,31 +121,32 @@
         </el-form-item>
 
         <el-form-item label="银行对接方式" class="is50" prop="connectionMode">
-          <el-select clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+          <el-select filterable clearable placeholder="请选择" v-model="ruleForm.connectionMode">
             <el-option
               size="mini"
-              v-for="item in dictData.connection_mode"
-              :key="item.id"
+              v-for="item in dictData.bank_connection_mode"
+              :key="item.value"
               :label="item.label"
-              :value="item.id"
+              :value="item.value"
             ></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="客户分类" class="is50" prop="customerClassification">
-          <el-select clearable placeholder="请选择" v-model="ruleForm.customerClassification">
+          <el-select
+            filterable
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.customerClassification"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.customer_classification"
-              :key="item.id"
+              :key="item.value"
               :label="item.label"
-              :value="item.id"
+              :value="item.value"
             ></el-option>
           </el-select>
-        </el-form-item>
-
-        <el-form-item label="排序号" class="is50" prop="topNo">
-          <el-input type="number" clearable placeholder="请输入" v-model="ruleForm.topNo"></el-input>
         </el-form-item>
       </el-form>
 
@@ -205,6 +216,7 @@ export default {
         sameCardIo: "否", // 是否同卡进出
         multipleCards: "否", // 是否支持绑定多张卡
         replacementCard: "否", // 是否可换绑卡
+        hotRecommend: "否", // 是否热门
         needAuthentication: "否" // 是否需要认证授权
       },
       dictData: {}, // 数据字典
@@ -264,21 +276,23 @@ export default {
             // 编辑
             httpType = "put";
             let httpData = JSON.parse(this.fromHttp);
+
             obj = {
               id: httpData.id,
               uuid: httpData.uuid,
-              institutionId: httpData.institutionId,
-              locationId: step1.locationId,
+              locationId: "",
               locationName: "",
               name: step1.name,
               subType: step1.type,
               subTypeLabel: "",
               aum: step1.aum,
               logo: step1.logo,
+              star: step1.star,
+              starLabel: "",
               starRatingDesc: step1.starRatingDesc,
               description: step1.description,
-              operator: httpData.operator,
-              contentVersion: httpData.contentVersion,
+              operator: httpData.operator, // 创建人
+              contentVersion: step1.version,
               parentId: step1.parentId ? step1.parentId : "-1",
               parentName: "",
               configuration: {
@@ -299,6 +313,8 @@ export default {
                 topNo: this.ruleForm.topNo,
                 connectionMode: this.ruleForm.connectionMode,
                 connectionModeLabel: "",
+                hotRecommend:
+                  this.ruleForm.hotRecommend === "是" ? "YES" : "NO",
 
                 sameCardIo: this.ruleForm.sameCardIo === "是" ? "YES" : "NO", // 是否同卡进出
                 multipleCards:
@@ -310,8 +326,8 @@ export default {
                 backgroundImage: step1.backgroundImage, // 背景图
                 semicircleBackgroundImage: step1.semicircleBackgroundImage, // 半圆背景图
                 textLogo: step1.textLogo, // 文字商标
-                maintainStartTime: step1.maintainStartTime, // 维护开始时间
-                maintainEndTime: step1.maintainEndTime, // 维护结束时间
+                maintainStartTime: "", // 维护开始时间
+                maintainEndTime: "", // 维护结束时间
                 serviceTime: "", // 客服服务时间
                 version: step1.version //版本标识
               },
@@ -319,16 +335,11 @@ export default {
               productCoverageList: []
             };
 
-            if (step1.serviceTime.length) {
-              obj.configuration.serviceTime =
-                step1.serviceTime[0] + " " + step1.serviceTime[1];
-            }
-
             this.dictData.channel_coverage_type.forEach(item => {
               this.ruleForm.channel_coverage.forEach(str => {
                 if (item.label === str) {
                   obj.channelCoverageList.push({
-                    institutionId: httpData.institutionId,
+                    institutionUid: httpData.uuid,
                     channelName: item.label,
                     channelCode: item.value
                   });
@@ -339,7 +350,7 @@ export default {
               this.ruleForm.product_coverage.forEach(str => {
                 if (item.label === str) {
                   obj.productCoverageList.push({
-                    institutionId: httpData.institutionId,
+                    institutionUid: httpData.uuid,
                     productName: item.label,
                     productCode: item.value
                   });
@@ -351,10 +362,10 @@ export default {
             httpType = "post";
             obj = {
               name: step1.name,
-              locationId: step1.locationId,
+              locationId: "",
               locationName: "",
-              type: step1.type,
-              typeLabel: "",
+              subType: step1.type,
+              subTypeLabel: "",
               parentId: step1.parentId ? step1.parentId : "-1",
               parentName: "",
               aum: step1.aum,
@@ -368,6 +379,8 @@ export default {
                 signedUp: this.ruleForm.signedUp === "是" ? "YES" : "NO",
                 customerClassification: this.ruleForm.customerClassification,
                 customerClassificationLabel: "",
+                hotRecommend:
+                  this.ruleForm.hotRecommend === "是" ? "YES" : "NO",
                 openedAccount:
                   this.ruleForm.openedAccount === "是" ? "YES" : "NO",
                 buyable: this.ruleForm.buyable === "是" ? "YES" : "NO",
@@ -381,7 +394,6 @@ export default {
                 topNo: this.ruleForm.topNo,
                 connectionMode: this.ruleForm.connectionMode,
                 connectionModeLabel: "",
-
                 sameCardIo: this.ruleForm.sameCardIo === "是" ? "YES" : "NO", // 是否同卡进出
                 multipleCards:
                   this.ruleForm.multipleCards === "是" ? "YES" : "NO", // 是否支持绑定多张卡
@@ -392,18 +404,15 @@ export default {
                 backgroundImage: step1.backgroundImage, // 背景图
                 semicircleBackgroundImage: step1.semicircleBackgroundImage, // 半圆背景图
                 textLogo: step1.textLogo, // 文字商标
-                maintainStartTime: step1.maintainStartTime, // 维护开始时间
-                maintainEndTime: step1.maintainEndTime, // 维护结束时间
+                maintainStartTime: "", // 维护开始时间
+                maintainEndTime: "", // 维护结束时间
                 serviceTime: "", // 客服服务时间
                 version: step1.version //版本标识
               },
               channelCoverageList: [],
               productCoverageList: []
             };
-            if (step1.serviceTime.length) {
-              obj.configuration.serviceTime =
-                step1.serviceTime[0] + " " + step1.serviceTime[1];
-            }
+
             this.dictData.channel_coverage_type.forEach(item => {
               this.ruleForm.channel_coverage.forEach(str => {
                 if (item.label === str) {
@@ -427,16 +436,17 @@ export default {
           }
 
           // 查询区域数据，填充location数组
-          if (step1.locationId) {
+          if (step1.locationId.length) {
+            obj.locationId = step1.locationId[step1.locationId.length - 1];
             wap: for (let i = this.dictData.quyu.length; i--; ) {
-              if (this.dictData.quyu[i].value == step1.locationId) {
+              if (this.dictData.quyu[i].value == obj.locationId) {
                 obj.locationName = this.dictData.quyu[i].label;
                 break wap;
               } else {
                 let child = this.dictData.quyu[i].children;
                 if (child) {
                   for (let j = child.length; j--; ) {
-                    if (child[j].value == step1.locationId) {
+                    if (child[j].value == obj.locationId) {
                       obj.locationName =
                         this.dictData.quyu[i].label + "/" + child[j].label;
                       break wap;
@@ -446,26 +456,35 @@ export default {
               }
             }
           }
+          
+          if (step1.serviceTime.length) {
+            obj.configuration.serviceTime =
+              step1.serviceTime[0] + " " + step1.serviceTime[1];
+          }
+          if (step1.weihu.length) {
+            obj.configuration.maintainStartTime = step1.weihu[0];
+            obj.configuration.maintainEndTime = step1.weihu[1];
+          }
 
-          this.dictData.connection_mode.forEach(item => {
-            if (item.id === this.ruleForm.connectionMode) {
+          this.dictData.bank_connection_mode.forEach(item => {
+            if (item.value === this.ruleForm.connectionMode) {
               obj.configuration.connectionModeLabel = item.label;
             }
           });
 
           this.dictData.bank_type.forEach(item => {
-            if (item.id === step1.type) {
-              obj.typeLabel = item.label;
+            if (item.value === step1.type) {
+              obj.subTypeLabel = item.label;
             }
           });
 
           this.dictData.institution_star.forEach(item => {
-            if (item.id === step1.star) {
+            if (item.value == step1.star) {
               obj.starLabel = item.label;
             }
           });
           this.dictData.customer_classification.forEach(item => {
-            if (item.id === this.ruleForm.customerClassification) {
+            if (item.value === this.ruleForm.customerClassification) {
               obj.configuration.customerClassificationLabel = item.label;
             }
           });
@@ -474,6 +493,7 @@ export default {
               obj.parentName = item.name;
             }
           });
+
           this.isSaveIng = true;
           this.$api
             .add_newJiGou({

@@ -155,12 +155,13 @@ export default {
     },
     //点击保存
     send(data) {
-      this.dialogVisible = false;
       bank_card_upd(data).then(res=> {
-          this.getBankCardList({
-            pageNum: this.$store.state.bankCard.bankCardList.pageNum,
-            pageSize: this.$store.state.bankCard.bankCardList.pageSize
-          });
+        this.dialogVisible = false;
+        this.$message.success('保存成功')
+        this.getBankCardList({
+          pageNum: this.$store.state.bankCard.bankCardList.pageNum,
+          pageSize: this.$store.state.bankCard.bankCardList.pageSize
+        });
       }).catch(()=>{
         this.$alert(`${res.message}`, '保存失败', {
           confirmButtonText: '确定',

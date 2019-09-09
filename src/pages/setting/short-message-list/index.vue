@@ -52,6 +52,10 @@ export default {
     tableEmit(obj) {
       switch (obj.type) {
         case "detail": //详情
+          this.$router.push({
+            path: "/setting/sms/manager/list/sms-details",
+            query: { id: obj.data.id }
+          });
           break;
         case "delete": //单个删除
           this.deleteIndex(obj.data.id);

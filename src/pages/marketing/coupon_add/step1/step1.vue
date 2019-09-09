@@ -71,7 +71,7 @@
           </el-form-item>
 
           <!-- <el-form-item label="有效期计算方式" prop="YXQJStype">
-            <el-select
+            <el-select filterable
               v-model="formData.YXQJStype"
               placeholder="请选择有效期计算方式"
               style="width:100%;"
@@ -112,7 +112,7 @@
           <!-- </div> -->
 
           <el-form-item label="卡券使用类型" prop="useType">
-            <el-select
+            <el-select filterable
               v-model="formData.useType"
               placeholder="请选择卡券使用类型"
               style="width:100%;"
@@ -175,7 +175,7 @@
           </el-form-item>
 
           <el-form-item label="收益发放类型" prop="incomeGrantType">
-            <el-select
+            <el-select filterable
               v-model="formData.incomeGrantType"
               placeholder="请选择收益发放类型"
               style="width:100%;"
@@ -191,7 +191,7 @@
           </el-form-item>
 
           <el-form-item label="适用渠道" prop="applyChannel">
-            <el-select
+            <el-select filterable
               v-model="formData.applyChannel"
               placeholder="请选择适用渠道"
               style="width:100%;"
@@ -223,7 +223,7 @@
           </el-form-item>
 
           <el-form-item label="是否做关联" prop="isLink">
-            <el-select
+            <el-select filterable
               v-model="formData.isLink"
               placeholder="请选择"
               style="width:100%;"

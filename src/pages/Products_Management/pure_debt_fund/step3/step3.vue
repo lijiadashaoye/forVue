@@ -25,7 +25,7 @@
         <div v-show="ruleForm['type']==='认购'">
           <el-form-item label="金额">
             <div class="toFlex">
-              <el-select
+              <el-select filterable
                 class="isInput"
                 style="margin-right:10px;"
                 clearable
@@ -50,7 +50,7 @@
                 ></el-input>
               </el-form-item>
 
-              <el-select
+              <el-select filterable
                 class="isInput"
                 clearable
                 placeholder="请选择"
@@ -68,7 +68,7 @@
           </el-form-item>
           <el-form-item label="交易金额">
             <div class="toFlex">
-              <el-select
+              <el-select filterable
                 class="isInput"
                 style="margin-right:10px;"
                 clearable
@@ -93,7 +93,7 @@
                 ></el-input>
               </el-form-item>
 
-              <el-select
+              <el-select filterable
                 class="isInput"
                 clearable
                 placeholder="请选择"
@@ -144,7 +144,7 @@
         <div v-show="ruleForm['type']==='申购'">
           <el-form-item label="金额">
             <div class="toFlex">
-              <el-select
+              <el-select filterable
                 class="isInput"
                 style="margin-right:10px;"
                 clearable
@@ -170,7 +170,7 @@
                 ></el-input>
               </el-form-item>
 
-              <el-select
+              <el-select filterable
                 class="isInput"
                 clearable
                 placeholder="请选择"
@@ -189,7 +189,7 @@
 
           <el-form-item label="交易金额">
             <div class="toFlex">
-              <el-select
+              <el-select filterable
                 class="isInput"
                 style="margin-right:10px;"
                 clearable
@@ -215,7 +215,7 @@
                 ></el-input>
               </el-form-item>
 
-              <el-select
+              <el-select filterable
                 class="isInput"
                 clearable
                 placeholder="请选择"
@@ -266,7 +266,7 @@
         <div v-show="ruleForm['type']==='赎回'">
           <el-form-item label="赎回期限">
             <div class="toFlex">
-              <el-select
+              <el-select filterable
                 class="isInput"
                 clearable
                 placeholder="请选择"
@@ -292,7 +292,7 @@
 
           <el-form-item label="赎回天数">
             <div class="toFlex">
-              <el-select
+              <el-select filterable
                 class="isInput"
                 clearable
                 placeholder="请选择"
@@ -365,7 +365,9 @@ export default {
   data() {
     // 验证数字
     var checkNum2 = (rule, value, callback) => {
-      if (+value < 0) {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value < 0) {
         callback(new Error("请输入正数"));
       } else if (("" + value).length > 19) {
         callback(new Error("请输入1-19字符"));
@@ -375,7 +377,9 @@ export default {
     };
     // 验证数字
     var checkNum3 = (rule, value, callback) => {
-      if (+value > 100) {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value > 100) {
         callback(new Error("请输入小于100的值"));
       } else if (+value < 0) {
         callback(new Error("请输入正数"));
@@ -481,15 +485,15 @@ export default {
             },
             netValue: {
               // 净值
-              netAccumulateValue: +step1.netValue.netAccumulateValue,
-              netAssetValue: +step1.netValue.netAssetValue
+              netAccumulateValue: +step1.netAccumulateValue,
+              netAssetValue: +step1.netAssetValue
             },
             //  业绩
             performance: {
-              oneDayIncrease: +step1.performance.oneDayIncrease,
-              oneYearIncrease: +step1.performance.oneYearIncrease,
-              sixMonthIncrease: +step1.performance.sixMonthIncrease,
-              threeMonthIncrease: +step1.performance.threeMonthIncrease
+              oneDayIncrease: +step1.oneDayIncrease,
+              oneYearIncrease: +step1.oneYearIncrease,
+              sixMonthIncrease: +step1.sixMonthIncrease,
+              threeMonthIncrease: +step1.threeMonthIncrease
             },
             subscribe: {
               // 认购
@@ -635,6 +639,9 @@ export default {
             })
             .then(res => {
               if (res) {
+                sessionStorage.removeItem("chunzhai_step1");
+                sessionStorage.removeItem("chunzhai_step2");
+                sessionStorage.removeItem("chunzhai_step3");
                 this.isOk = true;
               }
             });
@@ -646,10 +653,10 @@ export default {
       if (type === "back") {
         this.$router.push({ name: `pure_debt_fund_mainPage` });
       } else {
-        this.$router.push({ name: `pure_debt_fund_step1` });
         sessionStorage.removeItem("chunzhai_step1");
         sessionStorage.removeItem("chunzhai_step2");
         sessionStorage.removeItem("chunzhai_step3");
+        this.$router.push({ name: `pure_debt_fund_step1` });
       }
     },
     // 取消

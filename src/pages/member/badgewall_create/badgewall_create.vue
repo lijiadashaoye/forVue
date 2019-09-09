@@ -20,7 +20,7 @@
             <imgUpload
               v-if="show"
               :datas="{
-                  url:'admin/file/up/market',
+                  url:'admin/file/up/member',
                   imgUrl:''
                 }"
               @selectImg='getImg("actImg",$event)'
@@ -76,7 +76,7 @@
             label="点亮规则类型"
             prop="ruleType"
           >
-            <el-select
+            <el-select filterable
               v-model="formData.ruleType"
               clearable
               placeholder="请选择"

@@ -15,6 +15,9 @@ export default {
     this.pageName = sessionStorage.getItem("page");
   },
 
-  methods: {}
+  beforeDestroy() {
+    sessionStorage.removeItem("huiyuan_dengji");
+    sessionStorage.removeItem("huiyuan_mark");
+  }
 };
 </script>

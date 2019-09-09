@@ -6,7 +6,7 @@
           <h4>
             <span class="isPoints">*</span>活动配置
           </h4>
-          <el-select v-model="other" placeholder="请选择" multiple>
+          <el-select filterable v-model="other" placeholder="请选择" multiple>
             <el-option
               v-for="item in otherList"
               :key="item.value"
@@ -20,7 +20,7 @@
           <h4>
             <span class="isPoints">*</span>请选显示渠道：
           </h4>
-          <el-select v-model="showWay" placeholder="请选择" clearable>
+          <el-select filterable v-model="showWay" placeholder="请选择" clearable>
             <el-option
               v-for="tar in qudaoList"
               :key="tar.value"
@@ -37,7 +37,7 @@
 
           <div>
             <span>请选择栏位：</span>
-            <el-select
+            <el-select filterable
               multiple
               placeholder="请选择"
               size="mini"
@@ -78,7 +78,7 @@
               <el-input v-model="lanweiForm.name"></el-input>
             </el-form-item>
             <el-form-item label="平台" prop="pingtai">
-              <el-select v-model="lanweiForm.pingtai" placeholder="请选择活动平台">
+              <el-select filterable v-model="lanweiForm.pingtai" placeholder="请选择活动平台">
                 <el-option
                   size="mini"
                   v-for="item in pingTaiList"
@@ -103,7 +103,7 @@
               <imgUpload
                 v-if="lanweiForm.show"
                 :datas="{
-                  url:'admin/file/up/member',
+                  url:'admin/file/up/market',
                   imgUrl:''
                 }"
                 @selectImg="sharePageImg('lanwei',$event)"
@@ -119,7 +119,7 @@
             </el-form-item>
 
             <el-form-item label="是否上架">
-              <el-select v-model="lanweiForm.shangjia" placeholder="请选择">
+              <el-select filterable v-model="lanweiForm.shangjia" placeholder="请选择">
                 <el-option
                   size="mini"
                   v-for="item in shangjiaList"
@@ -189,7 +189,7 @@
               <imgUpload
                 v-if="shareForm.show"
                 :datas="{
-                  url:'admin/file/up/member',
+                  url:'admin/file/up/market',
                   imgUrl:''
                 }"
                 @selectImg="sharePageImg('share',$event)"
@@ -197,7 +197,7 @@
             </el-form-item>
 
             <el-form-item prop="shareWay" label="分享途径" label-width="90px">
-              <el-select v-model="shareForm.shareWay" placeholder="请选择">
+              <el-select filterable v-model="shareForm.shareWay" placeholder="请选择">
                 <el-option
                   v-for="item in shareList"
                   :key="item.value"

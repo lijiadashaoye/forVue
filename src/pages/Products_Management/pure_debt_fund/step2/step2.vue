@@ -14,7 +14,7 @@
         :rules="rules"
       >
         <el-form-item label="上下架状态" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
             <el-option
               v-for="item in dictData.shelve_status"
               :key="item.value"
@@ -25,7 +25,7 @@
         </el-form-item>
 
         <el-form-item label="是否面签" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
             <el-option
               v-for="item in dictData.visa_interview_type"
               :key="item.value"
@@ -131,8 +131,8 @@ export default {
         visaInterview: "", // 是否面签
         homePage: "否", // 是否首页排行
         realNameAuth: "否", // 是否实名
-        defaultNum: "", // 默认购买数量
-        defaultAmount: "", // 默认购买金额
+        defaultNum: "0", // 默认购买数量
+        defaultAmount: "0.00", // 默认购买金额
         h5Url: "", // 产品H5链接
         showBankPage: "否" // 是否显示银行页
       },

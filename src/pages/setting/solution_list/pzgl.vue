@@ -3,7 +3,7 @@
     <div id="forHeader">
       <h3>{{pageName}}</h3>
       <span>配置位置：</span>
-      <el-select size="mini" v-model="actNO" placeholder="请选择" @change="getUserData">
+      <el-select filterable size="mini" v-model="actNO" placeholder="请选择" @change="getUserData">
         <el-option
           v-for="item in searchList"
           :key="item.value"
@@ -135,8 +135,8 @@ export default {
     },
     // 添加按钮、编辑按钮
     buttonRowUpdata(data) {
-      sessionStorage.setItem("page", "素材编辑");
       if (data) {
+        sessionStorage.setItem("page", "编辑素材");
         // 编辑
         this.$router.push({
           name: "scbj",
@@ -146,6 +146,7 @@ export default {
           }
         });
       } else {
+        sessionStorage.setItem("page", "添加素材");
         // 添加
         this.$router.push({
           name: "scbj",
@@ -226,15 +227,19 @@ export default {
                       numSucces++;
                     } else {
                       numFail++;
-                      failName += `名称：${item.data[0].solutionDesc} \n`;
+                      failName += `<li>名称：${item.data[0].solutionDesc}</li>`;
                     }
                   });
-                  let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                  let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
                   if (numFail > 0) {
-                    str += titleText + failName;
+                    str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                   }
                   this.$alert(str, "操作结果提示", {
                     confirmButtonText: "确定",
+                    dangerouslyUseHTMLString: true,
                     callback: this.getUserData
                   });
                 });

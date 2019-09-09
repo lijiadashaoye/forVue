@@ -21,15 +21,17 @@ const mutations = {
     //获取列表数据
     getLoginSpreadListData(state,data){
         loginSpread_list(data).then(res=> {
-            state.loginSpreadList.data.list = res.data.list;
-            state.loginSpreadList.total = res.data.total;
-            state.loginSpreadList.data.list.forEach((v)=> {
-                if(v.status === 'ENABLE'){
-                  v.status = '启 用'
-                }else{
-                  v.status = '停 用'
-                }
-            })
+            if(res && res.success) {
+                state.loginSpreadList.data.list = res.data.list;
+                state.loginSpreadList.total = res.data.total;
+                state.loginSpreadList.data.list.forEach((v)=> {
+                    if(v.status === 'ENABLE'){
+                      v.status = '启 用'
+                    }else{
+                      v.status = '停 用'
+                    }
+                })
+            }
         })
     },
       // 用户权限判定，之后表格右侧会有不同的操作按钮

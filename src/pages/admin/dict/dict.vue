@@ -274,22 +274,25 @@ export default {
                 let numSucces = 0;
                 let numFail = 0;
                 let failName = "";
-                let titleText = `失败的数据为：\n `;
 
                 arr.forEach(item => {
                   if (item.ok) {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `字典值为：${item.data[0].value} \n`;
+                    failName += `<li>字典值为：${item.data[0].value}</li>`;
                   }
                 });
-                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
 
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.getUserData
                 });

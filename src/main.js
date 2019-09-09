@@ -3,10 +3,11 @@ import App from './App.vue';
 import everyApi from './api/index.js'
 
 import ElementUI from 'element-ui';
-Vue.use(ElementUI);
 import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
 
 Vue.config.productionTip = false
+Vue.config.devtools = true
 
 import store from './stores/index.js';
 import router from './route.js';
@@ -39,6 +40,7 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+import 'quill/dist/quill.js'
 Vue.use(VueQuillEditor)
 
 // 设置全局图片请求的baseUrl

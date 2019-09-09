@@ -14,7 +14,7 @@
         :rules="rules"
       >
         <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -34,7 +34,7 @@
         </el-form-item>
 
         <el-form-item label="产品系列" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -86,7 +86,7 @@
         </el-form-item>
 
         <el-form-item label="所属区域" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.areaCode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.areaCode">
             <el-option
               size="mini"
               v-for="item in dictData.quyu"
@@ -98,7 +98,7 @@
         </el-form-item>
 
         <el-form-item label="币种" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
             <el-option
               size="mini"
               v-for="item in dictData.bizhong"
@@ -120,7 +120,7 @@
         </el-form-item>
 
         <el-form-item label="计息方式" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.interestMode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.interestMode">
             <el-option
               size="mini"
               v-for="item in dictData.interest_mode"
@@ -132,7 +132,7 @@
         </el-form-item>
 
         <el-form-item label="付息频率" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
             <el-option
               size="mini"
               v-for="item in dictData.frequency_type"
@@ -144,7 +144,7 @@
         </el-form-item>
 
         <el-form-item label="支取时间" class="is50">
-          <el-select class="isInput" v-model="ruleForm.payTime" clearable placeholder="请选择">
+          <el-select filterable class="isInput" v-model="ruleForm.payTime" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.pay_time"
@@ -156,7 +156,7 @@
         </el-form-item>
 
         <el-form-item label="监管属性" style="position:relative" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -173,7 +173,7 @@
         </el-form-item>
 
         <el-form-item label="产品标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.productTags"
             clearable
@@ -197,7 +197,7 @@
         </el-form-item>
 
         <el-form-item label="自定义标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.selfDefiningTags"
             clearable
@@ -215,7 +215,7 @@
         </el-form-item>
 
         <el-form-item label="活动标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.activityTags"
             clearable
@@ -263,15 +263,17 @@
         </el-form-item>
 
         <el-form-item label="起购范围说明">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.amountRangeExplain"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.amountRangeExplain"></isQuill>
         </el-form-item>
 
         <el-form-item label="产品描述" prop="description">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
 
-      <addLiLv :addLiLvProp="addLiLvProp"></addLiLv>
+      <div style="width:90%;margin:0 auto;padding-left:50px;">
+        <addLiLv :addLiLvProp="addLiLvProp"></addLiLv>
+      </div>
 
       <div class="nextButtons">
         <el-button size="mini" type="primary" @click="next">下一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -295,6 +297,16 @@ export default {
         callback(new Error("请输入正数"));
       } else if (("" + value).length > 14 || ("" + value).length < 0) {
         callback(new Error("请输入1-14字符"));
+      } else {
+        callback();
+      }
+    };
+    // 验证数字
+    var checkNum2 = (rule, value, callback) => {
+      if (+value < 0||+value>100) {
+        callback(new Error("请输入0--100"));
+      } else if (("" + value).length > 10 || ("" + value).length < 0) {
+        callback(new Error("请输入1-10字符"));
       } else {
         callback();
       }
@@ -384,7 +396,7 @@ export default {
         typeAlias: [
           { min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }
         ],
-        yearRate: [{ validator: checkNum3, trigger: "blur" }],
+        yearRate: [{ validator: checkNum2, trigger: "blur" }],
         deadlineAlias: [
           { min: 1, max: 50, message: "最多输入50个字", trigger: "blur" }
         ],

@@ -143,7 +143,7 @@
             label="产品类型">
             <template slot-scope="scope">
               <el-form-item>
-                <el-select v-model="scope.row.productType" placeholder="请选择产品类型" @change="typeSelect(scope.row,scope.row.productType)">
+                <el-select filterable v-model="scope.row.productType" placeholder="请选择产品类型" @change="typeSelect(scope.row,scope.row.productType)">
                   <el-option
                     v-for="(item,ind) in channelData"
                     :key="ind"
@@ -159,19 +159,20 @@
             <template slot-scope="scope">
               <el-form-item>
                 <el-input v-if="scope.row.inputFlag" v-model="scope.row.linkId" placeholder="请输入产品链接"></el-input>
-                <el-select
+                <el-select filterable
                   v-else
                   v-model="scope.row.linkId"
-                  filterable
+                  
                   clearable
                   remote
                   reserve-keyword
                   @focus='selectFocus(scope.row)'
-                  :remote-method="fuzzySearch"
-                  v-loadmore='loadmore'
-                  placeholder="请选择产品名称">
+                  :remote-method="(query)=>{fuzzySearch(query,scope.row)}"
+                  v-loadmore='loadmore(scope.row)'
+                  placeholder="请选择产品名称"
+                  @change="selectLinkId(scope.row.linkId,scope)">
                   <el-option
-                    v-for="(item,ind) in productNameOpt"
+                    v-for="(item,ind) in scope.row.productNameOpt"
                     :key="ind"
                     :label="item.name"
                     :value="item.id">
@@ -220,12 +221,12 @@ export default {
       id: '',
       videoUrl: '',
       channelData: [],
-      productNameOpt: [],
       productRelationListVo: {//关联产品对象[{},{}]
         tableData: [{
           productType: '',
           linkId: '',
           inputFlag: false,
+          productNameOpt: []
         }],//关联产品的表数据
       },
       prevStep: "取消",
@@ -242,7 +243,6 @@ export default {
         linkLocationEnum: '',
         name: null
       },
-      prodType: '',
       newsImageUrl: "", //新闻图片
       content: ``, //内容
       contentUrl: "", //内容链接
@@ -277,7 +277,7 @@ export default {
     productUrl_list().then(res=> {
       if(res && res.success) {
         this.channelData = res.data.list.filter(v=> {
-          return v.linkUrl != '' && v.linkUrl != null;
+          return v.linkUrl != '' && v.linkUrl != null && v.remarks == 'news';;
         });
       }
     });
@@ -304,10 +304,18 @@ export default {
           this.productRelationListVo.tableData[i].linkId = this.opts.productRelationListVo[i].linkUrl;
         } else {
           this.productRelationListVo.tableData[i].inputFlag = false;
-          this.productForm.pageNum = 1;
-          this.productForm.linkLocationEnum = this.opts.productRelationListVo[i].productType;
-          this.getproList(this.productForm)
           this.productRelationListVo.tableData[i].linkId = this.opts.productRelationListVo[i].linkId;
+        }
+      })
+      this.productRelationListVo.tableData.forEach(v=> {
+        if(v.productType != 'EXTERNAL_LINK') {
+          this.productForm.pageNum = 1;
+          this.getproList({
+            pageSize: 200,
+            pageNum: 1,
+            linkLocationEnum: v.productType,
+            name: null
+          },v)
         }
       })
     } else {
@@ -320,6 +328,7 @@ export default {
     indexMethod(index) {
       return index+1
     },
+    //产品列表select获取焦点时候根据前面的类型请求数据
     selectFocus(row) {
       if(row.productType != '') {
         this.productForm = {
@@ -329,7 +338,7 @@ export default {
           name: null
         }
         this.productForm.linkLocationEnum = row.productType;
-        this.getproList(this.productForm);
+        this.getproList(this.productForm,row);
       }
     },
     //比较出示点赞量小于访问量
@@ -339,39 +348,44 @@ export default {
         this.fabulousNumber = '';
       }
     },
-    loadmore() {
+    //产品下拉框   下拉加载
+    loadmore(row) {
       if(this.productForm.pageNum < this.productPageCount) {
         this.productForm.pageNum++;
-        this.getproList(this.productForm);
+        this.getproList(this.productForm,row);
       }
     },
-    getproList(form) {
-      this.productNameOpt = [];
-      productList(form).then(res=> {
+    //获取产品下拉数据
+    getproList(form,row) {
+      form.linkLocationEnum = row.productType
+      productList(form).then(async res=> {
+        row.productNameOpt = [];
         if(res && res.success) {
           this.productPageCount = res.data && Math.ceil(res.data.total/this.productForm.pageSize)
-          console.log(res)
           if(res.data && res.data.list != null && res.data.list != []) {
             const _res = res.data.list
-            this.productNameOpt = [...this.productNameOpt,..._res]
-            console.log(this.productNameOpt)
+            row.productNameOpt = [...row.productNameOpt,..._res]
           }
         }
-      }).catch(res=> {
-        this.$message.error(`${res.message}`)
       })
     },
-    fuzzySearch(query) {
-      if(query!= '' && this.prodType != '') {
-          this.productNameOpt = [];
+    //
+    selectLinkId(id,scope) {
+      this.$set(this.productRelationListVo.tableData,scope.$index,scope.row)
+      this.$forceUpdate();
+    },
+    //模糊搜索  产品
+    fuzzySearch(query,row) {
+      if(query!= '' && row.productType != '') {
+          row.productNameOpt = [];
           this.productForm.name = query;
-          this.productForm.linkLocationEnum = this.prodType;
-          this.getproList(this.productForm)
+          this.productForm.linkLocationEnum = row.productType;
+          this.getproList(this.productForm,row)
       } else {
-          this.productNameOpt = [];
+          row.productNameOpt = [];
           this.productForm.name = null;
-          this.productForm.linkLocationEnum = this.prodType;
-          this.getproList(this.productForm)
+          this.productForm.linkLocationEnum = row.productType;
+          this.getproList(this.productForm,row)
       }
     },
     //选择产品类型
@@ -387,19 +401,19 @@ export default {
         row.inputFlag = true;
       } else if(val != '' && val != null && val != undefined) {
         row.inputFlag = false;
-        this.prodType = val;
-        this.productForm.linkLocationEnum = val;
-        this.getproList(this.productForm)
+        this.productForm.linkLocationEnum = row.productType;
+        this.getproList(this.productForm,row)
       }
     },
     //添加列表
     addProduct() {
       if(this.productRelationListVo.tableData.length < 5) {
-        if(this.productRelationListVo.tableData[this.productRelationListVo.tableData.length-1].productType != '' && this.productRelationListVo.tableData[this.productRelationListVo.tableData.length-1].productType != null && this.productRelationListVo.tableData[this.productRelationListVo.tableData.length-1].linkId != '') {
+        if(this.productRelationListVo.tableData.length == 0 || this.productRelationListVo.tableData[this.productRelationListVo.tableData.length-1].productType != '' && this.productRelationListVo.tableData[this.productRelationListVo.tableData.length-1].productType != null && this.productRelationListVo.tableData[this.productRelationListVo.tableData.length-1].linkId != '') {
           this.productRelationListVo.tableData.push({
             productType: '',
             linkId: '',
-            inputFlag: false
+            inputFlag: false,
+            productNameOpt: []
           })
         } else {
           this.$message.error('请将上条数据填写完整')
@@ -414,7 +428,7 @@ export default {
     upload(params) {
       const _file = params.file;
       const isLt2M = _file.size / 1024 / 1024 < 2;
-      const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+      const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
       var formData = new FormData();
       formData.append("file", _file);
       if(!idJPG) {
@@ -442,12 +456,13 @@ export default {
           this.id = null;
           this.videoUrl = '';
           this.channelData = [];
-          this.productNameOpt = [];
+          // this.productNameOpt = [];
           this.productRelationListVo = {//关联产品对象[{},{}]
             tableData: [{
               productType: '',
               linkId: '',
               inputFlag: false,
+              productNameOpt: []
             }]//关联产品的表数据
           };
           this.prevStep = "取消"
@@ -538,7 +553,7 @@ export default {
             products[i].linkUrl = this.productRelationListVo.tableData[i].linkId;
           } else {
             products[i].linkId = this.productRelationListVo.tableData[i].linkId;
-            this.productNameOpt && this.productNameOpt.forEach(item=> {
+            this.productRelationListVo.tableData[i].productNameOpt && this.productRelationListVo.tableData[i].productNameOpt.forEach(item=> {
               if(this.productRelationListVo.tableData[i].linkId == item.id) {
                 products[i].productName = item.name;
               }
@@ -564,15 +579,16 @@ export default {
         }
         this.$emit('save',obj)
         this.id = null;
+        this.active = 0;
       } else {
         this.$alert("*号是必填项", "提交失败", {
-            confirmButtonText: "确定",
-            callback: action => {
-                this.$message({
-                type: "error",
-                message: `*号是必填项`
-                });
-            }
+          confirmButtonText: "确定",
+          callback: action => {
+            this.$message({
+            type: "error",
+            message: `*号是必填项`
+            });
+          }
         });
       }
     }
@@ -602,10 +618,18 @@ export default {
             this.productRelationListVo.tableData[i].linkId = this.opts.productRelationListVo[i].linkUrl;
           } else {
             this.productRelationListVo.tableData[i].inputFlag = false;
-            this.productForm.pageNum = 1;
-            this.productForm.linkLocationEnum = this.opts.productRelationListVo[i].productType;
-            this.getproList(this.productForm)
             this.productRelationListVo.tableData[i].linkId = this.opts.productRelationListVo[i].linkId;
+          }
+        })
+        this.productRelationListVo.tableData.forEach(v=> {
+          if(v.productType != 'EXTERNAL_LINK') {
+            this.productForm.pageNum = 1;
+            this.getproList({
+              pageSize: 200,
+              pageNum: 1,
+              linkLocationEnum: v.productType,
+              name: null
+            },v)
           }
         })
       } else {
@@ -682,13 +706,12 @@ export default {
     }
   }
   .item-img {
-    width: 100px;
-    height: 80px;
+    // width: 100px;
+    // height: 80px;
     display: flex;
     align-items: center;
     img {
-      width: 80px;
-      height: 80px;
+      width:100%;
     }
   }
 }

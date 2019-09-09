@@ -104,6 +104,7 @@ export default {
             adverdis_list_upData(data).then(res=> {
                 if(res && res.success) {
                     this.dialogFormVisible = false;
+                    this.$message.success('保存成功')
                     this.getList({
                         pageNum: this.$store.state.advertis.advertisList.pageNum,
                         pageSize: this.$store.state.advertis.advertisList.pageSize,

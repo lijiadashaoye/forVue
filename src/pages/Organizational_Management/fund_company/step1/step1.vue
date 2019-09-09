@@ -36,7 +36,7 @@
         </el-form-item>
 
         <el-form-item label="公司描述" prop="description">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
     </div>
@@ -117,7 +117,7 @@ export default {
   },
   created() {
     this.hasImg = {
-      url: "admin/file/up/setting",
+      url: "admin/file/up/product",
       imgUrl: ""
     };
     this.pageName = sessionStorage.getItem("page") + " > 新增基金公司"; // 获取页面名称

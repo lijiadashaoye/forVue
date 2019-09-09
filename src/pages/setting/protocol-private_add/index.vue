@@ -46,16 +46,6 @@ export default {
           if(res && res.success) {
             this.$router.push('/home/setting/protocol-private/list')
           }
-        }).catch(()=>{
-          this.$message(`${res.message}`, '保存失败', {
-            confirmButtonText: '确定',
-            callback: action => {
-              this.$message({
-                type: 'info',
-                message: `action: ${ action }`
-              });
-            }
-          });
         })
       } else {
         //弹出消息提示用户

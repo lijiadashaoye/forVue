@@ -1,60 +1,43 @@
 <template>
     <el-card class="box-card">
-
-        <div class="card-item">
-            <span class="item-text">*APP标识:</span>
-            <div class="item-input">
-                <el-radio-group v-model="appChannelCode">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
+            <el-form-item label="APP标识:" prop="appChannelCode">
+                <el-radio-group v-model="ruleForm.appChannelCode">
                     <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*栏目标题:</span>
-            <div class="item-input">
-                <el-input v-model.trim="title" placeholder="请输入标题"></el-input>
-            </div>
-        </div> 
+            <el-form-item label="栏目标题:" prop="title">
+                <el-input v-model.trim="ruleForm.title" placeholder="请输入标题"></el-input>
+            </el-form-item>
+        
+            <el-form-item label="栏目key:" prop="columnKey">
+                <el-input v-model.trim="ruleForm.columnKey" placeholder="请输入唯一key" @input="e => ruleForm.columnKey = validForbid(ruleForm.columnKey)"></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*栏目key:</span>
-            <div class="item-input">
-                <el-input v-model.trim="columnKey" placeholder="请输入唯一key" @input="e => columnKey = validForbid(columnKey)"></el-input>
-            </div>
-        </div> 
-
-        <div class="card-item card-img">
-            <span class="item-text">*栏目图片:</span>
-            <div class="item-img">
+            <el-form-item label="栏目图片:" prop="columnImage">
                 <el-upload
                     class="avatar-uploader"
                     action="customize"
                     :show-file-list="false"
                     :http-request="uploadColumnImage"
                     >
-                    <img v-if="columnImage" :src="ImgBaseUrl + columnImage" class="avatar">
+                    <img v-if="ruleForm.columnImage" :src="ImgBaseUrl + ruleForm.columnImage" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
                 </el-upload>
-            </div>
-        </div>
+            </el-form-item>
         
-        <div class="card-item">
-            <span class="item-text">*是否显示:</span>
-            <div class="item-input">
-                <el-radio-group v-model="isShow">
+            <el-form-item label="是否显示:" prop="isShow">
+                <el-radio-group v-model="ruleForm.isShow">
                     <el-radio :label="'SHOW'">显示</el-radio>
                     <el-radio :label="'HIDE'">不显示</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*显示类型:</span>
-            <div class="item-input">
-                <el-select v-model="buttonTypeCode" placeholder="请选择显示类型">
+            <el-form-item label="显示类型:" prop="buttonTypeCode">
+                <el-select filterable v-model="ruleForm.buttonTypeCode" placeholder="请选择显示类型">
                     <el-option
                         v-for="(item,ind) in buttonTypeOpt"
                         :key="ind"
@@ -62,93 +45,57 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-            </div>
-        </div>
+            </el-form-item>
+        
+            <el-form-item label="栏目标题颜色:" prop="columnColor">
+                <el-color-picker v-model="ruleForm.columnColor"></el-color-picker>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*栏目标题颜色:</span>
-            <div class="item-input item-color">
-                <el-input
-                    v-model="columnColor"
-                    :disabled="true">
-                </el-input>
-                <el-color-picker v-model="columnColor"></el-color-picker>
-            </div>
-        </div>
+            <el-form-item label="文字说明:" prop="textExplain">
+                <el-input v-model.trim="ruleForm.textExplain" placeholder="请输入说明"></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">文字说明:</span>
-            <div class="item-input">
-                <el-input v-model.trim="textExplain" placeholder="请输入说明"></el-input>
-            </div>
-        </div>
+            <el-form-item label="文字说明颜色:" prop="textExplainColor">
+                <el-color-picker v-model="ruleForm.textExplainColor"></el-color-picker>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">文字说明颜色:</span>
-            <div class="item-input item-color">
-                <el-input
-                    v-model="textExplainColor"
-                    :disabled="true">
-                </el-input>
-                <el-color-picker v-model="textExplainColor"></el-color-picker>
-            </div>
-        </div>
+            <el-form-item label="排序值:" prop="sort">
+                <el-input v-model.trim="ruleForm.sort"  placeholder="只允许填入数字" @input="e => ruleForm.sort = validForbid(ruleForm.sort)"></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*排序值:</span>
-            <div class="item-input">
-                <el-input v-model.trim="sort" type="number" placeholder="只允许填入数字" @input="e => sort = validForbid(sort)"></el-input>
-            </div>
-        </div>
+            <el-form-item label="链接地址:" prop="linkUrl">
+                <el-input v-model.trim="ruleForm.linkUrl" placeholder="请输入链接地址"></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">链接地址:</span>
-            <div class="item-input">
-                <el-input v-model.trim="linkUrl" placeholder="请输入链接地址"></el-input>
-            </div>
-        </div>
+            <el-form-item label="打点编号:" prop="dotNumber">
+                <el-input v-model.trim="ruleForm.dotNumber" placeholder="请输入打点编号" @input="e => ruleForm.dotNumber = validForbid(ruleForm.dotNumber)"></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">打点编号:</span>
-            <div class="item-input">
-                <el-input v-model.trim="dotNumber" placeholder="请输入打点编号" @input="e => dotNumber = validForbid(dotNumber)"></el-input>
-            </div>
-        </div>
-
-        <div class="card-item card-textarea">
-            <span class="item-text">备注:</span>
-            <div class="item-input">
+            <el-form-item label="备注:" prop="remark">
                 <el-input
                 type="textarea"
                 :autosize="{ minRows: 4, maxRows: 5}"
                 placeholder="请输入内容"
-                v-model.trim="remark"
+                v-model.trim="ruleForm.remark"
                 ></el-input>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*系统:</span>
-            <div class="item-input">
-                <el-radio-group v-model="platformCode">
+            <el-form-item label="系统:" prop="platformCode">
+                <el-radio-group v-model="ruleForm.platformCode">
                     <el-radio :label="'ios'">苹果</el-radio>
                     <el-radio :label="'android'">安卓</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*版本号:</span>
-            <div class="item-input">
-                <el-input v-model.trim="versionNo" placeholder="只允许填入数字" @input="e => versionNo = validForbid(versionNo)"></el-input>
-            </div>
-        </div>
+            <el-form-item label="版本号:" prop="versionNo">
+                <el-input v-model.trim="ruleForm.versionNo" placeholder="只允许填入数字" @input="e => ruleForm.versionNo = validForbid(ruleForm.versionNo)"></el-input>
+            </el-form-item>
 
-        <div class="card-footer">
-            <el-button @click="cancel">取消</el-button>
-            <el-button @click="save">保存</el-button>
-        </div>
-
+            <el-form-item>
+                <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+                <el-button @click="cancel('ruleForm')">取消</el-button>
+            </el-form-item>
+        </el-form>
     </el-card>
 </template>
 
@@ -159,25 +106,60 @@ export default {
     props: ['appChannel', 'params'],
     data() {
         return {
+            ruleForm: {
+                appChannelCode: '',//app标示码
+                buttonTypeCode: '',//显示位置比标识码
+                title: '',//标题
+                columnKey: '',//栏目key
+                columnImage: '',//栏目图片
+                isShow: '',//是否现实
+                columnColor:'',//栏目标题颜色
+                textExplain: '',//文字说明
+                textExplainColor: '',//文字说明颜色
+                sort: '',//排序
+                linkUrl: '',//链接地址
+                dotNumber: '',//打点编号
+                remark: '',//备注
+                platformCode: '',//系统标示
+                versionNo: '',//版本号
+            },
+            rules: {
+                appChannelCode: [
+                    { required: true, message: '请选择APP', trigger: 'blur' },
+                ],
+                buttonTypeCode: [
+                    { required: true, message: '请选择显示类型', trigger: 'blur' },
+                ],
+                title: [
+                    { required: true, message: '请输入标题', trigger: 'blur' },
+                ],
+                columnKey: [
+                    { required: true, message: '请输入栏目key', trigger: 'blur' },
+                ],
+                columnImage: [
+                    { required: true, message: '请选择栏目图片', trigger: 'blur' },
+                ],
+                isShow: [
+                    { required: true, message: '请选择', trigger: 'blur' },
+                ],
+                columnColor: [
+                    { required: true, message: '请选择颜色', trigger: 'blur' },
+                ],
+                sort: [
+                    { required: true, message: '请输入排序值', trigger: 'blur' },
+                    { pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' }
+                ],
+                platformCode: [
+                    { required: true, message: '请选择系统', trigger: 'blur' },
+                ],
+                versionNo: [
+                    { required: true, message: '请输入版本号', trigger: 'blur' },
+                ],
+            },
             id: '',
-            appChannelCode: '',//app标示码
             appChannelName: '',//app
-            buttonTypeCode: '',//显示位置比标识码
             buttonTypeName: '',//显示位置
-            title: '',//标题
-            columnKey: '',//栏目key
-            columnImage: '',//栏目图片
-            isShow: '',//是否现实
-            columnColor:'',//栏目标题颜色
-            textExplain: '',//文字说明
-            textExplainColor: '',//文字说明颜色
-            sort: '',//排序
-            linkUrl: '',//链接地址
-            dotNumber: '',//打点编号
-            remark: '',//备注
-            platformCode: '',//系统标示
             platformName: '',//系统名字
-            versionNo: '',//版本号
             buttonTypeOpt: [//button显示下拉列表
                 {
                     label: "底部",
@@ -193,113 +175,87 @@ export default {
     mounted() {
         this.ImgBaseUrl = this.$ImgBaseUrl;
         if(this.params) {
-            this.id = this.params.id;
-            this.appChannelCode = this.params.appChannelCode;
+            this.id = this.params.id ? this.params.id : null;
+            this.ruleForm.appChannelCode = this.params.appChannelCode;
             this.appChannelName = this.params.appChannelName;
-            this.buttonTypeCode = this.params.buttonTypeCode;
+            this.ruleForm.buttonTypeCode = this.params.buttonTypeCode;
             this.buttonTypeName = this.params.buttonTypeName;
-            this.platformCode = this.params.platformCode;
+            this.ruleForm.platformCode = this.params.platformCode;
             this.platformName = this.params.platformName;
-            this.versionNo = this.params.versionNo;
-            this.title = this.params.title;
-            this.columnKey = this.params.columnKey;
-            this.columnImage = this.params.columnImage;
-            this.isShow = this.params.isShow;
-            this.columnColor = this.params.columnColor;
-            this.textExplain = this.params.textExplain;
-            this.textExplainColor = this.params.textExplainColor;
-            this.sort = this.params.sort;
-            this.linkUrl = this.params.linkUrl;
-            this.dotNumber = this.params.dotNumber;
-            this.remark = this.params.remark;
+            this.ruleForm.versionNo = this.params.versionNo;
+            this.ruleForm.title = this.params.title;
+            this.ruleForm.columnKey = this.params.columnKey;
+            this.ruleForm.columnImage = this.params.columnImage;
+            this.ruleForm.isShow = this.params.isShow;
+            this.ruleForm.columnColor = this.params.columnColor;
+            this.ruleForm.textExplain = this.params.textExplain;
+            this.ruleForm.textExplainColor = this.params.textExplainColor;
+            this.ruleForm.sort = this.params.sort;
+            this.ruleForm.linkUrl = this.params.linkUrl;
+            this.ruleForm.dotNumber = this.params.dotNumber;
+            this.ruleForm.remark = this.params.remark;
         }
     },
     methods: {
         //取消
-        cancel() {
-            this.id = '';
-            this.appChannelCode = '';
-            this.appChannelName = '';
-            this.buttonTypeCode = '';
-            this.buttonTypeName = '';
-            this.platformCode = '';
-            this.platformName = '';
-            this.versionNo = '';
-            this.title = '';
-            this.columnKey = '';
-            this.columnImage = '';
-            this.isShow = '';
-            this.columnColor = '';
-            this.textExplain = '';
-            this.textExplainColor = '';
-            this.sort = '';
-            this.linkUrl = '';
-            this.dotNumber = '';
-            this.remark = '';
+        cancel(formName) {
+            this.$refs[formName].resetFields();
             this.$emit('cancel')
         },
 
         //保存
-        save() {
-            if(this.appChannelCode && this.buttonTypeCode && this.platformCode && this.versionNo && this.title && this.columnKey && this.columnImage && this.isShow && this.columnColor && this.sort) {
-                //渠道
-                this.appChannel.forEach(v=> {
-                    if(this.appChannelCode == v.label){
-                        this.appChannelName = v.value
+        save(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    this.appChannel.forEach(v=> {
+                        if(this.ruleForm.appChannelCode == v.label){
+                            this.appChannelName = v.value
+                        }
+                    })
+                    //渠道
+                    this.buttonTypeOpt.forEach(v=> {
+                        if(this.ruleForm.buttonTypeCode == v.value){
+                            this.buttonTypeName = v.label
+                        }
+                    })
+                    //平台
+                    if(this.ruleForm.platformCode === 'android') {
+                        this.platformName = '安卓'
+                    } else if(this.ruleForm.platformCode === 'ios') {
+                        this.platformName = '苹果'
                     }
-                })
-                //渠道
-                this.buttonTypeOpt.forEach(v=> {
-                    if(this.buttonTypeCode == v.value){
-                        this.buttonTypeName = v.label
+                    let obj = {
+                        id: this.id,
+                        appChannelCode: this.ruleForm.appChannelCode,
+                        appChannelName: this.appChannelName,
+                        buttonTypeCode: this.ruleForm.buttonTypeCode,
+                        buttonTypeName: this.buttonTypeName,
+                        platformCode: this.ruleForm.platformCode,
+                        platformName: this.platformName,
+                        versionNo: this.ruleForm.versionNo,
+                        title: this.ruleForm.title,
+                        columnKey: this.ruleForm.columnKey,
+                        columnImage: this.ruleForm.columnImage,
+                        isShow: this.ruleForm.isShow,
+                        columnColor: this.ruleForm.columnColor,
+                        textExplain: this.ruleForm.textExplain,
+                        textExplainColor: this.ruleForm.textExplainColor,
+                        sort: this.ruleForm.sort,
+                        linkUrl: this.ruleForm.linkUrl,
+                        dotNumber: this.ruleForm.dotNumber,
+                        remark: this.ruleForm.remark
                     }
-                })
-                //平台
-                if(this.platformCode === 'android') {
-                    this.platformName = '安卓'
-                } else if(this.platformCode === 'ios') {
-                    this.platformName = '苹果'
+                    this.$emit('send',obj)
+                } else {
+                    return false;
                 }
-                let obj = {
-                    id: this.id,
-                    appChannelCode: this.appChannelCode,
-                    appChannelName: this.appChannelName,
-                    buttonTypeCode: this.buttonTypeCode,
-                    buttonTypeName: this.buttonTypeName,
-                    platformCode: this.platformCode,
-                    platformName: this.platformName,
-                    versionNo: this.versionNo,
-                    title: this.title,
-                    columnKey: this.columnKey,
-                    columnImage: this.columnImage,
-                    isShow: this.isShow,
-                    columnColor: this.columnColor,
-                    textExplain: this.textExplain,
-                    textExplainColor: this.textExplainColor,
-                    sort: this.sort,
-                    linkUrl: this.linkUrl,
-                    dotNumber: this.dotNumber,
-                    remark: this.remark
-                }
-                this.$emit('send',obj)
-
-            } else {
-                this.$alert("*号是必填项", "提交失败", {
-                    confirmButtonText: "确定",
-                    callback: action => {
-                        this.$message({
-                        type: "info",
-                        message: `action: ${action}`
-                        });
-                    }
-                });
-            }
+            });
         },
         //上传图片
         uploadColumnImage(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" || _file.type === "image/gif" || _file.type === "image/png" || _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {
@@ -312,100 +268,37 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.columnImage = res.data
+                    this.ruleForm.columnImage = res.data
                 }
             })
         },
     },
     watch: {
         'params.id'() {
-            this.id = this.params.id;
-            this.appChannelCode = this.params.appChannelCode;
+            this.id = this.params.id ? this.params.id : null;
+            this.ruleForm.appChannelCode = this.params.appChannelCode;
             this.appChannelName = this.params.appChannelName;
-            this.buttonTypeCode = this.params.buttonTypeCode;
+            this.ruleForm.buttonTypeCode = this.params.buttonTypeCode;
             this.buttonTypeName = this.params.buttonTypeName;
-            this.platformCode = this.params.platformCode;
+            this.ruleForm.platformCode = this.params.platformCode;
             this.platformName = this.params.platformName;
-            this.versionNo = this.params.versionNo;
-            this.title = this.params.title;
-            this.columnKey = this.params.columnKey;
-            this.columnImage = this.params.columnImage;
-            this.isShow = this.params.isShow;
-            this.columnColor = this.params.columnColor;
-            this.textExplain = this.params.textExplain;
-            this.textExplainColor = this.params.textExplainColor;
-            this.sort = this.params.sort;
-            this.linkUrl = this.params.linkUrl;
-            this.dotNumber = this.params.dotNumber;
-            this.remark = this.params.remark;
+            this.ruleForm.versionNo = this.params.versionNo;
+            this.ruleForm.title = this.params.title;
+            this.ruleForm.columnKey = this.params.columnKey;
+            this.ruleForm.columnImage = this.params.columnImage;
+            this.ruleForm.isShow = this.params.isShow;
+            this.ruleForm.columnColor = this.params.columnColor;
+            this.ruleForm.textExplain = this.params.textExplain;
+            this.ruleForm.textExplainColor = this.params.textExplainColor;
+            this.ruleForm.sort = this.params.sort;
+            this.ruleForm.linkUrl = this.params.linkUrl;
+            this.ruleForm.dotNumber = this.params.dotNumber;
+            this.ruleForm.remark = this.params.remark;
         }
     }
 }
 </script>
 
 <style lang='scss' scoped>
-.box-card{
-    box-shadow:0 0 0 0 !important;
-    border:0;
-}
-.card-item{
-    width:100%;
-    // height:60px;
-    padding:10px;
-    box-sizing:border-box;
-    display:flex;
-    align-items: center;
-    .item-text{
-        width:200px;
-    }
-    .item-input{
-        width:400px;
-        .msg{
-            width:100%;
-            padding:10px;
-            color:red;
-        }
-        .el-select{
-            width:100%;
-        }
-    }
-    .item-color{
-        display:flex;
-    }
-    .item-img{
-        width:100px;
-        height:80px;
-        display:flex;
-        align-items: center;
-        img{
-            width:80px;
-            height:80px;
-        }
-    }
-}
-.card-img{
-    height:auto;
-    .item-img{
-        width:auto;
-        height:auto;
-        display:flex;
-        align-items: center;
-        padding:10px 0;
-        box-sizing:border-box;
-        img{
-            width:100%;
-            height:auto;
-        }
-    }
-}
-.card-textarea{
-  height:auto;
-}
-.card-footer{
-    width:100%;
-    display:flex;
-    justify-content: center;
-    height:100px;
-    align-items: center;
-}
+
 </style>

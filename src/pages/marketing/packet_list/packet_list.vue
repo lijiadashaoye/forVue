@@ -27,7 +27,7 @@
           </el-form-item>
 
           <el-form-item label="红包类型">
-            <el-select v-model="ruleForm.amountType" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.amountType" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in typeList"
@@ -39,7 +39,7 @@
           </el-form-item>
 
           <el-form-item label="状态">
-            <el-select v-model="ruleForm.status" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.status" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in statueList"
@@ -58,7 +58,7 @@
       </div>
     </div>
     <div id="forTable" v-if="loadEnd">
-      <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
   </div>
 </template>
@@ -231,16 +231,18 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `红包名称为：${item.data[0].name} \n`;
+                    failName += `<li>红包名称为：${item.data[0].name}</li>`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.seachClick("delete")
                 });
@@ -273,7 +275,7 @@ export default {
         });
       }
     },
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let market_packet_add = quanxian.includes("market_packet_add");

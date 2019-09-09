@@ -3,7 +3,7 @@
     <div id="forHeader">
       <h3>{{pageName}}</h3>
     </div>
-    <div v-if="!isOk">
+    <div v-if="!isOk" style="overflow:auto;">
       <el-form
         ref="ruleForm"
         size="normal"
@@ -15,6 +15,7 @@
       >
         <el-form-item label="监管属性" class="is50" prop="regulatoryProperty">
           <el-select
+            filterable
             v-model="ruleForm.regulatoryProperty"
             clearable
             placeholder="请选择"
@@ -44,7 +45,13 @@
         </el-form-item>
 
         <el-form-item label="是否上架" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.shelveStatus"
+          >
             <el-option
               v-for="item in dictData.shelve_status"
               :key="item.value"
@@ -54,7 +61,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="是否面签" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.visaInterview"
+          >
             <el-option
               v-for="item in dictData.visa_interview_type"
               :key="item.value"
@@ -92,7 +105,13 @@
         </el-form-item>
 
         <el-form-item prop="listAreaFlag" label="榜单专区标识" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.listAreaFlag"
+          >
             <el-option
               v-for="item in dictData.list_area_type"
               :key="item.value"
@@ -103,7 +122,13 @@
         </el-form-item>
 
         <el-form-item label="合作方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.cooperationMode"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.cooperation_mode"
@@ -115,7 +140,13 @@
         </el-form-item>
 
         <el-form-item label="银行对接方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.connectionMode"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.bank_connection_mode"
@@ -138,7 +169,7 @@
         </el-form-item>
 
         <el-form-item label="产品区域" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.quyu">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.quyu">
             <el-option
               size="mini"
               v-for="item in dictData.quyu"
@@ -194,11 +225,11 @@
           </el-form-item>
         </div>
       </el-form>
-    </div>
-    <div v-if="!isOk" class="nextButtons">
-      <el-button size="mini" type="primary" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-      <el-button size="mini" type="primary" @click="next">保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
-      <el-button size="mini" type="info" @click="back">取消</el-button>
+      <div v-if="!isOk" class="nextButtons">
+        <el-button size="mini" type="primary" @click="before">上一步</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="primary" @click="next">保存</el-button>&nbsp;&nbsp;&nbsp;&nbsp;
+        <el-button size="mini" type="info" @click="back">取消</el-button>
+      </div>
     </div>
 
     <hasSuccess @isOver="isOver" v-if="isOk" />
@@ -309,6 +340,7 @@ export default {
             regulatoryPropertyLabel: "",
             description: step1.description,
             contentVersion: +step1.contentVersion,
+            currencyCode: step1.currencyCode, // 币种编码
             appInfo: {
               shelveStatus: this.ruleForm.shelveStatus,
               shelveStatusLabel: "",
@@ -357,6 +389,15 @@ export default {
             obj.riskLevelLabel = this.dictData.risk_level.filter(
               item => item.value == obj.riskLevel
             )[0].label;
+          }
+
+          // 币种
+          if (obj.currencyCode) {
+            let kk = this.dictData.bizhong.filter(
+              tar => tar.value === obj.currencyCode
+            )[0];
+            obj.currencyName = kk.label;
+            obj.currencyUnit = kk.unit;
           }
 
           if (obj.surplusQuota) {
@@ -421,6 +462,8 @@ export default {
             })
             .then(res => {
               if (res) {
+                sessionStorage.removeItem("licai_step1");
+                sessionStorage.removeItem("licai_step2");
                 this.isOk = true;
               }
             });
@@ -438,7 +481,6 @@ export default {
         // 清空新增理财时用到的
         sessionStorage.removeItem("licai_step1");
         sessionStorage.removeItem("licai_step2");
-
         this.$router.push({ name: `manage_money_matters_step1` });
       }
     },

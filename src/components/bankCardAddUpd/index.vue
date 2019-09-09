@@ -2,7 +2,7 @@
     <el-card class="box-card">
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
             <el-form-item label="银行名称:" prop="bankName">
-                <el-select v-model="ruleForm.bankName" placeholder="请选择银行" filterable :disabled="detailFlag">
+                <el-select filterable v-model="ruleForm.bankName" placeholder="请选择银行"  :disabled="detailFlag">
                     <el-option
                     v-for="(item,ind) in bankOption"
                     :key="ind"
@@ -21,7 +21,7 @@
                 <el-input v-model.number="ruleForm.clearingBankNumber" placeholder="清算行行号（12位纯数字）" :disabled="detailFlag" maxlength="12" show-word-limit></el-input>
             </el-form-item>
             <el-form-item label="卡类型:" prop="cardType">
-                <el-select v-model="ruleForm.cardType" placeholder="请选择" :disabled="detailFlag">
+                <el-select filterable v-model="ruleForm.cardType" placeholder="请选择" :disabled="detailFlag">
                     <el-option
                     v-for="(item,ind) in cardTypeData"
                     :key="ind"
@@ -115,7 +115,7 @@ export default {
     },
     mounted() {
         //获取银行列表选项
-        this.list.forEach((v)=>{
+        this.list && this.list.forEach((v)=>{
             this.states.push(v.bankName)
         })
         this.bankOption = this.states && this.states.map(item => {
@@ -140,7 +140,7 @@ export default {
         save(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    this.$store.state.bank.bankList.data.list.forEach(v=> {
+                   this.$store.state.bank.bankList.data.list && this.$store.state.bank.bankList.data.list.forEach(v=> {
                         if(this.ruleForm.bankName == v.bankName){
                             this.bankId = v.id
                         }

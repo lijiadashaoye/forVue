@@ -62,7 +62,7 @@
       </el-form-item>
 
       <el-form-item label="使用状态">
-        <el-select v-model="searchTable.status" placeholder="请选择">
+        <el-select filterable v-model="searchTable.status" placeholder="请选择">
           <el-option
             size="mini"
             v-for="item in statueList"
@@ -293,7 +293,7 @@ export default {
               return;
             }
           })
-          .then(dd => {
+          .then(() => {
             this.$message.success("补仓成功！");
             this.zengfaNum = "";
             this.setPageData();
@@ -709,14 +709,6 @@ export default {
           }
         });
     },
-    // 补仓表格的 emit
-    bucangEmit(data) {
-      switch (data.type) {
-        case "regetData": // 分页的emit
-          this.getBuCang(3);
-          break;
-      }
-    }
   }
 };
 </script>

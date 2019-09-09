@@ -9,7 +9,7 @@
         </div> -->
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
             <el-form-item label="银行名称:" prop="prodectBankId">
-                <el-select v-model="ruleForm.prodectBankId" placeholder="请输入名称" :disabled="detailFlag">
+                <el-select filterable v-model="ruleForm.prodectBankId" placeholder="请输入名称" :disabled="detailFlag">
                     <el-option
                     v-for="(item,ind) in options"
                     :key="ind"
@@ -128,7 +128,7 @@ export default {
         uploadLogo(params){
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {
@@ -168,7 +168,7 @@ export default {
         uploadBgFile(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {

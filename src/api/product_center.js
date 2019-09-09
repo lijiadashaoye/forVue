@@ -64,7 +64,7 @@ export default {
     getChunZhaiInfoData(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `product/pureDebtFund/detail/${data.data}`
+            url: `product/pureDebtFund/pureDebtFundDetail/${data.data}`
         })
     },
     //编辑纯债基金
@@ -76,11 +76,95 @@ export default {
         })
     },
 
+    // 获取纯债基金净值
+    get_jingzhi(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `product/pureDebtFund/net_detail/${data.id}/${data.time}`
+        })
+    },
+    //更新净值
+    post_jingzhi(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `product/pureDebtFund/netValue`,
+            data: data.data
+        })
+    },
+    //更新业绩
+    post_yeji(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `product/pureDebtFund/performance`,
+            data: data.data
+        })
+    },
     // 获取认购
     get_rengou(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `/product/pureDebtFund/${data.type}/${data.id}`
+            url: `/product/pureDebtFund/pageBuyRule?${qs.stringify(data.data)}`
+        })
+    },
+    // 新增、编辑认购
+    put_post_rengou(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/pureDebtFund/subscribeRule`,
+            data: data.data
+        })
+    },
+    // 删除认购
+    rengou_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/pureDebtFund/subscribeRule/${data.id}`,
+        })
+    },
+
+    // 获取申购
+    get_shengou(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/pureDebtFund/pageBuyRule?${qs.stringify(data.data)}`
+        })
+    },
+    // 新增、编辑申购
+    put_post_shengou(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/pureDebtFund/applyForPurchaseRule`,
+            data: data.data
+        })
+    },
+    // 删除申购
+    shengou_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/pureDebtFund/applyForPurchaseRule/${data.id}`,
+        })
+    },
+
+    // 获取赎回
+    get_shuhui(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/pureDebtFund/pageRedemptionRule?${qs.stringify(data.data)}`
+        })
+    },
+    // 新增、编辑赎回
+    put_post_shuhui(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/pureDebtFund/redemptionRule`,
+            data: data.data
+        })
+    },
+    // 删除赎回
+    shuhui_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/pureDebtFund/redemptionRule/${data.id}`,
         })
     },
     //////////////////////////////////////////////////////////////////////////////////
@@ -129,7 +213,21 @@ export default {
             url: `/product/monetaryFund/${data.data}`,
         })
     },
+    get_huobi_chartData(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `product/monetaryFund/yield/${data.id}/${data.time}`,
+        })
+    },
 
+     //更新收益
+     post_shouyi(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `product/monetaryFund/yield`,
+            data: data.data
+        })
+    },
 
     //////////////////////////////////////////////////////////////////////////////////
     // 理财产品

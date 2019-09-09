@@ -3,21 +3,13 @@
     <Header class="isHeader" />
     <Slider />
     <div :class="asideState?'isContent1':'isContent2'">
-      <section
-        class="logoWaper"
-        v-if="routerName==='home'"
-      >
+      <section class="logoWaper" v-if="routerName==='home'">
         <section class="logo">
-          <img
-            src="../../assets/logo.jpg"
-            style="width:100%; height:100;"
-          ></section>
+          <img src="../../assets/logo.jpg" style="width:100%; height:100;" />
+        </section>
         <p>比财数据科技</p>
       </section>
-      <router-view
-        v-if="routerName!=='home'"
-        style="height:100%;"
-      ></router-view>
+      <router-view v-else style="height:100%;"></router-view>
     </div>
   </div>
 </template>
@@ -52,8 +44,7 @@ export default {
   },
   created() {
     this.routerName = this.$route.name;
-  },
-  methods: {}
+  }
 };
 </script>
 

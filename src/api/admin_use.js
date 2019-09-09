@@ -196,7 +196,7 @@ export default {
     admin_department_savePoint(data) {
         return data.vm.$axios({
             method: 'post',
-            url: 'admin/dept/',
+            url: 'admin/dept',
             data: data.data
         })
     },
@@ -204,7 +204,7 @@ export default {
     admin_department_upPoint(data) {
         return data.vm.$axios({
             method: 'put',
-            url: 'admin/dept/',
+            url: 'admin/dept',
             data: data.data
         })
     },

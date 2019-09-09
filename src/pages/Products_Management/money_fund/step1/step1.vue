@@ -14,7 +14,13 @@
         :rules="rules"
       >
         <el-form-item prop="institutionName" label="机构名称" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.institutionName">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.institutionName"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.jigou"
@@ -28,7 +34,13 @@
         </el-form-item>
 
         <el-form-item prop="fundHouseId" label="基金公司" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.fundHouseId">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.fundHouseId"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.jijin"
@@ -96,6 +108,42 @@
           <span class="isA"></span>
         </el-form-item>
 
+        <el-form-item label="所属区域" style="position:relative" class="is50">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.areaCode"
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.quyu"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="币种" style="position:relative" class="is50">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="ruleForm.currencyCode"
+          >
+            <el-option
+              size="mini"
+              v-for="item in dictData.bizhong"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="7日年化收益率" class="is50" prop="onThe7thOfTheYearYield">
           <el-input
             class="isInput"
@@ -119,11 +167,11 @@
         </el-form-item>
 
         <el-form-item label="产品描述" prop="description">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
 
         <el-form-item label="收益规则" prop="yieldRule">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.yieldRule"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.yieldRule"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
@@ -172,11 +220,13 @@ export default {
         redemptionDate: "", // 赎回到账日
         lockinPeriod: "", // 锁定期
         buyIn: "", // 买入
-        commission: "", // 手续费
+        commission: "0.00", // 手续费
         description: "", // 描述
         yieldRule: "", //  收益规则
-        onThe7thOfTheYearYield: "", // 七日年化收益率
-        thousandsOfYearsYields: "" // 万份年化收益率
+        areaCode: "",
+        currencyCode: "",
+        onThe7thOfTheYearYield: "0.0000", // 七日年化收益率
+        thousandsOfYearsYields: "0.0000" // 万份年化收益率
       },
       //表单验证
       rules: {

@@ -21,7 +21,7 @@
           label-position="right"
           size="mini"
           ref="ruleForm"
-         >
+        >
           <el-form-item label="活动编号">
             <el-input v-model="ruleForm.activityNo" placeholder="请输入"></el-input>
           </el-form-item>
@@ -31,7 +31,7 @@
           </el-form-item>
 
           <el-form-item label="活动状态">
-            <el-select v-model="ruleForm.shelfStatus" clearable placeholder="请选择">
+            <el-select filterable v-model="ruleForm.shelfStatus" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in searchList"
@@ -232,14 +232,18 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `活动名称为：${item.data[0].activityName} \n`;
+                    failName += `<li>活动名称为：${item.data[0].activityName}</li>`;
                   }
                 });
-                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.seachClick("reset")
                 });

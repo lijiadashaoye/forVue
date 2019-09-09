@@ -20,7 +20,7 @@
                     >
                         刷新
                     </el-button>
-                    <el-select v-model="platformCode" @change="platformChangeFn">
+                    <el-select filterable v-model="platformCode" @change="platformChangeFn">
                         <el-option
                                 v-for="item in platformCodeList"
                                 :key="item.code"
@@ -44,8 +44,9 @@
 
         <div id="forTable">
             <isTable
-                    :inputData='this.$store.state.clientVersion.clientVersionList'
-                    @tableEmit='tableEmit'
+                v-if='flag'
+                :inputData='this.$store.state.clientVersion.clientVersionList'
+                @tableEmit='tableEmit'
             />
         </div>
         <!-- 修改/详情的弹框 -->
@@ -53,7 +54,7 @@
             <el-dialog :close-on-click-modal='false' :visible.sync="dialogVisible" width="60%" :title="title">
                 <el-form ref="form" :model="ruleForm" :rules="rule" label-width="200px" label-position="left">
                     <el-form-item label="app标识">
-                        <el-select v-model="ruleForm.appChannelCode">
+                        <el-select filterable v-model="ruleForm.appChannelCode">
                             <el-option
                                     v-for="item in appChannelCodeList"
                                     :key="item.code"
@@ -135,6 +136,7 @@
     import isTable from '../../../components/isTable/isTable';
     import { clientVersion_del,clientVersion_add,clientVersion_edit }  from '../../../api/setting_use';
     import { upLoadImg } from '../../../api/setting_use.js';
+import { setTimeout } from 'timers';
 
     export default {
         components: {
@@ -215,6 +217,7 @@
                     ]
                 }, // 验证
                 ImgBaseUrl: '',
+                flag: true
             }
         },
         mounted() {
@@ -253,7 +256,7 @@
                 },{
                     title: "是否弹出更新提示框",
                     key: "hintText",
-                    minWidth: "120",
+                    minWidth: "140",
                 },{
                     title: "创建时间",
                     key: "gmtCreated",
@@ -284,22 +287,35 @@
         },
         methods: {
             ...mapMutations({
-                userDo: 'clientVersion/userDo'
+                userDo: 'clientVersion/userDo',
+                getClientVersionList: 'clientVersion/getClientVersionList'
             }),
             ...mapActions({
                 getList: 'clientVersion/getList'
             }),
             // 搜索
             search() {
+                this.$store.state.clientVersion.clientVersionList.pageNum = 1;
                 this.getList({
                     versionName: this.versionNo,
                     platformCode: this.platformCode,
-                    pageNum: 1,
+                    pageNum: this.$store.state.clientVersion.clientVersionList.pageNum,
                     pageSize: this.$store.state.clientVersion.clientVersionList.pageSize
                 })
             },
             // 切换客户端
             platformChangeFn() {
+                this.flag = false;
+                setTimeout(()=> {
+                    this.flag = true;
+                })
+                this.$store.state.clientVersion.clientVersionList.pageNum = 1;
+                this.getClientVersionList({
+                    versionNo: this.versionNo,
+                    platformCode: this.platformCode,
+                    pageNum: this.$store.state.clientVersion.clientVersionList.pageNum,
+                    pageSize: this.$store.state.clientVersion.clientVersionList.pageSize
+                })
                 if (this.platformCode == 'android') {
                     this.$store.state.clientVersion.clientVersionList.data.title.splice(2,0,{
                         title: "渠道",
@@ -309,10 +325,8 @@
                 } else {
                     this.$store.state.clientVersion.clientVersionList.data.title.splice(2,1)
                 }
-                this.getList({
-                    versionNo: this.versionNo,
-                    platformCode: this.platformCode
-                })
+                    this.$forceUpdate();
+                
             },
             // 详情接口
             infoFn(row) {
@@ -369,7 +383,7 @@
             uploadLogo(params){
                 const _file = params.file;
                 const isLt2M = _file.size / 1024 / 1024 < 2;
-                const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+                const idJPG = _file.type === "image/jpeg" || _file.type === "image/gif" || _file.type === "image/png" || _file.type ===  "image/jpg";
                 var formData = new FormData();
                 formData.append("file", _file);
                 if (!idJPG) {
@@ -418,7 +432,7 @@
                             platformCode: this.platformCode
                         })
                     })
-                }).catch(()=>{})
+                })
             },
             // 刷新
             refreshFn() {

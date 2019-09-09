@@ -1,98 +1,59 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <h3>{{pageName}}</h3>
       <div class="toCreateBtn">
-        <el-button
-          size="mini"
-          type="warning"
-          @click="buttonRowUpdata(true)"
-        >创建任务</el-button>
-        <el-button
-          size="mini"
-          type="danger"
-          @click="toDelete('more')"
-        >批量删除</el-button>
+        <el-button size="mini" type="warning" @click="buttonRowUpdata(true)">创建任务</el-button>
+        <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       </div>
       <div>
-
         <!-- 搜索 -->
         <el-form
           :inline="true"
           :model="ruleForm"
           label-width="80px"
-          label-suffix=':'
-          label-position='right'
-          size='mini'
+          label-suffix=":"
+          label-position="right"
+          size="mini"
           ref="ruleForm"
         >
-
           <el-form-item label="任务名称">
-            <el-input
-              v-model="ruleForm.activityName"
-              placeholder="请输入"
-            ></el-input>
+            <el-input v-model="ruleForm.activityName" placeholder="请输入"></el-input>
           </el-form-item>
 
           <el-form-item label="任务类别">
-            <el-select
-              v-model="ruleForm.shelfStatus"
-              clearable
-              placeholder="请选择"
-            >
+            <el-select filterable v-model="ruleForm.shelfStatus" clearable placeholder="请选择">
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in searchList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item label="任务类型">
-            <el-select
-              v-model="ruleForm.shelfStatus"
-              clearable
-              placeholder="请选择"
-            >
+            <el-select filterable v-model="ruleForm.shelfStatus" clearable placeholder="请选择">
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in searchList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item>
-            <el-button
-              size="mini"
-              type="primary"
-              @click="seachClick(true)"
-            >查询</el-button>
-            <el-button
-              size="mini"
-              type="info"
-              @click="seachClick(false)"
-            >重置</el-button>
+            <el-button size="mini" type="primary" @click="seachClick(true)">查询</el-button>
+            <el-button size="mini" type="info" @click="seachClick(false)">重置</el-button>
           </el-form-item>
         </el-form>
-
       </div>
-
     </div>
-    <div
-      id='forTable'
-      v-if="loadEnd"
-    >
-      <isTable
-        :inputData='tableInputData'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable" v-if="loadEnd">
+      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
   </div>
 </template>
@@ -262,16 +223,18 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `活动名称为：${item.data[0].activityName} \n`;
+                    failName += `<li>活动名称为：${item.data[0].activityName}</li>`;
                   }
                 });
-                let str = `共操作 ${
-                  arr.length
-                } 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
                 this.$alert(str, "操作结果提示", {
+                  dangerouslyUseHTMLString: true,
                   confirmButtonText: "确定",
                   callback: this.getUserData
                 });
@@ -335,7 +298,7 @@ export default {
         });
       }
     },
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let market_activity_upd = quanxian.includes("market_activity_upd");

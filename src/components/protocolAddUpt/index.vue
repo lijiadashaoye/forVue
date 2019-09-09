@@ -10,7 +10,7 @@
       </el-form-item>
 
       <el-form-item label="选择类型:" prop="configType">
-        <el-select v-model="ruleForm.configType" placeholder="请选择类型" :disabled="upd">
+        <el-select filterable v-model="ruleForm.configType" placeholder="请选择类型" :disabled="upd">
           <el-option
             v-for="(item,ind) in options"
             :key="ind"

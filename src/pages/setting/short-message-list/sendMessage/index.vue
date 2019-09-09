@@ -9,8 +9,6 @@
     <div id="forTable">
       <div class="form-box" style="display:inline-block;">
         <span class="boldTitle">批量发送短信</span>
-        <br />
-        <br />
         <el-form
           ref="ruleForm"
           :rules="rules"
@@ -34,8 +32,6 @@
               </el-radio-group>
             </el-form-item>
             <span class="boldTitle">设定发送时间</span>
-            <br />
-            <br />
             <el-form-item label="发送类型">
               <el-radio-group v-model="sendType">
                 <el-radio :label="0">立即发送</el-radio>
@@ -64,14 +60,13 @@
             </el-form-item>
             <template v-if="ruleForm.sendTarget=='PART_USER'">
               <span class="boldTitle">发送地区选择</span>
-              <br />
               <el-form-item label="发送方式" prop="changeLocation">
                 <el-radio-group v-model="ruleForm.changeLocation">
                   <el-radio label="PHONE_LOCATION">按手机号归属地</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="选择省份" prop="sendLocationList">
-                <el-select multiple v-model="ruleForm.sendLocationList" placeholder="请选择（可多选）">
+                <el-select filterable multiple v-model="ruleForm.sendLocationList" placeholder="请选择（可多选）">
                   <el-option
                     v-for="(item,index) in locationList"
                     :key="index"
@@ -85,7 +80,7 @@
 
           <template v-else-if="ruleForm.sendType=='IMPORT_PHONE'">
             <el-form-item label="手机号码" prop="filePath">
-              <el-input v-model="ruleForm.filePath" v-show="false"></el-input>
+              <el-input v-model="ruleForm.filePath" v-if="false"></el-input>
 
               <el-upload
                 style="display:inline;"
@@ -103,28 +98,23 @@
               <span style="padding-left:20px;color:#409EFF">下载模板</span>
             </el-form-item>
           </template>
-          <template v-else>
-            <el-form-item label="手机号码" prop="sendPhone">
-              <el-input
-                style="width:400px;"
-                type="textarea"
-                v-model="ruleForm.sendPhone"
-                :rows="2"
-                placeholder="请输入手机号"
-              ></el-input>
-              <br />注意：手机号以英文逗号分隔
-            </el-form-item>
-          </template>
-
+          <el-form-item v-else label="手机号码" prop="sendPhone">
+            <el-input
+              style="width:400px;"
+              type="textarea"
+              v-model="ruleForm.sendPhone"
+              :rows="2"
+              placeholder="请输入手机号"
+            ></el-input>
+            <br />
+            注意：手机号以英文逗号分隔
+          </el-form-item>
           <span class="boldTitle">设置发送内容</span>
-          <br />
-          <br />
           <el-form-item label="标题" prop="title">
             <el-input style="width:400px;" v-model="ruleForm.title" placeholder="请输入标题"></el-input>
-            <br />注意：手机号以英文逗号分隔
           </el-form-item>
           <el-form-item label="短信内容" prop="templateCode">
-            <el-select v-model="ruleForm.templateCode" placeholder="选择模板">
+            <el-select filterable v-model="ruleForm.templateCode" placeholder="选择模板">
               <el-option
                 v-for="item in templateArr"
                 :key="item.id"
@@ -140,11 +130,12 @@
               type="textarea"
               :rows="2"
               placeholder="请输入内容"
+              maxlength="22"
             ></el-input>
           </el-form-item>
         </el-form>
 
-        <span style="display:block;float:right;">0/22</span>
+        <span style="display:block;float:right;">{{ruleForm.smsContent.length}}/22</span>
       </div>
       <div class="btn">
         <el-button type="primary" @click="saveFn('ruleForm')">保存</el-button>
@@ -162,7 +153,7 @@ import messageMixin from "../messageMixin.js";
 export default {
   name: "sendMessage",
   components: {},
-  mixins:[messageMixin],
+  mixins: [messageMixin],
   data() {
     // 手机号逗号分隔正则
     const validatePhone = (rule, value, callback) => {
@@ -196,6 +187,7 @@ export default {
           return timeType;
         }
       },
+      ruleMiddleForm: {}, //中转的提交数据
       ruleForm: {
         // 表单数据
         sendType: "SYSTEM_USER", //发送方式类型
@@ -207,7 +199,7 @@ export default {
         smsContent: "", //短信内容
         title: "", //短信标题
         filePath: "",
-        file:{},
+        file: {},
         sendTimeList: [], //定时发送的时间数组
         selectTime: "" //下拉框选择的时间  提交会删除
       },
@@ -245,8 +237,8 @@ export default {
       return this.ruleForm.sendType;
     }
   },
-  watch: {
-    sendTypeForm() {
+  watch:{
+    sendTypeForm(){
       this.$refs["ruleForm"].clearValidate();
     }
   },
@@ -259,6 +251,7 @@ export default {
     }),
     //上传文件
     uploadPhoneFile(params) {
+      console.log(params);
       const _file = params.file;
       // const isLt2M = _file.size / 1024 / 1024 < 2;
       // const idJPG =
@@ -286,48 +279,62 @@ export default {
       this.$refs["ruleForm"].resetFields();
       this.$router.back();
     },
+    // formData参数转化
+    formDataInfo() {
+      let formData = new FormData();
+      for (let key in this.ruleMiddleForm) {
+        formData.append(key, this.ruleMiddleForm[key]);
+      }
+      return formData;
+    },
     // 根据不同发送方式清空数据
     sendDefaultInfo() {
-      delete this.ruleForm["sendTarget"];
-      delete this.ruleForm["changeLocation"];
-      delete this.ruleForm["sendLocationList"];
-      delete this.ruleForm["sendTimeList"];
-      delete this.ruleForm["selectTime"];
+      delete this.ruleMiddleForm["sendTarget"];
+      delete this.ruleMiddleForm["changeLocation"];
+      delete this.ruleMiddleForm["sendLocationList"];
+      delete this.ruleMiddleForm["sendTimeList"];
+      delete this.ruleMiddleForm["selectTime"];
     },
     // 保存
     saveFn(ruleForm) {
       this.$refs[ruleForm].validate(valid => {
         if (valid) {
+          this.ruleMiddleForm = Object.assign({}, this.ruleForm);
           // 删除time的中转数据
-          delete this.ruleForm["selectTime"];
+          delete this.ruleMiddleForm["selectTime"];
+          delete this.ruleMiddleForm["filePath"];
           // 判断类型将不必要的参数清空
-          if (this.ruleForm.sendType == "SYSTEM_USER") {
-            delete this.ruleForm["filePath"];
-            delete this.ruleForm["sendPhone"];
+          if (this.ruleMiddleForm.sendType == "SYSTEM_USER") {
+            delete this.ruleMiddleForm["filePath"];
+            delete this.ruleMiddleForm["sendPhone"];
+            delete this.ruleMiddleForm["file"];
             // 避免自定义发送时间参数 干扰
             if (this.sendType == 0) {
-              delete this.ruleForm["sendTimeList"];
+              delete this.ruleMiddleForm["sendTimeList"];
             } else {
-              this.ruleForm.sendTimeList = this.ruleForm.sendTimeList.map(
+              this.ruleMiddleForm.sendTimeList = this.ruleMiddleForm.sendTimeList.map(
                 item => {
                   return new Date(item).getTime();
                 }
               );
             }
             // 部分用户才有选择地区
-            if (this.ruleForm.sendTarget == "TOTAL_USER") {
-              delete this.ruleForm["sendLocation"];
-              delete this.ruleForm["changeLocation"];
+            if (this.ruleMiddleForm.sendTarget == "TOTAL_USER") {
+              delete this.ruleMiddleForm["sendLocationList"];
+              delete this.ruleMiddleForm["changeLocation"];
             }
-          } else if (this.ruleForm.sendType == "IMPORT_PHONE") {
-            this.ruleForm.filePath = this.phoneFileUrl;
-            delete this.ruleForm["sendPhone"];
+          } else if (this.ruleMiddleForm.sendType == "IMPORT_PHONE") {
+            // 导入手机号
+            delete this.ruleMiddleForm["sendPhone"];
             this.sendDefaultInfo();
           } else {
-            delete this.ruleForm["filePath"];
+            // 文本
+            delete this.ruleMiddleForm["file"];
+            delete this.ruleMiddleForm["filePath"];
             this.sendDefaultInfo();
           }
-          this.addSmsManage(this.ruleForm).then(() => {
+          let formInfo = this.formDataInfo();
+          this.addSmsManage(formInfo).then(() => {
             this.$message({
               message: "添加成功",
               type: "success"
@@ -381,6 +388,8 @@ export default {
   font-weight: bold;
   position: relative;
   left: -15px;
+  margin-bottom:20px;
+  display:inline-block;
 }
 // time选中展示框
 .showTime {

@@ -14,7 +14,7 @@
         :rules="rules"
       >
         <el-form-item prop="institutionId" label="机构名称" style="position:relative" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -34,7 +34,7 @@
         </el-form-item>
 
         <el-form-item label="产品系列" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             clearable
             placeholder="请选择"
@@ -83,7 +83,7 @@
         </el-form-item>
 
         <el-form-item label="付息频率" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.frequencyType">
             <el-option
               size="mini"
               v-for="item in dictData.frequency_type"
@@ -131,7 +131,7 @@
         </el-form-item>
 
         <el-form-item prop="fengxian" label="风险等级" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.fengxian">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.fengxian">
             <el-option
               size="mini"
               v-for="item in dictData.risk_level"
@@ -143,7 +143,7 @@
         </el-form-item>
 
         <el-form-item label="剩余额度" prop="surplusQuota" class="is50">
-          <el-select class="isInput" v-model="ruleForm.surplusQuota" clearable placeholder="请选择">
+          <el-select filterable class="isInput" v-model="ruleForm.surplusQuota" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.surplus_quota"
@@ -165,7 +165,7 @@
         </el-form-item>
 
         <el-form-item label="币种" style="position:relative" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.currencyCode">
             <el-option
               size="mini"
               v-for="item in dictData.bizhong"
@@ -177,7 +177,7 @@
         </el-form-item>
 
         <el-form-item label="监管属性" class="is50" prop="regulatoryProperty">
-          <el-select
+          <el-select filterable
             v-model="ruleForm.regulatoryProperty"
             clearable
             placeholder="请选择"
@@ -194,7 +194,7 @@
         </el-form-item>
 
         <el-form-item label="产品标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.productTags"
             clearable
@@ -218,7 +218,7 @@
         </el-form-item>
 
         <el-form-item label="自定义标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.selfDefiningTags"
             clearable
@@ -236,7 +236,7 @@
         </el-form-item>
 
         <el-form-item label="活动标签" class="is50">
-          <el-select
+          <el-select filterable
             class="isInput"
             v-model="ruleForm.activityTags"
             clearable
@@ -263,20 +263,20 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="起售日期" class="is50">
+        <el-form-item label="起售日期" class="is50" prop="qishou">
           <el-date-picker
             v-model="ruleForm.qishou"
-            type="datetimerange"
+            type="daterange"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
         <el-form-item class="is50"></el-form-item>
-        <el-form-item label="起息日期" class="is50">
+        <el-form-item label="起息日期" class="is50" prop="qixi">
           <el-date-picker
             v-model="ruleForm.qixi"
-            type="datetimerange"
+            type="daterange"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             value-format="yyyy-MM-dd HH:mm:ss"
@@ -305,11 +305,11 @@
         </el-form-item>
 
         <el-form-item label="起购范围说明">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.amountRangeExplain"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.amountRangeExplain"></isQuill>
         </el-form-item>
 
         <el-form-item label="产品描述">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
 
@@ -449,7 +449,12 @@ export default {
           { required: true, message: "请选择监管属性", trigger: "change" }
         ],
         minAmount: [{ required: true, validator: checkNum5, trigger: "blur" }],
-        maxAmount: [{ required: true, validator: checkNum4, trigger: "blur" }]
+        maxAmount: [{ required: true, validator: checkNum4, trigger: "blur" }],
+
+        qishou: [
+          { required: true, message: "请输入起售日期", trigger: "change" }
+        ],
+        qixi: [{ required: true, message: "请输入起息日期", trigger: "change" }]
       }
     };
   },
@@ -491,41 +496,24 @@ export default {
       }
     },
     next() {
-      // this.$refs.ruleForm.validate(valid => {
-      //   if (valid) {
-          if (
-            (this.ruleForm.qishou && !this.ruleForm.qixi) ||
-            (!this.ruleForm.qishou && this.ruleForm.qixi)
-          ) {
-            this.$message.error("起息日期和起售日期必须同时输入数据！");
-          } else {
-            if (this.ruleForm.qishou && this.ruleForm.qixi) {
-              let qishou = new Date(this.ruleForm.qishou[0]);
-              let qixi = new Date(this.ruleForm.qixi[0]);
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          let qishou = new Date(this.ruleForm.qishou[0]);
+          let qixi = new Date(this.ruleForm.qixi[0]);
 
-              if (qixi >= qishou) {
-                sessionStorage.setItem(
-                  "jiegou_step1",
-                  JSON.stringify(this.ruleForm)
-                );
-                this.$router.push({
-                  name: "jiegou_step2"
-                });
-              } else {
-                this.$message.error("起息日期不能早于起售日期！");
-              }
-            } else {
-              sessionStorage.setItem(
-                "jiegou_step1",
-                JSON.stringify(this.ruleForm)
-              );
-              this.$router.push({
-                name: "jiegou_step2"
-              });
-            }
+          if (qixi >= qishou) {
+            sessionStorage.setItem(
+              "jiegou_step1",
+              JSON.stringify(this.ruleForm)
+            );
+            this.$router.push({
+              name: "jiegou_step2"
+            });
+          } else {
+            this.$message.error("起息日期不能早于起售日期！");
           }
-        // }
-      // });
+        }
+      });
     },
     // 取消
     back() {

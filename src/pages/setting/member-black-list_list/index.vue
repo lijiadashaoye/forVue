@@ -16,7 +16,7 @@
 
         <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm searchForm">
           <el-form-item label="加入类型" prop="joinType">
-            <el-select v-model="ruleForm.joinType" placeholder="请选择">
+            <el-select filterable v-model="ruleForm.joinType" placeholder="请选择">
               <el-option
                 v-for="item in joinTypeOpt"
                 :key="item.value"
@@ -176,8 +176,9 @@ export default {
     //修改点击保存
     send(data){
       black_list_upd(data).then(res=> {
-        if(res) {
+        if(res && res.success) {
           this.dialogVisible = false;
+          this.$message.success('保存成功')
           this.getBlackNameListData({
             pageNum: this.$store.state.protocol.protocolList.pageNum,
             pageSize: this.$store.state.protocol.protocolList.pageSize,

@@ -95,7 +95,7 @@
             </el-form-item>
 
             <el-form-item label="初始访问量" prop="visitNumber" class="istopItem">
-                <el-input v-model="softNewsForm.visitNumber" placeholder="请输入初始访问量" type="number"></el-input>
+                <el-input v-model.number="softNewsForm.visitNumber" placeholder="请输入初始访问量" maxlength="20" show-word-limit></el-input>
             </el-form-item>
 
             <el-form-item label="新闻开始时间" prop="startTime" class="istopItem">
@@ -125,7 +125,7 @@
             </el-form-item> -->
 
             <el-form-item label="产品类型" prop="productType" class="istopItem">
-                <el-select v-model="softNewsForm.productType" placeholder="请选择产品类型" @change="typeSelect(softNewsForm.productType)">
+                <el-select filterable v-model="softNewsForm.productType" placeholder="请选择产品类型" @change="typeSelect(softNewsForm.productType)">
                   <el-option
                     v-for="(item,index) in channelData"
                     :key="index"
@@ -136,10 +136,9 @@
             </el-form-item>
 
             <el-form-item label="产品名称" prop="linkId" class="istopItem">
-                <el-select
+                <el-select filterable
                   v-model="softNewsForm.linkId"
                   v-loadmore='loadmore'
-                  filterable
                   clearable
                   remote
                   reserve-keyword
@@ -259,7 +258,7 @@ export default {
             rules: {
                 newsTitle: [{ required: true, message: '请输入新闻标题', trigger: 'blur' }],
                 newsImageUrl: [{ required: true, message: '请选择图片', trigger: 'blur' }],
-                visitNumber: [{ required: true, message: '请输入初始访问量', trigger: 'blur' }],
+                visitNumber: [{ required: true, message: '请输入初始访问量', trigger: 'blur' },{ pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' }],
                 startTime: [{required: true, message: '请选择日期和时间', trigger: 'blur'}],
                 productType: [{required: true, message: '请选择产品类型', trigger: 'blur'}],
                 linkId: [{required: true, message: '请选择产品名称', trigger: 'blur'}]
@@ -296,6 +295,10 @@ export default {
             },{
                 title: "新闻类型",
                 key: "newsTypeCN",
+                minWidth: "120",
+            },{
+                title: "来源",
+                key: "source",
                 minWidth: "120",
             },{
                 title: "新闻开始时间",
@@ -451,7 +454,7 @@ export default {
         upload(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if (!idJPG) {
@@ -503,6 +506,7 @@ export default {
                         news_manger_add(obj).then(res => {
                             if(res && res.success){
                                 this.softNewsVisible = false;
+                                this.$message.success('保存成功')
                                 this.getList({
                                     pageNum: this.$store.state.newsManager.newsMangerList.pageNum,
                                     pageSize: this.$store.state.newsManager.newsMangerList.pageSize
@@ -628,6 +632,7 @@ export default {
                 if(res && res.success) {
                     this.opts = null;
                     this.success = true;
+                    this.$message.success('保存成功')
                     this.getList({
                         pageNum: this.$store.state.newsManager.newsMangerList.pageNum,
                         pageSize: this.$store.state.newsManager.newsMangerList.pageSize,
@@ -678,7 +683,6 @@ export default {
                         }).then(res=> {
                             if(res && res.success) {
                                 this.isTopVisible = false;
-                                console.log(this.isTopVisible)
                                 this.resetForm('isTopForm');
                                 this.getList({
                                     pageNum: this.$store.state.newsManager.newsMangerList.pageNum,
@@ -763,7 +767,7 @@ export default {
 }
 .updata{
     width:100%;
-    .el-dialog__wrapper>/deep/.el-dialog{
+    .el-dialog__wrapper>.el-dialog{
         width:70% !important;
     }
 }

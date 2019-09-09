@@ -142,11 +142,13 @@ export default {
 
     //点击关闭
     close() {
+      this.opts = null;
       this.dialogVisible = false
     },
 
     //点击取消
     cancel() {
+      this.opts = null;
       this.dialogVisible = false
     },
     //接受更改后的信息  请求
@@ -154,6 +156,7 @@ export default {
       loginSpread_updata(data).then((res)=> {
         if(res && res.success){
           this.dialogVisible = false;
+          this.$message.success('保存成功')
           this.getLoginSpreadListData({
               pageNum: this.$store.state.loginSpread.loginSpreadList.pageNum,
               pageSize: this.$store.state.loginSpread.loginSpreadList.pageSize

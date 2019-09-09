@@ -1,8 +1,12 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <div class="headerName">
+        <h3>{{pageName}}</h3>
+        <el-button size="mini" type="warning" @click="back">返回</el-button>
+      </div>
     </div>
+
     <div id="forTable">
       <div class="toflex">
         <div class="toleft">
@@ -13,21 +17,16 @@
             :model="leftForm"
             label-width="80px"
           >
-            <el-form-item label="显示名称" prop="name">
-              <el-input v-model="leftForm.name" placeholder="APP标识+平台+登陆状态+描述信息" style="width:107%"></el-input>
+            <el-form-item label="显示名称" prop="name" style="width:50%;margin-right:0;">
+              <el-input v-model="leftForm.name" placeholder="APP标识+平台+登陆状态+描述信息"></el-input>
             </el-form-item>
 
-            <el-form-item label="排序值" prop="paixu" label-width="95px">
-              <el-input
-                v-model="leftForm.paixu"
-                type="number"
-                placeholder="请输入整数"
-                style="width:107%"
-              ></el-input>
+            <el-form-item label="排序值" prop="paixu" style="width:50%;margin-right:0;">
+              <el-input v-model="leftForm.paixu" type="number" placeholder="请输入整数"></el-input>
             </el-form-item>
 
-            <el-form-item label="APP标识" prop="appMark">
-              <el-select v-model="leftForm.appMark" placeholder="请选择" clearable>
+            <el-form-item label="APP标识" prop="appMark" style="width:50%;margin-right:0;">
+              <el-select filterable v-model="leftForm.appMark" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of selectData"
                   :key="item.value"
@@ -37,8 +36,8 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="是否有效" prop="youxiao">
-              <el-select v-model="leftForm.youxiao" placeholder="请选择" clearable>
+            <el-form-item label="是否有效" prop="youxiao" style="width:50%;margin-right:0;">
+              <el-select filterable v-model="leftForm.youxiao" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of shifou"
                   :key="item.value"
@@ -48,8 +47,8 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="配置点" prop="peizhi">
-              <el-select
+            <el-form-item label="配置点" prop="peizhi" style="width:50%;margin-right:0;">
+              <el-select filterable
                 v-model="leftForm.peizhi"
                 placeholder="请选择"
                 clearable
@@ -64,8 +63,8 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="登录状态" prop="loginStatus">
-              <el-select v-model="leftForm.loginStatus" placeholder="请选择" clearable>
+            <el-form-item label="登录状态" prop="loginStatus" style="width:50%;margin-right:0;">
+              <el-select filterable v-model="leftForm.loginStatus" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of dlzt"
                   :key="item.value"
@@ -75,8 +74,8 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="平台" prop="pingtai">
-              <el-select v-model="leftForm.pingtai" placeholder="请选择" clearable>
+            <el-form-item label="平台" prop="pingtai" style="width:50%;margin-right:0;">
+              <el-select filterable v-model="leftForm.pingtai" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of pingtai"
                   :key="item.value"
@@ -86,7 +85,7 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="描述信息">
+            <el-form-item label="描述信息" style="width:50%;margin-right:0;">
               <el-input
                 v-model="leftForm.miaoshu"
                 type="textarea"
@@ -95,7 +94,7 @@
                 style="width:116%"
               ></el-input>
             </el-form-item>
-
+            <hr style="margin:0;" />
             <el-form-item label="其他条件">
               <el-button size="mini" @click="toAdd">+</el-button>
             </el-form-item>
@@ -106,7 +105,7 @@
             <ul>
               <li class="aline" v-for="data of leftForm.other" :key="data.num">
                 <el-form-item size="mini">
-                  <el-select v-model="data.ruleType" placeholder="请选择" clearable>
+                  <el-select filterable v-model="data.ruleType" placeholder="请选择" clearable>
                     <el-option
                       v-for="item of ruleTypeList"
                       :key="item.value"
@@ -117,7 +116,7 @@
                 </el-form-item>
 
                 <el-form-item size="mini">
-                  <el-select size="mini" v-model="data.signType" placeholder="请选择" clearable>
+                  <el-select filterable size="mini" v-model="data.signType" placeholder="请选择" clearable>
                     <el-option
                       v-for="item of fuhao"
                       :key="item.value"
@@ -148,7 +147,7 @@
         <div class="toright">
           <el-form :inline="true" ref="rightForm" :model="rightForm" label-width="80px">
             <el-form-item label="APP标识">
-              <el-select v-model="rightForm.appChannelCode" placeholder="请选择" clearable>
+              <el-select filterable v-model="rightForm.appChannelCode" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of selectData"
                   :key="item.value"
@@ -159,7 +158,7 @@
             </el-form-item>
 
             <el-form-item label="平台">
-              <el-select v-model="rightForm.platformCode" placeholder="请选择" clearable>
+              <el-select filterable v-model="rightForm.platformCode" placeholder="请选择" clearable>
                 <el-option
                   v-for="item of pingtai"
                   :key="item.value"
@@ -625,11 +624,20 @@ export default {
       this.tableInputData.pageSize = 10;
       this.tableInputData.pageNum = 1;
       this.getList();
+    },
+    // 返回按钮
+    back() {
+      sessionStorage.setItem("page", "卡券列表");
+      window.history.back();
     }
   }
 };
 </script>
-<style>
+<style scoped='true'>
+.headerName {
+  display: flex;
+  justify-content: space-between;
+}
 .toflex {
   display: flex;
   justify-content: space-between;

@@ -170,8 +170,9 @@ export default {
     reqest(data){
       this.obj = data;
       yuebao_updata(data).then(res=> {
-        if(res.success){
+        if(res && res.success){
           this.centerDialogVisible = false;
+          this.$message.success('保存成功')
           this.getYebaoRateListData({
             pageNum: this.$store.state.yuebaoRate.yuebaoRateList.pageNum,
             pageSize: this.$store.state.yuebaoRate.yuebaoRateList.pageSize,

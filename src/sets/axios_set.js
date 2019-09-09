@@ -60,6 +60,7 @@ axios.interceptors.response.use(
   response => {
     // dataAxios 是 axios 返回数据中的 data
     const dataAxios = response.data;
+
     if (dataAxios.success) { // 页面请求的
       return dataAxios;
     } else
@@ -70,28 +71,20 @@ axios.interceptors.response.use(
       return dataAxios
     } else {
       let token = localStorage.getItem('token');
-      if (token) {
+      if (token && dataAxios.code !== "B_INVALID_TOKEN") {
         // 如果token无效，则跳转到登录页
-        if (dataAxios.code === "B_INVALID_TOKEN") {
-          Message({
-            message: `${dataAxios.message}，请重新登录！`,
-            type: 'error',
-            duration: 2 * 1000
-          });
-          setTimeout(() => {
-            isApp.$router.push({
-              name: 'login'
-            })
-          }, 1000)
-        } else {
-          Message({
-            message: `${dataAxios.message}！`,
-            type: 'error',
-            duration: 2 * 1000
-          });
-        }
-      } else {
+        Message({
+          message: `${dataAxios.message}！`,
+          type: 'error',
+          duration: 2 * 1000
+        });
 
+      } else {
+        setTimeout(() => {
+          isApp.$router.push({
+            name: 'login'
+          })
+        }, 1000)
         Message({
           message: `${dataAxios.message}`,
           type: 'warning',

@@ -73,8 +73,8 @@ export default {
     //   请求个人详情数据
     this.getMessageDetail(this.$route.query.id).then(data => {
       let nowData = Object.assign({}, data);
-      // 用于展示编辑按钮
-      this.infoType = true;
+      // 用于展示编辑按钮  //后台逻辑不好处理暂时不使用修改
+      // this.infoType = true;
       // 消息类型
       for (let item of messageType) {
         if (nowData.messageType == item.value) {

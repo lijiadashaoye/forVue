@@ -12,7 +12,7 @@
       <el-form
         :inline="true"
         :model="searchForm"
-        label-width="80px"
+        label-width="85px"
         label-suffix=":"
         label-position="right"
         size="mini"
@@ -31,7 +31,7 @@
         </el-form-item>
 
         <el-form-item label="机构类型" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.type" clearable placeholder="请选择">
+          <el-select filterable v-model="searchForm.type" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.institution_type"
@@ -43,7 +43,7 @@
         </el-form-item>
 
         <el-form-item label="银行星级" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.star" clearable placeholder="请选择">
+          <el-select filterable v-model="searchForm.star" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.institution_star"
@@ -55,7 +55,7 @@
         </el-form-item>
 
         <el-form-item label="是否签约" style="margin-bottom:5px;">
-          <el-select v-model="searchForm.signedUp" clearable placeholder="请选择">
+          <el-select filterable v-model="searchForm.signedUp" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.qianyueList"
@@ -200,6 +200,10 @@ export default {
                 if (res) {
                   this.$message.success("删除成功！");
                   this.getUserData();
+                  // 更新字典
+                  this.$store.dispatch("get_dict", this).then(res => {
+                    sessionStorage.setItem("dict", JSON.stringify(res));
+                  });
                 }
               });
           })
@@ -249,16 +253,23 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `名称：${item.data[0].name}； \n`;
+                    failName += `<li>名称：${item.data[0].name}</li>`;
                   }
                 });
-                let str = `共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个 \n`;
+                let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
 
                 if (numFail > 0) {
-                  str += titleText + failName;
+                  str += `<p>失败的数据为：</p>
+                    <ul>
+                      ${failName}
+                    </ul>`;
                 }
+                this.$store.dispatch("get_dict", this).then(res => {
+                  sessionStorage.setItem("dict", JSON.stringify(res));
+                });
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
+                  dangerouslyUseHTMLString: true,
                   callback: this.getUserData
                 });
               });

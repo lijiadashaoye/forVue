@@ -18,7 +18,7 @@
         </el-form-item>
 
         <el-form-item label="是否上架" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
             <el-option
               v-for="item in dictData.shelve_status"
               :key="item.value"
@@ -29,7 +29,7 @@
         </el-form-item>
 
         <el-form-item label="是否面签" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
             <el-option
               v-for="item in dictData.visa_interview_type"
               :key="item.value"
@@ -78,7 +78,7 @@
         </el-form-item>
 
         <el-form-item prop="listAreaFlag" label="榜单专区标识" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
             <el-option
               size="mini"
               v-for="item in dictData.list_area_type"
@@ -90,7 +90,7 @@
         </el-form-item>
 
         <el-form-item label="合作方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
             <el-option
               size="mini"
               v-for="item in dictData.cooperation_mode"
@@ -102,10 +102,10 @@
         </el-form-item>
 
         <el-form-item label="银行对接方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
             <el-option
               size="mini"
-              v-for="item in dictData.connection_mode"
+              v-for="item in dictData.bank_connection_mode"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -280,7 +280,7 @@ export default {
             productSubtype: type.value, // 产品子类型
             productSubtypeLabel: type.label, // 产品子类型Label
             typeAlias: step1.typeAlias, // 产品类型（类别别名）
-            renewal: step1.renewal === "是" ? "YES" : "NO", // 到期是否转存
+            renewal: this.ruleForm.renewal === "是" ? "YES" : "NO", // 到期是否转存
             withdrawalTime: step1.payTime, // 支取时间
             withdrawalTimeLabel: "", // 支取时间Label
             incomeReturnWay: step1.interestModeWay, // 收益返还方式
@@ -341,14 +341,14 @@ export default {
               toTermSymbolType: item.max_symbol, // 限制条件符号
               toTermSymbolTypeLabel: "",
 
-              lilv: item.lilv, // 利率
+              interestRate: +item.lilv, // 利率
               lockinPeriod: +item.lockinPeriod, // 锁定期限
               showList: item.showList, // 榜单展示
               lockinShowList: item.lockinShowList, // 锁定期榜单展示
               remark: item.remark, // 备注
               homepageCopywriting: item.homepageCopywriting, // 首页文案
               detailCopywriting: item.detailCopywriting, // 详情页文案
-              detailCopywriting: item.detailCopywriting //  银行文案
+              bankCopywriting: item.bankCopywriting //  银行文案
             };
 
             kk.fromTermUnitLabel = this.dictData.deadline_type.filter(
@@ -433,7 +433,7 @@ export default {
 
           // 银行对接方式Label
           obj.appInfo.connectionModeLabel = obj.appInfo.connectionMode
-            ? this.dictData.connection_mode.filter(
+            ? this.dictData.bank_connection_mode.filter(
                 item => item.value === obj.appInfo.connectionMode
               )[0].label
             : "";
@@ -502,6 +502,8 @@ export default {
               this.isSaveIng = false;
               if (res) {
                 this.isOk = true;
+                sessionStorage.removeItem("dingqi_step1");
+                sessionStorage.removeItem("dingqi_step2");
               }
             });
         } else {

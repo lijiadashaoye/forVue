@@ -1,10 +1,8 @@
 <template>
     <el-card class="box-card">
-
-        <div class="card-item">
-            <span class="item-text">*APP标识:</span>
-            <div class="item-input">
-                <el-select v-model="appChannelCode" placeholder="请选择APP" @change="appSelect(appChannelCode)">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
+            <el-form-item label="APP标识:" prop="appChannelCode">
+                <el-select filterable v-model="ruleForm.appChannelCode" placeholder="请选择APP" @change="appSelect(appChannelCode)">
                     <el-option
                         v-for="(item,ind) in AppOpt"
                         :key="ind"
@@ -12,13 +10,10 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*显示类型:</span>
-            <div class="item-input">
-                <el-select v-model="buttonTypeCode" placeholder="请选择显示类型">
+            <el-form-item label="显示类型:" prop="buttonTypeCode">
+                <el-select filterable v-model="ruleForm.buttonTypeCode" placeholder="请选择显示类型">
                     <el-option
                         v-for="(item,ind) in buttonTypeOpt"
                         :key="ind"
@@ -26,118 +21,72 @@
                         :value="item.value">
                     </el-option>
                 </el-select>
-            </div>
-        </div>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*选中按钮图片:</span>
-            <div class="item-img">
+            <el-form-item label="选中按钮图片:" prop="buttonSelectedIcon">
                 <el-upload
                     class="avatar-uploader"
                     action="customize"
                     :show-file-list="false"
                     :http-request="uploadCheckImg"
                     >
-                    <img v-if="buttonSelectedIcon" :src="ImgBaseUrl + buttonSelectedIcon" class="avatar">
+                    <img v-if="ruleForm.buttonSelectedIcon" :src="ImgBaseUrl + ruleForm.buttonSelectedIcon" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
                 </el-upload>
-            </div>
-        </div>
-        
-        <div class="card-item">
-            <span class="item-text">*未选中按钮图片:</span>
-            <div class="item-img">
+            </el-form-item>
+            
+            <el-form-item label="未选中按钮图片:" prop="buttonUnselectedIcon">
                 <el-upload
                     class="avatar-uploader"
                     action="customize"
                     :show-file-list="false"
                     :http-request="uploadUnCheckImg"
                     >
-                    <img v-if="buttonUnselectedIcon" :src="ImgBaseUrl + buttonUnselectedIcon" class="avatar">
+                    <img v-if="ruleForm.buttonUnselectedIcon" :src="ImgBaseUrl + ruleForm.buttonUnselectedIcon" class="avatar">
                     <div v-else>
                         <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
                     </div>
                 </el-upload>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*按钮名称:</span>
-            <div class="item-input">
-                <el-input v-model="buttonText" placeholder="请输入按钮名称"></el-input>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*未选中文字颜色:</span>
-            <div class="item-input item-color">
-                <el-input
-                    v-model="buttonUnselectedTextColor"
-                    :disabled="true">
-                </el-input>
-                <el-color-picker v-model="buttonUnselectedTextColor"></el-color-picker>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*选中后文字颜色:</span>
-            <div class="item-input item-color">
-                <el-input
-                    v-model="buttonSelectedTextColor"
-                    :disabled="true">
-                </el-input>
-                <el-color-picker v-model="buttonSelectedTextColor"></el-color-picker>
-            </div>
-        </div>
-
-        <div class="card-item" v-if="platformFlag">
-            <span class="item-text">*平台:</span>
-            <div class="item-input">
-                <el-radio-group v-model="platformCode" :disabled="upData">
+            </el-form-item>
+            
+            <el-form-item label="按钮名称:" prop="buttonText">
+                <el-input v-model="ruleForm.buttonText" placeholder="请输入按钮名称"></el-input>
+            </el-form-item>
+            
+            <el-form-item label="未选中文字颜色:" prop="buttonUnselectedTextColor">
+                <el-color-picker v-model="ruleForm.buttonUnselectedTextColor"></el-color-picker>
+            </el-form-item>
+            
+            <el-form-item label="选中后文字颜色:" prop="buttonSelectedTextColor">
+                <el-color-picker v-model="ruleForm.buttonSelectedTextColor"></el-color-picker>
+            </el-form-item>
+            
+            <el-form-item label="平台:" prop="platformCode" v-if="platformFlag">
+                <el-radio-group v-model="ruleForm.platformCode" :disabled="upData">
                     <el-radio :label="'ios'">苹果</el-radio>
                     <el-radio :label="'android'">安卓</el-radio>
                 </el-radio-group>
-            </div>
-        </div>
+            </el-form-item>
+            
+            <el-form-item label="按钮key:" prop="buttonKey">
+                <el-input v-model="ruleForm.buttonKey" placeholder="请输入按钮key，例如：排行榜phb"></el-input>
+            </el-form-item>
+            
+            <el-form-item label="显示顺序:" prop="sort">
+                <el-input-number v-model="ruleForm.sort" controls-position="right" :min="1" :max="5"></el-input-number>
+            </el-form-item>
+            
+            <el-form-item label="版本号:" prop="versionNo">
+                <el-input v-model="ruleForm.versionNo" placeholder="请输入版本号，只能输入正整数" ></el-input>
+            </el-form-item>
 
-        <div class="card-item">
-            <span class="item-text">*按钮key:</span>
-            <div class="item-input">
-                <el-input v-model="buttonKey" placeholder="请输入按钮key，例如：排行榜phb"></el-input>
-            </div>
-        </div>
-
-        <div class="card-item">
-            <span class="item-text">*显示顺序:</span>
-            <div class="item-input">
-                <el-input v-model="sort" min="1" max="5" type="number" placeholder="请输入1~5"></el-input>
-            </div>
-        </div>
-
-
-        <div class="card-item">
-            <span class="item-text">*版本号:</span>
-            <div class="item-input">
-                <el-input v-model="versionNo" placeholder="请输入版本号，只能输入正整数" ></el-input>
-            </div>
-        </div>
-        
-        <!-- <div class="card-item">
-            <span class="item-text">*是否启用:</span>
-            <div class="item-input">
-                <el-radio-group v-model="StartFlag">
-                    <el-radio :label="'ENABLE'">启用</el-radio>
-                    <el-radio :label="'DISABLE'">未启用</el-radio>
-                </el-radio-group>
-            </div>
-        </div> -->
-
-        <div class="card-footer">
-            <el-button @click="cancel">取消</el-button>
-            <el-button @click="save">保存</el-button>
-        </div>
+            <el-form-item>
+                <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+                <el-button @click="cancel('ruleForm')">取消</el-button>
+            </el-form-item>
+        </el-form>
 
     </el-card>
     
@@ -150,16 +99,37 @@ export default {
     props:['opts', 'isWxFlag', 'upData'],
     data(){
         return {
-            buttonSelectedIcon: '',//选中的图片
-            buttonUnselectedIcon: '',//未选中的图片
-            buttonText: "",//按钮名称
-            buttonUnselectedTextColor: '#409EFF',//未选中的字体颜色
-            buttonSelectedTextColor: '#409EFF',//选中的颜色
-            platformCode: '',//平台
+            ruleForm: {
+                appChannelCode: "",//app名字标识
+                buttonTypeCode: "",//button显示标识
+                buttonSelectedIcon: '',//选中的图片
+                buttonUnselectedIcon: '',//未选中的图片
+                buttonText: "",//按钮名称
+                buttonUnselectedTextColor: '#409EFF',//未选中的字体颜色
+                buttonSelectedTextColor: '#409EFF',//选中的颜色
+                platformCode: '',//平台
+                buttonKey: "",//按钮索引标识
+                sort: "",//显示顺序
+                versionNo: "",//版本号
+            },
+            rules: {
+                appChannelCode: [{required: true, message: '请选择App', trigger: 'blur'},],
+                buttonTypeCode: [{required: true, message: '请选择显示类型', trigger: 'blur'},],
+                buttonSelectedIcon: [{required: true, message: '请上传图片', trigger: 'blur'},],
+                buttonUnselectedIcon: [{required: true, message: '请上传图片', trigger: 'blur'},],
+                buttonText: [{required: true, message: '请输入按钮名称', trigger: 'blur'},],
+                buttonUnselectedTextColor: [{required: true, message: '请选择颜色', trigger: 'blur'},],
+                buttonSelectedTextColor: [{required: true, message: '请选择颜色', trigger: 'blur'},],
+                platformCode: [{required: true, message: '请选择平台', trigger: 'blur'},],
+                buttonKey: [{required: true, message: '请输入按钮key', trigger: 'blur'},],
+                sort: [{required: true, message: '请输入显示顺序', trigger: 'blur'},],
+                versionNo: [
+                    {required: true, message: '请输入版本号', trigger: 'blur'},
+                    {pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' },
+                ],
+            },
             platformName: "",//平台名称
             platformFlag: true,//平台是否可选
-            StartFlag: 'ENABLE',//是否启用
-            appChannelCode: "",//app名字标识
             appChannelName: "",//app名称
             AppOpt: [//app下拉列表数据
                 {
@@ -173,7 +143,6 @@ export default {
                     value: "pincaiwx"
                 }
             ],
-            buttonTypeCode: "",//button显示标识
             buttonTypeName: "",//button类型名称
             buttonTypeOpt: [//button显示下拉列表
                 {
@@ -187,9 +156,6 @@ export default {
                     value: "know"
                 }
             ],
-            versionNo: "",//版本号
-            sort: "",//显示顺序
-            buttonKey: "",//按钮索引标识
             ImgBaseUrl: ''
         }
     },
@@ -198,18 +164,17 @@ export default {
         //修改时传入当前要修改得值
         if(this.opts) {
             this.platformFlag = this.isWxFlag;
-            this.appChannelCode = this.opts.appChannelCode;
-            this.buttonKey = this.opts.buttonKey;
-            this.buttonSelectedIcon = this.opts.buttonSelectedIcon;
-            this.buttonUnselectedIcon = this.opts.buttonUnselectedIcon;
-            this.buttonTypeCode = this.opts.buttonTypeCode;
-            this.platformCode = this.opts.platformCode;
-            this.versionNo = this.opts.versionNo;
-            this.sort = this.opts.sort;
-            this.buttonSelectedTextColor = this.opts.buttonSelectedTextColor;
-            this.buttonUnselectedTextColor = this.opts.buttonUnselectedTextColor;
-            this.buttonText = this.opts.buttonText;
-            this.StartFlag = this.opts.status;
+            this.ruleForm.appChannelCode = this.opts.appChannelCode;
+            this.ruleForm.buttonKey = this.opts.buttonKey;
+            this.ruleForm.buttonSelectedIcon = this.opts.buttonSelectedIcon;
+            this.ruleForm.buttonUnselectedIcon = this.opts.buttonUnselectedIcon;
+            this.ruleForm.buttonTypeCode = this.opts.buttonTypeCode;
+            this.ruleForm.platformCode = this.opts.platformCode;
+            this.ruleForm.versionNo = this.opts.versionNo;
+            this.ruleForm.sort = this.opts.sort;
+            this.ruleForm.buttonSelectedTextColor = this.opts.buttonSelectedTextColor;
+            this.ruleForm.buttonUnselectedTextColor = this.opts.buttonUnselectedTextColor;
+            this.ruleForm.buttonText = this.opts.buttonText;
         }
     },
     methods:{
@@ -225,7 +190,7 @@ export default {
         uploadUnCheckImg(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {
@@ -238,7 +203,7 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.buttonUnselectedIcon = res.data
+                    this.ruleForm.buttonUnselectedIcon = res.data
                 }
             })
         },
@@ -247,7 +212,7 @@ export default {
         uploadCheckImg(params) {
             const _file = params.file;
             const isLt2M = _file.size / 1024 / 1024 < 2;
-            const idJPG = _file.type === "image/jpeg" || "image/gif" || "image/png" || "image/jpg";
+            const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
             var formData = new FormData();
             formData.append("file", _file);
             if(!idJPG) {
@@ -260,161 +225,92 @@ export default {
             }
             upLoadImg(formData).then(res=> {
                 if(res.success){
-                    this.buttonSelectedIcon = res.data
+                    this.ruleForm.buttonSelectedIcon = res.data
                 }
             })
         },
-        cancel(){
+        cancel(formName){
+            this.$refs[formName].resetFields();
             this.$emit('cancel')
         },
 
         //点击保存
-        save(){
-            //判断sort值
-            if(this.sort < 1 || this.sort > 5){
-                this.$alert('显示顺序只能是1~5之间', '提交失败', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-                    this.sort = "";
-                        this.$message({
-                            type: 'info'
-                        });
-                    }
-                })
-                return false;
-            }
-            if(this.appChannelCode == 'pincaiwx') {
-                this.platformCode = 'pincaiwx'
-            }
-            //*必填项
-            if(this.buttonKey && this.appChannelCode && this.buttonTypeCode &&  this.versionNo && this.buttonSelectedIcon && this.buttonUnselectedIcon && this.buttonText && this.buttonSelectedTextColor && this.buttonUnselectedTextColor && this.sort && this.platformCode){
-                //取到选中的appChannelname
-                this.AppOpt.forEach(v=> {
-                    if(this.appChannelCode == v.value) {
-                        this.appChannelName = v.label
-                    }
-                })
-                //渠道选中的buttonTupeName
-                this.buttonTypeOpt.forEach(v=> {
-                    if(this.buttonTypeCode == v.value) {
-                        this.buttonTypeName = v.label
-                    }
-                })
-                if(this.platformCode == "ios") {
-                    this.platformName = "苹果"
-                } else if(this.platformCode == "android") {
-                    this.platformName = "安卓"
-                } else {
-                    this.platformCode = 'pincaiwx';
+        save(formName){
+            this.$refs[formName].validate((valid) => {
+                if(this.ruleForm.appChannelCode == 'pincaiwx') {
+                    this.ruleForm.platformCode = 'pincaiwx'
                 }
-
-                if(!/^[0-9]*[1-9][0-9]*$/g.test(this.versionNo)) {
-                    this.$alert('版本号只能填写正整数,提交失败', '提示信息', {
-                        confirmButtonText: '确定',
-                        callback: action => {
-                            this.$message({
-                                type: 'error',
-                                message: `版本号只能填写正整数`
-                            });
+                if (valid) {
+                    //取到选中的appChannelname
+                    this.AppOpt.forEach(v=> {
+                        if(this.ruleForm.appChannelCode == v.value) {
+                            this.appChannelName = v.label
                         }
-                    });
-                    return;
-                }
-                let obj = {
-                    id: this.opts ? this.opts.id : "",
-                    buttonKey: this.buttonKey,
-                    appChannelCode: this.appChannelCode,
-                    appChannelName: this.appChannelName,
-                    buttonTypeCode: this.buttonTypeCode,
-                    buttonTypeName: this.buttonTypeName,
-                    platformCode: this.platformCode,
-                    platformName: this.platformName,
-                    versionNo: Number(this.versionNo),
-                    buttonSelectedIcon: this.buttonSelectedIcon,
-                    buttonUnselectedIcon: this.buttonUnselectedIcon,
-                    buttonText: this.buttonText,
-                    buttonSelectedTextColor: this.buttonSelectedTextColor,
-                    buttonUnselectedTextColor: this.buttonUnselectedTextColor,
-                    sort: this.sort,
-                    status: this.StartFlag
-                }
-                this.$emit('send',obj)
-            } else {
-                this.$alert('*号是必填项', '提交失败', {
-                    confirmButtonText: '确定',
-                    callback: action => {
-                        this.$message({
-                            type: 'info',
-                            message: `action: ${ action }`
-                        });
+                    })
+                    //渠道选中的buttonTupeName
+                    this.buttonTypeOpt.forEach(v=> {
+                        if(this.ruleForm.buttonTypeCode == v.value) {
+                            this.buttonTypeName = v.label
+                        }
+                    })
+                    if(this.ruleForm.platformCode == "ios") {
+                        this.platformName = "苹果"
+                    } else if(this.ruleForm.platformCode == "android") {
+                        this.platformName = "安卓"
+                    } else {
+                        this.ruleForm.platformCode = 'pincaiwx';
                     }
-                })
-            }  
+                    let obj = {
+                        id: this.opts ? this.opts.id : null,
+                        buttonKey: this.ruleForm.buttonKey,
+                        appChannelCode: this.ruleForm.appChannelCode,
+                        appChannelName: this.appChannelName,
+                        buttonTypeCode: this.ruleForm.buttonTypeCode,
+                        buttonTypeName: this.buttonTypeName,
+                        platformCode: this.ruleForm.platformCode,
+                        platformName: this.platformName,
+                        versionNo: Number(this.ruleForm.versionNo),
+                        buttonSelectedIcon: this.ruleForm.buttonSelectedIcon,
+                        buttonUnselectedIcon: this.ruleForm.buttonUnselectedIcon,
+                        buttonText: this.ruleForm.buttonText,
+                        buttonSelectedTextColor: this.ruleForm.buttonSelectedTextColor,
+                        buttonUnselectedTextColor: this.ruleForm.buttonUnselectedTextColor,
+                        sort: this.ruleForm.sort,
+                    }
+                    this.$emit('send',obj)
+                } else {
+                    return false;
+                }
+            });
         }
     },
     watch: {
         //监听传入opts  id  变化
         'opts.id'() {
             this.platformFlag = this.isWxFlag;
-            this.appChannelCode = this.opts.appChannelCode;
-            this.buttonKey = this.opts.buttonKey;
-            this.buttonSelectedIcon = this.opts.buttonSelectedIcon;
-            this.buttonUnselectedIcon = this.opts.buttonUnselectedIcon;
-            this.buttonTypeCode = this.opts.buttonTypeCode;
-            this.platformCode = this.opts.platformCode;
-            this.versionNo = this.opts.versionNo;
-            this.sort = this.opts.sort;
-            this.buttonSelectedTextColor = this.opts.buttonSelectedTextColor;
-            this.buttonUnselectedTextColor = this.opts.buttonUnselectedTextColor;
-            this.buttonText = this.opts.buttonText;
+            this.ruleForm.appChannelCode = this.opts.appChannelCode;
+            this.ruleForm.buttonKey = this.opts.buttonKey;
+            this.ruleForm.buttonSelectedIcon = this.opts.buttonSelectedIcon;
+            this.ruleForm.buttonUnselectedIcon = this.opts.buttonUnselectedIcon;
+            this.ruleForm.buttonTypeCode = this.opts.buttonTypeCode;
+            this.ruleForm.platformCode = this.opts.platformCode;
+            this.ruleForm.versionNo = this.opts.versionNo;
+            this.ruleForm.sort = this.opts.sort;
+            this.ruleForm.buttonSelectedTextColor = this.opts.buttonSelectedTextColor;
+            this.ruleForm.buttonUnselectedTextColor = this.opts.buttonUnselectedTextColor;
+            this.ruleForm.buttonText = this.opts.buttonText;
         }
     }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" scoped='true'>
     .box-card{
         flex:1;
         height:100%;
         overflow-y: auto;
     }
-    .card-item{
+    img{
         width:100%;
-        // height:100px;
-        padding:10px;
-        box-sizing:border-box;
-        display:flex;
-        align-items: center;
-        .item-text{
-            width:200px;
-        }
-        .item-input{
-            width:400px;
-            .msg{
-                width:100%;
-                padding:10px;
-                color:red;
-            }
-        }
-        .item-color{
-            display:flex;
-        }
-        .item-img{
-            width:100px;
-            height:80px;
-            display:flex;
-            align-items: center;
-            img{
-                width:80px;
-                height:80px;
-            }
-        }
-    }
-    .card-footer{
-        width:100%;
-        display:flex;
-        justify-content: center;
-        height:100px;
-        align-items: center;
     }
 </style>

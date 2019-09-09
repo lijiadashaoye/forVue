@@ -49,23 +49,41 @@
               <el-input v-model="menuData.menuId"></el-input>
             </el-form-item>
             <el-form-item label="标题" prop="name">
-              <el-input placeholder="请输入标题，最多32字符" v-model="menuData.name" :readonly="toEdit"></el-input>
+              <el-input placeholder="请输入标题，最多32字符" v-model="menuData.name" :disabled="toEdit"></el-input>
             </el-form-item>
             <el-form-item prop="permission" label="权限标识">
               <el-input
                 placeholder="请输入权限标识，最多32字符"
                 v-model="menuData.permission"
-                :readonly="toEdit"
+                :disabled="toEdit"
               ></el-input>
             </el-form-item>
             <el-form-item label="图标" prop="icon">
-              <el-input :readonly="toEdit" v-model="menuData.icon" placeholder="请输入图标"></el-input>
+              <el-input :disabled="toEdit" v-model="menuData.icon" placeholder="请输入图标"></el-input>
+            </el-form-item>
+            <el-form-item prop="type" label="类型">
+              <el-select
+                filterable
+                :disabled="toEdit"
+                v-model="menuData.type"
+                placeholder="请输入资源请求类型"
+                style="width:100%;"
+                @change="set_after(menuData.type)"
+              >
+                <el-option
+                  v-for="item in typeData"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
             </el-form-item>
             <el-form-item prop="url" label="资源路径">
-              <el-input :readonly="toEdit" v-model="menuData.url" placeholder="请输入资源路径"></el-input>
+              <el-input :disabled="toEdit" v-model="menuData.url" placeholder="请输入资源路径"></el-input>
             </el-form-item>
             <el-form-item prop="method" label="请求方法">
               <el-select
+                filterable
                 :disabled="toEdit"
                 v-model="menuData.method"
                 placeholder="请输入资源请求方法"
@@ -80,33 +98,18 @@
                 ></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item prop="type" label="类型">
-              <el-select
-                :disabled="toEdit"
-                v-model="menuData.type"
-                placeholder="请输入资源请求类型"
-                style="width:100%;"
-                clearable
-              >
-                <el-option
-                  v-for="item in typeData"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
+
             <el-form-item prop="sort" label="排序">
               <el-input
                 type="number"
-                :readonly="toEdit"
+                :disabled="toEdit"
                 v-model="menuData.sort"
-                placeholder="请输入排序，只能输入正整数，最多32字符"
+                placeholder="请输入排序，只能输入正整数，最多11字符"
               ></el-input>
             </el-form-item>
 
             <el-form-item label="前端地址" prop="path">
-              <el-input :readonly="toEdit" v-model="menuData.path" placeholder="请输入前端地址"></el-input>
+              <el-input :disabled="toEdit" v-model="menuData.path" placeholder="请输入前端地址"></el-input>
             </el-form-item>
           </el-form>
           <div v-if="!toEdit">
@@ -182,14 +185,8 @@ export default {
           { required: true, message: "请输入标题", trigger: "blur" },
           { min: 1, max: 32, message: "请输入1-32个字符", trigger: "blur" }
         ],
-        url: [
-          { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" },
-          { required: true, message: "请输入资源路径", trigger: "blur" }
-        ],
-        method: [
-          { required: true, message: "请输入资源请求方法", trigger: "blur" }
-        ],
         type: [
+          { min: 1, max: 50, message: "请输入1-50个字符", trigger: "blur" },
           { required: true, message: "请输入资源请求类型", trigger: "blur" }
         ],
         sort: [{ validator: checkSort, trigger: "blur" }],
@@ -197,11 +194,9 @@ export default {
           { required: true, message: "请输入权限标识", trigger: "blur" },
           { min: 1, max: 32, message: "请输入1-32个字符", trigger: "blur" }
         ],
-        icon: [
-          { min: 1, max: 32, message: "请输入1-32", trigger: "blur" }
-        ],
+        icon: [{ min: 1, max: 30, message: "请输入1-30", trigger: "blur" }],
         path: [
-          { min: 1, max: 128, message: "请输入1-128个字符", trigger: "blur" }
+          { min: 1, max: 30, message: "请输入1-30个字符", trigger: "blur" }
         ]
       }
     };
@@ -215,6 +210,25 @@ export default {
     this.hasOpen = [];
   },
   methods: {
+    // 根据类型切换验证规则（资源路径、请求方法）
+    set_after(type) {
+      let kk = { ...this.rules };
+      if (type === "MENU") {
+        kk.url = [
+          { min: 1, max: 50, message: "请输入1-50个字符", trigger: "blur" }
+        ];
+        delete kk.method;
+      } else {
+        kk.url = [
+          { min: 1, max: 50, message: "请输入1-50个字符", trigger: "blur" },
+          { required: true, message: "请输入资源路径", trigger: "blur" }
+        ];
+        kk.method = [
+          { required: true, message: "请输入资源请求方法", trigger: "change" }
+        ];
+      }
+      this.rules = kk;
+    },
     // 菜单数据发生变动后重新获取导航数据
     sureReGetAside() {
       this.$confirm("导航菜单数据已经发生变动，是否更新导航？")
@@ -223,7 +237,7 @@ export default {
         })
         .catch(() => {});
     },
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
       let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
       let sys_menu_add = quanxian.includes("sys_menu_add");
@@ -364,6 +378,7 @@ export default {
       this.getAllTree();
       this.toEdit = true;
       this.isAdd = false;
+      this.$refs.menuData.resetFields();
     },
     // 添加按钮
     addbutton() {

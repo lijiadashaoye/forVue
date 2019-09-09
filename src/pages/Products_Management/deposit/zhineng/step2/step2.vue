@@ -18,7 +18,7 @@
         </el-form-item>
 
         <el-form-item label="是否上架" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.shelveStatus">
             <el-option
               v-for="item in dictData.shelve_status"
               :key="item.value"
@@ -29,7 +29,7 @@
         </el-form-item>
 
         <el-form-item label="是否面签" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.visaInterview">
             <el-option
               v-for="item in dictData.visa_interview_type"
               :key="item.value"
@@ -88,7 +88,7 @@
         </el-form-item>
 
         <el-form-item label="合作方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.cooperationMode">
             <el-option
               size="mini"
               v-for="item in dictData.cooperation_mode"
@@ -100,10 +100,10 @@
         </el-form-item>
 
         <el-form-item label="银行对接方式" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.connectionMode">
             <el-option
               size="mini"
-              v-for="item in dictData.connection_mode"
+              v-for="item in dictData.bank_connection_mode"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -150,7 +150,7 @@
         </el-form-item>
 
         <el-form-item prop="listAreaFlag" label="榜单专区标识" class="is50">
-          <el-select class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
+          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="ruleForm.listAreaFlag">
             <el-option
               size="mini"
               v-for="item in dictData.list_area_type"
@@ -278,7 +278,7 @@ export default {
             typeAlias: step1.typeAlias,
             deadlineAlias: step1.deadlineAlias, // 期限别名
             interestRateAlias: step1.interestRateAlias,
-            renewal: step1.renewal === "是" ? "YES" : "NO",
+            renewal: this.ruleForm.renewal === "是" ? "YES" : "NO",
             withdrawalTime: step1.payTime,
             withdrawalTimeLabel: "",
             interestMode: step1.interestMode,
@@ -290,7 +290,7 @@ export default {
             currencyCode: step1.currencyCode, // 币种编码
             currencyName: "",
             currencyUnit: "",
-            contentVersion: step1.contentVersion, // 内容版本号
+            contentVersion: +step1.contentVersion, // 内容版本号
             description: step1.description,
             interestRates: [],
             appInfo: {
@@ -387,7 +387,7 @@ export default {
             : "";
           // 银行对接方式Label
           obj.appInfo.connectionModeLabel = obj.appInfo.connectionMode
-            ? this.dictData.connection_mode.filter(
+            ? this.dictData.bank_connection_mode.filter(
                 item => item.value === obj.appInfo.connectionMode
               )[0].label
             : "";
@@ -421,14 +421,14 @@ export default {
               toTermSymbolType: item.max_symbol, // 限制条件符号
               toTermSymbolTypeLabel: "",
 
-              lilv: item.lilv, // 利率
+              interestRate: +item.lilv, // 利率
               lockinPeriod: +item.lockinPeriod, // 锁定期限
               showList: item.showList, // 榜单展示
               lockinShowList: item.lockinShowList, // 锁定期榜单展示
               remark: item.remark, // 备注
               homepageCopywriting: item.homepageCopywriting, // 首页文案
               detailCopywriting: item.detailCopywriting, // 详情页文案
-              detailCopywriting: item.detailCopywriting //  银行文案
+              bankCopywriting: item.bankCopywriting //  银行文案
             };
 
             kk.fromTermUnitLabel = this.dictData.deadline_type.filter(
@@ -486,6 +486,7 @@ export default {
               });
             });
           }
+
           this.isSaveIng = true;
           this.$api
             .save_zhineng({
@@ -495,6 +496,8 @@ export default {
             .then(res => {
               this.isSaveIng = false;
               if (res) {
+                sessionStorage.removeItem("zhineng_step1");
+                sessionStorage.removeItem("zhineng_step2");
                 this.isOk = true;
               }
             });

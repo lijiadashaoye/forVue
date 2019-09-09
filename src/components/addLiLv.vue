@@ -3,18 +3,20 @@
     ref="lilvForm"
     size="normal"
     :model="lilvForm"
-    label-width="150px"
+    label-width="130px"
     label-suffix=":"
     class="isForm"
     :rules="rules"
+    style="margin:0;width:91%"
   >
-    <el-form-item style="width:100%;" required label="新增利率">
+    <el-form-item style="width:100%;margin-bottom:0;" required label="新增利率">
       <el-button size="mini" type="warning" @click="addNewLilv">保存利率</el-button>
     </el-form-item>
 
-    <el-form-item style="width:100%;" label="存期设置" required>
+    <el-form-item style="width:100%;margin-bottom:5px;" label="存期设置" required>
       <div :class="{hasError:hasError,setCunQi:true}">
         <el-select
+          filterable
           @change="isChange"
           placeholder="限制条件"
           v-model="lilvForm.min_symbol"
@@ -35,6 +37,7 @@
           placeholder="最小期限"
         ></el-input>&nbsp;
         <el-select
+          filterable
           @change="isChange"
           placeholder="期限单位"
           v-model="lilvForm.min_danwei"
@@ -49,6 +52,7 @@
         </el-select>
         <h3 style="width:8%;flex-shrink:0;text-align:center;">存期</h3>
         <el-select
+          filterable
           @change="isChange"
           placeholder="限制条件"
           v-model="lilvForm.max_symbol"
@@ -69,6 +73,7 @@
           placeholder="最大期限"
         ></el-input>&nbsp;
         <el-select
+          filterable
           @change="isChange"
           placeholder="期限单位"
           style="width:15%;flex-shrink:0;"
@@ -89,7 +94,7 @@
     </el-form-item>
 
     <el-form-item prop="showList" label="榜单展示">
-      <el-select placeholder="请选择" v-model="lilvForm.showList" @change="isChange">
+      <el-select filterable placeholder="请选择" v-model="lilvForm.showList" @change="isChange">
         <el-option v-for="item in yes_no" :key="item.value" :label="item.label" :value="item.value"></el-option>
       </el-select>
     </el-form-item>
@@ -99,12 +104,12 @@
     </el-form-item>
 
     <el-form-item prop="lockinShowList" label="锁定期榜单展示">
-      <el-select placeholder="请选择" v-model="lilvForm.lockinShowList" @change="isChange">
+      <el-select filterable placeholder="请选择" v-model="lilvForm.lockinShowList" @change="isChange">
         <el-option v-for="item in yes_no" :key="item.value" :label="item.label" :value="item.value"></el-option>
       </el-select>
     </el-form-item>
 
-    <el-form-item prop="remark" label="备注" style="width:100%;">
+    <el-form-item prop="remark" label="备注" style="width:100%;margin-bottom:0;">
       <el-input
         type="textarea"
         autosize
@@ -114,7 +119,7 @@
       ></el-input>
     </el-form-item>
 
-    <el-form-item prop="homepageCopywriting" label="首页文案" style="width:100%;">
+    <el-form-item prop="homepageCopywriting" label="首页文案" style="width:100%;margin-bottom:0;">
       <el-input
         type="textarea"
         autosize
@@ -123,7 +128,7 @@
         placeholder="请输入"
       ></el-input>
     </el-form-item>
-    <el-form-item prop="detailCopywriting" label="详情页文案" style="width:100%;">
+    <el-form-item prop="detailCopywriting" label="详情页文案" style="width:100%;margin-bottom:0;">
       <el-input
         type="textarea"
         autosize
@@ -144,7 +149,7 @@
     </el-form-item>
 
     <div class="suolueWap" v-if="addLiLvProp.lilv_data.length">
-      <div v-for="tar of addLiLvProp.lilv_data" :key="tar.num" class="suolue">
+      <div v-for="tar of addLiLvProp.lilv_data" :key="tar.num" class="suolue" title="点击进行编辑">
         <p>
           期限:
           <span style="font-size:14px;">{{tar.minDeadline}}{{seeDanWei1(tar)}}</span>
@@ -170,6 +175,16 @@
           title="删除"
           @click="toShowProp(tar.num)"
         ></el-button>
+
+        <el-button
+          class="suolueBtn1"
+          size="mini"
+          icon="el-icon-edit"
+          type="light"
+          circle
+          title="编辑"
+          @click.stop="toEdit(tar)"
+        ></el-button>
       </div>
     </div>
   </el-form>
@@ -182,12 +197,19 @@ export default {
   data() {
     // 验证数字 0-100,19字长
     var checkNum6 = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error("请正确输入"));
-      } else if (value < 0 || value >= 100) {
+      if (value < 0 || value >= 100) {
         callback(new Error("请输入0 ~ 100"));
       } else if (("" + value).length > 19 || ("" + value).length < 0) {
         callback(new Error("请输入1-19字符"));
+      } else {
+        callback();
+      }
+    };
+    var checkNum1 = (rule, value, callback) => {
+      if (value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 14 || ("" + value).length < 0) {
+        callback(new Error("请输入1-14字符"));
       } else {
         callback();
       }
@@ -221,12 +243,16 @@ export default {
 
       //表单验证
       rules: {
-        lilv: [{ required: true, validator: checkNum6, trigger: "blur" }],
+        lilv: [
+          { required: true, message: "请输入利率", trigger: "blur" },
+          { required: true, validator: checkNum6, trigger: "blur" }
+        ],
         showList: [
           { required: true, message: "请选择榜单展示", trigger: "change" }
         ],
         lockinPeriod: [
-          { required: true, message: "请选择锁定期限", trigger: "change" }
+          { required: true, message: "请输入锁定期限", trigger: "blur" },
+          { validator: checkNum1, trigger: "blur" }
         ],
         lockinShowList: [
           { required: true, message: "请选择锁定期榜单展示", trigger: "change" }
@@ -236,6 +262,10 @@ export default {
   },
   created() {
     this.num = this.addLiLvProp.num;
+    if (this.addLiLvProp.lilv_data.length) {
+      this.addLiLvProp.lilv_data.forEach(item => (item.num = this.num++));
+    }
+
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
     this.dictData.rule_symbol.forEach(tar => {
       switch (tar.value) {
@@ -282,6 +312,7 @@ export default {
       }
     });
   },
+
   methods: {
     isChange() {
       this.addLiLvProp.isInput = true;
@@ -314,7 +345,7 @@ export default {
               num: this.num++,
               ...this.lilvForm
             };
-            console.log(this.addLiLvProp);
+
             this.addLiLvProp.lilv_data.push(obj);
             this.addLiLvProp.isInput = false;
 
@@ -364,6 +395,9 @@ export default {
         if (+min_value * +min_danwei > +max_value * +max_danwei) {
           return false;
         }
+        if (min_value.length > 10 || max_value.length > 10) {
+          return false;
+        }
         return true;
       } else {
         return false;
@@ -381,6 +415,12 @@ export default {
     toDelete(num) {
       let index = this.addLiLvProp.lilv_data.findIndex(tar => tar.num == num);
       this.addLiLvProp.lilv_data.splice(index, 1);
+    },
+    toEdit(item, event) {
+      this.toDelete(item.num);
+      this.lilvForm = { ...item };
+      this.addLiLvProp.isInput = true;
+      delete this.lilvForm.num;
     }
   }
 };
@@ -404,6 +444,11 @@ export default {
   top: -14px;
   right: 0px;
 }
+.suolueBtn1 {
+  position: absolute;
+  top: -15px;
+  right: 32px;
+}
 .setCunQi {
   display: flex;
   justify-content: flex-start;
@@ -414,7 +459,7 @@ export default {
   animation: blingbling 2s infinite;
 }
 .hasError::after {
-  content: "最小期限不能比最大期限大！";
+  content: "最小期限不能比最大期限大，且都不可以超过10个字符！";
   position: absolute;
   top: -35px;
   left: 30%;

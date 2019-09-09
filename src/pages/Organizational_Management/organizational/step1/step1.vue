@@ -17,22 +17,22 @@
           <el-input clearable placeholder="请输入" v-model="ruleForm.name"></el-input>
         </el-form-item>
 
-        <el-form-item label="所属省市" style="margin-bottom:5px;">
+        <el-form-item label="所属省市" style="margin-bottom:5px;" prop="locationId">
           <el-cascader
-            v-model="location"
+            v-model="ruleForm.locationId"
             :options="dictData.quyu"
             :props="{ expandTrigger: 'hover'}"
           ></el-cascader>
         </el-form-item>
 
         <el-form-item prop="type" label="银行类型" style="position:relative" class="isWith">
-          <el-select clearable placeholder="请选择" v-model="ruleForm.type">
+          <el-select filterable clearable placeholder="请选择" v-model="ruleForm.type">
             <el-option
               size="mini"
               v-for="item in dictData.bank_type"
-              :key="item.id"
+              :key="item.value"
               :label="item.label"
-              :value="item.id"
+              :value="item.value"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -42,7 +42,7 @@
         </el-form-item>
 
         <el-form-item prop="parentId" label="隶属机构" style="position:relative" class="isWith">
-          <el-select clearable placeholder="请选择" v-model="ruleForm.parentId">
+          <el-select filterable clearable placeholder="请选择" v-model="ruleForm.parentId">
             <el-option
               size="mini"
               v-for="item in dictData.paren"
@@ -86,13 +86,14 @@
             value-format="HH:mm:ss"
             is-range
             arrow-control
-            v-model="weihu"
+            v-model="ruleForm.weihu"
             range-separator="~"
             start-placeholder="开始时间"
             end-placeholder="结束时间"
             placeholder="选择时间范围"
           ></el-time-picker>
         </el-form-item>
+
         <el-form-item label="版本标识" prop="version">
           <el-input clearable placeholder="请输入" v-model="ruleForm.version"></el-input>
         </el-form-item>
@@ -112,23 +113,23 @@
         </el-form-item>
 
         <el-form-item label="银行星级" style="margin-bottom:5px;">
-          <el-select v-model="ruleForm.star" clearable placeholder="请选择">
+          <el-select filterable v-model="ruleForm.star" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.institution_star"
-              :key="item.id"
+              :key="item.value"
               :label="item.label"
-              :value="item.id"
+              :value="item.value"
             ></el-option>
           </el-select>
         </el-form-item>
 
         <el-form-item label="星级评定描述" style="text-align:left;" prop="starRatingDesc">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.starRatingDesc"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.starRatingDesc"></isQuill>
         </el-form-item>
 
         <el-form-item label="银行描述" style="text-align:left;" prop="description">
-          <isQuill :url="'admin/file/up/setting'" v-model="ruleForm.description"></isQuill>
+          <isQuill :url="'admin/file/up/product'" v-model="ruleForm.description"></isQuill>
         </el-form-item>
       </el-form>
       <div class="nextButtons">
@@ -159,12 +160,10 @@ export default {
       pageName: "", // 当前页面名字
       dictData: {}, // 字典数据
       hasImg: null, // 如果有图片数据，要显示出来
-      location: [], // 所属区域
-      weihu: [], // 保存维护时间
       ruleForm: {
         name: "", //  机构名称
         locationId: [], // 所属省/直辖市ID
-        type: "", //  机构类型
+        type: "", //  银行类型
         aum: "", // 资产规模
         parentId: "", // 隶属机构ID
         hotLine: "", // 热线电话
@@ -172,12 +171,12 @@ export default {
         star: "", // 星级
         starRatingDesc: "", // 星级评定描述
         description: "", // 银行描述
-
         backgroundImage: "", // 背景图
         semicircleBackgroundImage: "", // 半圆背景图
         textLogo: "", // 文字商标
-        maintainStartTime: "", // 维护开始时间
-        maintainEndTime: "", // 维护结束时间
+        weihu: [],
+        // maintainStartTime: "", // 维护开始时间
+        // maintainEndTime: "", // 维护结束时间
         serviceTime: [], // 客服服务时间
         version: "" //版本标识
       },
@@ -205,19 +204,19 @@ export default {
   created() {
     this.hasImg = {
       logoUrl: {
-        url: "admin/file/up/setting",
+        url: "admin/file/up/product",
         imgUrl: ""
       },
       backUrl: {
-        url: "admin/file/up/setting",
+        url: "admin/file/up/product",
         imgUrl: ""
       },
       banyuanUrl: {
-        url: "admin/file/up/setting",
+        url: "admin/file/up/product",
         imgUrl: ""
       },
       shangbiao: {
-        url: "admin/file/up/setting",
+        url: "admin/file/up/product",
         imgUrl: ""
       }
     };
@@ -226,62 +225,33 @@ export default {
       this.pageName = sessionStorage.getItem("page") + " > 编辑机构第一步"; // 获取页面名称
     } else {
       this.pageName = sessionStorage.getItem("page") + " > 新增机构第一步"; // 获取页面名称
+      this.setTime();
     }
 
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
     let step1 = sessionStorage.getItem("organizational_step1");
     if (step1) {
       this.ruleForm = JSON.parse(step1);
-      this.weihu = this.ruleForm.weihu;
 
       this.hasImg.logoUrl.imgUrl = this.ruleForm.logo;
       this.hasImg.backUrl.imgUrl = this.ruleForm.backgroundImage;
       this.hasImg.banyuanUrl.imgUrl = this.ruleForm.semicircleBackgroundImage;
       this.hasImg.shangbiao.imgUrl = this.ruleForm.textLogo;
-
-      if (this.ruleForm.maintainStartTime) {
-        this.weihu = [
-          this.ruleForm.maintainStartTime,
-          this.ruleForm.maintainEndTime
-        ];
-      }
-
-      // 查询区域数据，填充location数组
-      if (this.ruleForm.locationId) {
-        wap: for (let i = this.dictData.quyu.length; i--; ) {
-          if (this.dictData.quyu[i].value == this.ruleForm.locationId) {
-            this.location = ["" + this.ruleForm.locationId];
-            break wap;
-          } else {
-            let child = this.dictData.quyu[i].children;
-            if (child) {
-              for (let j = child.length; j--; ) {
-                if (child[j].value == this.ruleForm.locationId) {
-                  this.location = [
-                    "" + child[j].paren,
-                    "" + this.ruleForm.locationId
-                  ];
-                  break wap;
-                }
-              }
-            }
-          }
-        }
-      }
-     
     }
   },
   methods: {
+    setTime() {
+      this.ruleForm.weihu = this.ruleForm.serviceTime = [1, 2].map(tar => {
+        let time = new Date();
+        let hour = time.getHours(),
+          minute = time.getMinutes(),
+          second = time.getSeconds();
+        return `${hour}:${minute}:${second}`;
+      });
+    },
     next() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          if (this.location.length > 0) {
-            this.ruleForm.locationId = this.location[this.location.length - 1];
-          }
-          if (this.weihu.length > 0) {
-            this.ruleForm.maintainStartTime = this.weihu[0];
-            this.ruleForm.maintainEndTime = this.weihu[1];
-          }
           sessionStorage.setItem(
             "organizational_step1",
             JSON.stringify(this.ruleForm)

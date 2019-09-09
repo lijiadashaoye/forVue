@@ -21,7 +21,7 @@
           </el-form-item>
 
           <el-form-item label="红包类型" prop="amountType">
-            <el-select
+            <el-select filterable
               v-model="formData.amountType"
               clearable
               placeholder="请选择"
@@ -125,7 +125,7 @@
           </div>
 
           <el-form-item label="发放类型" prop="grantType">
-            <el-select v-model="formData.grantType" clearable placeholder="请选择">
+            <el-select filterable v-model="formData.grantType" clearable placeholder="请选择">
               <el-option
                 size="mini"
                 v-for="item in outList"
@@ -186,10 +186,7 @@ export default {
     };
     // 验证数字
     var checkamountFixed = (rule, value, callback) => {
-      let reg = /\./;
-      if (reg.test(value)) {
-        callback(new Error("请输入整数"));
-      } else if (value === "") {
+      if (value === "") {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
@@ -237,9 +234,9 @@ export default {
         callback();
       }
     };
-      // 验证总金额
+    // 验证总金额
     var checkMaxAmount = (rule, value, callback) => {
-     if (value < 0) {
+      if (value < 0) {
         callback(new Error("请输入正数"));
       } else if (("" + value).length > 23 || ("" + value).length < 0) {
         callback(new Error("请输入1-23字符"));
