@@ -1,12 +1,14 @@
-import { pointLocation } from '../../api/log'
+import {
+    pointLocation
+} from '../../api/log'
 
 const state = {
-    pointLocationList : {
+    pointLocationList: {
         checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10,
         pageNum: 1,
         total: null,
-        noIndex:false,
+        noIndex: false,
         actions: {},
         data: {
             list: [],
@@ -18,7 +20,7 @@ const state = {
 }
 
 const mutations = {
-    pointLocationList(state,data) {
+    pointLocationList(state, data) {
         let params = {
             memberId: data.memberId,
             deviceId: data.deviceId,
@@ -38,12 +40,17 @@ const mutations = {
             params.pageSize = 10
         } else {
             params.pageNum = state.pointLocationList.pageNum
-            params.pageSize =  state.pointLocationList.pageSize
+            params.pageSize = state.pointLocationList.pageSize
             if (data.objectId) {
                 params.objectId = data.objectId
             }
         }
-        pointLocation(params).then(res=> {
+
+        let arr = Object.keys(params).filter(str => Boolean(params[str])),
+            obj = {};
+        arr.forEach(str => obj[str] = params[str]);
+
+        pointLocation(obj).then(res => {
             state.pointLocationList.data.list = res.data.list;
             state.pointLocationList.total = res.data.total;
             state.pointLocationList.data.list.map((v) => {
@@ -83,6 +90,11 @@ const mutations = {
                         }
                     })
                 }
+                if (v.networkType == 0) {
+                    v.networkTypeCN = '流量'
+                } else if (v.networkType == 1) {
+                    v.networkTypeCN = 'WIFI'
+                }
             })
         })
     },
@@ -98,8 +110,10 @@ const mutations = {
 }
 
 const actions = {
-    getList({commit},data={}) {
-        commit('pointLocationList',data)
+    getList({
+        commit
+    }, data = {}) {
+        commit('pointLocationList', data)
     }
 }
 export default {

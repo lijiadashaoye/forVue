@@ -1,12 +1,12 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
-      <h3>{{pageName}}</h3>
+    <div id="forHeader">
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
     </div>
-    <div
-      id='forTable'
-      style="padding-bottom:0;"
-    >
+    <div id="forTable" style="padding-bottom:0;">
       <router-view v-if="again"></router-view>
     </div>
   </div>
@@ -16,20 +16,22 @@ export default {
   props: {},
   data() {
     return {
+      env: null,
       pageName: "", // 当前页面名字
       again: true
     };
   },
-  beforeDestroy(){
-    sessionStorage.removeItem('fromHttp')
-    sessionStorage.removeItem('step1Data')
-    sessionStorage.removeItem('step2Data')
-    sessionStorage.removeItem('step3Data')
-    sessionStorage.removeItem('whichAward')
-    sessionStorage.removeItem('jiangliKaQuan')
-    sessionStorage.removeItem('jiangliHongBao')
+  beforeDestroy() {
+    sessionStorage.removeItem("fromHttp");
+    sessionStorage.removeItem("step1Data");
+    sessionStorage.removeItem("step2Data");
+    sessionStorage.removeItem("step3Data");
+    sessionStorage.removeItem("whichAward");
+    sessionStorage.removeItem("jiangliKaQuan");
+    sessionStorage.removeItem("jiangliHongBao");
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.setPage();
   },
   watch: {

@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button
         size="mini"
         type="primary"
@@ -29,6 +32,8 @@
             :highlight-current="true"
             :props="defaultProps"
             @node-click="handleNodeClick"
+            @node-collapse="node_close"
+            @node-expand="node_open"
             node-key="id"
             :default-expanded-keys="hasOpen"
           ></el-tree>
@@ -139,6 +144,7 @@ export default {
     };
 
     return {
+      env: null,
       hasOpen: [], // 记录已经展开的
       pageName: "", // 当前页面名字
       quanxian: [],
@@ -196,12 +202,13 @@ export default {
         ],
         icon: [{ min: 1, max: 30, message: "请输入1-30", trigger: "blur" }],
         path: [
-          { min: 1, max: 30, message: "请输入1-30个字符", trigger: "blur" }
+          { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" }
         ]
       }
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
     this.getAllTree();
@@ -212,7 +219,9 @@ export default {
   methods: {
     // 根据类型切换验证规则（资源路径、请求方法）
     set_after(type) {
-      let kk = { ...this.rules };
+      let kk = { ...this.rules },
+        data = JSON.parse(JSON.stringify(this.menuData));
+      data.method = "";
       if (type === "MENU") {
         kk.url = [
           { min: 1, max: 50, message: "请输入1-50个字符", trigger: "blur" }
@@ -228,6 +237,11 @@ export default {
         ];
       }
       this.rules = kk;
+
+      setTimeout(() => {
+        this.$refs.menuData.resetFields();
+        this.menuData = { ...data };
+      });
     },
     // 菜单数据发生变动后重新获取导航数据
     sureReGetAside() {
@@ -239,7 +253,7 @@ export default {
     },
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
       let sys_menu_add = quanxian.includes("sys_menu_add");
       let sys_menu_edit = quanxian.includes("sys_menu_edit");
       let sys_menu_del = quanxian.includes("sys_menu_del");
@@ -253,14 +267,18 @@ export default {
         this.quanxian.push("sys_menu_del");
       }
     },
+    // 节点被关闭时触发的事件
+    node_close(data) {
+      let num = this.hasOpen.findIndex(tar => tar == data.id);
+      this.hasOpen.splice(num, 1);
+    },
+    // 节点被展开时触发的事件
+    node_open(data) {
+      this.hasOpen.push(data.id);
+    },
     // tree 点击的时候
     handleNodeClick(data) {
       if (this.toEdit) {
-        if (!this.hasOpen.includes(data.id)) {
-          this.hasOpen.push(data.id);
-        } else {
-          this.hasOpen = this.hasOpen.filter(item => item != data.id);
-        }
         this.$api
           .admin_menu_getMenu({
             vm: this,

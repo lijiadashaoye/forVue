@@ -627,3 +627,34 @@ $font_color1:rgb(246, 246, 246);
         color: $font_color
     }
 }
+
+.for_img {
+    position: relative;
+}
+
+.for_img span {
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    background-size: 100%;
+}
+
+.isS {
+    top: -95px;
+    left: 80px;
+    background: url("../../assets/login3.png") no-repeat;
+}
+
+.isS1 {
+    top: -100px;
+    left: 80px;
+    background: url("../../assets/login1.png") no-repeat;
+}
+
+.isS2 {
+    top: -91px;
+    left: 80px;
+    background: url("../../assets/login2.png") no-repeat;
+    transform: scale(.91);
+}

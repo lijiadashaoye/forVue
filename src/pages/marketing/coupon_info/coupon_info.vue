@@ -1,7 +1,11 @@
 <template>
   <div class="componentWaper">
     <div class="headerName">
-      <h3>{{pageName}}</h3>
+        <p class="isPageName">
+         <span :class="env?'lineSpan1':'lineSpan'">|</span>
+       
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button size="mini" type="warning" @click="back">返回</el-button>
     </div>
     <ul v-if="infoData" class="isUl">
@@ -140,7 +144,7 @@ export default {
   data() {
     // 验证手机号
     var checkPhone = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback();
       } else if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error("手机号码有误，请重填"));
@@ -708,7 +712,7 @@ export default {
             this.caozuo.show = true;
           }
         });
-    },
+    }
   }
 };
 </script>

@@ -14,7 +14,6 @@ export default {
   created() {
     this.pageName = sessionStorage.getItem("page");
   },
-
   beforeDestroy() {
     sessionStorage.removeItem("huiyuan_dengji");
     sessionStorage.removeItem("huiyuan_mark");

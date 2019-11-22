@@ -10,31 +10,21 @@
     style="margin:0;width:91%"
   >
     <el-form-item style="width:100%;margin-bottom:0;" required label="新增利率">
-      <el-button size="mini" type="warning" @click="addNewLilv">保存利率</el-button>
+      <el-button
+        size="mini"
+        type="warning"
+        @click="addNewLilv"
+      >{{addLiLvProp.isInput?'保存利率':'新增利率'}}</el-button>
     </el-form-item>
 
     <el-form-item style="width:100%;margin-bottom:5px;" label="存期设置" required>
       <div :class="{hasError:hasError,setCunQi:true}">
-        <el-select
-          filterable
-          @change="isChange"
-          placeholder="限制条件"
-          v-model="lilvForm.min_symbol"
-          style="width:15%;flex-shrink:0;"
-        >
-          <el-option
-            v-for="item in cunqi_symbol.forMin"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>&nbsp;
         <el-input
           @input="isChange"
           type="number"
           style="width:15%;flex-shrink:0;"
           v-model="lilvForm.minDeadline"
-          placeholder="最小期限"
+          :placeholder="placeHolder"
         ></el-input>&nbsp;
         <el-select
           filterable
@@ -49,9 +39,26 @@
             :label="item.label"
             :value="item.value"
           ></el-option>
-        </el-select>
-        <h3 style="width:8%;flex-shrink:0;text-align:center;">存期</h3>
+        </el-select>&nbsp;
         <el-select
+          filterable
+          @change="isChange_tiaojian"
+          placeholder="限制条件"
+          v-model="lilvForm.min_symbol"
+          style="width:15%;flex-shrink:0;"
+        >
+          <el-option
+            v-for="item in dictData.forMax"
+            :key="item.value"
+            :label="item.fuhao"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+
+        <h3 style="width:8%;flex-shrink:0;text-align:center;">存期</h3>
+
+        <el-select
+          :disabled="placeHolder == '期限'"
           filterable
           @change="isChange"
           placeholder="限制条件"
@@ -59,13 +66,14 @@
           style="width:15%;flex-shrink:0;"
         >
           <el-option
-            v-for="item in cunqi_symbol.forMax"
+            v-for="item in dictData.forMax"
             :key="item.value"
-            :label="item.label"
+            :label="item.fuhao"
             :value="item.value"
           ></el-option>
         </el-select>&nbsp;
         <el-input
+          :disabled="placeHolder == '期限'"
           @input="isChange"
           type="number"
           style="width:15%;flex-shrink:0;"
@@ -73,6 +81,7 @@
           placeholder="最大期限"
         ></el-input>&nbsp;
         <el-select
+          :disabled="placeHolder == '期限'"
           filterable
           @change="isChange"
           placeholder="期限单位"
@@ -109,6 +118,12 @@
       </el-select>
     </el-form-item>
 
+    <el-form-item prop="showProduct" label="产品展示">
+      <el-select filterable placeholder="请选择" v-model="lilvForm.showProduct" @change="isChange">
+        <el-option v-for="item in yes_no" :key="item.value" :label="item.label" :value="item.value"></el-option>
+      </el-select>
+    </el-form-item>
+
     <el-form-item prop="remark" label="备注" style="width:100%;margin-bottom:0;">
       <el-input
         type="textarea"
@@ -138,7 +153,7 @@
       ></el-input>
     </el-form-item>
 
-    <el-form-item prop="bankCopywriting" label="银行文案" style="width:100%;">
+    <el-form-item prop="bankCopywriting" label="银行文案" style="width:100%;margin-bottom:0;">
       <el-input
         type="textarea"
         autosize
@@ -148,24 +163,49 @@
       ></el-input>
     </el-form-item>
 
+    <el-form-item prop="bangdanWrite" label="榜单期限文案" style="width:100%">
+      <el-input
+        type="textarea"
+        autosize
+        v-model="lilvForm.bangdanWrite"
+        @input="isChange"
+        placeholder="请输入"
+      ></el-input>
+    </el-form-item>
+
     <div class="suolueWap" v-if="addLiLvProp.lilv_data.length">
       <div v-for="tar of addLiLvProp.lilv_data" :key="tar.num" class="suolue" title="点击进行编辑">
         <p>
           期限:
-          <span style="font-size:14px;">{{tar.minDeadline}}{{seeDanWei1(tar)}}</span>
-          <span style="font-size:20px; letter-spacing:-5px;">{{seeFuHao1(tar)}}</span>
+          <span
+            v-if="tar.minDeadline!==''"
+            style="font-size:14px;"
+          >{{tar.minDeadline}}{{seeDanWei1(tar)}}</span>
+          <span
+            v-if="tar.minDeadline!==''"
+            style="font-size:20px; letter-spacing:-5px;"
+          >{{seeFuHao1(tar)}}</span>
           &nbsp;存期
-          <span style="font-size:20px;letter-spacing:-4px;">{{seeFuHao2(tar)}}</span>
-          <span style="font-size:14px;">&nbsp;&nbsp;{{tar.maxDeadline}}{{seeDanWei2(tar)}}</span>
+          <span
+            v-if="tar.maxDeadline!==''"
+            style="font-size:20px;letter-spacing:-4px;"
+          >{{seeFuHao2(tar)}}</span>
+          <span
+            v-if="tar.maxDeadline!==''"
+            style="font-size:14px;"
+          >&nbsp;&nbsp;{{tar.maxDeadline}}{{seeDanWei2(tar)}}</span>
         </p>
         <p>利率: {{tar.lilv+' %'}}</p>
         <p>榜单展示: {{tar.showList=='YES'?'是':'否'}}</p>
-        <p>锁定期限: {{tar.lockinPeriod=='YES'?'是':'否'}}</p>
+        <p>锁定期限: {{tar.lockinPeriod+'天'}}</p>
         <p>锁定期榜单展示: {{tar.lockinShowList=='YES'?'是':'否'}}</p>
-        <p v-if="tar.homepageCopywriting">备注: {{tar.remark}}</p>
+        <p>产品展示: {{tar.showProduct=='YES'?'是':'否'}}</p>
+        <p v-if="tar.remark">备注: {{tar.remark}}</p>
         <p v-if="tar.homepageCopywriting">首页文案: {{tar.homepageCopywriting}}</p>
         <p v-if="tar.detailCopywriting">详情页文案: {{tar.detailCopywriting}}</p>
         <p v-if="tar.bankCopywriting">银行文案: {{tar.bankCopywriting}}</p>
+        <p v-if="tar.bangdanWrite">榜单期限文案: {{tar.bangdanWrite}}</p>
+
         <el-button
           class="suolueBtn"
           size="mini"
@@ -197,10 +237,17 @@ export default {
   data() {
     // 验证数字 0-100,19字长
     var checkNum6 = (rule, value, callback) => {
+      let reg = /\./;
       if (value < 0 || value >= 100) {
-        callback(new Error("请输入0 ~ 100"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
+        callback(new Error("请输入0 ~ 100之间"));
+      } else if (reg.test(value)) {
+        let str = ("" + value).split(".")[1].length;
+        if (str > 4) {
+          this.lilvForm.lilv = (+value).toFixed(4);
+          callback(new Error("最多只能输入4位小数"));
+        } else {
+          callback();
+        }
       } else {
         callback();
       }
@@ -216,11 +263,8 @@ export default {
     };
 
     return {
+      placeHolder: "最小期限",
       hasError: false, // 当利率表格的期限发生错误时使用
-      cunqi_symbol: {
-        forMin: [], // 最小期限限制条件
-        forMax: [] // 最大期限限制条件
-      },
       dictData: {},
       yes_no: [{ label: "是", value: "YES" }, { label: "否", value: "NO" }],
       lilvForm: {
@@ -234,10 +278,12 @@ export default {
         lockinPeriod: "", // 锁定期限
         showList: "", // 榜单展示
         lockinShowList: "", // 锁定期榜单展示
+        showProduct: "", // 产品展示
         remark: "", // 备注
         homepageCopywriting: "", // 首页文案
         detailCopywriting: "", // 详情页文案
-        bankCopywriting: "" //  银行文案
+        bankCopywriting: "", //  银行文案
+        bangdanWrite: "" // 榜单期限文案
       },
       num: 0, // 利率列表是否有错误
 
@@ -267,74 +313,57 @@ export default {
     }
 
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
-    this.dictData.rule_symbol.forEach(tar => {
-      switch (tar.value) {
-        case "&lt":
-          this.cunqi_symbol.forMax.push({
-            label: tar.label,
-            fuhao: "<",
-            value: tar.value
-          });
-          break;
-        case "&le":
-          this.cunqi_symbol.forMax.push({
-            label: tar.label,
-            fuhao: "<=",
-            value: tar.value
-          });
-          break;
-        case "&gt":
-          this.cunqi_symbol.forMin.push({
-            label: tar.label,
-            fuhao: "<",
-            value: tar.value
-          });
-          break;
-        case "&ge":
-          this.cunqi_symbol.forMin.push({
-            label: tar.label,
-            fuhao: "<=",
-            value: tar.value
-          });
-          break;
-        case "=":
-          this.cunqi_symbol.forMax.push({
-            label: tar.label,
-            fuhao: "=",
-            value: tar.value
-          });
-          this.cunqi_symbol.forMin.push({
-            label: tar.label,
-            fuhao: "=",
-            value: tar.value
-          });
-          break;
-      }
-    });
   },
 
   methods: {
     isChange() {
       this.addLiLvProp.isInput = true;
     },
+    isChange_tiaojian() {
+      this.addLiLvProp.isInput = true;
+      if (this.lilvForm.min_symbol === "&eq") {
+        this.placeHolder = "期限";
+      } else {
+        this.placeHolder = "最小期限";
+      }
+      this.lilvForm.max_symbol = "";
+      this.lilvForm.maxDeadline = "";
+      this.lilvForm.max_danwei = "";
+    },
     // 显示预览的单位
     seeDanWei1(tar) {
       let danwei = this.dictData.deadline_type;
-      return danwei.filter(item => item.value === tar.min_danwei)[0].label;
+      let target = danwei.filter(item => item.value == tar.min_danwei)[0];
+      if (target) {
+        return target.label;
+      }
+      return "";
     },
     seeDanWei2(tar) {
       let danwei = this.dictData.deadline_type;
-      return danwei.filter(item => item.value === tar.max_danwei)[0].label;
+      let target = danwei.filter(item => item.value == tar.max_danwei)[0];
+      if (target) {
+        return target.label;
+      }
+      return "";
     },
     seeFuHao1(tar) {
-      return this.cunqi_symbol.forMin.filter(
-        item => item.value === tar.min_symbol
-      )[0].fuhao;
+      let target = this.dictData.forMax.filter(
+        item => item.value == tar.min_symbol
+      )[0];
+      if (target) {
+        return target.fuhao;
+      }
+      return "";
     },
     seeFuHao2(tar) {
-      return this.cunqi_symbol.forMax.filter(
-        item => item.value === tar.max_symbol
-      )[0].fuhao;
+      let target = this.dictData.forMax.filter(
+        item => item.value == tar.max_symbol
+      )[0];
+      if (target) {
+        return target.fuhao;
+      }
+      return "";
     },
     // 新增利率(点击添加)
     addNewLilv() {
@@ -347,7 +376,7 @@ export default {
             };
 
             this.addLiLvProp.lilv_data.push(obj);
-            this.addLiLvProp.isInput = false;
+            this.addLiLvProp.isInput = false; // 修改为未填入数据的初始化状态
 
             this.lilvForm = {
               minDeadline: "", // 最小期限
@@ -360,11 +389,14 @@ export default {
               lockinPeriod: "", // 锁定期限
               showList: "", // 榜单展示
               lockinShowList: "", // 锁定期榜单展示
+              showProduct: "",
               remark: "", // 备注
+              bangdanWrite: "",
               homepageCopywriting: "", // 首页文案
               detailCopywriting: "", // 详情页文案
               bankCopywriting: "" //  银行文案
             };
+            this.placeHolder = "最小期限";
             this.$refs.lilvForm.resetFields();
           } else {
             this.hasError = true;
@@ -377,32 +409,64 @@ export default {
     },
     // 验证存期设置
     yanzheng_cunqi() {
-      let min_value = this.lilvForm.minDeadline, // 最小期限值
+      let isOk = true,
+        min_value = this.lilvForm.minDeadline, // 最小期限值
         min_danwei = this.lilvForm.min_danwei, // 最小期限单位
         min_symbol = this.lilvForm.min_symbol, // 最小期限符号
         max_value = this.lilvForm.maxDeadline, // 最大期限值
         max_danwei = this.lilvForm.max_danwei, // 最大期限单位
         max_symbol = this.lilvForm.max_symbol; //  最大期限符号
 
+      // 验证最小区间
+      if (min_value || min_danwei || min_symbol) {
+        if (
+          !(min_value >= 0 && min_danwei && min_symbol) ||
+          min_value.length > 10
+        ) {
+          isOk = false;
+        }
+      }
+      // 验证最大区间
+      if (max_value || max_danwei || max_symbol) {
+        if (
+          !(max_value >= 0 && max_danwei && max_symbol) ||
+          max_value.length > 10
+        ) {
+          isOk = false;
+        }
+      }
+
       if (
-        min_value &&
+        !(
+          min_value ||
+          min_danwei ||
+          min_symbol ||
+          max_value ||
+          max_danwei ||
+          max_symbol
+        )
+      ) {
+        isOk = false;
+      }
+
+      if (
+        min_value >= 0 &&
         min_danwei &&
-        max_value &&
-        max_danwei &&
         min_symbol &&
+        max_value >= 0 &&
+        max_danwei &&
         max_symbol
       ) {
-        if (+min_value * +min_danwei > +max_value * +max_danwei) {
-          return false;
+        if (+min_value * +min_danwei >= +max_value * +max_danwei) {
+          isOk = false;
         }
         if (min_value.length > 10 || max_value.length > 10) {
-          return false;
+          isOk = false;
         }
-        return true;
-      } else {
-        return false;
       }
+      return isOk;
     },
+
     // 显示删除确认框
     toShowProp(tar) {
       this.$confirm(`确定要删除吗？`)
@@ -416,7 +480,7 @@ export default {
       let index = this.addLiLvProp.lilv_data.findIndex(tar => tar.num == num);
       this.addLiLvProp.lilv_data.splice(index, 1);
     },
-    toEdit(item, event) {
+    toEdit(item) {
       this.toDelete(item.num);
       this.lilvForm = { ...item };
       this.addLiLvProp.isInput = true;
@@ -426,19 +490,6 @@ export default {
 };
 </script>
 <style scoped='true' >
-.suolueWap {
-  display: flex;
-  flex-wrap: wrap;
-}
-.suolue {
-  width: 180px;
-  position: relative;
-  margin: 0 5px 15px 0;
-  padding: 5px;
-  border-radius: 5px 0px 5px 5px;
-  background: rgb(197, 243, 180);
-  font-size: 14px;
-}
 .suolueBtn {
   position: absolute;
   top: -14px;
@@ -459,7 +510,7 @@ export default {
   animation: blingbling 2s infinite;
 }
 .hasError::after {
-  content: "最小期限不能比最大期限大，且都不可以超过10个字符！";
+  content: "存期设置数据输入有误，且都不可以超过10个字符！";
   position: absolute;
   top: -35px;
   left: 30%;

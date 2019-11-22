@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <div class="toCreateBtn">
         <el-button
           v-if="tableInputData.data.quanxian.includes('market_coupon_add')"
@@ -198,7 +201,8 @@
         </el-form-item>
 
         <el-form-item label="收益发放类型" prop="incomeGrantType">
-          <el-select filterable
+          <el-select
+            filterable
             v-model="editForm.incomeGrantType"
             placeholder="请选择收益发放类型"
             style="width:100%;"
@@ -224,7 +228,8 @@
         </el-form-item>
 
         <el-form-item label="适用渠道" prop="applyChannel">
-          <el-select filterable
+          <el-select
+            filterable
             v-model="editForm.applyChannel"
             placeholder="请选择适用渠道"
             style="width:100%;"
@@ -421,7 +426,7 @@ export default {
     };
     // 验证手机号
     var checkPhone = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback();
       } else if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error("手机号码有误，请重填"));
@@ -440,6 +445,7 @@ export default {
       }
     };
     return {
+      env: null,
       fafangType: [], // 发放类型
       // 表单上边搜索部分的数据
       ruleForm: {
@@ -481,20 +487,6 @@ export default {
         {
           label: "拼团券",
           value: "PINTUAN"
-        }
-      ],
-      statueList: [
-        {
-          label: "发放中",
-          value: "GRANTING"
-        },
-        {
-          label: "已停止",
-          value: "STOP"
-        },
-        {
-          label: "作废",
-          value: "CANCEL"
         }
       ],
       // 是否为补发券、是否达到预警
@@ -708,6 +700,7 @@ export default {
     forms
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.loadEnd = false;
     let page = sessionStorage.getItem("page"); // 获取页面名称
     this.pageName = page;
@@ -739,7 +732,7 @@ export default {
       let reg = /\./;
       if (reg.test(value)) {
         return true;
-      } else if (value === "") {
+      } else if (!value) {
         return true;
       } else if (value < 0) {
         return true;
@@ -989,7 +982,6 @@ export default {
       if (reg.test(num)) {
         // 有小数点
         let arr = num.split(".");
-        let str = "";
 
         if (type === "ORDER") {
           // 定购券
@@ -1181,12 +1173,12 @@ export default {
     //////////////////////////////////////////////////////////////////////
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
       let market_coupon_add = quanxian.includes("market_coupon_add");
-      let market_coupon_del = quanxian.includes("market_coupon_del");
+      // let market_coupon_del = quanxian.includes("market_coupon_del");
       let market_coupon_upd = quanxian.includes("market_coupon_upd");
       let market_coupon_detail = quanxian.includes("market_coupon_detail");
-      let market_coupon_upd_num = quanxian.includes("market_coupon_upd_num");
+      // let market_coupon_upd_num = quanxian.includes("market_coupon_upd_num");
       if (market_coupon_add) {
         this.tableInputData.data.quanxian.push("market_coupon_add");
       }
@@ -1338,7 +1330,7 @@ export default {
           return obj;
         });
         resolve(data);
-      }).then(data => {
+      }).then(() => {
         this.loadEnd = true;
         return true;
       });
@@ -1351,8 +1343,7 @@ export default {
       let obj = {};
       switch (type) {
         case "search":
-          let arr = Object.keys(this.ruleForm);
-          arr.forEach(str => {
+          Object.keys(this.ruleForm).forEach(str => {
             if (this.ruleForm[str]) {
               obj[str] = this.ruleForm[str];
             }

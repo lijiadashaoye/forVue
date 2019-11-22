@@ -1,69 +1,68 @@
 <template>
-
   <div class="componentWaper">
-    <div id='forHeader'>
-      <h3>{{pageName}}</h3>
+    <div id="forHeader">
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
     </div>
     <div class="contents">
       <div style="width:100%;">
         <ul>
-          <li v-if="infoData.badgeWallName"><strong>徽章墙名称：</strong>
+          <li v-if="infoData.badgeWallName">
+            <strong>徽章墙名称：</strong>
             {{infoData.badgeWallName}}
           </li>
-          <li v-if="infoData.badgeWallExplain"><strong>徽章墙说明(介绍)：</strong>
+          <li v-if="infoData.badgeWallExplain">
+            <strong>徽章墙说明(介绍)：</strong>
             {{infoData.packetExplain}}
           </li>
-          <li v-if="infoData.badgeWallIcon"><strong>徽章墙图标：</strong>
-            <img
-              :src='infoData.badgeWallIcon'
-              style="width:50px;"
-            >
+          <li v-if="infoData.badgeWallIcon">
+            <strong>徽章墙图标：</strong>
+            <img :src="infoData.badgeWallIcon" style="width:50px;" />
           </li>
-          <li v-if="infoData.moduleExplain"><strong>模块介绍：</strong>
+          <li v-if="infoData.moduleExplain">
+            <strong>模块介绍：</strong>
             {{infoData.moduleExplain}}
           </li>
-          <li v-if="infoData.giftExplain"><strong>礼品介绍：</strong>
+          <li v-if="infoData.giftExplain">
+            <strong>礼品介绍：</strong>
             {{infoData.giftExplain}}
           </li>
-          <li v-if="infoData.ruleType"><strong>点亮规则类型：</strong>
+          <li v-if="infoData.ruleType">
+            <strong>点亮规则类型：</strong>
             {{infoData.ruleType}}
           </li>
-          <li v-if="infoData.status"><strong>状态：</strong>
+          <li v-if="infoData.status">
+            <strong>状态：</strong>
             {{infoData.status}}
           </li>
 
-          <li v-if="infoData.webUrl"><strong>app->h5url链接：</strong>
+          <li v-if="infoData.webUrl">
+            <strong>app->h5url链接：</strong>
             {{infoData.webUrl}}
           </li>
         </ul>
-        <div
-          id='forTable'
-          style="width:100%;"
-        >
-          <isTable
-            v-if="info_table.show"
-            :inputData='info_table'
-            @tableEmit="tableEmit($event)"
-          />
+        <div id="forTable" style="width:100%;">
+          <isTable v-if="info_table.show" :inputData="info_table" @tableEmit="tableEmit($event)" />
         </div>
       </div>
-      <div
-        v-if="Actor.length>0"
-        class="actors"
-      >
+      <div v-if="Actor.length>0" class="actors">
         <p>操作人:</p>
-        <div
-          v-for="(tar,index) in Actor"
-          :key='index'
-        >
-          <span v-if="tar.createUserId">{{'ID：'+tar.createUserId}}<br></span>
-          <span v-if="tar.createUserName">{{'名字：'+tar.createUserName}}<br></span>
-          <span v-if="tar.createTime"> {{'时间：'+tar.createTime}}</span>
+        <div v-for="(tar,index) in Actor" :key="index">
+          <span v-if="tar.createUserId">
+            {{'ID：'+tar.createUserId}}
+            <br />
+          </span>
+          <span v-if="tar.createUserName">
+            {{'名字：'+tar.createUserName}}
+            <br />
+          </span>
+          <span v-if="tar.createTime">{{'时间：'+tar.createTime}}</span>
         </div>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -74,6 +73,7 @@ export default {
   },
   data() {
     return {
+      env: null,
       Actor: [], // 操作人
       pageName: "",
       infoData: {}, // 保存服务器给的数据，已经格式化
@@ -97,6 +97,7 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
     this.getUserData();
   },

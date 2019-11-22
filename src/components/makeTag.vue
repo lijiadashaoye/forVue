@@ -1,86 +1,49 @@
 <template>
   <div id="tagWaper">
-    <input
-      placeholder="输入标签名进行搜索"
-      type='text'
-      class="isInput"
-      v-model="inputData.name"
-    >
-    <button
-      class="isButtonTag"
-      @click="toSearch"
-    >搜索</button>
-    <button
-      class="isButtonTag2"
-      @click="toSearch2"
-    >全部标签</button>
+    <input placeholder="输入标签名进行搜索" type="text" class="isInput" v-model="inputData.name" />
+    <button class="isButtonTag" @click="toSearch">搜索</button>
+    <button class="isButtonTag2" @click="toSearch2">全部标签</button>
     <div class="tagWaper">
       <h3>备选：</h3>
-      <div
-        @click="toAdd(item)"
-        v-for="(item,index) in inputData.list"
-        :key="index"
-        class="tagsd"
-        :style="{background:item.bkColor}"
-      >
-        {{item.name}}
+      <div v-if="inputData.list.length" class="markList">
+        <div
+          @click="toAdd(item)"
+          v-for="(item,index) in inputData.list"
+          :key="index"
+          class="tagsd"
+          :style="{background:item.bkColor}"
+        >{{item.name}}</div>
       </div>
+      <span v-else>没有搜索到数据！</span>
     </div>
     <div>
       <h3>已使用的</h3>
       <div class="tagWaper">
-        <div
-          v-for="(item,index) in inputData.hasSelect"
-          :key="index"
-          class="tags"
-        >
+        <div v-for="(item,index) in inputData.hasSelect" :key="index" class="tags">
           {{item.name}}
-          <span
-            title="点击删除"
-            class="toClose"
-            @click="toRemove(item)"
-          >x</span>
+          <span title="点击删除" class="toClose" @click="toRemove(item)">x</span>
         </div>
       </div>
-
     </div>
 
     <div>
       <h3>准备添加的</h3>
       <div class="tagWaper">
-        <div
-          v-for="(item,index) in inputData.willAdd"
-          :key="index"
-          class="tags"
-        >
+        <div v-for="(item,index) in inputData.willAdd" :key="index" class="tags">
           {{item.name}}
-          <span
-            title="点击删除"
-            class="toClose"
-            @click="toDelete(item)"
-          >x</span>
+          <span title="点击删除" class="toClose" @click="toDelete(item)">x</span>
         </div>
       </div>
-
     </div>
 
     <div>
       <h3>准备删除的</h3>
       <div class="tagWaper">
-        <div
-          v-for="(item,index) in inputData.toDelete"
-          :key="index"
-          class="tags1"
-        >
+        <div v-for="(item,index) in inputData.toDelete" :key="index" class="tags1">
           {{item.name}}
-          <span
-            title="不删除已有的"
-            class="toClose"
-            @click="reBack(item)"
-          >+</span>
+          <span title="不删除已有的" class="toClose" @click="reBack(item)">+</span>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -153,12 +116,14 @@ export default {
   padding: 10px 0;
   width: 100%;
 }
-.tagWaper {
+.tagWaper,
+.markList {
   display: flex;
   justify-content: flex-start;
   flex-wrap: wrap;
   padding: 5px 0;
 }
+
 .tagsd {
   padding: 1px 8px;
   border-radius: 10px;

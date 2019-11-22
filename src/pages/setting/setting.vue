@@ -6,27 +6,27 @@
 
 
 <script>
-
-
 export default {
   props: {},
   data() {
-    return {
-      
-    };
+    return {};
   },
-  created() {
-   
-  },
-  watch: {
-   
-  },
-  methods: {
-   
-  }
+  created() {},
+  watch: {},
+  methods: {}
 };
 </script>
-
-<style scoped='true' lang="scss">
-
+<style lang="scss">
+.adverAdd {
+  display: flex;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 5px 0;
+  button {
+    margin-left: 10px;
+  }
+}
+.bottomBtn {
+  text-align: center;
+}
 </style>

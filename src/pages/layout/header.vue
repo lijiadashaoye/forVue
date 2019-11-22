@@ -1,29 +1,15 @@
 <template>
-  <div class="header">
+  <div :class="env?'header1':'header'">
     <div class="front">
-      <img v-if="!asideState" src="../../assets/logo.png">
+      <img v-if="!asideState" src="../../assets/logo.png" />
       <span v-if="asideState">比财数据科技</span>
-      <button
-        :title="buttonText"
-        @click="toHidden"
-      >
-        <span
-          class="myIcon12px icon-allLeft"
-          v-if="asideState"
-        ></span>
-        <span
-          class="myIcon12px icon-shuangyou"
-          v-if="!asideState"
-        ></span>
+      <button :title="buttonText" @click="toHidden">
+        <span class="myIcon12px icon-allLeft" v-if="asideState"></span>
+        <span class="myIcon12px icon-shuangyou" v-else></span>
       </button>
-
     </div>
     <div class="back">
-      <span
-        @click="routeHome"
-        class="toHome"
-        title="返回到最初"
-      >返回主页</span>
+      <span @click="routeHome" class="toHome" title="返回到最初">返回主页</span>
 
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
@@ -39,7 +25,6 @@
             <span class="myIcon12px icon-tuichu"></span>
             退出
           </el-dropdown-item>
-
         </el-dropdown-menu>
       </el-dropdown>
     </div>
@@ -47,13 +32,14 @@
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex";
+import { mapMutations, mapGetters, mapState } from "vuex";
 export default {
   props: {},
   data() {
     return {
       userName: "",
-      buttonText: "点击缩小导航栏！"
+      buttonText: "点击缩小导航栏！",
+      env: null
     };
   },
   computed: {
@@ -63,8 +49,9 @@ export default {
     })
   },
   created() {
-    let kk = JSON.parse(localStorage.getItem("userData"));
+    let kk = JSON.parse(sessionStorage.getItem("userData"));
     this.userName = kk ? kk.username : "";
+    this.env = sessionStorage.getItem("env") === "development";
   },
   methods: {
     ...mapMutations(["set_asideState"]),

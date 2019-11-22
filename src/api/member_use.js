@@ -42,10 +42,10 @@ export default {
     },
     ////////////////////////////////////////////////////////////////
     // 获取标签列表
-    member_manager_getMarkLise(data) {
+    member_manager_getMarkList(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `/member/manager/label?${qs.stringify(data.data.search)}`,
+            url: `/member/manager/label?${qs.stringify(data.data)}`,
         })
     },
 
@@ -183,4 +183,23 @@ export default {
             url: `/member/manager/mission?${qs.stringify(data.data)}`
         })
     },
+
+       ////////////////////////////////////////////////////////////////
+
+    // 添加黑名单
+    add_black(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `/member/manager/member-black-list`,
+            data:data.data
+        })
+    },
+
+
+
+
+
+
+
+
 }

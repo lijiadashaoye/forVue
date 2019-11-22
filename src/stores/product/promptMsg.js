@@ -29,7 +29,7 @@ const mutations = {
     },
     userDo(state) {
         state.promptMsgList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('prompt_message_upd') > -1) {
             state.promptMsgList.data.quanxian.push('ok')
             state.promptMsgList.data.custom.push({

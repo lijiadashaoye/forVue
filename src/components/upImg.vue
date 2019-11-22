@@ -3,7 +3,7 @@
     <span class="uping" v-if="uping">上传中...</span>
     <span @click="deleteImg" title="删除图片" class="myIcon20px icon-49shurushanchu-1 toDelete"></span>
     <div class="showImg" @click="upImg" title="添加图片">
-      <img v-if="imgSrc" :src="imgSrc" class="isImg">
+      <img v-if="imgSrc" :src="imgSrc" class="isImg" />
       <div v-else>
         <p style="text-align:center" class="myIcon20px icon-add isIcon"></p>
         <p>选择图片</p>
@@ -53,7 +53,8 @@ export default {
             type2 == "png" ||
             type2 == "jpeg" ||
             type2 == "jpg" ||
-            type2 == "gif"
+            type2 == "gif" ||
+            type2 == "bmp"
           ) {
             this.uping = true;
             let formData = new FormData();
@@ -65,7 +66,7 @@ export default {
                 this.uping = false;
               }
             }, 6000);
-            
+
             // 执行上传
             this.$api
               .UPImg({

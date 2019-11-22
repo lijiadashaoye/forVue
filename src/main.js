@@ -35,13 +35,6 @@ Vue.prototype.validForbid = function (value) {
   }
   return value;
 }
-// 富文本编辑器
-import VueQuillEditor from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
-import 'quill/dist/quill.js'
-Vue.use(VueQuillEditor)
 
 // 设置全局图片请求的baseUrl
 if (process.env.NODE_ENV == "development") {
@@ -53,6 +46,17 @@ if (process.env.NODE_ENV == "development") {
   // "https://bicai-architecture.oss-cn-beijing.aliyuncs.com/";
 }
 
+// 根据路由设置标题
+router.afterEach(() => {
+  let page = sessionStorage.getItem('page');
+  if (page) {
+    document.title = page
+  } else {
+    document.title = '比财数据科技'
+  }
+})
+
+
 let isApp = new Vue({
   router,
   store,
@@ -60,6 +64,3 @@ let isApp = new Vue({
 }).$mount('#app');
 
 export default isApp
-
-
-

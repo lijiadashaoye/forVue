@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div class="headerName">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button size="mini" type="warning" @click="back">返回</el-button>
     </div>
 
@@ -51,7 +54,7 @@
           </li>
         </ul>
         <div id="forTable" style="width:100%;">
-          <isTable v-if="info_table.show" :inputData="info_table" @tableEmit="tableEmit($event)"/>
+          <isTable v-if="info_table.show" :inputData="info_table" @tableEmit="tableEmit($event)" />
         </div>
       </div>
       <div v-if="Actor.length>0" class="actors">
@@ -59,11 +62,11 @@
         <div v-for="(tar,index) in Actor" :key="index">
           <span v-if="tar.creator">
             {{'ID：'+tar.creator}}
-            <br>
+            <br />
           </span>
           <span v-if="tar.creatorName">
             {{'名字：'+tar.creatorName}}
-            <br>
+            <br />
           </span>
           <span v-if="tar.gmtCreated">{{'时间：'+tar.gmtCreated}}</span>
         </div>
@@ -80,6 +83,7 @@ export default {
   },
   data() {
     return {
+      env: null,
       Actor: [], // 操作人
       pageName: "",
       infoData: {}, // 保存服务器给的数据，已经格式化
@@ -103,6 +107,7 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
     this.getUserData();
   },

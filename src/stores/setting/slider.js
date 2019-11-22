@@ -29,7 +29,7 @@ const mutations = {
                     if (v.isShow === 'SHOW'){
                         v.isShowCN = '显示'
                     } else if (v.isShow === 'HIDE') {
-                        caches.isShowCN = '不显示'
+                        v.isShowCN = '不显示'
                     }
                 })
             }
@@ -38,13 +38,21 @@ const mutations = {
     //权限认证
     userDo(state) {
         state.sliderList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('sidebar_upd') > -1) {
             state.sliderList.data.custom.push({
                 text: "修改",
                 type: "warning",
                 size: "small",
                 emit: "edit"
+            });
+        }
+        if (jurisdiction.indexOf('sidebar_del') > -1) {
+            state.sliderList.data.custom.push({
+                text: "删除",
+                type: "danger",
+                size: "small",
+                emit: "delete"
             });
         }
     },

@@ -1,8 +1,8 @@
 import {
     AxiosGet,
-    AxiosDelete,
-    AxiosPost,
-    AxiosPut
+    // AxiosDelete,
+    // AxiosPost,
+    // AxiosPut
 } from '../sets/axiosMethods';
 
 // 设备定位列表接口

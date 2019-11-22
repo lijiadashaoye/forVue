@@ -106,8 +106,12 @@
     font-size: 12px;
     width: 100%;
     display: flex;
-    justify-content: flex-start;
 }
+
+.isContentLong>p {
+    color: rgb(0, 134, 175);
+}
+
 
 .isTitleLong {
     font-weight: bold;
@@ -119,19 +123,22 @@
     flex-shrink: 0
 }
 
-.isContentLong>p {
+.isShowContent {
     width: calc(100% - 30px);
     margin: 0;
     color: rgb(0, 134, 175);
     box-sizing: border-box;
     padding-right: 2px;
+    overflow: auto;
 }
+
 
 .isHidden {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-height: 80px;
+    color: rgb(0, 134, 175);
 }
 
 .guizeTitle {
@@ -140,9 +147,17 @@
     vertical-align: text-bottom
 }
 
+.ql-align-center {
+    text-align: center
+}
+
+.ql-editor .ql-align-center {
+    text-align: center;
+}
+
 /* 表单组件使用  */
 .table_top {
-    padding-left: 10px;
+    padding: 5px;
     display: flex;
     justify-content: space-between;
     background: white;
@@ -190,17 +205,15 @@
 
 .chartWaper {
     display: flex;
-    justify-content: space-between;
 }
 
 .chartWaper>div:nth-child(1) {
-    width: calc(100% - 90px);
+    width: calc(100% - 75px);
 }
 
 .chartWaper>div:nth-child(2) {
     width: 70px;
-    height: 120px;
-    margin-top: 50px;
+    margin-top: 70px;
 }
 
 .chartTop {
@@ -209,11 +222,16 @@
     position: absolute;
     top: -2px;
     left: 5px;
-    right: 16px;
+    right: 10px;
+}
+
+.chartTop>div:nth-of-type(2) button {
+    margin-bottom: 3px;
+    width: 70px;
+    padding: 5px 0;
 }
 
 .radioGroup {
-    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -238,6 +256,68 @@
     padding: 7px 0 !important;
     ;
     text-align: center !important;
+}
+
+.editDivTop {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.editDivTop>button {
+    margin-left: 10px;
+}
+
+.editDivTop>p {
+    width: 117px;
+}
+
+.editTit {
+    display: flex;
+    justify-content: space-between;
+}
+
+.editTit>p:nth-of-type(1) {
+    width: 20%;
+    text-align: center;
+}
+
+.editTit>p:nth-of-type(2) {
+    text-align: center;
+    width: 40%;
+}
+
+.editTit>p:nth-of-type(3) {
+    text-align: center;
+    width: 40%;
+}
+
+.editDiv {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.editDiv>label {
+    width: 214px;
+    font-weight: bold;
+    display: flex;
+    box-sizing: border-box;
+    padding: 0 2px;
+}
+
+.editDiv>div {
+    margin-left: 10px;
+}
+
+.itEdit {
+    background: rgb(221, 219, 219);
+}
+
+.dialogFooter {
+    display: flex;
+    justify-content: space-between;
 }
 
 /* 机构详情页使用*/
@@ -279,6 +359,7 @@
 .isLink {
     text-indent: 5px;
     text-decoration: underline !important;
+    color: rgb(9, 155, 199);
     cursor: pointer;
 }
 
@@ -425,8 +506,8 @@ hr {
 
 .isFormLine {
     margin: 0 auto;
-    width: 65%;
-    min-width: 500px;
+    width: 80%;
+    min-width: 850px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -441,6 +522,7 @@ hr {
 }
 
 .nextButtons {
+    background: #f3f3f3;
     width: 200px;
     padding-bottom: 30px;
     margin: 10px auto;
@@ -580,7 +662,7 @@ ul {
 .nextPage span {
     margin: 0 5px;
     font-size: 12px;
-    padding:0 2px;
+    padding: 0 2px;
 }
 
 .nextPage>span:nth-child(3):hover,
@@ -665,7 +747,7 @@ ul {
 }
 
 .setText {
-    font-size: 140px;
+    font-size: 140px !important;
     color: rgb(0, 255, 85);
     ;
 }
@@ -702,6 +784,9 @@ ul {
 
 .forTtitle {
     cursor: pointer;
+    display: flex;
+    box-sizing: border-box;
+    word-break: break-all;
 }
 
 .forTList>li {
@@ -793,4 +878,97 @@ ul {
     width: 100%;
     background: pink;
 
+}
+
+.errInfo {
+    font-weight: bold;
+    color: rgb(243, 40, 101);
+    margin-left: 20px;
+}
+
+.suolueWap {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.suolue {
+    width: 190px;
+    position: relative;
+    margin: 0 5px 18px 0;
+    padding: 5px;
+    border-radius: 5px 0px 5px 5px;
+    background: rgb(231, 227, 241);
+    font-size: 14px;
+}
+
+
+.isPageName {
+    padding: 4px 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+    color: #666666;
+    font-weight: bold;
+}
+
+.lineSpan {
+    margin-right: 2px;
+    color: #188FFF;
+}
+
+.lineSpan1 {
+    margin-right: 2px;
+    color: rgb(170, 24, 255);
+}
+
+.content {
+    width: 400px;
+    margin: 20px auto 0;
+}
+
+.forDialog {
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: rgb(126, 121, 121);
+    margin-right: 10px;
+}
+
+.alertUl {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap
+}
+
+.alertUl li {
+    width: 49%;
+    word-wrap: break-word;
+}
+
+.financing {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.financing tr {
+    margin-bottom: 5px;
+}
+
+.financing th {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.financing tr>th,
+.financing tr>td,
+.financing tr {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 50%;
+}
+
+.hoverI:hover {
+    background: rgb(76, 207, 240);
+    color: white;
 }

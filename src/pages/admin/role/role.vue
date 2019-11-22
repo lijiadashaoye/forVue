@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button
         size="mini"
         type="primary"
@@ -44,7 +47,7 @@
               style="width:100%;"
               v-model="updataUser.roleDeptId"
               :options="deptdata"
-              change-on-select
+              :props="{ checkStrictly: true }"
             ></el-cascader>
           </el-form-item>
         </el-form>
@@ -97,6 +100,7 @@ export default {
   props: {},
   data() {
     return {
+      env: null,
       // 权限tree数据
       getMenuAllTree: [],
       checkedArr: [], // 已选的tree项
@@ -163,6 +167,7 @@ export default {
     isTable
   },
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
@@ -235,7 +240,6 @@ export default {
                 let numSucces = 0;
                 let numFail = 0;
                 let failName = "";
-                let titleText = `失败的数据为：\n `;
                 arr.forEach(item => {
                   if (item.ok) {
                     numSucces++;
@@ -347,7 +351,7 @@ export default {
           if (res) {
             let obj = { ...this.updataUser, ...res.data };
             delete obj.roleDeptId;
-            this.updataUser = { ...obj };
+            this.updataUser = { ...obj, id: inData.roleId };
             return res.data;
           }
         });
@@ -397,17 +401,37 @@ export default {
       if (type) {
         this.$refs.updataUser.validate(valid => {
           if (valid) {
-            let httpType = ""; // 根据是否需要填写密码判定http方式，是否是添加
+            let httpType = "",
+              kk = {
+                roleName: this.updataUser.roleName,
+                roleCode: this.updataUser.roleCode,
+                roleDesc: this.updataUser.roleDesc,
+                deptName: "",
+                roleDeptId: +this.updataUser.roleDeptId[
+                  this.updataUser.roleDeptId.length - 1
+                ]
+              };
+            let arrs = this.deptdata,
+              deptName = "";
+
+            this.updataUser.roleDeptId.forEach(ids => {
+              wap: for (let i = 0; i < arrs.length; i++) {
+                if (arrs[i].value == ids) {
+                  deptName = arrs[i].label;
+                  if (arrs[i].children) {
+                    arrs = arrs[i].children;
+                  }
+                  break wap;
+                }
+              }
+            });
+            kk.deptName = deptName;
             if (this.dialog.title === "添加") {
               httpType = "post";
             } else {
               httpType = "put";
+              kk.roleId = this.updataUser.id;
             }
-
-            let kk = { ...this.updataUser }; // 上传服务器要求的格式数据
-            kk.roleDeptId = +this.updataUser.roleDeptId[
-              this.updataUser.roleDeptId.length - 1
-            ];
             this.$api
               .admin_role_addRole({
                 method: httpType,
@@ -425,10 +449,8 @@ export default {
                       }
                     })
                     .then(() => {
-                      this.getUserData();
-                    })
-                    .then(() => {
                       this.dialogClose();
+                      this.getUserData();
                     });
                 }
               });
@@ -458,7 +480,7 @@ export default {
       let pro2 = this.$api
         .admin_role_getRoleTree({
           vm: this,
-          data: inData.roleCode
+          data: "ROLE_" + inData.roleCode
         })
         .then(res => {
           if (res) {
@@ -527,7 +549,7 @@ export default {
       // 变更用户权限后需要重新获取数据
       this.tableInputData.data.quanxian = [];
       this.tableInputData.data.custom.length = 0;
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
 
       let sys_role_edit = quanxian.includes("sys_role_edit");
       let sys_role_del = quanxian.includes("sys_role_del");
@@ -597,12 +619,12 @@ export default {
           {
             title: "角色标识",
             key: "roleCode",
-            minWidth: "230"
+            minWidth: "120"
           },
           {
             title: "角色描述",
             key: "roleDesc",
-            minWidth: "160"
+            minWidth: "200"
           },
           {
             title: "所属部门",

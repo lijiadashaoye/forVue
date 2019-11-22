@@ -1,61 +1,52 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
-      <div class="explosiveAdd">
-        <el-button
-          type="primary"
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
+      <div class="adverAdd">
+        <el-input
+          style="width:200px;"
+          placeholder="请输入App名称"
+          prefix-icon="el-icon-search"
           size="mini"
-          @click="addProtocol(true)"
-        >
-          新增协议政策
-        </el-button>
-
-        <div>
-          <el-input
-            placeholder="请输入App名称"
-            prefix-icon="el-icon-search"
-            size='mini'
-            v-model="inputVal">
-          </el-input>       
-          <el-button
-            type="primary"
-            size="mini"
-            @click="search"
-            style="marginLeft:10px"
-          >
-            查询
-          </el-button>
-        </div>
-        
+          v-model="inputVal"
+        ></el-input>
+        <el-button type="warning" size="mini" @click="search" style="marginLeft:10px">查询</el-button>
+        <el-button type="primary" size="mini" @click="addProtocol(true)">新增协议政策</el-button>
       </div>
     </div>
 
     <div id="forTable">
-      <isTable
-      :inputData="this.$store.state.protocol.protocolList"
-      @tableEmit='tableEmit'/>
+      <isTable :inputData="this.$store.state.protocol.protocolList" @tableEmit="tableEmit" />
     </div>
 
-     <!-- 修改/详情信息的dialog -->
-    <el-dialog :close-on-click-modal='false' :title=" detailFlag ? '详情' : '修改服务协议' " :visible.sync="dialogFormVisible">
+    <!-- 修改/详情信息的dialog -->
+    <el-dialog
+      :close-on-click-modal="false"
+      :title=" detailFlag ? '详情' : '修改服务协议' "
+      :visible.sync="dialogFormVisible"
+    >
       <protocolAddUpt
-      :upd.sync="upd"
-      :appChannel.sync="this.$store.state.protocol.appChannel"
-      :opts="opts"
-      :detailFlag.sync="detailFlag"
-      @req="req"
-      @close="close"
-      @cancle="cancle"/>
+        :upd.sync="upd"
+        :appChannel.sync="this.$store.state.protocol.appChannel"
+        :opts="opts"
+        :detailFlag.sync="detailFlag"
+        :dialogFormVisible="dialogFormVisible"
+        @req="req"
+        @close="close"
+        @cancle="cancle"
+      />
     </el-dialog>
   </div>
 </template>
 
 <script>
-import isTable from '../../../components/isTable/isTable';
-import protocolAddUpt from '../../../components/protocolAddUpt';
-import { protocol_upd, protocol_delete } from '../../../api/setting_use.js';
-import { mapMutations } from 'vuex';
+import isTable from "../../../components/isTable/isTable";
+import protocolAddUpt from "../../../components/protocolAddUpt";
+import { protocol_upd, protocol_delete } from "../../../api/setting_use.js";
+import { mapMutations } from "vuex";
 export default {
   props: {},
   components: {
@@ -64,64 +55,71 @@ export default {
   },
   data() {
     return {
+      env: null,
       pageName: "", // 当前页面名字
       dialogFormVisible: false,
       inputVal: "",
       upd: false,
       detailFlag: true,
-      opts:{
-
-      }
+      opts: {}
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
+
     this.pageName = this.$route.name;
     this.userDo();
     this.$store.state.protocol.protocolList.pageNum = 1;
     this.getProtocolListData({
-            pageNum: this.$store.state.protocol.protocolList.pageNum,
-            pageSize: this.$store.state.protocol.protocolList.pageSize
-          });
+      pageNum: this.$store.state.protocol.protocolList.pageNum,
+      pageSize: this.$store.state.protocol.protocolList.pageSize
+    });
     this.getAppChannel();
     this.$store.state.protocol.protocolList.data.title = [
       {
         title: "编号",
         key: "id",
         minWidth: "80",
-        sortable:true
-      },{
+        sortable: true
+      },
+      {
         title: "标题",
         key: "title",
         minWidth: "200",
-        sortable:true
-      },{
+        sortable: true
+      },
+      {
         title: "App",
         key: "appChannelName",
         minWidth: "120",
-        sortable:true
-      },{
+        sortable: true
+      },
+      {
         title: "高亮字体说明",
         key: "highlight",
         minWidth: "200",
-        sortable:true
-      },{
+        sortable: true
+      },
+      {
         title: "高亮字体颜色",
         key: "highlightColor",
         minWidth: "200",
-        sortable:true
+        sortable: true
       }
-    ]
+    ];
   },
 
   methods: {
     ...mapMutations({
-      userDo:'protocol/userDo',
-      getProtocolListData: 'protocol/getProtocolListData',
-      getAppChannel: 'protocol/getAppChannel',
+      userDo: "protocol/userDo",
+      getProtocolListData: "protocol/getProtocolListData",
+      getAppChannel: "protocol/getAppChannel"
     }),
     //点击新增按钮
-    addProtocol(){
-      let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+    addProtocol() {
+      let jurisdiction = JSON.parse(
+        sessionStorage.getItem("buttenpremissions")
+      );
       //有权限  跳转到创建页面
       if (jurisdiction.indexOf("protocol_private_add") > -1) {
         this.$router.push(`/home/setting/protocol-private/add`);
@@ -133,33 +131,31 @@ export default {
       }
     },
     //点击保存
-    req(data){
-      protocol_upd(data).then(res=> {
-        if(res && res.success){
-          this.$message.success('保存成功')
+    req(data) {
+      protocol_upd(data).then(res => {
+        if (res && res.success) {
+          this.$message.success("保存成功");
           this.dialogFormVisible = false;
           this.upd = false;
           this.getProtocolListData({
             pageNum: this.$store.state.protocol.protocolList.pageNum,
             pageSize: this.$store.state.protocol.protocolList.pageSize
-          })
+          });
         }
-      })
+      });
     },
 
     //点击关闭
     close(data) {
       this.dialogFormVisible = data;
-      this.opts = {};
     },
 
     //点击取消
     cancle() {
       this.dialogFormVisible = false;
-      this.opts = null;
     },
     //点击修改
-    edit(data){
+    edit(data) {
       this.dialogFormVisible = true;
       this.detailFlag = false;
       this.opts = data;
@@ -172,28 +168,30 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       }).then(() => {
-        protocol_delete(id).then(res => {
-          if(res && res.success) {
-            this.getProtocolListData({
-              pageNum: this.$store.state.protocol.protocolList.pageNum,
-              pageSize: this.$store.state.protocol.protocolList.pageSize,
-              appChannelName: this.inputVal ? this.inputVal : null,
+        protocol_delete(id)
+          .then(res => {
+            if (res && res.success) {
+              this.getProtocolListData({
+                pageNum: this.$store.state.protocol.protocolList.pageNum,
+                pageSize: this.$store.state.protocol.protocolList.pageSize,
+                appChannelName: this.inputVal ? this.inputVal : null
+              });
+            }
+            this.$message({
+              type: "success",
+              message: "删除成功!"
             });
-          }
-          this.$message({
-            type: "success",
-            message: "删除成功!"
+          })
+          .catch(res => {
+            this.$message({
+              type: "error",
+              message: `${res.message}`
+            });
           });
-        }).catch(res=>{
-          this.$message({
-            type: "error",
-            message: `${res.message}`
-          });
-        })
-      })
+      });
     },
     //点击详情
-    detail(data){
+    detail(data) {
       this.dialogFormVisible = true;
       this.detailFlag = true;
       this.opts = data;
@@ -202,11 +200,11 @@ export default {
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-           //再次请求列表数据
+          //再次请求列表数据
           this.getProtocolListData({
             pageNum: this.$store.state.protocol.protocolList.pageNum,
             pageSize: this.$store.state.protocol.protocolList.pageSize,
-            appChannelName: this.inputVal ? this.inputVal : null,
+            appChannelName: this.inputVal ? this.inputVal : null
           });
           break;
         case "edit": // 编辑按钮
@@ -222,26 +220,11 @@ export default {
     },
     search() {
       this.getProtocolListData({
-        pageNum:1,
-        pageSize:this.$store.state.protocol.protocolList.pageSize,
+        pageNum: 1,
+        pageSize: this.$store.state.protocol.protocolList.pageSize,
         appChannelName: this.inputVal ? this.inputVal : null
-      })
+      });
     }
   }
 };
 </script>
-
-<style scoped='true' lang="scss">
-  .explosiveAdd {
-    width: 100%;
-    height:68px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    .el-input {
-      width: 200px;
-    }
-  }
-</style>

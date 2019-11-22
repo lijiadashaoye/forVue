@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-input size="mini" v-model="seachInput" placeholder="用户名" style="width:180px;"></el-input>
       <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
       <el-button size="mini" type="warning" @click="seachClick(false)">重置</el-button>
@@ -34,7 +37,7 @@
               style="width:100%;"
               v-model="menuData.deptId"
               :options="deptdata"
-              change-on-select
+              :props="{checkStrictly: true }"
             ></el-cascader>
           </el-form-item>
 
@@ -117,7 +120,7 @@ export default {
   data() {
     // 验证手机号
     var checkPhone = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("请输入电话号码"));
       } else if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error("手机号码有误，请重填"));
@@ -126,6 +129,7 @@ export default {
       }
     };
     return {
+      env: null,
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
@@ -188,6 +192,7 @@ export default {
     isTable
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
@@ -200,7 +205,7 @@ export default {
       this.getRole(id);
     },
     getRole(id) {
-      this.$api
+      return this.$api
         .admin_user_getRole({
           vm: this,
           data: id
@@ -208,10 +213,9 @@ export default {
         .then(res => {
           if (res) {
             this.ruleList = res.data;
-            if (this.ruleList.length == 0) {
-              // 动态清理roles数据
-              this.menuData.roles = [];
-            }
+            // 动态清理roles数据
+            this.menuData.roles = [];
+            return;
           }
         });
     },
@@ -251,10 +255,7 @@ export default {
 
             var reg = /[`~!@#$%^&*()\\+=<>?:"{}|,/;'[\]·！￥……（）——\\《》？：“”【】；‘’，。、]/g;
             if (reg.test(kk.username)) {
-              this.$message({
-                type: "warning",
-                message: `用户名中不能使用特殊字符`
-              });
+              this.$message.error("用户名中不能使用特殊字符");
               return;
             }
 
@@ -386,7 +387,6 @@ export default {
                 let numSucces = 0;
                 let numFail = 0;
                 let failName = "";
-                let titleText = `失败的数据为：\n `;
                 arr.forEach(item => {
                   if (item.ok) {
                     numSucces++;
@@ -420,7 +420,7 @@ export default {
      */
     checkChinese(rule, value, callback) {
       let pass = ("" + value).split("").some(tar => tar.charCodeAt() > 122);
-      if (value === "") {
+      if (!value) {
         callback(new Error("请输入密码"));
       } else if (value.length > 16 || value.length < 6) {
         callback(new Error("请输入6--19个字符"));
@@ -512,95 +512,94 @@ export default {
         });
       promiseArr.push(promise2);
 
-      Promise.all(promiseArr)
-        .then(resData => {
-          // 如果是添加，需要设置密码
-          if (type !== "edit") {
-            this.dialog.title = "添加";
-            this.menuData = {
-              actType: "add", // 不显示重设密码
-              setPassWord: true, // 显示密码输入框
-              username: "", // 用户名
-              deptId: [],
-              roles: [],
-              phone: "",
-              lockFlag: "0",
-              password: "",
-              sure_password: ""
-            };
-            this.rules["password"] = [
-              { required: true, validator: this.checkChinese, trigger: "blur" }
-            ];
-            this.rules["sure_password"] = [
-              { required: true, validator: this.surePassword, trigger: "blur" }
-            ];
-          } else {
-            this.dialog.title = "用户修改";
-            new Promise(resolve => {
-              // 将所属部门数据拉平成为一维数组，后边使用
-              let arrBig = [];
-              let digui = arr => {
-                arr.forEach(item => {
-                  arrBig.push(item);
-                  if (item.children) {
-                    digui(item.children);
-                  }
-                });
-              };
-              digui(resData[1]);
-              resolve(arrBig);
-            })
-              .then(arrs => {
-                // 获取所属部门的联动层级id
-                let arrChoose = [],
-                  ids = resData[0].deptId;
-                for (let i = arrs.length; i--; ) {
-                  let item = arrs[i];
-                  if (item.id == ids) {
-                    arrChoose.unshift("" + ids);
-                    ids = item.parentId;
-                  }
-                }
-                return arrChoose;
-              })
-              .then(depIds => {
-                // 根据所属部门的id，获取角色数据列表
-                if (depIds.length > 0) {
-                  let id = depIds[depIds.length - 1];
-                  this.getRole(id);
-                }
-                return depIds;
-              })
-              .then(depIds => {
-                let roleArr = resData[0].roleList;
-                delete this.rules.password;
-                delete this.rules.sure_password;
-                // 如果是编辑，可以选择是否重设密码
-                this.menuData = {
-                  actType: "edit", // 显示重设密码checkbox
-                  setPassWord: false, // 不显示密码输入框
-                  userId: resData[0].userId,
-                  username: resData[0].username,
-                  deptId: depIds, // 所属部门
-                  roles:
-                    roleArr.length > 0 ? roleArr.map(item => item.roleId) : [],
-                  phone: resData[0].phone,
-                  lockFlag: resData[0].lockFlag
-                };
-              });
-          }
-        })
-        .then(() => {
+      Promise.all(promiseArr).then(resData => {
+        // 如果是添加，需要设置密码
+        if (type !== "edit") {
+          this.dialog.title = "添加";
+          this.menuData = {
+            actType: "add", // 不显示重设密码
+            setPassWord: true, // 显示密码输入框
+            username: "", // 用户名
+            deptId: [],
+            roles: [],
+            phone: "",
+            lockFlag: "0",
+            password: "",
+            sure_password: ""
+          };
+          this.rules["password"] = [
+            { required: true, validator: this.checkChinese, trigger: "blur" }
+          ];
+          this.rules["sure_password"] = [
+            { required: true, validator: this.surePassword, trigger: "blur" }
+          ];
           this.dialog.show = true;
-        });
+        } else {
+          this.dialog.title = "用户修改";
+          new Promise(resolve => {
+            // 将所属部门数据拉平成为一维数组，后边使用
+            let arrBig = [];
+            let digui = arr => {
+              arr.forEach(item => {
+                arrBig.push(item);
+                if (item.children) {
+                  digui(item.children);
+                }
+              });
+            };
+            digui(resData[1]);
+            resolve(arrBig);
+          })
+            .then(arrs => {
+              // 获取所属部门的联动层级id
+              let arrChoose = [],
+                ids = resData[0].deptId;
+              for (let i = arrs.length; i--; ) {
+                let item = arrs[i];
+                if (item.id == ids) {
+                  arrChoose.unshift("" + ids);
+                  ids = item.parentId;
+                }
+              }
+              return arrChoose;
+            })
+            .then(depIds => {
+              // 根据所属部门的id，获取角色数据列表
+              if (depIds.length > 0) {
+                let id = depIds[depIds.length - 1];
+                return this.getRole(id).then(() => depIds);
+              }
+            })
+            .then(depIds => {
+              let roleArr = resData[0].roleList;
+              delete this.rules.password;
+              delete this.rules.sure_password;
+              // 如果是编辑，可以选择是否重设密码
+              this.menuData = {
+                actType: "edit", // 显示重设密码checkbox
+                setPassWord: false, // 不显示密码输入框
+                userId: resData[0].userId,
+                username: resData[0].username,
+                deptId: depIds, // 所属部门
+                roles:
+                  roleArr.length > 0 ? roleArr.map(item => item.roleId) : [],
+                phone: resData[0].phone,
+                lockFlag: resData[0].lockFlag
+              };
+            })
+            .then(() => {
+              this.dialog.show = true;
+            });
+        }
+      });
     },
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
       let sys_user_edit = quanxian.includes("sys_user_edit");
       let sys_user_del = quanxian.includes("sys_user_del");
       let sys_user_add = quanxian.includes("sys_user_add");
-      let user_phone_edit = quanxian.includes("user_phone_edit"); // 修改手机号
+      // let user_phone_edit = quanxian.includes("user_phone_edit"); // 修改手机号
 
       if (sys_user_add) {
         this.tableInputData.data.quanxian.push("sys_user_add");

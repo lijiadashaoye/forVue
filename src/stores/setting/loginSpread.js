@@ -1,4 +1,4 @@
-import { loginSpread_list, loginSpread_del } from '../../api/setting_use'
+import { loginSpread_list } from '../../api/setting_use'
 
 const state = {
     loginSpreadList : {
@@ -37,11 +37,11 @@ const mutations = {
       // 用户权限判定，之后表格右侧会有不同的操作按钮
      userDo(state) {
         state.loginSpreadList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if(jurisdiction.indexOf('login_page_spread_upd_status') > -1){
             state.loginSpreadList.data.custom.push({
                 text: "更改状态",
-                type: "warning",
+                type: "success",
                 size: "mini",
                 emit: "upStatus"
             })
@@ -49,7 +49,7 @@ const mutations = {
         if(jurisdiction.indexOf('protocol_private_detail') > -1){
             state.loginSpreadList.data.custom.push({
                 text: "详情",
-                type: "danger",
+                type: "primary",
                 size: "mini",
                 emit: "detail"
             });

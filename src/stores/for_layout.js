@@ -1,8 +1,9 @@
 // 定义状态，有哪些需要管理的状态属性
 const state = {
+    titles: '',
     asideState: true,
     reGetAsideData: 0,
-    whicePath: ''
+    whicePath: '' // 记录上一次的路由路径
 };
 
 // 存放可以被组件直接将名字作为属性使用的函数
@@ -22,6 +23,10 @@ const mutations = {
     set_path: (state, data) => {
         state.whicePath = data;
     },
+    set_title: (state, data) => {
+        state.titles = data;
+        sessionStorage.setItem('road', data)
+    },
 }
 // 异步执行状态变更
 const actions = {
@@ -29,10 +34,12 @@ const actions = {
     login({
         dispatch
     }, datas) {
+        sessionStorage.setItem('env', process.env.NODE_ENV)
+
         return datas.vm.$api.toLogin(datas)
             .then(res => {
                 if (res) {
-                    localStorage.setItem('token', '' + res.access_token);
+                    sessionStorage.setItem('token', '' + res.access_token);
                     return dispatch('getUserData', datas.vm)
                 } else {
                     return false
@@ -45,7 +52,7 @@ const actions = {
             .then(res => {
                 if (res) {
                     let kk = res.data.permissions;
-                    localStorage.setItem("buttenpremissions", JSON.stringify(kk));
+                    sessionStorage.setItem("buttenpremissions", JSON.stringify(kk));
                     return res.data
                 }
             })
@@ -57,11 +64,11 @@ const actions = {
             });
 
         return Promise.all([userInfo, asideData]).then(res => {
-            if (res.length===2) {
+            if (res.length === 2) {
                 let userDatas = res[0];
                 let asideData = res[1];
-                localStorage.setItem("userData", JSON.stringify(userDatas));
-                localStorage.setItem("asideData", JSON.stringify(asideData));
+                sessionStorage.setItem("userData", JSON.stringify(userDatas));
+                sessionStorage.setItem("asideData", JSON.stringify(asideData));
                 return true
             } else {
                 vm.$message.error(res.message);
@@ -103,7 +110,11 @@ const actions = {
             'visa_interview_type', // 是否面签
             "transaction_state", // 交易状态
             'bank_type', // 银行类型
-            'product_feature_type' // 产品特性
+            'product_feature_type', // 产品特性
+            'product_all_type', // 产品类型 字典
+            'product_area', // 地区标签
+            'application_type', // app名称
+            'continent_type', // 币种分类   
         ];
 
         arr.forEach((str) => {
@@ -127,11 +138,8 @@ const actions = {
             '/product/fundHouse/list', // 基金公司列表 0
             "/product/institution/list", // 机构列表 1
             '/product/institution/topList', // 获取隶属机构数据 2
-            '/product/tag/list?type=product_tag', // 获取产品标签列表 3
-            '/product/tag/list?type=self_defining_tag', // 获取自定义标签列表 4
-            '/product/tag/list?type=activity_tag', // 获取活动标签列表 5
-            '/log/common/area/tree/two', // 区域数据 6
-            '/product/product_currency/all_currency' // 币种 7
+            '/log/common/area/tree/two', // 区域数据 3
+            '/product/product_currency/all_currency' // 币种 4
         ]
 
         arr2.forEach((str) => {
@@ -188,22 +196,51 @@ const actions = {
             promiseArr3.push(kk);
         });
 
+        let promiseArr4 = [];
+        let arr4 = [
+            'product_tag', // 获取产品标签列表 0
+            'self_defining_tag', // 获取自定义标签列表 1
+            'activity_tag', // 获取活动标签列表 2
+        ];
+
+        arr4.forEach((str) => {
+            let kk = new Promise(resolve => {
+                vm.$api
+                    .post_fn({
+                        vm: vm,
+                        url: '/product/tag/list',
+                        data: {
+                            type: str
+                        }
+                    })
+                    .then(res => {
+                        if (res) {
+                            resolve(res.data);
+                        }
+                    });
+            });
+            promiseArr4.push(kk);
+        });
+
         async function Pro() {
             let kk1 = await Promise.all(promiseArr1);
             let kk2 = await Promise.all(promiseArr2);
             let kk3 = await Promise.all(promiseArr3);
+            let kk4 = await Promise.all(promiseArr4);
+
             [...arr, ...arr3].forEach((item, index) => {
                 obj[item] = [...kk1, ...kk3][index] ? [...kk1, ...kk3][index] : [];
             });
             obj.jijin = kk2[0] ? kk2[0] : [];
             obj.jigou = kk2[1] ? kk2[1] : [];
             obj.paren = kk2[2] ? kk2[2] : [];
-            obj.productTags = kk2[3] ? kk2[3] : [];
-            obj.selfDefiningTags = kk2[4] ? kk2[4] : [];
-            obj.activityTags = kk2[5] ? kk2[5] : [];
 
-            if (kk2[6]) {
-                obj.quyu = kk2[6].map(item => {
+            obj.productTags = kk4[0] ? kk4[0] : [];
+            obj.selfDefiningTags = kk4[1] ? kk4[1] : [];
+            obj.activityTags = kk4[2] ? kk4[2] : [];
+
+            if (kk2[3]) {
+                obj.quyu = kk2[3].map(item => {
                     if (item.children) {
                         return {
                             value: item.adcode,
@@ -229,8 +266,8 @@ const actions = {
                 obj.quyu = []
             }
 
-            if (kk2[7]) {
-                obj.bizhong = kk2[7].map(item => ({
+            if (kk2[4]) {
+                obj.bizhong = kk2[4].map(item => ({
                     label: item.currencyName,
                     value: item.currencyCode,
                     unit: item.currencyUnit
@@ -239,16 +276,6 @@ const actions = {
             } else {
                 obj.bizhong = []
             }
-
-            obj.shelveList = [{
-                    label: "上架中",
-                    value: "YES"
-                },
-                {
-                    label: "已下架",
-                    value: "NO"
-                }
-            ];
 
             obj.qianyueList = [{
                     label: "是",
@@ -259,19 +286,40 @@ const actions = {
                     value: "NO"
                 }
             ];
+
+            obj.forMax = []
+            obj.rule_symbol.forEach(tar => {
+                switch (tar.value) {
+                    case "&lt":
+                        obj.forMax.push({
+                            label: tar.label,
+                            fuhao: "<",
+                            value: tar.value
+                        });
+                        break;
+                    case "&le":
+                        obj.forMax.push({
+                            label: tar.label,
+                            fuhao: "≤",
+                            value: tar.value
+                        });
+                        break;
+                    case "&eq":
+                        obj.forMax.push({
+                            label: tar.label,
+                            fuhao: "=",
+                            value: tar.value
+                        });
+                        break;
+                }
+            });
+
             return obj;
         }
         return Pro()
     },
     clearToken() {
-        localStorage.removeItem("buttenpremissions");
-        localStorage.removeItem("token");
-        localStorage.removeItem("asideData");
-        localStorage.removeItem("userData");
-        sessionStorage.removeItem("xilie_data");
-        sessionStorage.removeItem("xilie_jigou");
-        sessionStorage.removeItem("page");
-        sessionStorage.removeItem("dict");
+        sessionStorage.clear();
     }
 }
 export default {

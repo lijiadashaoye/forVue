@@ -26,16 +26,11 @@ const mutations = {
                 state.peroidList.data.list = res.data.list;
                 state.peroidList.total = res.data.total;
                 state.peroidList.data.list && state.peroidList.data.list.forEach(v => {
-                    if (v.peroidType == 0) {
-                        v.peroidTypeCN = '内地'
-                    } else if (v.peroidType == 1) {
+                    if (v.peroidType == 'PETTY') {
+                        v.peroidTypeCN = '中国'
+                    } else if (v.peroidType == 'FINANCING') {
                         v.peroidTypeCN = '香港'
                     }
-                    // if (v.showType === 'TABLE') {
-                    //     v.showTypeCN = '表格'
-                    // } else if (v.showType === 'PORTRAIT') {
-                    //     v.showTypeCN = '竖版'
-                    // }
                     if (v.validStatus === 'VALID') {
                         v.validStatusCN = '有效 '
                     } else if (v.validStatus === 'INVALID') {
@@ -48,7 +43,7 @@ const mutations = {
     //权限认证
     userDo(state) {
         state.peroidList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('index_peroid_upd') > -1) {
             state.peroidList.data.custom.push({
                 text: "修改",
@@ -72,7 +67,6 @@ const actions = {
     getList({
         commit
     },data) {
-        // console.log(data)
         commit('getPeroidListData',data)
     },
 }

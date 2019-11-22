@@ -7,14 +7,16 @@
       </h3>
     </div>
     <div class="formContent">
+      <div class="goBack" @click="$router.go(-1)">返回</div>
       <el-form labelWidth="100px" label-position="left">
-        <span class="boldTitle">基本信息</span>
+        <span class="boldTitle">发送信息</span>
         <br />
         <br />
-        <el-form-item label="标题:">{{infoObj.title}}</el-form-item>
-        <el-form-item label="内容:">{{infoObj.smsContent}}</el-form-item>
         <el-form-item label="发送方式:">{{infoObj.sendType}}</el-form-item>
+        <el-form-item v-if="infoObj.sendTarget" label="发送目标:">{{infoObj.sendTarget}}</el-form-item>
+        <el-form-item v-if="infoObj.sendPhone" label="手机号:">{{infoObj.sendPhone}}</el-form-item>
         <el-form-item label="发送状态:">{{infoObj.sendStatus}}</el-form-item>
+    <el-form-item v-if="infoObj.sendTarget=='部分用户'" label="发送地区:">{{infoObj.sendLocation}}</el-form-item>
         <template v-if="infoObj.linkUrl || infoObj.linkName">
           <span class="boldTitle">消息类型</span>
           <br />
@@ -22,16 +24,26 @@
           <el-form-item label="外部链接:" v-if="infoObj.linkUrl">{{infoObj.linkUrl}}</el-form-item>
           <el-form-item label="产品名称:" v-else>{{infoObj.linkName}}</el-form-item>
         </template>
-        <span class="boldTitle">时间信息</span>
+        <template v-if="infoObj.sendTime">
+          <span class="boldTitle">时间信息</span>
+          <br />
+          <br />
+          <el-form-item v-if="infoObj.gmtCreated" label="创建时间:">{{infoObj.gmtCreated}}</el-form-item>
+           <el-form-item label="发送时间:">{{infoObj.sendTime}}</el-form-item>
+        </template>
+        <span class="boldTitle">发送内容</span>
         <br />
         <br />
-        <el-form-item label="创建时间:">{{infoObj.gmtCreated}}</el-form-item>
+        <el-form-item label="标题:">{{infoObj.title}}</el-form-item>
+        <el-form-item label="模版code:">{{infoObj.templateCode}}</el-form-item>
+        <el-form-item label="内容:">{{infoObj.smsContent}}</el-form-item>
       </el-form>
     </div>
   </div>
 </template>
 <script>
 import { mapActions } from "vuex";
+import {defaultChange} from '@/sets/changeLanguage.js'
 export default {
   name: "smsDetail",
   created() {
@@ -39,22 +51,10 @@ export default {
     this.pageName = this.$route.name.trim();
     //   请求短信详情数据
     this.getSmsDetail(this.$route.query.id).then(data => {
-      if (data.sendType == "SYSTEM_USER") {
-        data.sendType = "系统用户";
-      } else if (data.sendType == "IMPORT_PHONE") {
-        data.sendType = "导入手机号";
-      } else {
-        data.sendType = "文本";
-      }
-      if (data.sendStatus == "WAIT_SEND") {
-        data.sendStatus = "待发送";
-      } else if (ata.sendStatus == "SEND_SUCCESS") {
-        data.sendStatus = "发送成功";
-      } else if (data.sendStatus == "SENDFAIL") {
-        data.sendStatus = "发送失败";
-      } else {
-        data.sendStatus = "发送中";
-      }
+      data.sendType = defaultChange(data.sendType,true,'sendType');
+      let sendStatus = defaultChange(data.sendStatus,true,'sendTargetArr')
+      data.sendStatus = sendStatus?sendStatus:'暂无';
+      data.sendTarget = defaultChange(data.sendTarget,true,'sendTargetType');
       this.infoObj = data;
     });
   },
@@ -76,6 +76,23 @@ export default {
   padding: 80px;
   overflow: auto;
 
+  // 返回按钮
+  .goBack {
+    background: #409eff;
+    width: 60px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    float: right;
+    margin-right: 20px;
+    color: white;
+    position: relative;
+    z-index: 4;
+    &:hover {
+      cursor: pointer;
+    }
+  }
   // 加黑标题
   .boldTitle {
     font-weight: bold;

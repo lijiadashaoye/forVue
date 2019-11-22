@@ -5,7 +5,7 @@ import {
     delete_relation,
     relation_detail
 } from '../../api/setting_use'
-
+import { linkTypeArr } from '@/constant.js'
 const state = {
     relationDoArr:["parent_tree_list","parent_tree_add","parent_tree_detail","parent_tree_del","parent_tree_upd"],
     indexInfo:{},//单条数据,
@@ -36,6 +36,11 @@ const mutations = {
         state.relationList.data.list = res.data.list;
         state.relationList.total = res.data.total;
         state.relationList.data.list.forEach((item) => {
+            linkTypeArr.forEach((info)=>{
+                if(item.linkType == info.value){
+                    item.linkType = info.name
+                }
+            })
         })
     },
     // 设置title头部的数据插入
@@ -50,7 +55,7 @@ const mutations = {
     relationUserDo(state) {
         state.relationList.data.custom = [];
         state.relationList.data.quanxian = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         for (let item of state.relationDoArr) {
             if (jurisdiction.indexOf(item) > -1) {
                 state.relationList.data.quanxian.push(item);
@@ -87,13 +92,17 @@ const mutations = {
 const actions = {
     
     // 获取依赖列表
-    getRelationList({ commit }, data) {
-        return new Promise((resolve) => {
-            get_relation_list(data).then(res => {
-                if (res && res.success) {
-                    commit('setRelationList', res.data);
-                }
-            })
+    getRelationList({ commit,rootState }, data) {
+        let pageInfo = {
+            pageSize: rootState.powerTable['tableInfo']['pageSize'],
+            pageNum: rootState.powerTable['tableInfo']['pageNum']
+        }
+        Object.assign(pageInfo,data)
+        get_relation_list(pageInfo).then(res => {
+            if (res && res.success) {
+                // commit('setRelationList', res.data);
+                commit('powerTable/SETTABLEINFO', res.data, {root: true})
+            }
         })
 
     },
@@ -117,7 +126,6 @@ const actions = {
                 }
             })
         })
-
     },
     // 获取详情
     relationDetail({ commit }, data) {
@@ -126,6 +134,8 @@ const actions = {
                 if (res && res.success) {
                     // 详情信息存储vuex
                     commit("saveIndexInfo",res.data);
+                    commit('powerTable/SAVEINDEXINFO',res.data,{root:true});
+                    resolve()
                 }
             })
         })

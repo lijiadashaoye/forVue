@@ -15,7 +15,23 @@ export default {
             url: data.url,
         })
     },
-    //////////////////////////////////////////////////////////////////////////////////
+    // 其他get方法的数据获取
+    post_fn(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: data.url,
+            data: data.data
+        })
+    },
+    // 检查系列之类的是否可以删除
+    // 1 机构  2基金公司  3 系列
+    check_type(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/appInfo/isDel/${data.id}/${data.type}`,
+        })
+    },
+    ///////////////////////////////////////////////////////////////////////////////////
     // 纯债基金管理
     // 分页列表数据
     get_chunzhaiList(data) {
@@ -220,8 +236,8 @@ export default {
         })
     },
 
-     //更新收益
-     post_shouyi(data) {
+    //更新收益
+    post_shouyi(data) {
         return data.vm.$axios({
             method: 'post',
             url: `product/monetaryFund/yield`,
@@ -246,7 +262,7 @@ export default {
     get_licaiTree(data) {
         return data.vm.$axios({
             method: 'get',
-            url: `/product/productSeries/tree/wmp`,
+            url: `/product/productSeries/tree/${data.type}`,
         })
     },
     // 新增理财产品
@@ -259,14 +275,7 @@ export default {
         })
     },
 
-    //新增产品系列
-    add_productSeries(data) {
-        return data.vm.$axios({
-            method: data.httpType,
-            url: '/product/productSeries',
-            data: data.data
-        })
-    },
+
     // 获取理财产品信息
     getLiCaiInfoData(data) {
         return data.vm.$axios({
@@ -278,7 +287,7 @@ export default {
     product_licai_delete(data) {
         return data.vm.$axios({
             method: 'delete',
-            url: `/product/wmp/${data.data}`,
+            url: `/product/wmp/${data.type}${data.data}`,
         })
     },
     // 获取理财产品详情
@@ -286,6 +295,14 @@ export default {
         return data.vm.$axios({
             method: 'get',
             url: `/product/wmp/detail/${data.data}`,
+        })
+    },
+
+    // 保险产品详情
+    get_baoxian_info_data(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/wmp/insurance/detail/${data.data}`,
         })
     },
     // 编辑理财管理
@@ -296,6 +313,7 @@ export default {
             data: data.data
         })
     },
+
     //////////////////////////////////////////////////////////////////////////////////
     // 存款管理
     // 存款管理获取tree数据
@@ -327,11 +345,11 @@ export default {
             url: `/product/${data.type}/${data.data}`,
         })
     },
-    // 存款管理左侧系列的新增、编辑
-    left_xilie(data) {
+    //新增产品系列
+    add_xilie(data) {
         return data.vm.$axios({
             method: data.httpType,
-            url: `/product/productSeries`,
+            url: '/product/productSeries',
             data: data.data
         })
     },
@@ -496,6 +514,31 @@ export default {
             data: data.data
         })
     },
+    /************************************************************/
+
+    // 新增大额存款
+    save_big(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: '/product/deposit/largeDeposit',
+            data: data.data
+        })
+    },
+    // 大额存款查看详情
+    big_info(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `product/deposit/largeDeposit/${data.data}`
+        })
+    },
+    // 编辑活期存款
+    edit_big(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: '/product/deposit/largeDeposit',
+            data: data.data
+        })
+    },
 
     //////////////////////////////////////////////////////////////////////////////////
     // 机构管理
@@ -591,5 +634,225 @@ export default {
             data: data.data
         })
     },
+
+    //////////////////////////////////////////////////////////////////////
+
+    // 获取标签列表
+    get_markList(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `/product/tag/list`,
+            data: data.data
+        })
+    },
+    // 新增标签
+    marks_action(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/tag/${data.type}`,
+            data: data.data
+        })
+    },
+    // 获取标签列表
+    delete_marks(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/tag/${data.data}`,
+        })
+    },
+    // 上下架产品时查询产品设置
+    get_where(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/appInfo/validPro/${data.data}`,
+        })
+    },
+    //////////////////////////////////////////////////////////////////////
+
+    // 新增保险
+    add_baoxian(data) {
+        return data.vm.$axios({
+            method: 'post',
+            url: `/product/wmp/insurance/add`,
+            data: data.data
+        })
+    },
+    // 修改保险
+    edit_baoxian(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: `/product/wmp/insurance/update`,
+            data: data.data
+        })
+    },
+    /////////////////////////////////////////////////////////////////////
+    // 获取产品协议列表、查询
+    product_agreement_list(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/agreement/listPage?${qs.stringify(data.search)}`,
+        })
+    },
+    // 删除协议
+    delete_product_agreement(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/agreement/${data.id}`,
+        })
+    },
+    // 新增、修改协议
+    add_product_agreement(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/agreement`,
+            data: data.data
+        })
+    },
+
+    // 获取产品协议详情
+    product_agreement_single(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/agreement/${data.data}`,
+        })
+    },
+    /////////////////////////////////////////////////////////////
+    // 币种管理查询
+    coin_list(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/product_currency/page?${qs.stringify(data.search)}`,
+        })
+    },
+    // 获取产品协议详情
+    coin_info(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/product_currency/detail/${data.data}`,
+
+        })
+    },
+
+    // 新增、修改币种
+    coin_add(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/product_currency/currency`,
+            data: data.data
+        })
+    },
+
+    // 删除协议
+    coin_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/product_currency/currency/${data.id}`,
+        })
+    },
+
+
+    // 首页期限配置管理 > 首页期限列表同步按钮
+    tongbu(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/indexPeriod/resetPeriodProducts`,
+        })
+    },
+
+    /////////////////////////////////////////////////////////
+    // 获取投融资产品列表
+    get_financingList(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/investment/page?${qs.stringify(data.data)}`,
+        })
+    },
+    // 获取投融资产品详情
+    getFinancing(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/investment/${data.id}`,
+        })
+    },
+
+    // 新增投融资
+    add_financing(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/investment`,
+            data: data.data
+        })
+    },
+
+    // 删除投融资产品
+    financing_delete(data) {
+        return data.vm.$axios({
+            method: 'delete',
+            url: `/product/investment/${data.data}`,
+        })
+    },
+    //////////////////////////////////////////////////////////////////////
+    // 获取投融资告知书详情
+    risk_notice_item(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/investment/risk/${data.id}`,
+        })
+    },
+    // 获取投融资告知书列表
+    risk_notice_list(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/investment/risk/page?${qs.stringify(data.search)}`,
+        })
+    },
+    // 新增投融资
+    risk_notice(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/investment/risk`,
+            data: data.data
+        })
+    },
+    //////////////////////////////////////////////////////////
+
+    // 获取投融资告知书详情
+    get_project_description(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/investment/project/${data.id}`,
+        })
+    },
+
+    // 新增、修改项目说明书
+    add_project_description(data) {
+        return data.vm.$axios({
+            method: data.httpType,
+            url: `/product/investment/project`,
+            data: data.data
+        })
+    },
+    // 获取项目说明书列表
+    get_project_description_list(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `/product/investment/project/page?${qs.stringify(data.search)}`,
+        })
+    },
+    // 更新历史
+    toEditHistory(data) {
+        return data.vm.$axios({
+            method: 'get',
+            url: `${data.url}?${qs.stringify(data.data)}`,
+        })
+    },
+    // 保存纯债基金的更新历史
+    save_toEditHistory(data) {
+        return data.vm.$axios({
+            method: 'put',
+            url: data.url,
+            data: data.data
+        })
+    }
 
 }

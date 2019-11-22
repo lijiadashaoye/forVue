@@ -1,29 +1,29 @@
 <template>
   <div class="withTree">
     <div class="forTree">
-      <h3>{{pageName}}</h3>
       <div class="treeTop">
         <span>存款系列</span>
         <el-button size="mini" @click="toAdd_xilie">新增</el-button>
       </div>
-
       <div class="forT">
         <p class="allPro" @click="getList('all',null)">全部存款产品</p>
         <ul>
           <li v-for="item of menuTree" :key="item.institutionId">
-            <p @click="treeShow(item.institutionId);getList('father',item)" class="forTtitle">
-              <i
-                v-show="isShow(item.institutionId)"
-                style="color:skyblue"
-                :class="`myIcon12px icon-xiasanjiaoxiangxiamianxing`"
-              ></i>
-              <i
-                v-show="!isShow(item.institutionId)"
-                style="color:skyblue"
-                :class="`myIcon12px icon-yousanjiaoxiangyoumianxing`"
-              ></i>
-              {{item.institutionName}}
-            </p>
+            <div @click="treeShow(item.institutionId);getList('none',item)" class="forTtitle">
+              <p>
+                <i
+                  v-show="isShow(item.institutionId)"
+                  style="color:skyblue"
+                  :class="`myIcon12px icon-xiasanjiaoxiangxiamianxing`"
+                ></i>
+                <i
+                  v-show="!isShow(item.institutionId)"
+                  style="color:skyblue"
+                  :class="`myIcon12px icon-yousanjiaoxiangyoumianxing`"
+                ></i>
+              </p>
+              <p>{{item.institutionName}}</p>
+            </div>
             <ul ref="forUl" class="forTList" v-show="isShow(item.institutionId)">
               <li>
                 <p @click="useIt(item,$event);getList('none',item)" style="width:100%;">无系列</p>
@@ -54,7 +54,7 @@
           :visible.sync="addXiLieForm.toShow"
           width="450px"
           :before-close="toCloseCunkuanDialog"
-        >
+         >
           <el-form
             :model="addXiLieForm"
             label-width="110px"
@@ -62,7 +62,8 @@
             label-position="right"
           >
             <el-form-item label="* 机构">
-              <el-select filterable
+              <el-select
+                filterable
                 :disabled="addXiLieForm.type=='edit'"
                 v-model="addXiLieForm.jigou"
                 clearable
@@ -94,6 +95,11 @@
     </div>
 
     <div class="forRight">
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
+
       <div style="margin-bottom:5px;">
         <el-button size="mini" type="primary" @click="addNew()">新增存款产品</el-button>
         <el-button size="mini" type="warning" @click="seachClick('search')">查询</el-button>
@@ -115,7 +121,13 @@
         </el-form-item>
 
         <el-form-item label="是否上架" style="margin-bottom:5px;">
-          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
+          <el-select
+            filterable
+            class="isInput"
+            clearable
+            placeholder="请选择"
+            v-model="searchForm.shelveStatus"
+          >
             <el-option
               size="mini"
               v-for="item in dictData.shelve_status"
@@ -152,7 +164,7 @@
         </el-form-item>
       </el-form>
 
-      <div id="forTable">
+      <div id="forTable" v-if="loadEnd">
         <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
       </div>
     </div>
@@ -161,7 +173,7 @@
       :close-on-click-modal="false"
       title="选择存款类别"
       :visible.sync="cunkuanDialog"
-      width="500px"
+      width="600px"
       :before-close="toCloseCunkuanDialog"
     >
       <div class="addCunkuan">
@@ -169,6 +181,7 @@
         <el-button type="primary" @click="toAdd_Cunkuan('定期')">定期存款</el-button>
         <el-button type="primary" @click="toAdd_Cunkuan('智能')">智能存款</el-button>
         <el-button type="primary" @click="toAdd_Cunkuan('结构')">结构性存款</el-button>
+        <el-button type="primary" @click="toAdd_Cunkuan('大额')">大额存单</el-button>
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="toCloseCunkuanDialog">取 消</el-button>
@@ -177,12 +190,13 @@
   </div>
 </template>
 <script>
-import isTable from "../../../../components/isTable/isTable.vue";
+import isTable from "@/components/isTable/isTable.vue";
 
 export default {
   props: {},
   data() {
     return {
+      env: null,
       cunkuanDialog: false, // 控制新建存款弹框的显示隐藏
       addXiLieForm: {
         // tree 里面的新增弹框
@@ -200,6 +214,7 @@ export default {
       pageName: "", // 当前页面名字
       riqi: [], // 创建时间
       searchForm: {
+        institutionId: "", // 机构
         name: "", // 产品关键字
         shelveStatus: "", // 是否上架
         productSubtype: "", // 产品类型
@@ -227,20 +242,19 @@ export default {
     isTable
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     // step1里点击'无系列?'
     let kk = this.$route.query.institutionId;
     if (kk) {
       this.toAdd_xilie(+kk);
     }
-
-    this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     // 获取当前页面使用的字典数据
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
     this.canDoWhat();
-    this.getUserData();
-    this.treeData();
-    sessionStorage.removeItem("xilie_jigou");
+    this.seachClick("reset");
+    this.treeData(true);
+    sessionStorage.removeItem("select_xilie");
     // 清空新增活期时用到的
     sessionStorage.removeItem("huoqi_step1");
     sessionStorage.removeItem("huoqi_step2");
@@ -255,14 +269,27 @@ export default {
     // 清空新增定期时用到的
     sessionStorage.removeItem("jiegou_step1");
     sessionStorage.removeItem("jiegou_step2");
+    // 清空新增定期时用到的
+    sessionStorage.removeItem("big_step1");
+    sessionStorage.removeItem("big_step2");
   },
   methods: {
-    // 获取tree，第二页需要用到的标签数据
-    treeData() {
-      this.$api.get_treeData({ vm: this }).then(res => {
-        this.menuTree = res.data;
-        sessionStorage.setItem("xilie_data", JSON.stringify(this.menuTree));
-      });
+    // 获取tree数据,type=true时，为页面初始化
+    treeData(type) {
+      let xilie = sessionStorage.getItem("xilie_cunkuan");
+      if (!type || !xilie) {
+        getTree(this);
+      } else {
+        this.menuTree = JSON.parse(xilie);
+      }
+      function getTree(t) {
+        t.$api.get_licaiTree({ vm: t, type: "deposit" }).then(res => {
+          if (res) {
+            t.menuTree = res.data;
+            sessionStorage.setItem("xilie_cunkuan", JSON.stringify(t.menuTree));
+          }
+        });
+      }
     },
     // tree 的编辑、删除
     handleCommand(data, type) {
@@ -279,13 +306,24 @@ export default {
         this.$confirm("确认删除吗?")
           .then(() => {
             this.$api
-              .left_xilie_delete({
+              .check_type({
                 vm: this,
-                id: data.id
+                id: data.id,
+                type: 3
               })
               .then(res => {
                 if (res) {
-                  this.treeData();
+                  this.$api
+                    .left_xilie_delete({
+                      vm: this,
+                      id: data.id
+                    })
+                    .then(res => {
+                      if (res) {
+                        this.$message.success("删除成功！");
+                        this.treeData(false);
+                      }
+                    });
                 }
               });
           })
@@ -303,7 +341,7 @@ export default {
       if (e) {
         e.target.parentNode.style = "background:skyblue;color:#fff;";
       }
-      sessionStorage.setItem("xilie_jigou", JSON.stringify(data));
+      sessionStorage.setItem("select_xilie", JSON.stringify(data)); // 保存系列数据
     },
     // tree 切换展开收拢
     treeShow(id) {
@@ -323,11 +361,11 @@ export default {
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.seachClick("fenye");
+          this.seachClick("search");
           break;
         case "copy": // 复制按钮
           sessionStorage.setItem(
-            "xilie_jigou",
+            "select_xilie",
             JSON.stringify({
               institutionId: data.data.institutionId,
               id: data.data.seriesId
@@ -601,6 +639,9 @@ export default {
         case "结构": // add_jiegou
           routeUrl = "jiegou_step1";
           break;
+        case "大额": // large_deposit
+          routeUrl = "big_step1";
+          break;
       }
       this.$router.push({
         name: routeUrl
@@ -647,14 +688,17 @@ export default {
           }
 
           this.$api
-            .left_xilie({
+            .add_xilie({
               vm: this,
               httpType: httpType,
               data: obj
             })
             .then(res => {
               if (res) {
-                this.treeData();
+                this.$message.success(
+                  `${httpType === "post" ? "新增" : "修改"}成功！`
+                );
+                this.treeData(false);
                 this.toCloseCunkuanDialog();
               }
             });
@@ -696,7 +740,7 @@ export default {
               .then(res => {
                 if (res) {
                   this.$message.success("删除成功！");
-                  this.seachClick("delete");
+                  this.seachClick("search");
                 }
               });
           })
@@ -769,7 +813,7 @@ export default {
     },
     // 新增存款
     addNew() {
-      let kk = sessionStorage.getItem("xilie_jigou");
+      let kk = sessionStorage.getItem("select_xilie");
       if (kk) {
         this.cunkuanDialog = true;
       } else {
@@ -782,7 +826,7 @@ export default {
     inPut() {},
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      // let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
       // this.tableInputData.data.custom.push({
       //   text: "复制",
       //   type: "primary",
@@ -798,6 +842,7 @@ export default {
     },
     // 获取数据后的处理
     afterGetData(data) {
+      this.loadEnd = false;
       new Promise(resolve => {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
@@ -827,7 +872,7 @@ export default {
             minWidth: "140"
           },
           {
-            title: "产品类型",
+            title: "类别别名",
             key: "typeAlias",
             minWidth: "120"
           },
@@ -852,15 +897,16 @@ export default {
     seachClick(type) {
       // search  // 搜索
       // reset  // 重置
-      // fenye  // 分页
-      // upDown  // 上下架
       // delete // 删除
       let obj = {};
       switch (type) {
         case "search":
-          if (this.riqi.length > 0) {
+          if (this.riqi) {
             this.searchForm.createTimeStart = this.riqi[0];
             this.searchForm.createTimeEnd = this.riqi[1];
+          } else {
+            this.searchForm.createTimeStart = "";
+            this.searchForm.createTimeEnd = "";
           }
           // 过滤没有数据的属性
           Object.keys(this.searchForm).forEach(str => {
@@ -870,13 +916,11 @@ export default {
           });
           this.tableInputData.pageSize = 10;
           this.tableInputData.pageNum = 1;
-          obj.pageSize = this.tableInputData.pageSize;
-          obj.pageNum = this.tableInputData.pageNum;
-          this.getUserData(obj);
           break;
         case "reset":
           // 重置
           this.searchForm = {
+            institutionId: "",
             name: "", // 产品关键字
             shelveStatus: "", // 是否上架
             productSubtype: "", // 产品类型
@@ -886,10 +930,7 @@ export default {
           this.riqi = [];
           this.tableInputData.pageSize = 10; // 分页相关
           this.tableInputData.pageNum = 1;
-          this.getUserData();
           break;
-        case "fenye":
-        case "upDown":
         case "delete":
           if (this.riqi.length > 0) {
             this.searchForm.createTimeStart = this.riqi[0];
@@ -901,24 +942,22 @@ export default {
               obj[str] = this.searchForm[str];
             }
           });
-          obj.pageSize = this.tableInputData.pageSize;
-          obj.pageNum = this.tableInputData.pageNum;
-          this.getUserData(obj);
           break;
       }
+      obj.pageSize = this.tableInputData.pageSize;
+      obj.pageNum = this.tableInputData.pageNum;
+      this.getUserData(obj);
     },
     // tree被点击时执行
     getList(type, item) {
       let obj = {};
       switch (type) {
-        case "father":
         case "none":
           obj = {
             pageSize: 10,
             pageNum: 1,
             institutionId: item.institutionId
           };
-          this.getUserData(obj);
           break;
         case "child":
           obj = {
@@ -927,32 +966,23 @@ export default {
             seriesId: item.id,
             institutionId: item.institutionId
           };
-          this.getUserData(obj);
+
           break;
         case "all":
           obj = {
             pageSize: 10,
             pageNum: 1
           };
-          this.getUserData(obj);
           break;
       }
+      this.getUserData(obj);
     },
     // 获取表格数据
     getUserData(data) {
-      let obj;
-      if (data) {
-        obj = data;
-      } else {
-        obj = {
-          pageSize: this.tableInputData.pageSize,
-          pageNum: this.tableInputData.pageNum
-        };
-      }
       this.$api
         .get_cunkuanlistData({
           vm: this,
-          data: obj
+          data: data
         })
         .then(res => {
           if (res) {

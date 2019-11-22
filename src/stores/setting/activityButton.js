@@ -27,7 +27,7 @@ const mutations = {
      // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.activityButtonList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if(jurisdiction.indexOf('ctivity__button_upd') > -1){
             state.activityButtonList.data.quanxian.push('ok')
             state.activityButtonList.data.custom.push({

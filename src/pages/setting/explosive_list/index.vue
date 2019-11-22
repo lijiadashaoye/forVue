@@ -1,70 +1,70 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>
-        {{pageName}}
-      </h3>
-      <div class="explosiveAdd">
-        <el-button
-          type="primary"
-          size="mini"
-          @click="addExplosive"
-        >
-          新增爆款产品
-        </el-button>
-      </div>
-      <div>
-       <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm searchForm">
-          <el-form-item label="产品名称" prop="productName">
-            <!-- <el-select filterable v-model="ruleForm.productName" placeholder="请选择" filterable clearable> -->
-              <!-- <el-option
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
+
+      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="90px" :inline="true">
+        <el-form-item label="产品名称" prop="productName" style="margin-bottom:0;">
+          <!-- <el-select filterable v-model="ruleForm.productName" placeholder="请选择" filterable clearable> -->
+          <!-- <el-option
                 v-for="item in this.$store.state.explosive.explosiveList.productNameList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
               </el-option>
-            </!-->
-            <el-input
-              placeholder="请输入产品名称"
-              prefix-icon="el-icon-search"
-              v-model="ruleForm.productName">
-            </el-input>
-          </el-form-item>
+          </!-->
+          <el-input
+            placeholder="请输入产品名称"
+            prefix-icon="el-icon-search"
+            v-model="ruleForm.productName"
+            size="mini"
+          ></el-input>
+        </el-form-item>
 
-          <el-form-item label="生效时间" prop="time">
-            <el-date-picker
-              v-model="ruleForm.time"
-              type="datetimerange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
+        <el-form-item label="生效时间" prop="time" style="margin-bottom:0;">
+          <el-date-picker
+            v-model="ruleForm.time"
+            type="datetimerange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            size="mini"
+          ></el-date-picker>
+        </el-form-item>
 
-          <el-form-item>
-            <el-button type="primary" @click="search('ruleForm')">查询</el-button>
-            <el-button @click="resetForm('ruleForm')">清除</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
+        <el-form-item label="操作时间" prop="operationTime" style="margin-bottom:0;">
+          <el-date-picker
+            size="mini"
+            v-model="ruleForm.operationTime"
+            type="date"
+            placeholder="选择日期"
+          ></el-date-picker>
+        </el-form-item>
+
+        <el-form-item style="margin-bottom:0;">
+          <el-button type="warning" @click="search('ruleForm')" size="mini">查询</el-button>
+          <el-button @click="resetForm('ruleForm')" size="mini">清除</el-button>
+          <el-button type="primary" size="mini" @click="addExplosive">新增爆款产品</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <!-- 列表 -->
-    <div
-      id="forTable">
-      <isTable
-        :inputData='this.$store.state.explosive.explosiveList'
-        @tableEmit='tableEmit'
-      />
+    <div id="forTable">
+      <isTable :inputData="this.$store.state.explosive.explosiveList" @tableEmit="tableEmit" />
     </div>
     <!-- 修改遮罩 -->
-    <el-dialog :close-on-click-modal='false' title="修改" :visible.sync="flag">
+    <el-dialog :close-on-click-modal="false" title="修改" :visible.sync="flag" width="400px">
       <SettingExplosiveCommend
         :productTypeList="productTypeList"
-        :productNameList="productNameList"
         :opts="opts"
         @reqs="reqs"
+        :flag="flag"
         :dataType="type"
-        @cancel='cancel'/>
+        @cancel="cancel"
+      />
     </el-dialog>
   </div>
 </template>
@@ -73,75 +73,90 @@
 import { mapActions, mapMutations } from "vuex";
 import isTable from "../../../components/isTable/isTable";
 import SettingExplosiveCommend from "../../../components/SettingExplosiveCommend";
-import datePicker from '../../../components/datePicker';
-import { explosive_updata, explosive_delete } from '../../../api/setting_use.js';
-import { timestampToTime } from '../../../sets/timeFormat.js';
+// import datePicker from '../../../components/datePicker';
+import {
+  explosive_updata,
+  explosive_delete
+} from "../../../api/setting_use.js";
+import { timestampToTime } from "../../../sets/timeFormat.js";
 export default {
   props: {},
   components: {
     isTable,
-    SettingExplosiveCommend,//修改或者新增的组件
-    effectTime:datePicker,//生效日期
+    SettingExplosiveCommend //修改或者新增的组件
+    // effectTime:datePicker,//生效日期
   },
   data() {
     return {
+      env: null,
+
       pageName: "", // 当前页面名字
       searchVal: "",
-      msg:"",
+      msg: "",
       flag: false,
-      type: 'EXPLOSIVE',
+      type: "EXPLOSIVE",
       ruleForm: {
-        productName: '',
+        productName: "",
         time: [],
+        operationTime: ""
       },
-      searchOpt: [],//搜索列表
+      searchOpt: [], //搜索列表
       list: [],
       rules: {},
       states: [],
-      productTypeList:[{
-        value: "货币基金",
-        label: "货币基金"
-      },{
-        value: "理财产品",
-        label: "理财产品"
-      },{
-        value: "纯债基金",
-        label: "纯债基金"
-      },{
-        value: "存款产品",
-        label: "存款产品"
-      }],
-      productNameList:[{
-        id: 1,
-        value: "美金",
-        label: "美金"
-      },{
-        id: 2,
-        value: "欧元",
-        label: "欧元"
-      },{
-        id: 3,
-        value: "卢比",
-        label: "卢比"
-      },{
-        id: 4,
-        value: "人民币",
-        label: "人民币"
-      }],
-      opts:{
-
-      },
-      productList:[],
+      productTypeList: [
+        {
+          value: "货币基金",
+          label: "货币基金"
+        },
+        {
+          value: "理财产品",
+          label: "理财产品"
+        },
+        {
+          value: "纯债基金",
+          label: "纯债基金"
+        },
+        {
+          value: "存款产品",
+          label: "存款产品"
+        }
+      ],
+      productNameList: [
+        {
+          id: 1,
+          value: "美金",
+          label: "美金"
+        },
+        {
+          id: 2,
+          value: "欧元",
+          label: "欧元"
+        },
+        {
+          id: 3,
+          value: "卢比",
+          label: "卢比"
+        },
+        {
+          id: 4,
+          value: "人民币",
+          label: "人民币"
+        }
+      ],
+      opts: {},
       loading: true,
-      effectTimeVal: "",//生效时间
+      effectTimeVal: "" //生效时间
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
+
     this.userDo();
     this.getExplosiveListData({
       pageNum: 1,
       pageSize: this.$store.state.explosive.explosiveList.pageSize,
-      dataType:"EXPLOSIVE"
+      dataType: "EXPLOSIVE"
     });
     this.getProNameList();
     this.pageName = this.$route.name;
@@ -158,7 +173,7 @@ export default {
         minWidth: "120"
       },
       {
-        title: "产品类型",
+        title: "类别别名",
         key: "productTypeName",
         minWidth: "100"
       },
@@ -191,25 +206,37 @@ export default {
     ...mapMutations({
       getExplosiveListData: "explosive/getExplosiveListData",
       getProNameList: "explosive/getProNameList",
-      userDo: "explosive/userDo",
+      userDo: "explosive/userDo"
     }),
-    ...mapActions({
-    }),
+    ...mapActions({}),
     //查询
     search(formName) {
-      this.$refs[formName].validate((valid) => {
-          if (valid) {
-            this.getExplosiveListData({
-              dataType:"EXPLOSIVE",
-              startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
-              endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
-              productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
-              pageNum: 1,
-              pageSize: this.$store.state.explosive.explosiveList.pageSize,
-            })
-          } else {
-            return false;
-          }
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.$store.state.explosive.explosiveList.pageNum = 1;
+          this.getExplosiveListData({
+            dataType: "EXPLOSIVE",
+            startTime: this.ruleForm.time[0]
+              ? timestampToTime(this.ruleForm.time[0])
+              : null,
+            endTime: this.ruleForm.time[1]
+              ? timestampToTime(this.ruleForm.time[1])
+              : null,
+            productName:
+              this.ruleForm.productName != ""
+                ? this.ruleForm.productName
+                : null,
+            pageNum: this.$store.state.explosive.explosiveList.pageNum,
+            pageSize: this.$store.state.explosive.explosiveList.pageSize,
+            operationEndTime:
+              this.ruleForm.operationTime != "" &&
+              this.ruleForm.operationTime != null
+                ? this.ruleForm.operationTime
+                : null
+          });
+        } else {
+          return false;
+        }
       });
     },
     //清除
@@ -218,10 +245,12 @@ export default {
     },
     cancel() {
       this.flag = false;
-      this.opts = {};
+      //   this.opts = {};
     },
     addExplosive() {
-      let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let jurisdiction = JSON.parse(
+        sessionStorage.getItem("buttenpremissions")
+      );
       //有权限  跳转到创建页面
       if (jurisdiction.indexOf("explosive_add") > -1) {
         this.$router.push(`/home/setting/explosive/add`);
@@ -234,15 +263,7 @@ export default {
     },
     //点击详情
     open() {
-      this.$alert("您好，此项暂未开启", "产品详情", {
-        confirmButtonText: "确定",
-        callback: action => {
-          this.$message({
-            type: "info",
-            message: `action: ${action}`
-          });
-        }
-      });
+      this.$message.warning("您好，此项暂未开启!");
     },
     //点击删除
     delete(id) {
@@ -250,78 +271,89 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
-          // window.location.reload();
-          explosive_delete(id).then(res=> {
-            if(res && res.success) {
+      }).then(() => {
+        // window.location.reload();
+        explosive_delete(id)
+          .then(res => {
+            if (res && res.success) {
               this.$message({
                 type: "success",
                 message: "删除成功!"
               });
               this.getExplosiveListData({
-                dataType:"EXPLOSIVE",
-                startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
-                endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
-                productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+                dataType: "EXPLOSIVE",
+                startTime: this.ruleForm.time[0]
+                  ? timestampToTime(this.ruleForm.time[0])
+                  : null,
+                endTime: this.ruleForm.time[1]
+                  ? timestampToTime(this.ruleForm.time[1])
+                  : null,
+                productName:
+                  this.ruleForm.productName != ""
+                    ? this.ruleForm.productName
+                    : null,
                 pageNum: this.$store.state.explosive.explosiveList.pageNum,
-                pageSize: this.$store.state.explosive.explosiveList.pageSize,
-              })
+                pageSize: this.$store.state.explosive.explosiveList.pageSize
+              });
             }
           })
-          .catch((res) => {
+          .catch(res => {
             this.$message({
               type: "error",
               message: `${res.massage}`
             });
           });
-        })
+      });
     },
-    reqs(data){
+    reqs(data) {
       this.opts = data;
-      explosive_updata(data).then(res=> {
-        if(res && res.success){
+      explosive_updata(data).then(res => {
+        if (res && res.success) {
           this.flag = false;
-          this.$message.success('保存成功')
+          this.$message.success("保存成功");
           this.getExplosiveListData({
-            dataType:"EXPLOSIVE",
-            startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
-            endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
-            productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
+            dataType: "EXPLOSIVE",
+            startTime: this.ruleForm.time[0]
+              ? timestampToTime(this.ruleForm.time[0])
+              : null,
+            endTime: this.ruleForm.time[1]
+              ? timestampToTime(this.ruleForm.time[1])
+              : null,
+            productName:
+              this.ruleForm.productName != ""
+                ? this.ruleForm.productName
+                : null,
             pageNum: this.$store.state.explosive.explosiveList.pageNum,
-            pageSize: this.$store.state.explosive.explosiveList.pageSize,
+            pageSize: this.$store.state.explosive.explosiveList.pageSize
           });
         }
-      }).catch(()=>{
-        this.$alert(`${res.message}`, '保存失败', {
-          confirmButtonText: '确定',
-          callback: action => {
-            this.$message({
-              type: 'info',
-              message: `action: ${ action }`
-            });
-          }
-        });
-      })
+      });
     },
     //点击编辑
-    edit(data){
+    edit(data) {
       this.flag = true;
-      data.dataType = 'EXPLOSIVE'
+      data.dataType = "EXPLOSIVE";
       this.opts = data;
     },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-            this.getExplosiveListData({
-              dataType:"EXPLOSIVE",
-              startTime:this.ruleForm.time[0] ? timestampToTime(this.ruleForm.time[0]) : null,
-              endTime: this.ruleForm.time[1] ? timestampToTime(this.ruleForm.time[1]) : null,
-              productName: this.ruleForm.productName != '' ? this.ruleForm.productName : null,
-              pageNum: this.$store.state.explosive.explosiveList.pageNum,
-              pageSize: this.$store.state.explosive.explosiveList.pageSize,
-            });
+          this.getExplosiveListData({
+            dataType: "EXPLOSIVE",
+            startTime: this.ruleForm.time[0]
+              ? timestampToTime(this.ruleForm.time[0])
+              : null,
+            endTime: this.ruleForm.time[1]
+              ? timestampToTime(this.ruleForm.time[1])
+              : null,
+            productName:
+              this.ruleForm.productName != ""
+                ? this.ruleForm.productName
+                : null,
+            pageNum: this.$store.state.explosive.explosiveList.pageNum,
+            pageSize: this.$store.state.explosive.explosiveList.pageSize
+          });
           break;
         case "edit": // 编辑按钮
           this.edit(data.data);
@@ -333,32 +365,7 @@ export default {
           this.open();
           break;
       }
-    },
+    }
   }
 };
 </script>
-
-<style scoped='true' lang="scss">
-.explosiveAdd {
-  width: 100%;
-  height:68px;
-  display: flex;
-  justify-content: space-between;
-  padding: 20px;
-  box-sizing: border-box;
-  .el-input {
-    width: 200px;
-  }
-  }
-  .Dialog {
-    width:100%;
-    height:100%;
-    background: rgba(0,0,0,.6);
-    padding:100px;
-    box-sizing:border-box;
-  }
-  .searchForm{
-    display:flex;
-    flex-wrap: nowrap;
-  }
-</style>

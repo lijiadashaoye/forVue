@@ -124,7 +124,7 @@ export default {
     if (handleLen === 1) {
       this.setWidth = 60;
     } else {
-      this.setWidth = 56 * handleLen + (handleLen - 1) * 10 + 20;
+      this.setWidth = 56 * handleLen + (handleLen - 1) * 10 + 22;
     }
   },
   mounted() {
@@ -135,7 +135,7 @@ export default {
         if (cell.length > 0) {
           Array.from(cell).forEach(ele => {
             let str = ele.innerText;
-            let reg1 = /^\-/i;
+            let reg1 = /^-/i;
             let reg2 = /^\+/i;
             if (reg1.test(str)) {
               ele.style.color = "rgb(6, 221, 60)";
@@ -156,7 +156,7 @@ export default {
     handleSelectionChange(selection) {
       this.$emit("tableAct", { type: "moreSelect", data: selection });
     },
-    tableRowClassName({ row, rowIndex }) {
+    tableRowClassName({ rowIndex }) {
       if (rowIndex % 2 === 0) {
         return "";
       } else {
@@ -167,7 +167,7 @@ export default {
     toEmit(type, rows) {
       if (type === "delete") {
         this.$confirm(`确定要删除吗？`)
-          .then(_ => {
+          .then(() => {
             this.$emit("tableAct", { type: type, data: rows });
           })
           .catch(() => {});
@@ -221,7 +221,6 @@ export default {
 };
 </script>
 <style>
-@import url("./allCss.scss");
 .el-table .warning-row {
   background: rgb(238, 236, 234);
 }

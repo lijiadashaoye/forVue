@@ -35,7 +35,7 @@ const mutations = {
     },
     userDo(state) {
         state.cashList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('member_cash_out') > -1) {
             state.cashList.data.quanxian.push('ok')
             state.cashList.data.custom.push({

@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button
         size="mini"
         type="primary"
@@ -110,6 +113,7 @@ export default {
       }
     };
     return {
+      env: null,
       pageName: "", // 当前页面名字
       loadEnd: false,
       deleteData: [], // 储存需要删除的数据
@@ -185,6 +189,7 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
     this.canDoWhat();
     this.getUserData();
@@ -225,7 +230,9 @@ export default {
           }
         })
         .then(res => {
-          this.getUserData();
+          if (res) {
+            this.getUserData();
+          }
         });
     },
     // 图片上传
@@ -306,6 +313,7 @@ export default {
                 })
                 .then(res => {
                   if (res) {
+                    this.$message.success("保存成功！");
                     this.getUserData();
                     this.dialogClose();
                   }
@@ -388,7 +396,6 @@ export default {
                   let numSucces = 0;
                   let numFail = 0;
                   let failName = "";
-                  let titleText = `失败的数据为：\n `;
                   arr.forEach(item => {
                     if (item.ok) {
                       numSucces++;
@@ -418,7 +425,7 @@ export default {
     },
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
 
       let member_level_add = quanxian.includes("member_level_add");
       let member_level_upd = quanxian.includes("member_level_upd");
@@ -472,7 +479,7 @@ export default {
               }
             }
             if (str === "icon") {
-              obj[str] = this.$ImgBaseUrl + item[str];
+              obj[str] = item[str];
             }
           });
           for (let str in obj) {

@@ -6,49 +6,57 @@ import isApp from '../main'
 
 axios.defaults.timeout = 50000;
 
+let baseURL = '';
 if (process.env.NODE_ENV === "development") {
-  axios.defaults.baseURL = 'https://develop-gateway.bicai365.com/';
-  // axios.defaults.baseURL = 'http://gateway.bicai365.com/';
+  baseURL = 'https://develop-gateway.bicai365.com/';
 } else if (process.env.NODE_ENV === "demo") {
-  axios.defaults.baseURL = 'https://gatewaydemo.bicai365.com/';
+  baseURL = 'https://gatewaydemo.bicai365.com/';
 } else if (process.env.NODE_ENV === "release") {
-  axios.defaults.baseURL = 'https://gateway.bicai365.com/';
+  baseURL = 'https://gateway.bicai365.com/';
 } else if (process.env.NODE_ENV === "dev") {
-  axios.defaults.baseURL = 'https://develop-gateway.bicai365.com/';
+  baseURL = 'https://develop-gateway.bicai365.com/';
+} else if (process.env.NODE_ENV === "inner") {
+  baseURL = 'http://gateway.bicai365.com/';
 }
+axios.defaults.baseURL = baseURL;
 
-// axios.defaults.baseURL ='https://yiye-gateway-test4.bicai365.com'
+// 下载模版需要使用
+export const BaseUrl = baseURL;
 
-// axios.defaults.baseURL ='http://gateway.bicai365.com/';
-
-//创建一个错误
-function errorCreat(msg) {
-  const err = new Error(msg)
-  errorLog(err)
-  throw err
-}
+let timeOut = null;
 
 // 记录和显示错误
-function errorLog(err) {
-  // 显示提示
-  Message({
-    message: err.message + '试试刷新页面！',
-    type: 'error',
-    duration: 5 * 1000
-  })
+function errorLog(error) {
+  if (!timeOut) {
+    timeOut = setTimeout(() => {
+      // 显示提示
+      Message({
+        message: error.message + '!',
+        type: 'error',
+        duration: 5 * 1000
+      })
+      timeOut = null;
+    }, 50)
+  }
+}
+const clientParams = {
+  language: 'zh_CN',
+  platformCode: 'manager'
 }
 // 请求设置
 axios.interceptors.request.use(config => {
-  let token = localStorage.getItem('token');
+  let token = sessionStorage.getItem('token');
   if (token) {
     config.headers = {
       'Content-Type': 'application/json;charset=UTF-8',
       'Authorization': 'Bearer ' + token,
+      'clientParams': JSON.stringify(clientParams)
     }
   } else {
     config.headers = {
       'Authorization': 'Basic YmljYWk6QmljYWkzNjU=',
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'clientParams': JSON.stringify(clientParams)
     }
   }
   return config
@@ -56,11 +64,9 @@ axios.interceptors.request.use(config => {
 
 // 响应拦截器
 axios.interceptors.response.use(
-
   response => {
     // dataAxios 是 axios 返回数据中的 data
     const dataAxios = response.data;
-
     if (dataAxios.success) { // 页面请求的
       return dataAxios;
     } else
@@ -70,33 +76,20 @@ axios.interceptors.response.use(
     if (dataAxios instanceof ArrayBuffer || dataAxios instanceof Blob) { // 图片上传的
       return dataAxios
     } else {
-      let token = localStorage.getItem('token');
-      if (token && dataAxios.code !== "B_INVALID_TOKEN") {
-        // 如果token无效，则跳转到登录页
-        Message({
-          message: `${dataAxios.message}！`,
-          type: 'error',
-          duration: 2 * 1000
-        });
-
-      } else {
+      errorLog(dataAxios)
+      let token = sessionStorage.getItem('token');
+      if (!token || dataAxios.code === "B_INVALID_TOKEN") {
         setTimeout(() => {
           isApp.$router.push({
             name: 'login'
           })
         }, 1000)
-        Message({
-          message: `${dataAxios.message}`,
-          type: 'warning',
-          duration: 3 * 1000
-        })
       }
       return null
     }
   },
   error => {
     if (error && error.response) {
-
       switch (error.response.status) {
         case 400:
           error.message = '请求错误';
@@ -135,7 +128,7 @@ axios.interceptors.response.use(
           break
       }
     }
-    errorCreat(error)
+    errorLog(error)
     return Promise.reject(error)
   }
 )

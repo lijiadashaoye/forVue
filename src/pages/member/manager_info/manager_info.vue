@@ -1,13 +1,16 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader" class="headerName">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button size="mini" type="warning" @click="back">返回</el-button>
     </div>
     <div id="forTable">
       <ul>
         <li>
-          <img class="isAvatar" :src="infoData.avatar">
+          <img class="isAvatar" :src="infoData.avatar" />
         </li>
         <li class="forName">
           <p class="isName">{{infoData.name}}</p>
@@ -19,7 +22,7 @@
             <strong style="text-align:right;">会员状态：</strong>
             {{infoData.status}}
           </p>
-          <el-button style="margin-left:20px;" size="mini" type="primary" @click="makeMark()">标签操作</el-button>
+          <el-button style="margin-left:20px;" size="mini" type="primary" @click="makeMark">标签操作</el-button>
         </li>
         <li class="infoTitle">
           <span>基本信息</span>
@@ -84,7 +87,7 @@
 
           <div class="levelIcon">
             <strong>等级图标：</strong>
-            <img :src="infoData.LevelIcon">
+            <img :src="infoData.LevelIcon" />
           </div>
         </li>
         <li class="infoTitle">
@@ -133,7 +136,7 @@
         <li class="infoContent">
           <div>
             <strong>注册时间：</strong>
-            {{infoData.createTime}}
+            {{infoData.gmtCreated}}
           </div>
 
           <div>
@@ -162,7 +165,7 @@
         :before-close="markDialogClose"
         style="padding:0;"
       >
-        <makeTag v-if="dialogMark.show" :inputData="forMark" @toSearch="getMarkList"/>
+        <makeTag v-if="dialogMark.show" :inputData="forMark" @toSearch="getMarkList" />
 
         <span slot="footer" class="dialog-footer">
           <el-button size="mini" @click="markDialogAction(false)">取 消</el-button>
@@ -182,6 +185,7 @@ export default {
   },
   data() {
     return {
+      env: null,
       pageName: "",
       infoData: {}, // 保存服务器给的数据，已经格式化
       forMark: {
@@ -199,6 +203,7 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
     this.getUserData();
   },
@@ -229,19 +234,26 @@ export default {
     },
     // 查询标签
     getMarkList() {
+      let obj = {
+        status: "ENABLE"
+      };
+      if (this.forMark.name) {
+        obj.name = this.forMark.name;
+      }
       return this.$api
-        .member_manager_getMarkLise({
+        .member_manager_getMarkList({
           vm: this,
-          data: { name: this.forMark.name }
+          data: obj
         })
         .then(res => {
           if (res) {
-            this.forMark.list = res.data.list.map(item => {
-              return {
+            this.forMark.list = [];
+            res.data.list.forEach(item => {
+              this.forMark.list.push({
                 labelId: item.id,
                 name: item.name,
-                bkColor: this.makeStyle() 
-              };
+                bkColor: this.makeStyle()
+              });
             });
           }
         });
@@ -353,6 +365,9 @@ export default {
                   obj["certificateType"] = "军官证";
                   break;
               }
+              if (str == "avatar") {
+                obj[str] = this.$ImgBaseUrl + res.data.avatar;
+              }
             });
             this.infoData = obj;
           }
@@ -362,6 +377,6 @@ export default {
 };
 </script>
 
-<style scoped='true' lang="scss">
+<style scoped lang="scss">
 @import url("./managet_info.scss");
 </style>

@@ -37,7 +37,8 @@
 
           <div>
             <span>请选择栏位：</span>
-            <el-select filterable
+            <el-select
+              filterable
               multiple
               placeholder="请选择"
               size="mini"
@@ -503,9 +504,8 @@ export default {
     };
   },
   mounted() {
-    let fromHttp = sessionStorage.getItem("fromHttp");
-    let step2Data = sessionStorage.getItem("step2Data");
-
+    // let fromHttp = sessionStorage.getItem("fromHttp");
+    // let step2Data = sessionStorage.getItem("step2Data");
     // if (fromHttp && !step2Data) {
     //   // 只是通过点击编辑过来
     //   let fromHttpData = JSON.parse(fromHttp);
@@ -755,7 +755,7 @@ export default {
       this.$confirm(
         `重置的话，之前的操作活动配置数据将全部清除，是否继续重置？`
       )
-        .then(_ => {
+        .then(() => {
           this.other = [];
           this.showWay = ""; // 显示渠道
           this.pageData = {

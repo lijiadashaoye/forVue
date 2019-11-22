@@ -2,7 +2,10 @@
   <div class="componentWaper">
     <div id="forHeader">
       <div class="headerName">
-        <h3>{{pageName}}</h3>
+        <p class="isPageName">
+          <span :class="env?'lineSpan1':'lineSpan'">|</span>
+          位置：{{$store.state.for_layout.titles}}{{pageName}}
+        </p>
         <el-button size="mini" type="warning" @click="back">返回</el-button>
       </div>
     </div>
@@ -26,7 +29,7 @@
             </el-form-item>
 
             <el-form-item label="APP标识" prop="appMark" style="width:50%;margin-right:0;">
-              <el-select filterable v-model="leftForm.appMark" placeholder="请选择" clearable>
+              <el-select filterable v-model="leftForm.appMark" placeholder="请选择">
                 <el-option
                   v-for="item of selectData"
                   :key="item.value"
@@ -37,7 +40,7 @@
             </el-form-item>
 
             <el-form-item label="是否有效" prop="youxiao" style="width:50%;margin-right:0;">
-              <el-select filterable v-model="leftForm.youxiao" placeholder="请选择" clearable>
+              <el-select filterable v-model="leftForm.youxiao" placeholder="请选择">
                 <el-option
                   v-for="item of shifou"
                   :key="item.value"
@@ -48,10 +51,10 @@
             </el-form-item>
 
             <el-form-item label="配置点" prop="peizhi" style="width:50%;margin-right:0;">
-              <el-select filterable
+              <el-select
+                filterable
                 v-model="leftForm.peizhi"
                 placeholder="请选择"
-                clearable
                 @change="set_peizhidian"
               >
                 <el-option
@@ -64,7 +67,7 @@
             </el-form-item>
 
             <el-form-item label="登录状态" prop="loginStatus" style="width:50%;margin-right:0;">
-              <el-select filterable v-model="leftForm.loginStatus" placeholder="请选择" clearable>
+              <el-select filterable v-model="leftForm.loginStatus" placeholder="请选择">
                 <el-option
                   v-for="item of dlzt"
                   :key="item.value"
@@ -75,7 +78,7 @@
             </el-form-item>
 
             <el-form-item label="平台" prop="pingtai" style="width:50%;margin-right:0;">
-              <el-select filterable v-model="leftForm.pingtai" placeholder="请选择" clearable>
+              <el-select filterable v-model="leftForm.pingtai" placeholder="请选择">
                 <el-option
                   v-for="item of pingtai"
                   :key="item.value"
@@ -116,7 +119,13 @@
                 </el-form-item>
 
                 <el-form-item size="mini">
-                  <el-select filterable size="mini" v-model="data.signType" placeholder="请选择" clearable>
+                  <el-select
+                    filterable
+                    size="mini"
+                    v-model="data.signType"
+                    placeholder="请选择"
+                    clearable
+                  >
                     <el-option
                       v-for="item of fuhao"
                       :key="item.value"
@@ -169,8 +178,8 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button size="mini" type="primary" @click="getList()">查询</el-button>
-              <el-button size="mini" type="warning" @click="reset()">重置</el-button>
+              <el-button size="mini" type="primary" @click="getList">查询</el-button>
+              <el-button size="mini" type="warning" @click="reset">重置</el-button>
             </el-form-item>
           </el-form>
 
@@ -181,11 +190,17 @@
       </div>
     </div>
 
-    <el-dialog :visible.sync="show" width="30%" center :close-on-click-modal="false">
+    <el-dialog
+      :visible.sync="show"
+      width="30%"
+      center
+      :close-on-click-modal="false"
+      :show-close="false"
+    >
       <span>数据提交成功，请选择下一步执行步骤</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="toList(true)">去配置列表</el-button>
-        <el-button type="primary" @click="toList(false)">再次编辑</el-button>
+        <el-button type="primary" @click="toList(false)">{{ID?'再次编辑':'再次新增'}}</el-button>
       </span>
     </el-dialog>
   </div>
@@ -213,6 +228,8 @@ export default {
       }
     };
     return {
+      ID: "",
+      env: null,
       show: false, // 保存结束弹框
       loadEnd: false,
       tableInputData: {
@@ -282,11 +299,11 @@ export default {
           value: "button_top"
         },
         {
-          label: "活动按钮-顶部",
+          label: "活动按钮",
           value: "activity_button_top"
         },
         {
-          label: "开屏广告",
+          label: "启动页",
           value: "launch_advertis"
         },
         {
@@ -308,7 +325,7 @@ export default {
         youxiao: "", // 是否有效
         peizhi: "", // 配置点
         loginStatus: "", // 登录状态
-        pingtai: "", // 登录状态
+        pingtai: "IOS", // 登录状态
         miaoshu: "", // 描述信息
         other: [], // 其他条件
         hasSelect: [] // 如果是编辑，保存已选择的
@@ -319,7 +336,7 @@ export default {
         appChannelCode: "", // APP标识
         platformCode: "" // 平台
       },
-      beforeSelect: [], // 记录素材列表之前已选择的
+      beforeSelect: [], // 记录当前分页里，素材列表之前已选择的
       rules: {
         name: [
           { required: true, message: "请输入名称", trigger: "blur" },
@@ -348,17 +365,19 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
+
     this.pageName = sessionStorage.getItem("page");
     this.init();
   },
   methods: {
     init() {
       this.show = false;
-      let id = this.$route.query["id"];
+      this.ID = this.$route.query["id"];
       this.leftForm.peizhi = this.$route.query["weizhi"];
       this.rightForm.solutionGroup = this.leftForm.peizhi;
-      if (id) {
-        this.getUserData(id);
+      if (this.ID) {
+        this.getUserData(this.ID);
       } else {
         this.getList();
       }
@@ -433,7 +452,6 @@ export default {
           } else {
             httpType = "post";
           }
-
           this.$api
             .add_put({
               vm: this,
@@ -454,8 +472,35 @@ export default {
     },
     toList(type) {
       if (type) {
-        this.$router.push({ name: `pzgl` });
+        this.$router.push({
+          name: `pzgl`,
+          query: {
+            weizhi: this.$route.query["weizhi"]
+          }
+        });
       } else {
+        if (!this.ID) {
+          this.leftForm = {
+            name: "", // 显示名称
+            appMark: "", // APP标识
+            paixu: "", // 排序值
+            youxiao: "", // 是否有效
+            peizhi: "", // 配置点
+            loginStatus: "", // 登录状态
+            pingtai: "IOS", // 登录状态
+            miaoshu: "", // 描述信息
+            other: [], // 其他条件
+            hasSelect: [] // 如果是编辑，保存已选择的
+          };
+          // 右边查询
+          this.rightForm = {
+            solutionGroup: "",
+            appChannelCode: "", // APP标识
+            platformCode: "" // 平台
+          };
+          this.beforeSelect = []; // 记录当前分页里，素材列表之前已选择的
+          this.$refs.leftForm.resetFields();
+        }
         this.init();
       }
     },
@@ -478,6 +523,13 @@ export default {
         case "moreDelete": // 从右侧添加使用的
           if (!this.beforeSelect.length) {
             this.beforeSelect = data.data;
+
+            let arr = this.leftForm.hasSelect.map(kk => kk.id);
+            for (let i = this.beforeSelect.length; i--; ) {
+              if (!arr.includes(this.beforeSelect[i].id)) {
+                this.leftForm.hasSelect.push(this.beforeSelect[i]);
+              }
+            }
           } else {
             // 如果 this.beforeSelect.length > data.data.length 表示是删除已选过的
             if (this.beforeSelect.length > data.data.length) {
@@ -486,6 +538,7 @@ export default {
                 if (!arr.includes(this.beforeSelect[i].id)) {
                   // 如果当前页选择的素材，不包含在hasSelect，就表示是取消选中状态，要
                   // 从 hasSelect 数组中删除
+
                   this.leftForm.hasSelect = this.leftForm.hasSelect.filter(
                     jj => jj.id != this.beforeSelect[i].id
                   );
@@ -493,17 +546,15 @@ export default {
               }
             } else {
               // 添加新的
-              if (data.data.length) {
-                data.data.forEach(item => {
-                  // 遍历当前页选中的，把新勾选的添加到 hasSelect
-                  let isIn = this.leftForm.hasSelect.some(tar => {
-                    return tar.id === item.id;
-                  });
-                  if (!isIn) {
-                    this.leftForm.hasSelect.push(item);
-                  }
-                });
-              }
+              data.data.forEach(item => {
+                // 遍历当前页选中的，把新勾选的添加到 hasSelect
+                let isIn = this.leftForm.hasSelect.some(
+                  tar => tar.id === item.id
+                );
+                if (!isIn) {
+                  this.leftForm.hasSelect.push(item);
+                }
+              });
             }
             this.beforeSelect = JSON.parse(JSON.stringify(data.data));
           }
@@ -521,7 +572,7 @@ export default {
           obj[i] = this.rightForm[i];
         }
       }
-
+      // 获取素材列表
       this.$api
         .get_sucai_list({
           vm: this,
@@ -552,7 +603,8 @@ export default {
             obj.sucai = [
               {
                 text: item.title,
-                img: item.imageUrl
+                img: item.imageUrl,
+                type: item.imageUrl.split(".")[1]
               }
             ];
             obj.afterText = item.appChannelCode
@@ -561,6 +613,7 @@ export default {
           });
           return obj;
         });
+        // 表示是编辑
         if (this.leftForm.id) {
           let hasSelect = this.leftForm.hasSelect.map(tar => tar.id);
           this.tableInputData.data.setCheck = this.tableInputData.data.list.filter(
@@ -601,7 +654,7 @@ export default {
           if (res) {
             let datas = res.data;
             this.leftForm = {
-              id: datas.id,
+              id: datas.id, // 编辑的产品的id
               name: datas.solutionDesc, // 显示名称
               appMark: datas.appType, // APP标识
               paixu: datas.sortIndex, // 排序值
@@ -628,7 +681,12 @@ export default {
     // 返回按钮
     back() {
       sessionStorage.setItem("page", "卡券列表");
-      window.history.back();
+      this.$router.push({
+        name: `pzgl`,
+        query: {
+          weizhi: this.$route.query["weizhi"]
+        }
+      });
     }
   }
 };

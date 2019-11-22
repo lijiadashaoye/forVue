@@ -57,7 +57,7 @@ const mutations = {
     },
     userDo(state) {
         state.topProductList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('top_product_edit') > -1) {
             state.topProductList.data.quanxian.push('ok')
             state.topProductList.data.custom.push({

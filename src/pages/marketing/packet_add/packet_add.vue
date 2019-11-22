@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
     </div>
 
     <div id="forTable">
@@ -21,7 +24,8 @@
           </el-form-item>
 
           <el-form-item label="红包类型" prop="amountType">
-            <el-select filterable
+            <el-select
+              filterable
               v-model="formData.amountType"
               clearable
               placeholder="请选择"
@@ -174,7 +178,7 @@ export default {
   data() {
     // 验证总金额
     var checkTotalMoney = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
@@ -186,7 +190,7 @@ export default {
     };
     // 验证数字
     var checkamountFixed = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
@@ -201,7 +205,7 @@ export default {
       let reg = /\./;
       if (reg.test(value)) {
         callback(new Error("请输入整数"));
-      } else if (value === "") {
+      } else if (!value) {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
@@ -224,16 +228,16 @@ export default {
         callback();
       }
     };
-    // 验证数字
-    var checkNum3 = (rule, value, callback) => {
-      if (value < 0) {
-        callback(new Error("请输入正数"));
-      } else if (("" + value).length > 19 || ("" + value).length < 0) {
-        callback(new Error("请输入1-19字符"));
-      } else {
-        callback();
-      }
-    };
+    // // 验证数字
+    // var checkNum3 = (rule, value, callback) => {
+    //   if (value < 0) {
+    //     callback(new Error("请输入正数"));
+    //   } else if (("" + value).length > 19 || ("" + value).length < 0) {
+    //     callback(new Error("请输入1-19字符"));
+    //   } else {
+    //     callback();
+    //   }
+    // };
     // 验证总金额
     var checkMaxAmount = (rule, value, callback) => {
       if (value < 0) {
@@ -246,7 +250,7 @@ export default {
     };
     // 金额设置
     var checkMax = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("请输入金额"));
       } else if (+value < +this.formData.amountMin) {
         callback(new Error("金额不能比最低金额小！"));
@@ -306,6 +310,7 @@ export default {
     };
 
     return {
+      env: null,
       inputTarget: false, // 用来确定是那个输入框
       timer: null, // 计算总个数和总金额
       isAddGL: false, // 如果没有添加概率，执行此项
@@ -392,6 +397,7 @@ export default {
     }
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.toInit();
   },
   methods: {

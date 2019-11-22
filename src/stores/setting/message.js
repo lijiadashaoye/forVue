@@ -1,7 +1,8 @@
 import {
     sms_manage,
     push_message,
-    getAppChannel,
+    // getAppChannel,
+    productUrl_list,
     productList,
     get_message_detail,
     add_push_message,
@@ -11,8 +12,10 @@ import {
     add_sms_manage,
     change_push_manage,
     upload_file,
-    get_sms_detail
+    get_sms_detail,
+    download_template
 } from '../../api/setting_use'
+import { defaultChange } from '@/sets/changeLanguage.js'
 const state = {
     newsDoArr: ['push_message_add', 'push_message_detail', 'push_message_del', 'push_message_upd'], //消息推送所需要的权限
     smsDoArr: ['sms_manage_add', 'sms_manage_detail', 'sms_manage_del'], //短信推送模块需要的权限
@@ -68,82 +71,25 @@ const mutations = {
     savePushDetail(state, data) {
         state.newsDetailInfo = data;
     },
-    //获取列表数据
-    SETSMSLIST(state, res) {
-        state.smsList.data.list = res.data.list;
-        state.smsList.total = res.data.total;
-        state.smsList.data.list.forEach((item) => {
-            //    发送目标
-            if (item.sendTarget == "TOTAL_USER") {
-                item.sendTarget = "全部用户";
-            } else {
-                item.sendTarget = "部分用户";
-            }
-            // 发送方式
-            if (item.sendType == "SYSTEM_USER") {
-                item.sendType = "系统用户";
-            } else if (item.sendType == "IMPORT_PHONE") {
-                item.sendType = "导入手机号";
-            } else {
-                item.sendType = "文本";
-            }
-            // 发送状态
-            if(item.sendStatus=="WAIT_SEND"){
-                item.sendStatus = "待发送";
-            }else if(item.sendStatus=="SEND_SUCCESS"){
-                item.sendStatus = "发送成功";
-            }else if(item.sendStatus=="SENDFAIL"){
-                item.sendStatus = "发送失败";
-            }else{
-                item.sendStatus = "发送中";
-            }
-        })
-    },
     //  获取消息推送列表
     SETNEWSLIST(state, res) {
         state.newsList.data.list = res.data.list;
         state.newsList.total = res.data.total;
         state.newsList.data.list.forEach((item) => {
             // 推送方式
-            if(item.pushWay=="PUSH"){
-                item.pushWay = "推送";
-            }else{
-                item.pushWay = "站内信";
-            }
+            item.pushWay = defaultChange(item.pushWay, true, 'pushType');
+            // 发送状态
+            item.sendStatus = defaultChange(item.sendStatus, true, 'sendTargetArr');
+            // 产品类型
+            // item.linkLocationEnum = defaultChange(item.linkLocationEnum,true,)
         })
     },
-    // 短信模块权限
-    smsUserDo(state) {
-        state.smsList.data.custom = [];
-        state.smsList.data.quanxian = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
-        for (let item of state.smsDoArr) {
-            if (jurisdiction.indexOf(item) > -1) {
-                state.smsList.data.quanxian.push(item);
-                if (item == 'sms_manage_detail') {
-                    state.smsList.data.custom.push({
-                        text: "详情",
-                        type: "primary",
-                        size: "mini",
-                        emit: "detail"
-                    });
-                }
-                if (item == "sms_manage_del") {
-                    state.smsList.data.custom.push({
-                        text: "删除",
-                        type: "danger",
-                        size: "mini",
-                        emit: "delete"
-                    });
-                }
-            }
-        }
-    },
+
     // 推送信息模块权限
     newsUserDo(state) {
         state.newsList.data.custom = [];
         state.newsList.data.quanxian = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         for (let item of state.newsDoArr) {
             if (jurisdiction.indexOf(item) > -1) {
                 state.newsList.data.quanxian.push(item);
@@ -173,16 +119,19 @@ const mutations = {
 const actions = {
     //  获取短信列表
     getSmsList({
-        commit
-    }, data) {
-        sms_manage(data).then(res => {
+        commit, rootState
+    }) {
+        sms_manage({
+            pageSize: rootState.powerTable['tableInfo']['pageSize'],
+            pageNum: rootState.powerTable['tableInfo']['pageNum']
+        }).then(res => {
             if (res && res.success) {
-                commit('SETSMSLIST', res)
+                commit('powerTable/SETTABLEINFO', res, {root: true})
             }
         })
     },
     // 获取短信模板
-    getSmsTemplate({commit}, data) {
+    getSmsTemplate({ commit }, data) {
         return new Promise((resolve) => {
             get_sms_list(data).then(res => {
                 if (res && res.success) {
@@ -193,7 +142,7 @@ const actions = {
     },
 
     // 新增短信
-    addSmsManage({commit}, data) {
+    addSmsManage({ commit }, data) {
         return new Promise((resolve) => {
             add_sms_manage(data).then(res => {
                 if (res && res.success) {
@@ -204,7 +153,7 @@ const actions = {
 
     },
     // 获取短信详情
-    getSmsDetail({commit}, data) {
+    getSmsDetail({ commit }, data) {
         return new Promise((resolve) => {
             get_sms_detail(data).then(res => {
                 if (res && res.success) {
@@ -215,7 +164,7 @@ const actions = {
 
     },
     // 上传短信模板
-    upLoadFile({commit}, data) {
+    upLoadFile({ commit }, data) {
         return new Promise((resolve) => {
             upload_file(data, 'message').then(res => {
                 if (res && res.success) {
@@ -226,7 +175,7 @@ const actions = {
 
     },
     // 删除短信
-    deleteSmsManage({commit}, data) {
+    deleteSmsManage({ commit }, data) {
         return new Promise((resolve) => {
             delete_sms_manage(data).then(res => {
                 if (res && res.success) {
@@ -234,10 +183,14 @@ const actions = {
                 }
             })
         })
-
     },
+    // 短信模版下载
+    downloadTemplate({ }) {
+        download_template()
+    },
+
     // 获取消息推送列表
-    getNewsList({commit}, data) {
+    getNewsList({ commit }, data) {
         return new Promise(() => {
             push_message(data).then(res => {
                 if (res && res.success) {
@@ -262,9 +215,9 @@ const actions = {
 
     },
     // 推送消息产品类型获取
-    getProductTypeList({commit}, data) {
+    getProductTypeList({ commit }, data) {
         return new Promise((resolve) => {
-            getAppChannel(data).then(res => {
+            productUrl_list(data).then(res => {
                 if (res && res.success) {
                     resolve(res.data)
                 }
@@ -272,7 +225,7 @@ const actions = {
         })
     },
     // 关联产品获取
-    getProductList({commit}, data) {
+    getProductList({ commit }, data) {
         return new Promise((resolve) => {
             productList(data).then(res => {
                 if (res && res.success) {
@@ -282,7 +235,7 @@ const actions = {
         })
     },
     // 新增推送信息
-    addProduct({commit}, data) {
+    addProduct({ commit }, data) {
         return new Promise((resolve) => {
             add_push_message(data).then(res => {
                 if (res && res.success) {
@@ -292,7 +245,7 @@ const actions = {
         })
     },
     // 修改推送消息 
-    changePushManage({commit}, data) {
+    changePushManage({ commit }, data) {
         return new Promise((resolve) => {
             change_push_manage(data).then(res => {
                 if (res && res.success) {
@@ -303,7 +256,7 @@ const actions = {
 
     },
     // 删除推送信息
-    deleteProduct({commit}, data) {
+    deleteProduct({ commit }, data) {
         return new Promise((resolve) => {
             delete_push_message(data).then(res => {
                 if (res && res.success) {

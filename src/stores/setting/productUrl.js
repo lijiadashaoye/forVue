@@ -58,9 +58,8 @@ const actions = {
     deleteList({
         commit
     }, id) {
-        console.log(id)
         productUrl_delete(id).then((res) => {
-            if (res &&　res.success) {
+            if (res && res.success) {
                 commit('getProductUrlListData')
             }
         })

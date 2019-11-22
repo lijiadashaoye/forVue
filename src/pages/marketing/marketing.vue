@@ -13,8 +13,6 @@ export default {
   },
   created() {
     this.pageName = sessionStorage.getItem("page");
-  },
-
-  methods: {}
+  }
 };
 </script>

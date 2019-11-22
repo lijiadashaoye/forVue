@@ -5,8 +5,8 @@
 npm start
 
 ## 打包
-终端：npm run build<br>
-baseURL = 'http://gateway.bicai365.com/';<br>
+终端：npm run build:development<br>
+baseURL = 'https://develop-gateway.bicai365.com/';<br>
 
 终端：npm run build:dev<br>
 baseURL = 'http://gateway.bicai365.com/';<br>

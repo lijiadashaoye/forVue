@@ -1,15 +1,19 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button type="primary" size="mini" @click="add">新增产品支取提示信息</el-button>
     </div>
 
     <div id="forTable">
       <isTable :inputData="this.$store.state.promptMsg.promptMsgList" @tableEmit="tableEmit" />
     </div>
+
     <el-dialog
-      title="新增产品支取提示信息"
+      :title="`${addFlag?'新增':'修改'}产品支取提示信息`"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
       :before-close="close"
@@ -18,15 +22,15 @@
         :model="ruleForm"
         :rules="rules"
         ref="ruleForm"
-        class="demo-ruleForm"
+        
         label-width="140px"
         label-position="left"
       >
         <el-form-item label="产品所属银行:" prop="institutionId">
-          <el-select filterable
+          <el-select
+            filterable
             v-model="ruleForm.institutionId"
             placeholder="请选择"
-            
             clearable
             @change="getProductName"
           >
@@ -39,7 +43,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="产品名称:" prop="productId">
-          <el-select filterable v-model="ruleForm.productId" placeholder="请选择"  clearable>
+          <el-select filterable v-model="ruleForm.productId" placeholder="请选择" clearable>
             <el-option
               v-for="(item,ind) in productList"
               :key="ind"
@@ -49,7 +53,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="提示类型:" prop="promptType">
-          <el-select filterable v-model="ruleForm.promptType" placeholder="请选择"  clearable>
+          <el-select filterable v-model="ruleForm.promptType" placeholder="请选择" clearable>
             <el-option
               v-for="(item,ind) in promptTypeList"
               :key="ind"
@@ -63,7 +67,7 @@
           prop="deadline"
           :rules="[{required: ruleForm.promptType == 3 ? true : false, message: '请输入存期', trigger: 'blur'},{ pattern: /^\+?[1-9]\d*$/,message: '只能输入大于0的正整数', trigger: 'blur' }]"
         >
-          <el-input v-model.number="ruleForm.deadline" min="0" placeholder="请输入存期"></el-input>
+          <el-input type="number" v-model.number="ruleForm.deadline" min="0" placeholder="请输入存期"></el-input>
         </el-form-item>
         <el-form-item
           label="存期单位:"
@@ -89,8 +93,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="cancalAdd('ruleForm')">取消</el-button>
-        <el-button type="primary" @click="saveAdd('ruleForm')">保存</el-button>
+        <el-button @click="close">取消</el-button>
+        <el-button type="primary" @click="saveAdd">保存</el-button>
       </div>
     </el-dialog>
   </div>
@@ -112,6 +116,7 @@ export default {
   },
   data() {
     return {
+      env: null,
       pageName: "",
       id: "",
       dialogFormVisible: false,
@@ -172,6 +177,7 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = this.$route.name;
     this.userDo();
     productBank().then(async res => {
@@ -189,7 +195,6 @@ export default {
         title: "机构名称",
         key: "institutionName",
         minWidth: "200"
-        // sortable: true
       },
       {
         title: "产品名称",
@@ -217,10 +222,12 @@ export default {
     }),
     //新增
     add() {
-      let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let jurisdiction = JSON.parse(
+        sessionStorage.getItem("buttenpremissions")
+      );
       if (jurisdiction.indexOf("prompt_message_add") > -1) {
-        this.dialogFormVisible = true;
         this.addFlag = true;
+        this.dialogFormVisible = true;
       } else {
         this.$message.error("您暂无权限添加");
         this.addFlag = false;
@@ -239,16 +246,23 @@ export default {
     },
     //关闭弹窗
     close() {
-      this.dialogFormVisible = false;
       this.$refs.ruleForm.resetFields();
-    },
-    //取消
-    cancalAdd(formName) {
-      this.$refs[formName].resetFields();
+      this.addFlag = false;
+      this.id = "";
+      this.ruleForm.institutionId = "";
+      this.institutionName = "";
+      this.ruleForm.productId = "";
+      this.productName = "";
+      this.ruleForm.promptType = "";
+      this.ruleForm.deadline = "";
+      this.ruleForm.timeUnitType = "";
+      this.ruleForm.promptMessage = "";
+
+      this.dialogFormVisible = false;
     },
     //保存
-    saveAdd(formName) {
-      this.$refs[formName].validate(valid => {
+    saveAdd() {
+      this.$refs.ruleForm.validate(valid => {
         if (valid) {
           this.institutionList.forEach(v => {
             if (this.ruleForm.institutionId == v.id) {
@@ -261,7 +275,6 @@ export default {
             }
           });
           let obj = {
-            id: this.id ? this.id : null,
             institutionId: this.ruleForm.institutionId,
             institutionName: this.institutionName,
             productId: this.ruleForm.productId,
@@ -273,31 +286,33 @@ export default {
               : null,
             promptMessage: this.ruleForm.promptMessage
           };
+          if (this.id !== "") {
+            obj.id = this.id;
+          }
+
           if (this.addFlag) {
             //新增
             prompt_add(obj).then(res => {
               if (res && res.success) {
-                this.dialogFormVisible = false;
-                this.$refs.ruleForm.resetFields();
                 this.$message.success("保存成功");
+                this.close();
                 this.getList({
-                  pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
+                    pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
                   pageSize: this.$store.state.promptMsg.promptMsgList.pageSize
                 });
               }
             });
           } else {
-            //修改
+              //修改
             prompt_upd(obj).then(res => {
-              if (res && res.success) {
-                this.dialogFormVisible = false;
-                this.$refs.ruleForm.resetFields();
-                this.$message.success("保存成功");
-                this.getList({
-                  pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
-                  pageSize: this.$store.state.promptMsg.promptMsgList.pageSize
-                });
-              }
+                if (res && res.success) {
+                    this.$message.success("保存成功");
+                    this.close();
+                    this.getList({
+                        pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
+                        pageSize: this.$store.state.promptMsg.promptMsgList.pageSize
+                    });
+                }
             });
           }
         } else {
@@ -307,7 +322,6 @@ export default {
     },
     //修改
     edit(data) {
-      this.dialogFormVisible = true;
       this.addFlag = false;
       this.id = data.id;
       this.ruleForm.institutionId = data.institutionId;
@@ -318,6 +332,7 @@ export default {
       this.ruleForm.deadline = data.deadline;
       this.ruleForm.timeUnitType = data.timeUnitType;
       this.ruleForm.promptMessage = data.promptMessage;
+      this.dialogFormVisible = true;
     },
     //删除
     delete(id) {

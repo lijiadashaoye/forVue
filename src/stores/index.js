@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 Vue.use(Vuex);
 
 import for_layout from './for_layout'; //全局登录
+import powerTable from './powerTable';  //table列表专用
 import app_button_add from './setting/app_button_add';//首页按钮
 import explosive from './setting/explosive';//爆款
 import commend from './setting/commend';//新手
@@ -27,15 +28,20 @@ import productUrl from './setting/productUrl';//通用地址
 import message from './setting/message';//信息和短信列表
 import relation from './setting/relation';//父子依赖关系
 import smsRuleTemplate from './setting/smsRuleTemplate';//短信权限/模版
+import alarmConfig from './alarm/alarmConfig'; //系统预警配置
 import cashOut from './member/cashOut';//提现管理
 import devicePosition from './log/devicePosition';//log 设备定位
 import pointLocation from './log/pointLocation';//log 点位
 import topProduct from './product/topProduct'; //榜单置顶
-import promptMsg from './product/promptMsg'; //榜单置顶
+import promptMsg from './product/promptMsg';
+import problemInfo from './setting/problemInfo';//问题信息
+import questionDispose from './setting/questionDispose';//问题分类
 
 const store = new Vuex.Store({
     modules: { // 使用状态整合来区分
         for_layout,
+        powerTable,
+        alarmConfig,
         app_button_add,
         explosive,
         commend,
@@ -64,7 +70,9 @@ const store = new Vuex.Store({
         devicePosition,
         pointLocation,
         topProduct,
-        promptMsg
+        promptMsg,
+        problemInfo,
+        questionDispose
     }
 });
 

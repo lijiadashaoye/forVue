@@ -1,8 +1,10 @@
 <template>
   <el-card class="box-card">
     <h4 v-if="this.showType != 'VIDEO'">广告内容</h4>
+
     <div class="card-item">
       <span class="item-text">*选择App：</span>
+
       <div class="item-input">
         <el-radio-group v-model="appChannelCode">
           <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
@@ -12,6 +14,7 @@
 
     <div class="card-item">
       <span class="item-text">*名称:</span>
+
       <div class="item-input">
         <el-input v-model="advertisName" placeholder="请输入名称"></el-input>
       </div>
@@ -19,10 +22,13 @@
 
     <div class="card-item">
       <span class="item-text">*类型:</span>
+
       <div class="item-input">
         <el-radio-group v-model="showType" :disabled="showTypeFlag">
           <el-radio label="OPENSCREEN">开屏</el-radio>
+
           <el-radio label="FLASHSCREEN">闪屏</el-radio>
+
           <el-radio label="VIDEO">视频</el-radio>
         </el-radio-group>
       </div>
@@ -30,9 +36,11 @@
 
     <div class="card-item" v-if="this.showType == 'OPENSCREEN'">
       <span class="item-text">*状态:</span>
+
       <div class="item-input">
         <el-radio-group v-model="status">
           <el-radio label="ENABLE">启用</el-radio>
+
           <el-radio label="DISABLE">停用</el-radio>
         </el-radio-group>
       </div>
@@ -40,22 +48,27 @@
 
     <div class="card-item">
       <span class="item-text">*适用平台:</span>
+
       <div class="item-input">
         <el-radio-group v-model="platformCode">
           <el-radio label="android" :disabled="upDataFlag">安卓</el-radio>
+
           <el-radio label="ios" :disabled="upDataFlag">IOS</el-radio>
         </el-radio-group>
       </div>
     </div>
+
     <!-- 开屏 -->
+
     <div v-if="this.showType === 'OPENSCREEN'">
       <div class="card-img-list">
         <span class="item-text">*广告图片:</span>
+
         <div class="item-imgList-up">
           <el-upload
             class="upload-demo"
             auto-upload
-            action="http://gateway.bicai365.com/admin/file/up/setting"
+            action="https://develop-gateway.bicai365.com/admin/file/up/setting"
             :headers="myHeaders"
             :limit="6"
             :file-list="fileList"
@@ -73,6 +86,7 @@
 
     <div class="card-item" v-if="this.showType === 'FLASHSCREEN' || this.showType === 'VIDEO'">
       <span class="item-text">*分辨率:</span>
+
       <div class="item-input">
         <el-select filterable v-model="resolution" clearable placeholder="请选择">
           <el-option
@@ -86,9 +100,11 @@
     </div>
 
     <!-- 闪屏 -->
+
     <div v-if="this.showType === 'FLASHSCREEN'">
       <div class="card-item">
         <span class="item-text">*闪屏时间:</span>
+
         <div class="item-input-time">
           <span>
             <el-input v-model="displayTime" placeholder="只能输入数字"></el-input>&nbsp;&nbsp;&nbsp;毫秒
@@ -98,6 +114,7 @@
 
       <div class="card-item">
         <span class="item-text">*点击效果连接位置:</span>
+
         <div class="item-input">
           <el-select
             filterable
@@ -113,7 +130,8 @@
               :value="item.linkModel"
             >
               <span style="float: left">{{ item.linkName }}</span>
-              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.linkUrl }}</span>
+
+              <!-- <span style="float: right; color: #8492a6; font-size: 13px">{{ item.linkUrl }}</span> -->
             </el-option>
           </el-select>
         </div>
@@ -121,6 +139,7 @@
 
       <div class="card-item" v-if="inputFlag">
         <span class="item-text">网址链接:</span>
+
         <div class="item-input">
           <el-input v-model="linkUrl" placeholder="请输入产品链接"></el-input>
         </div>
@@ -128,6 +147,7 @@
 
       <div class="card-item" v-else>
         <span class="item-text">关联产品:</span>
+
         <div class="item-input">
           <el-select
             filterable
@@ -147,6 +167,7 @@
               :value="item.id"
             >
               <span style="float: left">{{ item.institutionName }}</span>
+
               <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
             </el-option>
           </el-select>
@@ -155,20 +176,26 @@
 
       <div class="card-item card-img">
         <span class="item-text">*广告:</span>
+
         <div class="item-img">
           <el-upload
             class="avatar-uploader"
             action="customize"
             :show-file-list="false"
             :http-request="uploadAdvertis"
+            v-loading="advertisLoading"
           >
             <img v-if="flashScreenUrl" :src="ImgBaseUrl + flashScreenUrl" class="avatar" />
+
             <div v-else>
               <el-button>
                 选择图片
                 <br />
+
                 <span style="font-size:12px;color:red">不能大于2M</span>
+
                 <br />
+
                 <span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span>
               </el-button>
             </div>
@@ -178,6 +205,7 @@
 
       <div class="card-item">
         <span class="item-text">*广告开始时间:</span>
+
         <div class="item-input">
           <el-date-picker v-model="startTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
         </div>
@@ -185,6 +213,7 @@
 
       <div class="card-item">
         <span class="item-text">*广告结束时间:</span>
+
         <div class="item-input">
           <el-date-picker v-model="endTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
         </div>
@@ -194,19 +223,24 @@
 
       <div class="card-item">
         <span class="item-text">用户选择:</span>
+
         <div class="item-input">
           <el-radio-group v-model="pushUser">
             <el-radio label="TOTAL">发送给全部用户</el-radio>
+
             <el-radio label="PORTION">发送给部分用户</el-radio>
           </el-radio-group>
         </div>
       </div>
+
       <!-- 部分用户地区 -->
+
       <div v-if="this.pushUser === 'PORTION'">
         <h4>推广地区选择</h4>
 
         <div class="card-item province">
           <span class="item-text">选择省份:</span>
+
           <div class="item-input">
             <el-select
               filterable
@@ -217,8 +251,8 @@
               placeholder="请选择省份"
             >
               <el-option
-                v-for="item in provinceOpt"
-                :key="item.value"
+                v-for="(item,ind) in provinceOpt"
+                :key="ind"
                 :label="item.label"
                 :value="item.value"
               ></el-option>
@@ -228,6 +262,7 @@
 
         <div class="card-item area">
           <span class="area-text">已选省份:</span>
+
           <div class="area-tag">
             <el-tag
               v-for="(tag,ind) in provinceList"
@@ -239,52 +274,56 @@
         </div>
       </div>
     </div>
+
     <!-- 视频 -->
+
     <div v-if="this.showType === 'VIDEO'">
       <div class="card-item card-img">
         <span class="item-text">广告:</span>
+
         <div class="item-img">
           <el-upload
             class="avatar-uploader"
             action="customize"
             :show-file-list="false"
             :http-request="uploadVideo"
-            :on-progress="uploadVideoProcess"
+            v-loading="videoLoading"
           >
             <video
-              v-if="videoUrl !='' && videoFlag == false"
+              v-if="videoUrl !==''"
               :src="ImgBaseUrl + videoUrl"
               width="350"
               height="180"
               controls="controls"
             ></video>
-            <el-button v-else-if="videoUrl =='' && videoFlag == false">选择视频</el-button>
-            <el-progress
-              v-if="videoFlag == true"
-              type="circle"
-              :percentage="videoUploadPercent"
-              style="margin-top:30px"
-            ></el-progress>
+
+            <el-button v-else-if="videoUrl ==''">选择视频</el-button>
           </el-upload>
         </div>
       </div>
 
       <div class="card-item card-img">
         <span class="item-text">首帧图片:</span>
+
         <div class="item-img">
           <el-upload
             class="avatar-uploader"
             action="customize"
             :show-file-list="false"
             :http-request="uploadFrame"
+            v-loading="frameLoading"
           >
             <img v-if="frameUrl" :src="ImgBaseUrl + frameUrl" class="avatar" />
+
             <div v-else>
               <el-button>
                 选择图片
                 <br />
+
                 <span style="font-size:12px;color:red">不能大于2M</span>
+
                 <br />
+
                 <span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span>
               </el-button>
             </div>
@@ -293,7 +332,7 @@
       </div>
     </div>
 
-    <div class="card-footer">
+    <div class="bottomBtn">
       <el-button @click="cancel">取消</el-button>
       <el-button type="primary" @click="save">保存</el-button>
     </div>
@@ -304,12 +343,13 @@
 import {
   upLoadImg,
   productUrl_list,
-  productList
+  productList,
+  bigFileUpload
 } from "../../api/setting_use.js";
 import { mapActions } from "vuex";
-var token = localStorage.getItem("token");
+var token = sessionStorage.getItem("token");
 export default {
-  props: ["appChannel", "params"],
+  props: ["appChannel", "params", "dialogFormVisible"],
   data() {
     return {
       id: "",
@@ -319,10 +359,13 @@ export default {
       modelType: "LAUNCHPAGE",
       productCodeFlag: true,
       showTypeFlag: false,
+      advertisLoading: false, //闪屏上传loading开关
+      videoLoading: false,
+      frameLoading: false,
       productForm: {
         pageSize: 200,
         pageNum: 1,
-        linkLocationEnum: "",
+        linkModel: "",
         name: null
       },
       productPageCount: 1,
@@ -349,36 +392,34 @@ export default {
       provinceList: [], //已选省份列表
       videoUrl: "", //视频地址
       frameUrl: "", //首帧图片地址
-      videoFlag: false, //刚开始的时候显示为flase
-      videoUploadPercent: "0%", //进度条刚开始的时候为0%
       launchAdvertisId: "",
       linkLocationOpt: [], //点击效果连接列表,
       productOpt: [], //产品列表
       resolutionOpt: [
         //分辨率下拉列表
         {
-          label: "1242_2688",
-          value: "1242_2688"
+          label: "1242*2688",
+          value: "1242*2688"
         },
         {
-          label: "1242_2208",
-          value: "1242_2208"
+          label: "1242*2208",
+          value: "1242*2208"
         },
         {
-          label: "1125_2436",
-          value: "1125_2436"
+          label: "1125*2436",
+          value: "1125*2436"
         },
         {
-          label: "828_1792",
-          value: "828_1792"
+          label: "828*1792",
+          value: "828*1792"
         },
         {
-          label: "750_1334",
-          value: "750_1334"
+          label: "750*1334",
+          value: "750*1334"
         },
         {
-          label: "640_1136",
-          value: "640_1136"
+          label: "640*1136",
+          value: "640*1136"
         }
       ],
       provinceOpt: [
@@ -526,7 +567,7 @@ export default {
   mounted() {
     this.getChannelData();
     this.ImgBaseUrl = this.$ImgBaseUrl;
-    if (this.params) {
+    if (this.params != null && this.dialogFormVisible) {
       this.upDataFlag = true;
       if (this.params.showType == "FLASHSCREEN") {
         this.productType = this.params.productRelationDetailsVo.productType;
@@ -540,7 +581,7 @@ export default {
         } else {
           this.inputFlag = false;
           this.productForm.pageNum = 1;
-          this.productForm.linkLocationEnum = this.params.productRelationDetailsVo.productType;
+          this.productForm.linkModel = this.params.productRelationDetailsVo.productType;
           this.getproList(this.productForm);
         }
         if (
@@ -592,7 +633,11 @@ export default {
           this.params.locationManage.forEach(v => {
             this.provinceList.push(v.province);
           });
+        } else {
+          this.provinceList = [];
         }
+      } else {
+        this.provinceList = [];
       }
       if (this.params.launchAdvertisingDetails.length > 0) {
         this.fileList = [];
@@ -601,16 +646,20 @@ export default {
             this.flashScreenUrl = v.advertisUrl;
           } else if (this.showType == "OPENSCREEN") {
             this.fileList.push({
-              url: v.advertisUrl
+              url: this.$ImgBaseUrl + v.advertisUrl
             });
           } else if (this.showType === "VIDEO") {
             if (v.advertisType === "VIDEO") {
               this.videoUrl = v.advertisUrl;
             } else if (v.advertisType === "FIRST_IMAGE") {
               this.frameUrl = v.advertisUrl;
+            } else {
+              this.frameUrl = "";
             }
           }
         });
+      } else {
+        this.fileList = [];
       }
       this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
       this.locationManage = this.params.locationManage;
@@ -625,6 +674,32 @@ export default {
     cancel() {
       this.id = null;
       this.$emit("cancel");
+      this.fileList = [];
+      this.appChannelName = "";
+      this.appChannelCode = "";
+      this.advertisName = "";
+      this.showType = "";
+      this.status = "ENABLE";
+      this.platformCode = "";
+      this.platformName = "";
+      this.launchAdvertisingDetails = [];
+      this.productType = "";
+      this.displayTime = "";
+      this.linkId = "";
+      this.linkUrl = "";
+      this.productName = "";
+      this.resolution = "";
+      this.flashScreenUrl = "";
+      this.startTime = "";
+      this.endTime = "";
+      this.pushUser = "TOTAL";
+      this.locationManage = [];
+      this.provinceList = [];
+      this.videoUrl = "";
+      this.frameUrl = "";
+      this.launchAdvertisId = "";
+      this.linkLocationOpt = [];
+      this.productOpt = [];
     },
     //选择产品类型
     getChannelData() {
@@ -643,31 +718,27 @@ export default {
       }
     },
     getproList(form) {
-      productList(form)
-        .then(res => {
-          if (res && res.success) {
-            this.productPageCount =
-              res.data && Math.ceil(res.data.total / this.productForm.pageSize);
-            if (res.data && res.data.list != null && res.data.list != []) {
-              const _res = res.data.list;
-              this.productOpt = [...this.productOpt, ..._res];
-            }
+      productList(form).then(res => {
+        if (res && res.success) {
+          this.productPageCount =
+            res.data && Math.ceil(res.data.total / this.productForm.pageSize);
+          if (res.data && res.data.list != null && res.data.list != []) {
+            const _res = res.data.list;
+            this.productOpt = [...this.productOpt, ..._res];
           }
-        })
-        .catch(res => {
-          this.$message.error(`${res.message}`);
-        });
+        }
+      });
     },
     fuzzySearch(query) {
       if (query != "" && this.productType != "") {
         this.productOpt = [];
-        this.productForm.name = query;
-        this.productForm.linkLocationEnum = this.productType;
+        this.productForm.linkName = query;
+        this.productForm.linkModel = this.productType;
         this.getproList(this.productForm);
       } else {
         this.productOpt = [];
-        this.productForm.name = null;
-        this.productForm.linkLocationEnum = this.productType;
+        this.productForm.linkName = null;
+        this.productForm.linkModel = this.productType;
         this.getproList(this.productForm);
       }
     },
@@ -676,7 +747,7 @@ export default {
       this.productForm = {
         pageSize: 200,
         pageNum: 1,
-        linkLocationEnum: "",
+        linkModel: "",
         name: null
       };
       this.productOpt = [];
@@ -690,7 +761,8 @@ export default {
           this.inputFlag = true;
         } else {
           this.inputFlag = false;
-          this.productForm.linkLocationEnum = val;
+          this.productForm.linkModel = val;
+          this.linkUrl = "";
           this.getproList(this.productForm);
         }
       } else {
@@ -768,12 +840,17 @@ export default {
             this.endTime &&
             this.launchAdvertisingDetails.length > 0
           ) {
-            this.provinceList.forEach(v => {
-              this.locationManage.push({
-                province: v,
-                modelType: "ADVERT_START"
+            if (this.pushUser == "PORTION") {
+              this.locationManage = [];
+              this.provinceList.forEach(v => {
+                this.locationManage.push({
+                  province: v,
+                  modelType: "ADVERT_START"
+                });
               });
-            });
+            } else {
+              this.locationManage = [];
+            }
             let obj = {
               id: this.id != "" && this.id != null ? this.id : null,
               advertisName: this.advertisName,
@@ -823,6 +900,7 @@ export default {
         } else if (this.showType === "VIDEO") {
           //视频
           if (this.launchAdvertisingDetails.length > 0 && this.resolution) {
+            console.log(this.launchAdvertisingDetails, "856");
             let obj = {
               id: this.id,
               advertisName: this.advertisName,
@@ -865,7 +943,6 @@ export default {
     //上传闪屏图片
     uploadAdvertis(params) {
       const _file = params.file;
-      console.log(_file);
       const isLt2M = _file.size / 1024 / 1024 < 2;
       const idJPG =
         _file.type === "image/jpeg" ||
@@ -882,8 +959,11 @@ export default {
         this.$message.error("请上传2M以下的图片");
         return false;
       }
+      this.advertisLoading = true;
       upLoadImg(formData).then(res => {
         if (res.success) {
+          this.advertisLoading = false;
+          this.launchAdvertisingDetails = [];
           this.flashScreenUrl = res.data;
           this.launchAdvertisingDetails.push({
             advertisType: "IMAGE",
@@ -905,6 +985,12 @@ export default {
 
     //上传视屏
     uploadVideo(params) {
+      this.launchAdvertisingDetails = this.launchAdvertisingDetails.filter(
+        (v, i) => {
+          return v.advertisType != "VIDEO";
+        }
+      );
+      console.log(this.launchAdvertisingDetails, "946");
       const _file = params.file;
       const isLt5M = _file.size / 1024 / 1024 < 10;
       var formData = new FormData();
@@ -913,22 +999,18 @@ export default {
         this.$message.error("请上传10M以下的视频");
         return false;
       }
-      upLoadImg(formData).then(res => {
+      this.videoLoading = true;
+      bigFileUpload(formData).then(res => {
         if (res && res.success) {
-          this.videoFlag = false;
-          this.videoUploadPercent = 0;
+          this.videoLoading = false;
           this.videoUrl = res.data;
+
           this.launchAdvertisingDetails.push({
             advertisType: "VIDEO",
             advertisUrl: this.videoUrl
           });
         }
       });
-    },
-    //上传视频进度条
-    uploadVideoProcess(event, file) {
-      this.videoFlag = true;
-      this.videoUploadPercent = parseInt(file.percentage);
     },
     //上传首帧图片
     uploadFrame(params) {
@@ -949,11 +1031,18 @@ export default {
         this.$message.error("请上传2M以下的图片");
         return false;
       }
+      this.frameLoading = true;
       upLoadImg(formData).then(res => {
-        if (res.success) {
+        if (res && res.success) {
+          this.frameLoading = false;
           this.frameUrl = res.data;
+          this.launchAdvertisingDetails = this.launchAdvertisingDetails.filter(
+            (v, i) => {
+              return v.advertisType != "FIRST_IMAGE";
+            }
+          );
           this.launchAdvertisingDetails.push({
-            advertisType: "IMAGE",
+            advertisType: "FIRST_IMAGE",
             advertisUrl: this.frameUrl
           });
         }
@@ -982,7 +1071,7 @@ export default {
     upImg(res, file) {
       this.launchAdvertisingDetails.push({
         advertisType: "IMAGE",
-        advertisUrl: this.$ImgBaseUrl + file.response.data
+        advertisUrl: file.response.data
       });
     },
     //删除开屏图片
@@ -991,7 +1080,7 @@ export default {
         ? this.$ImgBaseUrl + file.response.data
         : file.url;
       this.launchAdvertisingDetails.forEach((v, i) => {
-        if (v.advertisUrl == url) {
+        if (this.$ImgBaseUrl + v.advertisUrl == url) {
           this.launchAdvertisingDetails.splice(i, 1);
         }
       });
@@ -1007,8 +1096,13 @@ export default {
     }
   },
   watch: {
-    "params.id"() {
-      if (this.params != null && this.params.showType == "FLASHSCREEN") {
+    dialogFormVisible() {
+      this.getChannelData();
+      if (
+        this.dialogFormVisible &&
+        this.params != null &&
+        this.params.showType == "FLASHSCREEN"
+      ) {
         this.productType = this.params.productRelationDetailsVo.productType;
         if (
           this.params.productRelationDetailsVo != null &&
@@ -1020,7 +1114,7 @@ export default {
         } else {
           this.inputFlag = false;
           this.productForm.pageNum = 1;
-          this.productForm.linkLocationEnum = this.params.productRelationDetailsVo.productType;
+          this.productForm.linkModel = this.params.productRelationDetailsVo.productType;
           this.getproList(this.productForm);
         }
         if (
@@ -1049,7 +1143,7 @@ export default {
             : null;
       }
       this.showTypeFlag = true;
-      if (this.params != null) {
+      if (this.params != null && this.dialogFormVisible) {
         this.id = this.params != null && this.params.id ? this.params.id : "";
         this.appChannelName =
           this.params != null && this.params.appChannelName
@@ -1080,6 +1174,8 @@ export default {
             this.params.locationManage.forEach(v => {
               this.provinceList.push(v.province);
             });
+          } else {
+            this.provinceList = [];
           }
         }
         if (
@@ -1092,19 +1188,52 @@ export default {
               this.flashScreenUrl = v.advertisUrl;
             } else if (this.showType == "OPENSCREEN") {
               this.fileList.push({
-                url: v.advertisUrl
+                url: this.$ImgBaseUrl + v.advertisUrl
               });
             } else if (this.showType === "VIDEO") {
               if (v.advertisType === "VIDEO") {
                 this.videoUrl = v.advertisUrl;
               } else if (v.advertisType === "FIRST_IMAGE") {
                 this.frameUrl = v.advertisUrl;
+              } else {
+                this.frameUrl = "";
               }
             }
           });
+        } else {
+          this.fileList = [];
         }
         this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
         this.locationManage = this.params.locationManage;
+      } else {
+        this.id = null;
+        this.$emit("cancel");
+        this.fileList = [];
+        this.appChannelName = "";
+        this.appChannelCode = "";
+        this.advertisName = "";
+        this.showType = "";
+        this.status = "ENABLE";
+        this.platformCode = "";
+        this.platformName = "";
+        this.launchAdvertisingDetails = [];
+        this.productType = "";
+        this.displayTime = "";
+        this.linkId = "";
+        this.linkUrl = "";
+        this.productName = "";
+        this.resolution = "";
+        this.flashScreenUrl = "";
+        this.startTime = "";
+        this.endTime = "";
+        this.pushUser = "TOTAL";
+        this.locationManage = [];
+        this.provinceList = [];
+        this.videoUrl = "";
+        this.frameUrl = "";
+        this.launchAdvertisId = "";
+        this.linkLocationOpt = [];
+        this.productOpt = [];
       }
     }
   }
@@ -1119,13 +1248,14 @@ export default {
   margin: 0 auto;
   overflow-x: auto;
 }
+
 h4 {
   height: 60px;
   line-height: 60px;
 }
+
 .card-item {
-  width: 100%;
-  // height:60px;
+  width: 100%; // height:60px;
   padding: 4px 10px;
   box-sizing: border-box;
   display: flex;
@@ -1164,6 +1294,7 @@ h4 {
     }
   }
 }
+
 .province {
   height: auto;
 }
@@ -1190,6 +1321,7 @@ h4 {
     }
   }
 }
+
 .card-img {
   height: auto;
   .item-img {
@@ -1205,6 +1337,7 @@ h4 {
     }
   }
 }
+
 .card-img-list {
   width: 100%;
   height: auto;
@@ -1241,11 +1374,11 @@ h4 {
     }
   }
 }
+
 .card-footer {
   width: 100%;
   display: flex;
   justify-content: center;
-  height: 100px;
   align-items: center;
 }
 </style>

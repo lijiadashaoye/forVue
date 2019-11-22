@@ -45,21 +45,22 @@
               <el-radio label="PUSH">推送</el-radio>
             </el-radio-group>
           </el-form-item>
-          <span class="boldTitle">消息类型</span>
+          <span class="boldTitle">点击类型</span>
           <br />
           <br />
-          <el-form-item label="产品类型" prop="linkLocationEnum">
-            <el-select filterable
+          <el-form-item label="点击类型" prop="productType">
+            <el-select
+              filterable
               v-loadmore="loadmore"
               @change="typeChange"
-              v-model="ruleForm.linkLocationEnum"
+              v-model="ruleForm.productType"
               placeholder="请选择"
             >
               <el-option
                 v-for="item in productTypeArr"
                 :key="item.id"
-                :label="item.label"
-                :value="item.value"
+                :label="item.linkName"
+                :value="item.linkModel"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -67,9 +68,10 @@
           <el-form-item
             v-if="productInfo.defaultType&&!productInfo.inputType"
             prop="linkId"
-            label="产品名称"
+            :label="changeTitle"
           >
-            <el-select filterable
+            <el-select
+              filterable
               clearable
               remote
               reserve-keyword
@@ -77,7 +79,7 @@
               :remote-method="searchChange"
               v-loadmore="loadmore"
               v-model="ruleForm.linkId"
-              placeholder="请选择产品"
+              placeholder="请选择"
             >
               <el-option
                 style="display:flex;"
@@ -179,11 +181,11 @@ import messageMixin from "../../short-message-list/messageMixin.js";
 export default {
   name: "sendMessage",
   components: {},
-  mixins:[messageMixin],
+  mixins: [messageMixin],
   data() {
     // 网址正则
     const validateWebsite = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("链接地址不能为空"));
       } else if (!websiteRegx(value)) {
         callback("请输入正确网址");
@@ -192,7 +194,8 @@ export default {
       }
     };
     return {
-      ruleMiddleForm:{},//中转的数据
+      changeTitle: "产品名称",
+      ruleMiddleForm: {}, //中转的数据
       locationList: [],
       title: "推送列表",
       sendType: 0, //设定发送时间为立即发送
@@ -214,7 +217,7 @@ export default {
       productForm: {
         pageSize: 200,
         pageNum: 1,
-        linkLocationEnum: "",
+        linkModel: "",
         name: null
       },
       // 附属产品显示功能
@@ -225,12 +228,14 @@ export default {
       },
       ruleForm: {
         // 表单数据
-        linkLocationEnum: "", // 产品类型
+        productType: "",
         title: "", // 标题
         pushContent: "", //内容
         messageType: "SYSTEM_MESSAGE", //发送方式
         pushWay: "ALL", // 推送方式
+
         linkUrl: "", // 外部链接地址-产品类型选择时
+
         linkId: "", // 除链接外产品关联
         linkName: "", //关联产品名称
         sendTarget: "TOTAL_USER", //收信联系人发送方式
@@ -244,7 +249,7 @@ export default {
         pushContent: [{ required: true, message: "内容不能为空" }],
         messageType: [{ required: true }],
         pushWay: [{ required: true }],
-        linkLocationEnum: [{ required: true, message: "产品类型不能为空" }],
+        productType: [{ required: true, message: "产品类型不能为空" }],
         linkUrl: [
           {
             validator: validateWebsite,
@@ -266,7 +271,7 @@ export default {
       this.title = this.$route.query.title;
       // 合并详情参数和新建的默认参数
       let fromInfo = this.$store.state.message.newsDetailInfo;
-      for(let item in this.ruleForm){
+      for (let item in this.ruleForm) {
         this.ruleForm[item] = fromInfo[item];
       }
       // 部分用户显示地址
@@ -278,15 +283,15 @@ export default {
       this.ruleForm.sendTimeList = [fromInfo.sendTime];
       delete this.ruleForm["sendTime"];
       // 产品关联列表显示
-      this.typeChange(this.ruleForm.linkLocationEnum);
+      this.typeChange(this.ruleForm.productType);
       // 判断信息是否是自定义发送
       if (this.ruleForm.sendLocationList.length != 0) {
         this.sendType = 1;
       }
     }
     // 获取产品类型列表
-    this.getProductTypeList("product_url").then(data => {
-      this.productTypeArr = data;
+    this.getProductTypeList().then(data => {
+      this.productTypeArr = data.list;
     });
   },
   mounted() {
@@ -301,6 +306,7 @@ export default {
       addProduct: "message/addProduct",
       changePushManage: "message/changePushManage"
     }),
+
     // 产品关联改变时触发记录linkName
     selectChange(id) {
       for (let item of this.productArr) {
@@ -312,41 +318,59 @@ export default {
     },
     //产品类型发生改变
     typeChange(value) {
+      this.productInfo.defaultType = false;
       // 外部链接
       if (value == "EXTERNAL_LINK") {
         this.productInfo.defaultType = true;
         this.productInfo.inputType = true;
       } else if (
-        value == "CURRENCY_FUND" ||
-        value == "FINANCING_PRODUCT" ||
+        value == "MONETARY_FUND" ||
+        value == "WMP" ||
+        value == "PURE_DEBT_FUND" ||
         value == "DEPOSIT" ||
-        value == "PURE_DEPT_FUND"
+        value == "CONSULT_PAGE" ||
+        value == "ACTIVITY" ||
+        value == "Institution_Page"
       ) {
+        // }else{
+        //  清空二级列表的已选属性
+        if (this.ruleForm.linkId) {
+          this.ruleForm.linkId = "";
+        }
         this.productInfo.defaultType = true;
         this.productInfo.inputType = false;
-        // 请求关联产品 条件（货币基金、理财产品、纯债产品、存款产品）
-        this.productForm.linkLocationEnum = value;
+        // 请求关联产品 条件（货币基金、理财产品、纯 债产品、存款产品）
+        this.productForm.linkModel = value;
+        if (value == "CONSULT_PAGE") {
+          this.changeTitle = "关联咨询";
+        } else if (value == "ACTIVITY") {
+          this.changeTitle = "关联已上线活动";
+        } else if (value == "Institution_Page") {
+          this.changeTitle = "关联机构";
+        } else {
+          this.changeTitle = "关联产品";
+        }
         // 获取关联产品列表
         this.getproList();
-      } else {
-        this.productInfo.defaultType = false;
-        // 如果没有选择附属功能清空数据
       }
     },
     // 获取关联产品列表
     getproList() {
       this.getProductList(this.productForm).then(data => {
-        if (data.list.length > 0) {
-          this.productArr = data.list;
-          // 获取总页数
-          this.pages = data.pages;
+        if (data) {
+          if (data.list) {
+            this.productArr = data.list;
+          }
+          if (data.pages) {
+            // 获取总页数
+            this.pages = data.pages;
+          }
         }
       });
     },
     // 关联产品下拉加载
     loadmore() {
       if (this.productForm.pageNum < this.pages) {
-        console.log(this.productForm);
         this.productForm.pageNum++;
         this.getproList(this.productForm);
       }
@@ -354,9 +378,9 @@ export default {
     // 关联产品模糊搜索
     searchChange(value) {
       if (value != "") {
-        this.productForm.name = value;
+        this.productForm.linkName = value;
       } else {
-        this.productForm.name = null;
+        this.productForm.linkName = null;
       }
       // 关联产品清空
       this.productArr = [];
@@ -372,7 +396,7 @@ export default {
     saveFn(ruleForm) {
       this.$refs[ruleForm].validate(valid => {
         if (valid) {
-          this.ruleMiddleForm = Object.assign({},this.ruleForm);
+          this.ruleMiddleForm = Object.assign({}, this.ruleForm);
           // 删除time的中转数据
           delete this.ruleMiddleForm["selectTime"];
           // 避免自定义发送时间参数 干扰
@@ -387,6 +411,7 @@ export default {
           }
           // 产品类型判断
           if (!this.productInfo.defaultType) {
+            // 没有附属功能清空附属参数
             delete this.ruleMiddleForm["linkId"];
             delete this.ruleMiddleForm["linkUrl"];
             delete this.ruleMiddleForm["linkName"];
@@ -394,9 +419,11 @@ export default {
             this.productInfo.defaultType &&
             this.productInfo.inputType
           ) {
+            // 附属链接
             delete this.ruleMiddleForm["linkId"];
             delete this.ruleMiddleForm["linkName"];
           } else {
+            // 附属关联
             delete this.ruleMiddleForm["linkUrl"];
           }
           // 部分用户才有选择地区

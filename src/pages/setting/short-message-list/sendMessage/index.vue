@@ -65,8 +65,13 @@
                   <el-radio label="PHONE_LOCATION">按手机号归属地</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item label="选择省份" prop="sendLocationList">
-                <el-select filterable multiple v-model="ruleForm.sendLocationList" placeholder="请选择（可多选）">
+              <el-form-item label="选择省份" prop="sendLocation">
+                <el-select
+                  filterable
+                  multiple
+                  v-model="ruleForm.sendLocation"
+                  placeholder="请选择（可多选）"
+                >
                   <el-option
                     v-for="(item,index) in locationList"
                     :key="index"
@@ -90,12 +95,15 @@
                 prop
               >
                 <el-button type="primary">
+                  <span v-if="fileName">{{fileName}}</span>&nbsp;&nbsp;
                   <span v-if="ruleForm.filePath">已上传</span>
                   <span v-else>上传</span>
                   <i class="el-icon-upload el-icon--right"></i>
                 </el-button>
               </el-upload>
-              <span style="padding-left:20px;color:#409EFF">下载模板</span>
+              <span  class="download" style="padding-left:20px;color:#409EFF">
+                <a :href="downloadUrl">下载模板</a>
+              </span>
             </el-form-item>
           </template>
           <el-form-item v-else label="手机号码" prop="sendPhone">
@@ -106,20 +114,24 @@
               :rows="2"
               placeholder="请输入手机号"
             ></el-input>
-            <br />
-            注意：手机号以英文逗号分隔
+            <br />注意：手机号以英文逗号分隔
           </el-form-item>
           <span class="boldTitle">设置发送内容</span>
           <el-form-item label="标题" prop="title">
             <el-input style="width:400px;" v-model="ruleForm.title" placeholder="请输入标题"></el-input>
           </el-form-item>
-          <el-form-item label="短信内容" prop="templateCode">
-            <el-select filterable v-model="ruleForm.templateCode" placeholder="选择模板">
+          <el-form-item label="短信内容" prop="name">
+            <el-select   @change = "codeChange"
+              filterable
+              v-model="ruleForm.name"
+              v-loadmore="loadmore"
+              placeholder="选择模板"
+            >
               <el-option
                 v-for="item in templateArr"
                 :key="item.id"
                 :label="item.name"
-                :value="item.code"
+                :value="item.id"
               ></el-option>
             </el-select>
           </el-form-item>
@@ -150,6 +162,7 @@ import { spreadLocationList } from "@/constant.js";
 import { mapActions } from "vuex";
 import { phoneRegx } from "@/sets/regex.js";
 import messageMixin from "../messageMixin.js";
+import { BaseUrl } from '@/sets/axios_set.js'
 export default {
   name: "sendMessage",
   components: {},
@@ -172,6 +185,13 @@ export default {
       }
     };
     return {
+      downloadUrl:BaseUrl+'message/sms-manage/downloadTemplate',
+      loadObj: {
+        pageNum: 1,
+        pageSize: 50
+      }, //loadmore info
+      fileName:'', //上传的文件名称
+      loadCount: 0, //下拉列表的总页数
       sendType: 0, //自定义时间类型
       locationList: [],
       phoneFileUrl: "", //上传文件后用于展示图片
@@ -193,8 +213,10 @@ export default {
         sendType: "SYSTEM_USER", //发送方式类型
         sendTarget: "TOTAL_USER", //发送目标
         changeLocation: "PHONE_LOCATION", //发送地区选择手机号
-        sendLocationList: [], //发送地区数组
+        sendLocation: [], //发送地区数组
         templateCode: "", //模板code
+        name:"", //模版名称
+        smsChannel:0,//模版的渠道关联id
         sendPhone: "", //发送的文本手机号
         smsContent: "", //短信内容
         title: "", //短信标题
@@ -207,10 +229,10 @@ export default {
         sendType: [{ required: true }],
         sendTarget: [{ required: true }],
         changeLocation: [{ required: true }],
-        sendLocationList: [{ required: true, message: "省份不能为空" }],
+        sendLocation: [{ required: true, message: "省份不能为空" }],
         smsContent: [{ required: true, message: "短信内容不能为空" }],
         title: [{ required: true, message: "短信标题不能为空" }],
-        templateCode: [{ required: true, message: "模板选择项不能为空" }],
+        name: [{ required: true, message: "模板选择项不能为空" }],
         sendPhone: [{ required: true, validator: validatePhone }],
         filePath: [{ required: true, message: "导入文件不能为空" }],
         selectTime: [{ required: true, message: "时间不能为空" }]
@@ -218,7 +240,7 @@ export default {
       productForm: {
         pageSize: 200,
         pageNum: 1,
-        linkLocationEnum: "",
+        linkModel: "",
         name: null
       }
     };
@@ -228,47 +250,69 @@ export default {
     //   获取二级title
     this.pageName = this.$route.name.trim();
     // 获取短信模板列表
-    this.getSmsTemplate(1).then(data => {
-      this.templateArr = data;
-    });
+    this.getSms();
   },
   computed: {
     sendTypeForm() {
       return this.ruleForm.sendType;
     }
   },
-  watch:{
-    sendTypeForm(){
+  watch: {
+    sendTypeForm() {
       this.$refs["ruleForm"].clearValidate();
     }
   },
   mounted() {},
   methods: {
     ...mapActions({
+      getTemplateRuleList: "smsRuleTemplate/getTemplateRuleList",
       getSmsTemplate: "message/getSmsTemplate",
       addSmsManage: "message/addSmsManage",
-      upLoadFile: "message/upLoadFile"
+      upLoadFile: "message/upLoadFile",
+      downloadTemplate:"message/downloadTemplate"
     }),
+    // 短信模版下载
+    download(){
+      this.downloadTemplate();
+    },
+    // 模版更改触发
+    codeChange(id){
+      let item = this.templateArr.find((item)=>{
+        return item.id==id
+      })
+      this.ruleForm.templateCode = item.code;
+      this.ruleForm.name = item.name;
+      this.ruleForm.smsChannel = item.channeModel;
+    },
+    getSms() {
+      this.getTemplateRuleList(this.loadObj)
+        .then(res => {
+          // 总条目
+          this.loadCount = res.data && Math.ceil(res.data.total / this.loadObj.pageSize);
+          // 拼接数据
+          if (res.data && res.data.list != null && res.data.list != []) {
+            const _res = res.data.list;
+            this.templateArr = [...this.templateArr, ..._res];
+          }
+        })
+        .catch(e => {
+          // this.templateItemInfo = '模版数据库没有数据'
+        });
+    },
+    // 下拉加载
+    loadmore() {
+      console;
+      if (this.loadObj.pageNum < this.loadCount) {
+        this.loadObj.pageNum++;
+        this.getSms();
+      }
+    },
     //上传文件
     uploadPhoneFile(params) {
-      console.log(params);
+      this.fileName = params.file.name;
       const _file = params.file;
-      // const isLt2M = _file.size / 1024 / 1024 < 2;
-      // const idJPG =
-      //   _file.type === "image/jpeg" ||
-      //   "image/gif" ||
-      //   "image/png" ||
-      //   "image/jpg";
       var formData = new FormData();
       formData.append("file", _file);
-      // if (!idJPG) {
-      //   this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
-      //   return false;
-      // }
-      // if (!isLt2M) {
-      //   this.$message.error("请上传2M以下的图片");
-      //   return false;
-      // }
       this.ruleForm.file = _file;
       this.$message.success("上传成功");
       this.ruleForm.filePath = "success";
@@ -291,7 +335,7 @@ export default {
     sendDefaultInfo() {
       delete this.ruleMiddleForm["sendTarget"];
       delete this.ruleMiddleForm["changeLocation"];
-      delete this.ruleMiddleForm["sendLocationList"];
+      delete this.ruleMiddleForm["sendLocation"];
       delete this.ruleMiddleForm["sendTimeList"];
       delete this.ruleMiddleForm["selectTime"];
     },
@@ -320,7 +364,7 @@ export default {
             }
             // 部分用户才有选择地区
             if (this.ruleMiddleForm.sendTarget == "TOTAL_USER") {
-              delete this.ruleMiddleForm["sendLocationList"];
+              delete this.ruleMiddleForm["sendLocation"];
               delete this.ruleMiddleForm["changeLocation"];
             }
           } else if (this.ruleMiddleForm.sendType == "IMPORT_PHONE") {
@@ -349,6 +393,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.download:hover{
+  cursor: pointer;
+}
 .form-box {
   padding: 20px;
   margin-top: 40px;
@@ -388,8 +435,8 @@ export default {
   font-weight: bold;
   position: relative;
   left: -15px;
-  margin-bottom:20px;
-  display:inline-block;
+  margin-bottom: 20px;
+  display: inline-block;
 }
 // time选中展示框
 .showTime {

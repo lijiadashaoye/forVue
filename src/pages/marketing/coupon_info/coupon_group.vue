@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div class="headerName">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button size="mini" type="warning" @click="back">返回</el-button>
     </div>
     <div>
@@ -75,6 +78,7 @@ export default {
   },
   data() {
     return {
+      env: null,
       pageName: "",
       group: [],
       kaquanTable: {}, // 保存卡券列表
@@ -92,6 +96,7 @@ export default {
   },
 
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
     this.getGroup();
   },
@@ -201,34 +206,38 @@ export default {
     // 新建组
     addGroup() {
       this.getList().then(res => {
-        this.kaquanTable.pageNum = 0;
-        this.add_Newgroup = {
-          show: true,
-          notUse: false, // 组名不可编辑
-          title: "添加分组",
-          kaquanList: this.kaquanTable,
-          data: {
-            groupName: "",
-            couponIds: []
-          }
-        };
+        if (res) {
+          this.kaquanTable.pageNum = 0;
+          this.add_Newgroup = {
+            show: true,
+            notUse: false, // 组名不可编辑
+            title: "添加分组",
+            kaquanList: this.kaquanTable,
+            data: {
+              groupName: "",
+              couponIds: []
+            }
+          };
+        }
       });
     },
     // 添加券
     addCoupon(item) {
       this.getList().then(res => {
-        this.kaquanTable.pageNum = 0;
-        this.add_Newgroup = {
-          show: true,
-          notUse: true, // 组名不可编辑
-          title: "添加卡券",
-          kaquanList: this.kaquanTable,
-          data: {
-            groupId: item.groupId,
-            groupName: item.groupName,
-            couponIds: []
-          }
-        };
+        if (res) {
+          this.kaquanTable.pageNum = 0;
+          this.add_Newgroup = {
+            show: true,
+            notUse: true, // 组名不可编辑
+            title: "添加卡券",
+            kaquanList: this.kaquanTable,
+            data: {
+              groupId: item.groupId,
+              groupName: item.groupName,
+              couponIds: []
+            }
+          };
+        }
       });
     },
     // 查看组详情
@@ -282,10 +291,8 @@ export default {
               this.$message.error("当前分组中已经添加此卡券！");
             }
           }
-
           break;
         case "delete":
-          let isGet = false;
           this.$api
             .remove_coupon({
               vm: this,

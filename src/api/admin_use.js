@@ -53,11 +53,11 @@ export default {
     },
     // 修改用户手机号
     admin_user_updatePhone(data) {
-       return data.vm.$axios({
-        method: "put",
-        url: "admin/user/phone",
-        data: data.data
-      })
+        return data.vm.$axios({
+            method: "put",
+            url: "admin/user/phone",
+            data: data.data
+        })
     },
     ////////////////////////////////////////////////////////////////////////////////////////
     // 获取表格数据
@@ -127,7 +127,7 @@ export default {
     admin_role_addRole(data) {
         return data.vm.$axios({
             method: data.method,
-            url: "admin/role/",
+            url: "admin/role",
             data: data.data
         })
     },

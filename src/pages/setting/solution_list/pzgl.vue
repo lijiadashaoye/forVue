@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <span>配置位置：</span>
       <el-select filterable size="mini" v-model="actNO" placeholder="请选择" @change="getUserData">
         <el-option
@@ -18,20 +21,24 @@
     <div id="forTable" v-if="loadEnd">
       <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
+
+   
   </div>
 </template>
 <script>
 import isTable from "../../../components/isTable/isTable.vue";
-import imgUpload from "../../../components/upImg.vue";
+// import imgUpload from "../../../components/upImg.vue";
 
 export default {
   props: {},
   components: {
-    isTable,
-    imgUpload
+    isTable
+    // imgUpload
   },
   data() {
     return {
+   
+      env: null,
       pageName: "", // 当前页面名字
       loadEnd: false,
       deleteData: [], // 储存需要删除的数据
@@ -61,11 +68,11 @@ export default {
           value: "button_top"
         },
         {
-          label: "活动按钮-顶部",
+          label: "活动按钮",
           value: "activity_button_top"
         },
         {
-          label: "开屏广告",
+          label: "启动页",
           value: "launch_advertis"
         },
         {
@@ -80,7 +87,13 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
+
     this.pageName = sessionStorage.getItem("page");
+    if (this.$route.query["weizhi"]) {
+      this.actNO = this.$route.query["weizhi"];
+    }
+
     this.canDoWhat();
     this.getUserData();
   },
@@ -90,6 +103,7 @@ export default {
     // toSee() {
     //   console.log("概览");
     // },
+   
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
@@ -126,7 +140,9 @@ export default {
           data: obj
         })
         .then(res => {
-          this.getUserData();
+          if (res) {
+            this.getUserData();
+          }
         });
     },
     // 图片上传
@@ -221,7 +237,6 @@ export default {
                   let numSucces = 0;
                   let numFail = 0;
                   let failName = "";
-                  let titleText = `失败的数据为：\n `;
                   arr.forEach(item => {
                     if (item.ok) {
                       numSucces++;
@@ -293,7 +308,8 @@ export default {
             obj.sucai = item.previewResourceListVos.map(tar => {
               return {
                 text: tar.title,
-                img: tar.imageUrl
+                img: tar.imageUrl,
+                type: tar.imageUrl.split(".")[1]
               };
             });
           });
@@ -342,7 +358,16 @@ export default {
         })
         .then(res => {
           if (res) {
-            this.afterGetData(res.data);
+            if (res.data) {
+              this.afterGetData(res.data);
+            } else {
+              this.afterGetData({
+                total: 0,
+                pageSize: this.tableInputData.pageSize,
+                pageNum: this.tableInputData.pageNum,
+                list: []
+              });
+            }
           }
         });
     }

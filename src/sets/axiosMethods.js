@@ -12,6 +12,8 @@ export const AxiosGet = (url, data) => {
 
 //POST请求
 export const AxiosPost = (url, data) => {
+
+    
     return Axios.post(url, data)
 }
 
@@ -21,6 +23,7 @@ export const AxiosDelete = (url, data) => {
 }
 
 //PUT请求
+
 export const AxiosPut = (url, data) => {
     return Axios.put(url, data)
 }

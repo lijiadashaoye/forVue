@@ -1,7 +1,6 @@
 <template>
   <div class="withTree">
     <div class="forTree">
-      <h3>{{pageName}}</h3>
       <div class="treeTop">
         <span>理财系列</span>
         <el-button size="mini" @click="toAdd_xilie">新增</el-button>
@@ -10,7 +9,7 @@
         <p class="allPro" @click="getList('all',null)">全部理财产品</p>
         <ul>
           <li v-for="item of menuTree" :key="item.institutionId">
-            <p @click="treeShow(item.institutionId);getList('father',item)" class="forTtitle">
+            <p @click="treeShow(item.institutionId);getList('none',item)" class="forTtitle">
               <i
                 v-show="isShow(item.institutionId)"
                 style="color:skyblue"
@@ -34,7 +33,7 @@
                 >{{child.name}}</p>
 
                 <el-dropdown size="mini" @command="handleCommand(child,$event)">
-                  <span class="el-dropdown-link">
+                  <span class="el-dropdown-link hoverI">
                     <i class="el-icon-edit el-icon--right"></i>
                   </span>
                   <el-dropdown-menu slot="dropdown">
@@ -94,49 +93,16 @@
     </div>
 
     <div class="forRight">
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <div style="margin-bottom:5px;">
-        <el-button size="mini" type="primary" @click="addNew()">新增理财产品</el-button>
+        <el-button size="mini" type="primary" @click="addNew()">新增产品</el-button>
         <el-button size="mini" type="warning" @click="seachClick('search')">查询</el-button>
         <el-button size="mini" type="info" @click="seachClick('reset')">重置</el-button>
         <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
       </div>
-      <!-- <el-form
-        :inline="true"
-        :model="searchForm"
-        label-width="80px"
-        label-suffix=":"
-        label-position="right"
-        size="mini"
-        ref="searchForm"
-       >
-        <el-form-item style="margin-bottom:5px;">
-          <el-input v-model="searchForm.name" placeholder="请输入产品名称"></el-input>
-        </el-form-item>
-
-        <el-form-item label="是否上架" style="margin-bottom:5px;">
-          <el-select filterable class="isInput" clearable placeholder="请选择" v-model="searchForm.shelveStatus">
-            <el-option
-              size="mini"
-              v-for="item in dictData.shelve_status"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="创建时间" style="margin-bottom:5px;">
-          <el-date-picker
-            v-model="riqi"
-            type="daterange"
-            range-separator="~"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            size="mini"
-            style="width:100%"
-          ></el-date-picker>
-        </el-form-item>
-      </el-form>-->
       <el-form
         :inline="true"
         :model="searchForm"
@@ -149,35 +115,12 @@
         <el-form-item style="margin-bottom:5px;">
           <el-input v-model="searchForm.name" placeholder="请输入产品名称"></el-input>
         </el-form-item>
-        <el-form-item label="交易状态" style="margin-bottom:5px;">
-          <el-select filterable v-model="searchForm.status" clearable placeholder="请选择">
-            <el-option
-              size="mini"
-              v-for="item in dictData.transaction_state"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
 
         <el-form-item label="机构" style="margin-bottom:5px;">
           <el-select filterable v-model="searchForm.institutionId" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item in dictData.jigou"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="基金公司" style="margin-bottom:5px;">
-          <el-select filterable v-model="searchForm.fundHouseId" clearable placeholder="请选择">
-            <el-option
-              size="mini"
-              v-for="item in dictData.jijin"
               :key="item.id"
               :label="item.name"
               :value="item.id"
@@ -211,22 +154,42 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             size="mini"
+            value-format="yyyy-MM-dd"
             style="width:100%"
           ></el-date-picker>
         </el-form-item>
       </el-form>
 
-      <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
+      <el-dialog
+        :close-on-click-modal="false"
+        title="选择产品类别"
+        :visible.sync="licaiDialog"
+        width="300px"
+        :before-close="toCloseCunkuanDialog"
+      >
+        <div class="addCunkuan">
+          <el-button type="primary" @click="toAdd_LiCai('理财')">理财产品</el-button>
+          <el-button type="primary" @click="toAdd_LiCai('保险')">保险产品</el-button>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="toCloseCunkuanDialog">取 消</el-button>
+        </div>
+      </el-dialog>
+      <div id="forTable" v-if="loadEnd">
+        <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
+      </div>
     </div>
   </div>
 </template>
 <script>
-import isTable from "../../../../components/isTable/isTable.vue";
+import isTable from "@/components/isTable/isTable.vue";
 
 export default {
   props: {},
   data() {
     return {
+      env: null,
+      licaiDialog: false, // 控制新建理财弹框的显示隐藏
       addXiLieForm: {
         // tree 里面的新增弹框
         jigou: "",
@@ -236,6 +199,7 @@ export default {
       },
       menuTree: [], // tree 数据
       showArr: [], // 用来展开、收拢tree
+      deleteType: "", // 存储要删除的产品的类型
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
@@ -243,11 +207,10 @@ export default {
       riqi: [], // 创建时间
       // 搜索表单
       searchForm: {
+        seriesId: "",
+
         name: "", // 产品关键字
-        status: "", // 交易状态
         institutionId: "", // 机构ID
-        fundHouseId: "", // 基金公司ID
-        status: "", // 交易状态
         shelveStatus: "", // 是否上架
         createTimeStart: "", // 创建时间（开始）
         createTimeEnd: "" // 创建时间（结束）
@@ -273,12 +236,11 @@ export default {
     isTable
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     let kk = this.$route.query.institutionId;
     if (kk) {
       this.toAdd_xilie(+kk);
     }
-
-    this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     // 获取当前页面使用的字典数据
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
@@ -286,23 +248,35 @@ export default {
       return { id: v.id, label: v.name, value: v.name };
     });
     this.canDoWhat();
-    this.getUserData(null);
-    this.treeData();
+    this.seachClick("reset");
+    this.treeData(true);
 
-    sessionStorage.removeItem("xilie_licai");
+    sessionStorage.removeItem("select_xilie");
     // 清空新增理财时用到的
     sessionStorage.removeItem("licai_step1");
     sessionStorage.removeItem("licai_step2");
+    // 清空新增保险时用到的
+    sessionStorage.removeItem("baoxian_step1");
+    sessionStorage.removeItem("baoxian_step2");
   },
   methods: {
-    // 获取tree数据
-    treeData() {
-      this.$api.get_licaiTree({ vm: this }).then(res => {
-        if (res) {
-          this.menuTree = res.data;
-          sessionStorage.setItem("xilie_data", JSON.stringify(this.menuTree));
-        }
-      });
+    // 获取tree数据,type=true时，为页面初始化
+    treeData(type) {
+      let xilie = sessionStorage.getItem("xilie_licai");
+
+      if (!type || !xilie) {
+        gettree(this);
+      } else {
+        this.menuTree = JSON.parse(xilie);
+      }
+      function gettree(t) {
+        t.$api.get_licaiTree({ vm: t, type: "wmp" }).then(res => {
+          if (res) {
+            t.menuTree = res.data;
+            sessionStorage.setItem("xilie_licai", JSON.stringify(t.menuTree));
+          }
+        });
+      }
     },
     // tree 的编辑、删除
     handleCommand(data, type) {
@@ -319,13 +293,24 @@ export default {
         this.$confirm("确认删除吗?")
           .then(() => {
             this.$api
-              .left_xilie_delete({
+              .check_type({
                 vm: this,
-                id: data.id
+                id: data.id,
+                type: 3
               })
               .then(res => {
                 if (res) {
-                  this.treeData();
+                  this.$api
+                    .left_xilie_delete({
+                      vm: this,
+                      id: data.id
+                    })
+                    .then(res => {
+                      if (res) {
+                        this.$message.success("删除成功！");
+                        this.treeData(false);
+                      }
+                    });
                 }
               });
           })
@@ -343,7 +328,7 @@ export default {
       if (e) {
         e.target.parentNode.style = "background:skyblue;color:#fff;";
       }
-      sessionStorage.setItem("xilie_licai", JSON.stringify(data));
+      sessionStorage.setItem("select_xilie", JSON.stringify(data)); // 保存系列数据
     },
     // tree 切换展开收拢
     treeShow(id) {
@@ -363,7 +348,7 @@ export default {
     tableEmit(data) {
       switch (data.type) {
         case "regetData": // 分页的emit
-          this.seachClick(null);
+          this.seachClick("search");
           break;
         case "copy": // 复制按钮
           this.$api
@@ -403,9 +388,7 @@ export default {
                 sessionStorage.setItem("licai_step1", JSON.stringify(step1));
                 sessionStorage.setItem("licai_step2", JSON.stringify(step2));
                 // 获取理财系列数据
-                let kk = JSON.parse(
-                  sessionStorage.getItem("xilie_data")
-                ).filter(
+                JSON.parse(sessionStorage.getItem("xilie_licai")).filter(
                   item => item.institutionId == res.data.institutionId
                 )[0];
                 let obj = {
@@ -413,7 +396,7 @@ export default {
                   id: res.data.seriesId ? res.data.seriesId : ""
                 };
 
-                sessionStorage.setItem("xilie_licai", JSON.stringify(obj));
+                sessionStorage.setItem("select_xilie", JSON.stringify(obj));
 
                 this.$router.push({
                   name: "manage_money_matters_step1"
@@ -424,12 +407,22 @@ export default {
           break;
         case "delete": // 单独删除按钮
           this.aloneDeleteData = [];
-          this.aloneDeleteData.push(data.data.id);
+          data.data.productSubtype === "wmp"
+            ? this.aloneDeleteData.push({ type: "", id: data.data.id })
+            : this.aloneDeleteData.push({
+                type: "insurance/",
+                id: data.data.id
+              });
           this.toDelete("alone");
           break;
         case "moreDelete": // 批量删除按钮
-          var arr = data.data.map(item => item.id);
-          this.deleteData = arr;
+          this.deleteData = data.data.map(item => {
+            let kk = null;
+            item.productSubtype === "wmp"
+              ? (kk = { type: "", id: item.id })
+              : (kk = { type: "insurance/", id: item.id }); // 保险的删除
+            return kk;
+          });
           break;
         case "switch": // switch 变换
           this.switchAction(data.data);
@@ -439,7 +432,8 @@ export default {
             name: "manage_money_matters_info",
             query: {
               id: data.data.id,
-              institutionName: data.data.institutionName
+              name: data.data.name, // 产品名称
+              type: data.data.productSubtype // 产品类型
             }
           });
           break;
@@ -487,16 +481,18 @@ export default {
           }
 
           this.$api
-            .add_productSeries({
+            .add_xilie({
               vm: this,
               data: obj,
               httpType: httpType
             })
             .then(res => {
               if (res) {
-                this.$message.success("操作成功！");
+                this.$message.success(
+                  `${httpType === "post" ? "新增" : "修改"}成功！`
+                );
                 this.toCloseCunkuanDialog();
-                this.treeData();
+                this.treeData(false);
               }
             });
         } else {
@@ -508,6 +504,7 @@ export default {
     },
     // 关闭tree里 点击新增按钮的弹框
     toCloseCunkuanDialog() {
+      this.licaiDialog = false;
       this.cunkuanDialog = false;
       this.addXiLieForm = {
         jigou: "",
@@ -533,7 +530,9 @@ export default {
           }
         })
         .then(res => {
-          this.seachClick("search");
+          if (res) {
+            this.seachClick("search");
+          }
         });
     },
     // 删除、批量删除
@@ -544,7 +543,8 @@ export default {
             this.$api
               .product_licai_delete({
                 vm: this,
-                data: this.aloneDeleteData[0]
+                type: this.aloneDeleteData[0].type,
+                data: this.aloneDeleteData[0].id
               })
               .then(res => {
                 if (res) {
@@ -567,19 +567,20 @@ export default {
                 let del = this.$api
                   .product_licai_delete({
                     vm: this,
-                    data: item
+                    data: item.id,
+                    type: item.type
                   })
                   .then(res => {
                     let obj;
                     if (res) {
                       obj = {
                         ok: true,
-                        data: item
+                        data: item.id
                       };
                     } else {
                       obj = {
                         ok: false,
-                        data: tableData.filter(tar => tar.id == item)
+                        data: tableData.filter(tar => tar.id == item.id)
                       };
                     }
                     return obj;
@@ -593,13 +594,12 @@ export default {
                 let numSucces = 0;
                 let numFail = 0;
                 let failName = "";
-                let titleText = `失败的数据为：\n `;
                 arr.forEach(item => {
                   if (item.ok) {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `<li>名称：${item.data[0].institutionName}</li>`;
+                    failName += `<li>名称：${item.data[0].name}</li>`;
                   }
                 });
                 let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
@@ -626,12 +626,14 @@ export default {
       let obj = {};
       switch (type) {
         case "search":
-          if (this.riqi.length > 0) {
+          if (this.riqi) {
             this.searchForm.createTimeStart = this.riqi[0];
             this.searchForm.createTimeEnd = this.riqi[1];
+          } else {
+            this.searchForm.createTimeStart = "";
+            this.searchForm.createTimeEnd = "";
           }
-          let arr = Object.keys(this.searchForm);
-          arr.forEach(str => {
+          Object.keys(this.searchForm).forEach(str => {
             if (this.searchForm[str]) {
               obj[str] = this.searchForm[str];
             }
@@ -642,11 +644,9 @@ export default {
           this.riqi = []; // 创建时间
           // 搜索表单
           this.searchForm = {
+            seriesId: "",
             name: "", // 产品关键字
-            status: "", // 交易状态
             institutionId: "", // 机构ID
-            fundHouseId: "", // 基金公司ID
-            status: "", // 交易状态
             shelveStatus: "", // 是否上架
             createTimeStart: "", // 创建时间（开始）
             createTimeEnd: "" // 创建时间（结束）
@@ -663,16 +663,28 @@ export default {
       obj.pageNum = this.tableInputData.pageNum;
       this.getUserData(obj);
     },
-    // 新增货币基金 manage_money_matters
+    // 新增理财、保险
     addNew() {
-      let kk = sessionStorage.getItem("xilie_licai");
+      let kk = sessionStorage.getItem("select_xilie");
       if (kk) {
-        this.$router.push({
-          name: "manage_money_matters_step1"
-        });
+        this.licaiDialog = true;
       } else {
-        this.$message.error("请在左侧选择理财系列！");
+        this.$message.error("请在左侧选择产品系列！");
       }
+    },
+    toAdd_LiCai(type) {
+      let routeUrl = "";
+      switch (type) {
+        case "理财":
+          routeUrl = "manage_money_matters_step1";
+          break;
+        case "保险": // add_dingqi
+          routeUrl = "baoxian_step1";
+          break;
+      }
+      this.$router.push({
+        name: routeUrl
+      });
     },
     // 导出
     outPut() {},
@@ -680,7 +692,7 @@ export default {
     inPut() {},
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      // let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
       // this.tableInputData.data.custom.push({
       //   text: "复制",
       //   type: "primary",
@@ -696,11 +708,24 @@ export default {
     },
     // 获取数据后的处理
     shelveStatus(data) {
+      this.loadEnd = false;
       new Promise(resolve => {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list;
+        this.tableInputData.data.list = data.list.map(item => {
+          let arr = Object.keys(item);
+          arr.forEach(str => {
+            if (str === "interestRate") {
+              if (+item[str] > 0) {
+                item[str] = `+${(+item[str]).toFixed(4)}%`;
+              } else {
+                item[str] = `${(+item[str]).toFixed(4)}%`;
+              }
+            }
+          });
+          return item;
+        });
 
         // // 设置字体点击事件
         this.tableInputData.actions.click = {
@@ -722,7 +747,7 @@ export default {
           {
             title: "预期年化收益率",
             key: "interestRate",
-            minWidth: "130",
+            minWidth: "150",
             sortable: true
           },
           {
@@ -751,14 +776,12 @@ export default {
     getList(type, item) {
       let obj = {};
       switch (type) {
-        case "father":
         case "none":
           obj = {
             pageSize: 10,
             pageNum: 1,
             institutionId: item.institutionId
           };
-          this.getUserData(obj);
           break;
         case "child":
           obj = {
@@ -767,30 +790,22 @@ export default {
             seriesId: item.id,
             institutionId: item.institutionId
           };
-          this.getUserData(obj);
           break;
         case "all":
           obj = {
             pageSize: 10,
             pageNum: 1
           };
-          this.getUserData(obj);
           break;
       }
+      this.getUserData(obj);
     },
     // 获取表格数据
     getUserData(obj) {
-      let datas = {};
-      if (obj) {
-        datas = obj;
-      } else {
-        datas.pageSize = this.tableInputData.pageSize;
-        datas.pageNum = this.tableInputData.pageNum;
-      }
       this.$api
         .get_licaiList({
           vm: this,
-          data: datas
+          data: obj
         })
         .then(res => {
           if (res) {

@@ -1,14 +1,17 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-input size="mini" v-model="seachInput" placeholder="输入类型" style="width:180px;"></el-input>&nbsp;&nbsp;
       <el-input size="mini" v-model="labelInput" placeholder="输入字典标签" style="width:180px;"></el-input>
       <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
       <el-button size="mini" type="info" @click="seachClick(false)">重置</el-button>
       <el-button
         size="mini"
-        type="primary"
+        type="warning"
         v-if="tableInputData.data.quanxian.includes('sys_dict_add')"
         @click="buttonRowUpdata(true)"
       >添加</el-button>
@@ -71,7 +74,7 @@ export default {
       let reg = /\./;
       if (reg.test(value)) {
         callback(new Error("请输入整数"));
-      } else if (value === "") {
+      } else if (!value) {
         callback(new Error("请输入排序"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
@@ -82,6 +85,7 @@ export default {
       }
     };
     return {
+      env: null,
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
@@ -147,6 +151,7 @@ export default {
     isTable
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
@@ -188,6 +193,10 @@ export default {
                   this.$message.success(`${this.dialog.title}成功！`);
                   this.getUserData();
                   this.dialogClose();
+
+                  this.$store.dispatch("get_dict", this).then(res => {
+                    sessionStorage.setItem("dict", JSON.stringify(res));
+                  });
                 }
               });
           }
@@ -333,7 +342,7 @@ export default {
     },
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
       let sys_dict_edit = quanxian.includes("sys_dict_edit");
       let sys_dict_del = quanxian.includes("sys_dict_del");
 

@@ -1,35 +1,36 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
+    <div id="forHeader">
       <div class="headerName">
-        <h3>{{pageName}}</h3>
-        <span
-          title="点击查看"
-          @click="toSeeRiZhi"
-        >修改日志</span>
+        <p class="isPageName">
+          <span :class="env?'lineSpan1':'lineSpan'">|</span>
+          位置：{{$store.state.for_layout.titles}}{{pageName}}
+        </p>
+        <span title="点击查看" @click="toSeeRiZhi">修改日志</span>
       </div>
     </div>
-    <everyInfo :pageData='pageData' />
+    <everyInfo :pageData="pageData" />
   </div>
 </template>
 <script>
-import everyInfo from "../../../../components/everyInfo.vue";
+import everyInfo from "@/components/everyInfo.vue";
 
 export default {
   components: { everyInfo },
   data() {
     return {
+      env: null,
       pageName: "", // 当前页面名字
-      pageData: {},
+      pageData: {}
     };
   },
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName =
-      sessionStorage.getItem("page") +
-      ` > ${this.$route.query["institutionName"]}详情`; // 获取页面名称
+      sessionStorage.getItem("page") + ` > ${this.$route.query["name"]}详情`; // 获取页面名称
     this.pageData = {
-      page: "manage_money_matters",  // 理财管理
-      id:this.$route.query["id"]
+      page: this.$route.query["type"],
+      id: this.$route.query["id"]
     };
   },
   methods: {
@@ -37,6 +38,6 @@ export default {
     toSeeRiZhi() {
       console.log(this.pageData);
     }
-  },
+  }
 };
 </script>

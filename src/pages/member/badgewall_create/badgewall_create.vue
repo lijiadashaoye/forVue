@@ -1,114 +1,63 @@
 <template>
   <div class="pageWaper">
-    <div id='forHeader'>
-      <h3>{{pageName}}</h3>
+    <div id="forHeader">
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
     </div>
     <div v-if="!isOk">
       <div class="formWaper">
-        <el-form
-          size="small"
-          ref="formData"
-          :model="formData"
-          :rules="rules"
-          label-width="100px"
-        >
-          <el-form-item
-            label="徽章墙图标"
-            required
-            class="isImgd"
-          >
+        <el-form size="small" ref="formData" :model="formData" :rules="rules" label-width="100px">
+          <el-form-item label="徽章墙图标" required class="isImgd">
             <imgUpload
               v-if="show"
               :datas="{
                   url:'admin/file/up/member',
                   imgUrl:''
                 }"
-              @selectImg='getImg("actImg",$event)'
+              @selectImg="getImg('actImg',$event)"
             />
           </el-form-item>
 
-          <el-form-item
-            label="徽章墙名称"
-            prop="badgeWallName"
-            class="forName"
-          >
+          <el-form-item label="徽章墙名称" prop="badgeWallName" class="forName">
             <el-input v-model="formData.badgeWallName"></el-input>
           </el-form-item>
-          <el-form-item
-            label="徽章墙说明"
-            prop="badgeWallExplain"
-          >
-            <el-input
-              rows='3'
-              type='textarea'
-              v-model="formData.badgeWallExplain"
-            ></el-input>
+          <el-form-item label="徽章墙说明" prop="badgeWallExplain">
+            <el-input rows="3" type="textarea" v-model="formData.badgeWallExplain"></el-input>
           </el-form-item>
 
           <el-form-item label="模块介绍">
-            <el-input
-              rows='3'
-              type='textarea'
-              v-model="formData.moduleExplain"
-            ></el-input>
+            <el-input rows="3" type="textarea" v-model="formData.moduleExplain"></el-input>
           </el-form-item>
 
           <el-form-item label="礼品介绍">
-            <el-input
-              rows='3'
-              type='textarea'
-              v-model="formData.giftExplain"
-            ></el-input>
+            <el-input rows="3" type="textarea" v-model="formData.giftExplain"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="H5 链接"
-            prop="webUrl"
-          >
-            <el-input
-              rows='2'
-              type='textarea'
-              v-model="formData.webUrl"
-            ></el-input>
+          <el-form-item label="H5 链接" prop="webUrl">
+            <el-input rows="2" type="textarea" v-model="formData.webUrl"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="点亮规则类型"
-            prop="ruleType"
-          >
-            <el-select filterable
-              v-model="formData.ruleType"
-              clearable
-              placeholder="请选择"
-            >
+          <el-form-item label="点亮规则类型" prop="ruleType">
+            <el-select filterable v-model="formData.ruleType" clearable placeholder="请选择">
               <el-option
-                size='mini'
+                size="mini"
                 v-for="item in outList"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
-              >
-              </el-option>
+              ></el-option>
             </el-select>
           </el-form-item>
-
         </el-form>
       </div>
       <div class="buttons">
-        <el-button
-          @click="step()"
-          type="primary"
-        >保 存</el-button>
-        <el-button
-          @click="reset"
-          type="info"
-        >重 置</el-button>
+        <el-button @click="step" type="primary">保 存</el-button>
+        <el-button @click="reset" type="info">重 置</el-button>
       </div>
     </div>
-    <hasSuccess
-      @isOver="isOver"
-      v-if="isOk"
-    />
+    <hasSuccess @isOver="isOver" v-if="isOk" />
   </div>
 </template>
 <script>
@@ -119,6 +68,7 @@ export default {
   components: { imgUpload, hasSuccess },
   data() {
     return {
+      env: null,
       isOk: false, // 控制表单填写完毕的显示
       show: true, // 控制上传图片组件的显示隐藏
       pageName: "", // 当前页面名字
@@ -159,12 +109,8 @@ export default {
     };
   },
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
-  },
-  mounted() {
-    let id = this.$route.query["id"];
-    if (id) {
-    }
   },
   methods: {
     reset() {
@@ -192,7 +138,7 @@ export default {
         this.isOk = false;
       }
     },
-    step(num) {
+    step() {
       this.$refs.formData.validate(valid => {
         if (valid) {
           if (this.formData.badgeWallIcon) {

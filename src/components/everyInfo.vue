@@ -15,6 +15,12 @@
           <div class="table_top" v-if="pageData.forLishi">
             <div>
               <span class="guizeTitle">历史业绩</span>
+              <span style="padding-left:2px;" class="guizeTitle">
+                <i
+                  title="历史业绩：在客户端展示的历史业绩，以最后更新数据为准。"
+                  class="myIcon14px icon-wenhaoyuanyiwenxianxing"
+                ></i>
+              </span>
             </div>
             <el-button size="mini" @click="lishiYeJi = true">更新</el-button>
           </div>
@@ -30,6 +36,9 @@
         <div class="table_top" v-if="rengou.rengou||shengou.shengou||shuhui.shuhui">
           <div>
             <span class="guizeTitle">交易规则</span>
+            <span style="padding-left:5px;">
+              <i title="交易规则：在客户端展示的交易规则，以银行交易规则为准" class="myIcon14px icon-wenhaoyuanyiwenxianxing"></i>
+            </span>
           </div>
           <el-button size="mini" @click="addNewGuiZe">新增规则</el-button>
         </div>
@@ -72,12 +81,25 @@
     </div>
 
     <!-- 理财管理 -->
-    <div class="buju" v-if="pageData.page==='manage_money_matters'">
+    <div class="buju" v-if="pageData.page==='wmp'">
       <div>
         <div v-if="pageData.forProduct">
           <baseinfo :pageData="pageData" @toReGetData="toReGetData" />
         </div>
-        <div></div>
+      </div>
+
+      <div>
+        <simple :pageData="pageData" v-if="pageData.forSimple" />
+        <chart :pageData="pageData" v-if="pageData.forChart" />
+      </div>
+    </div>
+
+    <!-- 保险理财 -->
+    <div class="buju" v-if="pageData.page==='wmp_insurance'">
+      <div>
+        <div v-if="pageData.forProduct">
+          <baseinfo :pageData="pageData" @toReGetData="toReGetData" />
+        </div>
       </div>
 
       <div>
@@ -111,8 +133,48 @@
 
       <div>
         <simple :pageData="pageData" />
-        <div v-if="pageData.forForms">
-          <!-- <forms @tableAct="tableAct" :type="'lilv'" :pageData="pageData" /> -->
+        <!-- <div v-if="lilvForms.length">
+           <forms @tableAct="tableAct" :type="'lilv'" :pageData="pageData" /> 
+        </div>-->
+        <div>
+          <h3 style="display:flex;justify-content:space-between;padding-right:10px;">
+            利率列表
+            <el-button size="mini" @click="get_isEditButton">编辑</el-button>
+          </h3>
+          <div class="suolueWap" v-if="lilvForms.length">
+            <div v-for="tar of lilvForms" :key="tar.num" class="suolue" title="点击进行编辑">
+              <p>
+                期限:
+                <span
+                  v-if="tar.minDeadline!==''"
+                  style="font-size:14px;"
+                >{{tar.minDeadline}}{{seeDanWei1(tar)}}</span>
+                <span
+                  v-if="tar.minDeadline!==''"
+                  style="font-size:20px; letter-spacing:-5px;"
+                >{{seeFuHao1(tar)}}</span>
+                &nbsp;存期
+                <span
+                  v-if="tar.maxDeadline!==''"
+                  style="font-size:20px;letter-spacing:-4px;"
+                >{{seeFuHao2(tar)}}</span>
+                <span
+                  v-if="tar.maxDeadline!==''"
+                  style="font-size:14px;"
+                >&nbsp;&nbsp;{{tar.maxDeadline}}{{seeDanWei2(tar)}}</span>
+              </p>
+              <p>利率: {{tar.lilv+' %'}}</p>
+              <p>榜单展示: {{tar.showList=='YES'?'是':'否'}}</p>
+              <p>锁定期限: {{tar.lockinPeriod+'天'}}</p>
+              <p>锁定期榜单展示: {{tar.lockinShowList=='YES'?'是':'否'}}</p>
+              <p>产品展示: {{tar.showProduct=='YES'?'是':'否'}}</p>
+              <p v-if="tar.remark">备注: {{tar.remark}}</p>
+              <p v-if="tar.homepageCopywriting">首页文案: {{tar.homepageCopywriting}}</p>
+              <p v-if="tar.detailCopywriting">详情页文案: {{tar.detailCopywriting}}</p>
+              <p v-if="tar.bankCopywriting">银行文案: {{tar.bankCopywriting}}</p>
+              <p v-if="tar.bangdanWrite">榜单期限文案: {{tar.bangdanWrite}}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -128,8 +190,45 @@
 
       <div>
         <simple :pageData="pageData" />
-        <div v-if="pageData.forForms">
-          <!-- <forms @tableAct="tableAct" :pageData="pageData.forForms" /> -->
+        <!-- <div v-if="lilvForms.length">
+          <forms @tableAct="tableAct" :pageData="pageData.forForms" />
+        </div>-->
+        <div>
+          <h3>利率列表</h3>
+          <div class="suolueWap" v-if="lilvForms.length">
+            <div v-for="tar of lilvForms" :key="tar.num" class="suolue" title="点击进行编辑">
+              <p>
+                期限:
+                <span
+                  v-if="tar.minDeadline!==''"
+                  style="font-size:14px;"
+                >{{tar.minDeadline}}{{seeDanWei1(tar)}}</span>
+                <span
+                  v-if="tar.minDeadline!==''"
+                  style="font-size:20px; letter-spacing:-5px;"
+                >{{seeFuHao1(tar)}}</span>
+                &nbsp;存期
+                <span
+                  v-if="tar.maxDeadline!==''"
+                  style="font-size:20px;letter-spacing:-4px;"
+                >{{seeFuHao2(tar)}}</span>
+                <span
+                  v-if="tar.maxDeadline!==''"
+                  style="font-size:14px;"
+                >&nbsp;&nbsp;{{tar.maxDeadline}}{{seeDanWei2(tar)}}</span>
+              </p>
+              <p>利率: {{tar.lilv+' %'}}</p>
+              <p>榜单展示: {{tar.showList=='YES'?'是':'否'}}</p>
+              <p>锁定期限: {{tar.lockinPeriod+'天'}}</p>
+              <p>锁定期榜单展示: {{tar.lockinShowList=='YES'?'是':'否'}}</p>
+              <p>产品展示: {{tar.showProduct=='YES'?'是':'否'}}</p>
+              <p v-if="tar.remark">备注: {{tar.remark}}</p>
+              <p v-if="tar.homepageCopywriting">首页文案: {{tar.homepageCopywriting}}</p>
+              <p v-if="tar.detailCopywriting">详情页文案: {{tar.detailCopywriting}}</p>
+              <p v-if="tar.bankCopywriting">银行文案: {{tar.bankCopywriting}}</p>
+              <p v-if="tar.bangdanWrite">榜单期限文案: {{tar.bangdanWrite}}</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -145,6 +244,60 @@
 
       <div>
         <simple :pageData="pageData" />
+      </div>
+    </div>
+
+    <!-- 大额存款管理 -->
+    <div class="buju" v-if="pageData.page==='large_deposit'&&pageData.datas">
+      <div>
+        <div>
+          <baseinfo :pageData="pageData" @toReGetData="toReGetData" />
+        </div>
+        <div></div>
+      </div>
+
+      <div>
+        <simple :pageData="pageData" />
+        <div>
+          <h3 style="display:flex;justify-content:space-between;padding-right:10px;">
+            利率列表
+            <el-button size="mini" @click="get_isEditButton">编辑</el-button>
+          </h3>
+          <div class="suolueWap" v-if="lilvForms.length">
+            <div v-for="tar of lilvForms" :key="tar.num" class="suolue" title="点击进行编辑">
+              <p>
+                期限:
+                <span
+                  v-if="tar.minDeadline!==''"
+                  style="font-size:14px;"
+                >{{tar.minDeadline}}{{seeDanWei1(tar)}}</span>
+                <span
+                  v-if="tar.minDeadline!==''"
+                  style="font-size:20px; letter-spacing:-5px;"
+                >{{seeFuHao1(tar)}}</span>
+                &nbsp;存期
+                <span
+                  v-if="tar.maxDeadline!==''"
+                  style="font-size:20px;letter-spacing:-4px;"
+                >{{seeFuHao2(tar)}}</span>
+                <span
+                  v-if="tar.maxDeadline!==''"
+                  style="font-size:14px;"
+                >&nbsp;&nbsp;{{tar.maxDeadline}}{{seeDanWei2(tar)}}</span>
+              </p>
+              <p>利率: {{tar.lilv+' %'}}</p>
+              <p>榜单展示: {{tar.showList=='YES'?'是':'否'}}</p>
+              <p>锁定期限: {{tar.lockinPeriod+'天'}}</p>
+              <p>锁定期榜单展示: {{tar.lockinShowList=='YES'?'是':'否'}}</p>
+              <p>产品展示: {{tar.showProduct=='YES'?'是':'否'}}</p>
+              <p v-if="tar.remark">备注: {{tar.remark}}</p>
+              <p v-if="tar.homepageCopywriting">首页文案: {{tar.homepageCopywriting}}</p>
+              <p v-if="tar.detailCopywriting">详情页文案: {{tar.detailCopywriting}}</p>
+              <p v-if="tar.bankCopywriting">银行文案: {{tar.bankCopywriting}}</p>
+              <p v-if="tar.bangdanWrite">榜单期限文案: {{tar.bangdanWrite}}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -175,7 +328,7 @@
       :close-on-click-modal="false"
       :title="guize_httpType==='post'?'新增交易规则':'编辑交易规则'"
       :visible.sync="newGuiZe"
-      width="500px"
+      width="930px"
       :before-close="toCloseNewGuiZeDialog"
     >
       <el-checkbox-group
@@ -195,112 +348,135 @@
         size="normal"
         :model="rengou_forms"
         label-width="80px"
-        label-suffix=":"
         :rules="rules"
       >
         <h3>
           认购
           <el-button :disabled="!isChange" @click="save_rengou" size="mini" type="warning">保 存</el-button>
+          <span class="errInfo" v-if="errInfo.includes(1)">适用范围数据有误！</span>
         </h3>
-        <el-form-item label="金额">
-          <div class="toFlex">
-            <el-form-item prop="minAmountSymbol">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="rengou_forms.minAmountSymbol"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.rule_symbol"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>&nbsp;
-            <el-form-item prop="minTransactionAmount">
-              <el-input
-                type="number"
-                clearable
-                v-model="rengou_forms.minTransactionAmount"
-                placeholder="最小金额"
-              ></el-input>
-            </el-form-item>&nbsp;
-            <el-form-item prop="minAmountUnit">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="rengou_forms.minAmountUnit"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.currency_unit"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </div>
-        </el-form-item>
-        <el-form-item label="交易金额">
-          <div class="toFlex">
-            <el-form-item prop="maxAmountSymbol">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="rengou_forms.maxAmountSymbol"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.rule_symbol"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>&nbsp;
-            <el-form-item prop="maxTransactionAmount">
-              <el-input
-                type="number"
-                clearable
-                v-model="rengou_forms.maxTransactionAmount"
-                placeholder="最大金额"
-              ></el-input>
-            </el-form-item>&nbsp;
-            <el-form-item prop="maxAmountUnit">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="rengou_forms.maxAmountUnit"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.currency_unit"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </div>
+        <div class="toFlex">
+          <el-form-item label="适用范围:">
+            <div class="toFlex">
+              <el-form-item prop="minTransactionAmount">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="rengou_forms.minTransactionAmount"
+                  placeholder="最小金额"
+                ></el-input>
+              </el-form-item>&nbsp;
+              <el-form-item prop="minAmountUnit">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="rengou_forms.minAmountUnit"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.currency_unit"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>&nbsp;
+              <el-form-item prop="minAmountSymbol">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="rengou_forms.minAmountSymbol"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.forMax"
+                    :key="item.value"
+                    :label="item.fuhao"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-form-item>
+          <el-form-item label="交易金额">
+            <div class="toFlex">
+              <el-form-item prop="maxAmountSymbol">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="rengou_forms.maxAmountSymbol"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.forMax"
+                    :key="item.value"
+                    :label="item.fuhao"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>&nbsp;
+              <el-form-item prop="maxTransactionAmount">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="rengou_forms.maxTransactionAmount"
+                  placeholder="最大金额"
+                ></el-input>
+              </el-form-item>&nbsp;
+              <el-form-item prop="maxAmountUnit">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="rengou_forms.maxAmountUnit"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.currency_unit"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-form-item>
+        </div>
+
+        <el-form-item label="费率:" prop="rate">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="rengou_forms.rate"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="费率" prop="rate">
-          <el-input clearable v-model="rengou_forms.rate" placeholder="请输入" type="number"></el-input>
+        <el-form-item label="费率折扣:" prop="rateDiscount">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="rengou_forms.rateDiscount"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="费率折扣" prop="rateDiscount">
-          <el-input clearable v-model="rengou_forms.rateDiscount" placeholder="请输入" type="number"></el-input>
-        </el-form-item>
-
-        <el-form-item label="单笔费用" prop="cost">
-          <el-input clearable v-model="rengou_forms.cost" placeholder="请输入" type="number"></el-input>
+        <el-form-item label="单笔费用:" prop="cost">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="rengou_forms.cost"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">元/笔</span>
         </el-form-item>
       </el-form>
 
@@ -310,113 +486,136 @@
         size="normal"
         :model="shengou_forms"
         label-width="80px"
-        label-suffix=":"
         :rules="rules"
       >
         <h3>
           申购
           <el-button :disabled="!isChange" @click="save_shengou" size="mini" type="warning">保 存</el-button>
+          <span class="errInfo" v-if="errInfo.includes(2)">适用范围数据有误！</span>
         </h3>
-        <el-form-item label="金额">
-          <div class="toFlex">
-            <el-form-item prop="minAmountSymbol2">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="shengou_forms.minAmountSymbol2"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.rule_symbol"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>&nbsp;
-            <el-form-item prop="minTransactionAmount2">
-              <el-input
-                type="number"
-                clearable
-                v-model="shengou_forms.minTransactionAmount2"
-                placeholder="最小金额"
-              ></el-input>
-            </el-form-item>&nbsp;
-            <el-form-item prop="minAmountUnit2">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="shengou_forms.minAmountUnit2"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.currency_unit"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </div>
+        <div class="toFlex">
+          <el-form-item label="适用范围:">
+            <div class="toFlex">
+              <el-form-item prop="minTransactionAmount2">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="shengou_forms.minTransactionAmount2"
+                  placeholder="最小金额"
+                ></el-input>
+              </el-form-item>&nbsp;
+              <el-form-item prop="minAmountUnit2">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="shengou_forms.minAmountUnit2"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.currency_unit"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>&nbsp;
+              <el-form-item prop="minAmountSymbol2">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="shengou_forms.minAmountSymbol2"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.forMax"
+                    :key="item.value"
+                    :label="item.fuhao"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-form-item>
+
+          <el-form-item label="交易金额">
+            <div class="toFlex">
+              <el-form-item prop="maxAmountSymbol2">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="shengou_forms.maxAmountSymbol2"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.forMax"
+                    :key="item.value"
+                    :label="item.fuhao"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>&nbsp;
+              <el-form-item prop="maxTransactionAmount2">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="shengou_forms.maxTransactionAmount2"
+                  placeholder="最大金额"
+                ></el-input>
+              </el-form-item>&nbsp;
+              <el-form-item prop="maxAmountUnit2">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="shengou_forms.maxAmountUnit2"
+                >
+                  <el-option
+                    size="mini"
+                    v-for="item in dictData.currency_unit"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-form-item>
+        </div>
+
+        <el-form-item label="费率:" prop="rate2">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="shengou_forms.rate2"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="交易金额">
-          <div class="toFlex">
-            <el-form-item prop="maxAmountSymbol2">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="shengou_forms.maxAmountSymbol2"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.rule_symbol"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>&nbsp;
-            <el-form-item prop="maxTransactionAmount2">
-              <el-input
-                type="number"
-                clearable
-                v-model="shengou_forms.maxTransactionAmount2"
-                placeholder="最大金额"
-              ></el-input>
-            </el-form-item>&nbsp;
-            <el-form-item prop="maxAmountUnit2">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="shengou_forms.maxAmountUnit2"
-              >
-                <el-option
-                  size="mini"
-                  v-for="item in dictData.currency_unit"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </div>
+        <el-form-item label="费率折扣:" prop="rateDiscount2">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="shengou_forms.rateDiscount2"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="费率" prop="rate2">
-          <el-input clearable v-model="shengou_forms.rate2" placeholder="请输入" type="number"></el-input>
-        </el-form-item>
-
-        <el-form-item label="费率折扣" prop="rateDiscount2">
-          <el-input clearable v-model="shengou_forms.rateDiscount2" placeholder="请输入" type="number"></el-input>
-        </el-form-item>
-
-        <el-form-item label="单笔费用" prop="cost2">
-          <el-input clearable v-model="shengou_forms.cost2" placeholder="请输入" type="number"></el-input>
+        <el-form-item label="单笔费用:" prop="cost2">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="shengou_forms.cost2"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">元/笔</span>
         </el-form-item>
       </el-form>
 
@@ -426,79 +625,102 @@
         size="normal"
         :model="shuhui_forms"
         label-width="80px"
-        label-suffix=":"
         :rules="rules"
       >
         <h3>
           赎回
           <el-button :disabled="!isChange" @click="save_shuhui" size="mini" type="warning">保 存</el-button>
+          <span class="errInfo" v-if="errInfo.includes(3)">适用范围数据有误！</span>
         </h3>
-        <el-form-item label="赎回期限">
-          <div class="toFlex">
-            <el-form-item prop="minTimeSymbol">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="shuhui_forms.minTimeSymbol"
-              >
-                <el-option
-                  v-for="item in dictData.rule_symbol"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>&nbsp;
-            <el-form-item prop="minTimeLimit">
-              <el-input
-                type="number"
-                clearable
-                v-model="shuhui_forms.minTimeLimit"
-                placeholder="最大期限"
-              ></el-input>
-            </el-form-item>
-          </div>
+        <div class="toFlex">
+          <el-form-item label="适用范围:">
+            <div class="toFlex">
+              <el-form-item prop="minTimeLimit">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="shuhui_forms.minTimeLimit"
+                  placeholder="最大期限"
+                ></el-input>
+              </el-form-item>&nbsp;
+              <el-form-item prop="minTimeSymbol">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="shuhui_forms.minTimeSymbol"
+                >
+                  <el-option
+                    v-for="item in dictData.forMax"
+                    :key="item.value"
+                    :label="item.fuhao"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+          </el-form-item>
+
+          <el-form-item label="赎回天数" label-width="80px">
+            <div class="toFlex">
+              <el-form-item prop="maxTimeSymbol">
+                <el-select
+                  filterable
+                  clearable
+                  placeholder="请选择"
+                  v-model="shuhui_forms.maxTimeSymbol"
+                >
+                  <el-option
+                    v-for="item in dictData.forMax"
+                    :key="item.value"
+                    :label="item.fuhao"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>&nbsp;
+              <el-form-item prop="maxTimeLimit">
+                <el-input
+                  type="number"
+                  clearable
+                  v-model="shuhui_forms.maxTimeLimit"
+                  placeholder="最大期限"
+                ></el-input>
+              </el-form-item>
+            </div>
+          </el-form-item>
+        </div>
+
+        <el-form-item label="费率:" prop="rate3">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="shuhui_forms.rate3"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="赎回天数">
-          <div class="toFlex">
-            <el-form-item prop="maxTimeSymbol">
-              <el-select
-                filterable
-                clearable
-                placeholder="请选择"
-                v-model="shuhui_forms.maxTimeSymbol"
-              >
-                <el-option
-                  v-for="item in dictData.rule_symbol"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>&nbsp;
-            <el-form-item prop="maxTimeLimit">
-              <el-input
-                type="number"
-                clearable
-                v-model="shuhui_forms.maxTimeLimit"
-                placeholder="最大期限"
-              ></el-input>
-            </el-form-item>
-          </div>
+        <el-form-item label="费率折扣:" prop="rateDiscount3">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="shuhui_forms.rateDiscount3"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">%</span>
         </el-form-item>
 
-        <el-form-item label="费率" prop="rate3">
-          <el-input clearable v-model="shuhui_forms.rate3" placeholder="请输入" type="number"></el-input>
-        </el-form-item>
-
-        <el-form-item label="费率折扣" prop="rateDiscount3">
-          <el-input clearable v-model="shuhui_forms.rateDiscount3" placeholder="请输入" type="number"></el-input>
-        </el-form-item>
-
-        <el-form-item label="单笔费用" prop="cost3">
-          <el-input clearable v-model="shuhui_forms.cost3" placeholder="请输入" type="number"></el-input>
+        <el-form-item label="单笔费用:" prop="cost3">
+          <el-input
+            class="isInput"
+            clearable
+            v-model="shuhui_forms.cost3"
+            placeholder="请输入"
+            type="number"
+          ></el-input>
+          <span class="isA">元/笔</span>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -566,7 +788,7 @@
           <el-select filterable placeholder="请选择" v-model="newLiLvDia.data.bangdan">
             <el-option
               size="mini"
-              v-for="item in dictData.shelveList"
+              v-for="item in dictData.qianyueList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -578,7 +800,7 @@
           <el-select filterable placeholder="请选择" v-model="newLiLvDia.data.lockBangDan">
             <el-option
               size="mini"
-              v-for="item in dictData.shelveList"
+              v-for="item in dictData.qianyueList"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -624,6 +846,18 @@
           <span class="isAd"></span>
         </el-form-item>
 
+        <el-form-item label="近一个月涨幅:" prop="oneMonth">
+          <el-input
+            type="number"
+            clearable
+            placeholder="请输入"
+            v-model="ruleForm1.oneMonth"
+            style="width:calc(100% - 30px);"
+            @input="isChange=false"
+          ></el-input>
+          <span class="isAd"></span>
+        </el-form-item>
+
         <el-form-item label="近三个月涨幅:" prop="sanyue">
           <el-input
             type="number"
@@ -661,7 +895,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button :disabled="isChange" @click="save1()" type="primary">保 存</el-button>
+        <el-button :disabled="isChange" @click="save1" type="primary">保 存</el-button>
         <el-button @click="toCloseNewGuiZeDialog">取 消</el-button>
       </div>
     </el-dialog>
@@ -726,11 +960,159 @@ export default {
         callback();
       }
     };
+
+    // 验证数字
+    var check_rate = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.rengou_forms.rate = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_rateDiscount = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.rengou_forms.rateDiscount = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_rate2 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.shengou_forms.rate2 = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_rateDiscount2 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.shengou_forms.rateDiscount2 = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_rate3 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.shuhui_forms.rate3 = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_rateDiscount3 = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入"));
+      } else if (+value > 100) {
+        callback(new Error("请输入小于100的值"));
+      } else if (+value < 0) {
+        callback(new Error("请输入正数"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.shuhui_forms.rateDiscount3 = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_danri = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入单日涨幅"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.ruleForm1.danri = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_oneMonth = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入近一个月涨幅"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.ruleForm1.oneMonth = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_sanyue = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入近三个月涨幅"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.ruleForm1.sanyue = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_liuyue = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入近六个月涨幅"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.ruleForm1.liuyue = (+value).toFixed(2);
+        callback();
+      }
+    };
+    // 验证数字
+    var check_yinian = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请输入近一年月涨幅"));
+      } else if (("" + value).length > 19) {
+        callback(new Error("请输入1-19字符"));
+      } else {
+        this.ruleForm1.yinian = (+value).toFixed(2);
+        callback();
+      }
+    };
+
     return {
+      errInfo: [], // 记录认购、申购、赎回的认证错误
       rengou: {},
       shengou: {},
       shuhui: {},
-
+      lilvForms: [], // 展示利率用
       loadEnd: false, // 控制表格的显示隐藏（机构管理详情底下的表）
       tableInputData: {
         // 传给table子组件的数据
@@ -757,44 +1139,45 @@ export default {
       edit_list: [], // 用来控制新增时显示哪些表单项
       // 认购
       rengou_forms: {
-        rate: "", // 费率
-        rateDiscount: "", // 费率折扣
+        rate: "0.00", // 费率
+        rateDiscount: "0.00", // 费率折扣
         cost: "", // 单笔费用
         minTransactionAmount: "", // 金额
-        minAmountUnit: "", // 金额单位
-        minAmountSymbol: "", // 金额符号标识
+        minAmountUnit: "1", // 金额单位
+        minAmountSymbol: "&le", // 金额符号标识
         maxTransactionAmount: "", // 最大交易金额
-        maxAmountUnit: "", // 交易金额单位
-        maxAmountSymbol: "" // 交易金额符号标识
+        maxAmountUnit: "1", // 交易金额单位
+        maxAmountSymbol: "&le" // 交易金额符号标识
       },
       // 申购
       shengou_forms: {
-        rate2: "", // 费率
-        rateDiscount2: "", // 费率折扣
+        rate2: "0.00", // 费率
+        rateDiscount2: "0.00", // 费率折扣
         cost2: "", // 单笔费用
         minTransactionAmount2: "", // 金额
-        minAmountUnit2: "", // 金额单位
-        minAmountSymbol2: "", // 金额符号标识
+        minAmountUnit2: "1", // 金额单位
+        minAmountSymbol2: "&le", // 金额符号标识
         maxTransactionAmount2: "", // 最大交易金额
-        maxAmountUnit2: "", // 交易金额单位
-        maxAmountSymbol2: "" // 交易金额符号标识
+        maxAmountUnit2: "1", // 交易金额单位
+        maxAmountSymbol2: "&le" // 交易金额符号标识
       },
       // 赎回
       shuhui_forms: {
-        rate3: "", // 费率
-        rateDiscount3: "", // 费率折扣
+        rate3: "0.00", // 费率
+        rateDiscount3: "0.00", // 费率折扣
         cost3: "", // 单笔费用
         minTimeLimit: "", // 期限
-        minTimeSymbol: "", // 期限符号标识
+        minTimeSymbol: "&le", // 期限符号标识
         maxTimeLimit: "", // 天数
-        maxTimeSymbol: "" // 天数符号标识
+        maxTimeSymbol: "&le" // 天数符号标识
       },
       ruleForm1: {
         // 历史业绩的更新
         danri: "",
         sanyue: "",
         liuyue: "",
-        yinian: ""
+        yinian: "",
+        oneMonth: ""
       },
       // 新增利率弹框
       newLiLvDia: {
@@ -840,20 +1223,23 @@ export default {
         bangdan: [
           { required: true, message: "请选择榜单展示", trigger: "change" }
         ],
-        danri: [{ required: true, message: "请输入单日涨幅", trigger: "blur" }],
-        sanyue: [
-          { required: true, message: "请输入近三个月涨幅", trigger: "blur" }
+        danri: [{ required: true, validator: check_danri, trigger: "blur" }],
+        oneMonth: [
+          { required: true, validator: check_oneMonth, trigger: "blur" }
         ],
-        liuyue: [
-          { required: true, message: "请输入近六个月涨幅", trigger: "blur" }
-        ],
-        yinian: [
-          { required: true, message: "请输入近一年月涨幅", trigger: "blur" }
-        ],
+        sanyue: [{ required: true, validator: check_sanyue, trigger: "blur" }],
+        liuyue: [{ required: true, validator: check_liuyue, trigger: "blur" }],
+        yinian: [{ required: true, validator: check_yinian, trigger: "blur" }],
 
-        rate: [{ validator: checkNum3, trigger: "blur" }],
-        rateDiscount: [{ validator: checkNum3, trigger: "blur" }],
-        cost: [{ validator: checkNum1, trigger: "blur" }],
+        rate: [{ validator: check_rate, trigger: "blur" }],
+        rateDiscount: [{ validator: check_rateDiscount, trigger: "blur" }],
+
+        rate2: [{ validator: check_rate2, trigger: "blur" }],
+        rateDiscount2: [{ validator: check_rateDiscount2, trigger: "blur" }],
+
+        rate3: [{ validator: check_rate3, trigger: "blur" }],
+        rateDiscount3: [{ validator: check_rateDiscount3, trigger: "blur" }],
+
         minAmountSymbol: [
           { required: true, message: "请选择", trigger: "change" }
         ],
@@ -867,9 +1253,6 @@ export default {
           { required: true, message: "请选择", trigger: "change" }
         ],
 
-        rate2: [{ validator: checkNum3, trigger: "blur" }],
-        rateDiscount2: [{ validator: checkNum3, trigger: "blur" }],
-        cost2: [{ validator: checkNum1, trigger: "blur" }],
         minAmountSymbol2: [
           { required: true, message: "请选择", trigger: "change" }
         ],
@@ -883,9 +1266,6 @@ export default {
           { required: true, message: "请选择", trigger: "change" }
         ],
 
-        rate3: [{ validator: checkNum3, trigger: "blur" }],
-        rateDiscount3: [{ validator: checkNum3, trigger: "blur" }],
-        cost3: [{ validator: checkNum1, trigger: "blur" }],
         minTimeSymbol: [
           { required: true, message: "请选择", trigger: "change" }
         ],
@@ -909,9 +1289,12 @@ export default {
     this.init(); // 页面初始化
   },
   methods: {
+    get_isEditButton() {
+      document.querySelector("#isEditButton").click();
+    },
     // 监听表格的操作
     tableEmit(data) {
-      console.log(data)
+      let name = "";
       switch (data.type) {
         case "regetData": // 分页的emit
           this.changeFn();
@@ -919,15 +1302,48 @@ export default {
         case "delete": // 单独删除按钮
           this.toDelete(data.data.id);
           break;
-        case "switch": // switch 变换
-          this.switchAction(data.data);
+        case "textClick": // 单独删除按钮
+          if (this.checkTable != "存款产品") {
+            switch (this.checkTable) {
+              case "货币基金":
+                name = "money_fund_info";
+                sessionStorage.setItem("page", "货币基金管理");
+                break;
+              case "理财产品":
+                name = "manage_money_matters_info";
+                sessionStorage.setItem("page", "理财管理");
+                break;
+              case "纯债基金":
+                name = "pure_debt_fund_info";
+                sessionStorage.setItem("page", "纯债基金管理");
+                break;
+            }
+
+            this.$router.push({
+              name: name,
+              query: {
+                id: data.data.id,
+                type: data.data.productSubtype,
+                name: data.data.name
+              }
+            });
+          } else {
+            sessionStorage.setItem("page", "存款管理");
+            this.$router.push({
+              name: "deposit_info",
+              query: {
+                id: data.data.id, // 产品 id
+                name: data.data.name, // 产品名称
+                type: data.data.productSubtype // 产品类型
+              }
+            });
+          }
           break;
       }
     },
 
     init() {
       let page = this.pageData.page;
-
       switch (page) {
         case "pure_debt_fund": // 纯债基金管理
           this.get_chunzhai_xiangqing();
@@ -935,8 +1351,11 @@ export default {
         case "money_fund": // 货币基金
           this.get_huobi_xiangqing();
           break;
-        case "manage_money_matters": // 理财管理
+        case "wmp": // 理财管理
           this.get_licai_xiangqing();
+          break;
+        case "wmp_insurance": // 保险理财
+          this.get_baoxian_xiangqing();
           break;
         case "organizational": // 机构管理
           this.checkList = [
@@ -983,6 +1402,9 @@ export default {
         case "time_deposit": // 定期存款管理
           this.get_dingqi_xiangqing();
           break;
+        case "large_deposit": // 大额存单管理
+          this.get_big_xiangqing();
+          break;
         case "intelligent_deposit": // 智能存款管理
           this.get_zhineng_xiangqing();
           break;
@@ -991,7 +1413,7 @@ export default {
           break;
       }
     },
-    // // 监听表格的操作
+    // // 监听更新利率的表格的操作（暂时作废）
     // tableAct(data) {
     //   if (data.type === "add") {
     //     this.newLiLvDia.data.spuId = +data.data; // 存款ID
@@ -1120,11 +1542,11 @@ export default {
               table: [
                 {
                   title: "起购金额",
-                  num: res.data.appInfo.minAmount
+                  num: res.data.minAmount + " 元"
                 },
                 {
                   title: "递增金额",
-                  num: res.data.increaseAmount
+                  num: res.data.increaseAmount + " 元"
                 },
                 {
                   title: "剩余额度",
@@ -1146,6 +1568,55 @@ export default {
                 },
                 {
                   title: "到期",
+                  text: new Date(
+                    res.data.managementDate[1]
+                  ).toLocaleDateString()
+                }
+              ]
+            };
+            this.$nextTick(() => {
+              this.$set(this.pageData, "forProduct", res.data);
+              this.$set(this.pageData, "forChart", stepsTop);
+            });
+          }
+        });
+    },
+    // 保险理财产品详情
+    get_baoxian_xiangqing() {
+      this.$api
+        .get_baoxian_info_data({
+          vm: this,
+          data: this.pageData.id
+        })
+        .then(res => {
+          if (res) {
+            this.$set(this.pageData, "forProduct", null);
+            this.$set(this.pageData, "forChart", null);
+            let stepsTop = {
+              // 步骤条数据
+              table: [
+                {
+                  title: "起购金额",
+                  num: res.data.minAmount + " 元"
+                },
+                {
+                  title: "递增金额",
+                  num: res.data.increaseAmount + " 元"
+                },
+                {
+                  title: "剩余额度",
+                  num: res.data.surplusQuotaLabel
+                }
+              ],
+              steps: [
+                {
+                  title: "起息日",
+                  text: new Date(
+                    res.data.managementDate[0]
+                  ).toLocaleDateString()
+                },
+                {
+                  title: "到期日",
                   text: new Date(
                     res.data.managementDate[1]
                   ).toLocaleDateString()
@@ -1201,73 +1672,142 @@ export default {
             this.$set(this.pageData, "datas", null);
             this.$nextTick(() => {
               this.$set(this.pageData, "datas", res.data);
-              // 利率表格的数据
-              let forms = {
-                topClick: true, // 表格上边的新增利率
-                fenye: true, // 是否需要分页
-                pageNum: 0, // 当前页妈
-                // 表格头部的蓝点
-                titleUp: {
-                  pointName: "利率"
-                },
-                // 表格头部
-                title: [
-                  {
-                    prop: "num", // 要显示的属性
-                    label: "序号", // 要显示的文字
-                    width: "100" // 当前项的宽度
-                  },
-                  {
-                    prop: "qixian", // 要显示的属性
-                    label: "期限", // 要显示的文字
-                    width: "100" // 当前项的宽度
-                  },
-                  {
-                    prop: "danwei", // 要显示的属性
-                    label: "单位", // 要显示的文字
-                    width: "100" // 当前项的宽度
-                  },
-                  {
-                    prop: "lilv", // 要显示的属性
-                    label: "利率 %", // 要显示的文字
-                    width: "100" // 当前项的宽度
-                  },
-                  {
-                    prop: "beizhu", // 要显示的属性
-                    label: "备注", // 要显示的文字
-                    width: "100" // 当前项的宽度
-                  }
-                ],
-                handle: [
-                  // 表格执行的操作
-                  {
-                    click: "edit", // 表格操作栏的点击事件
-                    text: "编辑" // 表格操作栏的点击事件
-                  },
-                  {
-                    click: "delete", // 表格操作栏的点击事件
-                    text: "删除" // 表格操作栏的点击事件
-                  }
-                ],
-                // 表格数据
-                dataTotal: []
-              };
-              let arr = res.data.interestRates;
+              this.lilvForms = res.data.interestRates.map(item => {
+                let obj = {
+                  id: item.id,
+                  spuId: item.spuId,
+                  minDeadline: item.fromTerm, // 最小期限
+                  min_danwei: item.fromTermUnitType, // 最小期限单位
+                  min_symbol: item.fromTermSymbolType, // 最小单位符号
+                  maxDeadline: item.toTerm, // 最大期限
+                  max_danwei: item.toTermUnitType, // 最大期限单位
+                  max_symbol: item.toTermSymbolType, // 最小单位符号
+                  lilv: item.interestRate, // 利率
+                  lockinPeriod: item.lockinPeriod, // 锁定期限
+                  showList: item.showList, // 榜单展示
+                  lockinShowList: item.lockinShowList, // 锁定期榜单展示
+                  remark: item.remark, // 备注
+                  homepageCopywriting: item.homepageCopywriting, // 首页文案
+                  detailCopywriting: item.detailCopywriting, // 详情页文案
+                  bankCopywriting: item.bankCopywriting, //  银行文案
 
-              if (arr.length > 0) {
-                for (let i = 0; i < arr.length; i++) {
-                  forms.dataTotal.push({
-                    num: i + 1,
-                    qixian: arr[i].deadline,
-                    danwei: arr[i].timeUnitLabel,
-                    lilv: arr[i].interestRate,
-                    beizhu: arr[i].remark,
-                    id: arr[i].id,
-                    parentID: arr[i].spuId
-                  });
-                }
-              }
-              this.$set(this.pageData, "forForms", forms);
+                  showProduct: item.productList, //  产品展示
+                  bangdanWrite: item.termCopywriting //  榜单期限文案
+                };
+                return obj;
+              });
+
+              // 利率表格的数据
+              // let forms = {
+              //   type: "dingqi",
+              //   dingqi: {
+              //     topClick: true, // 表格上边的新增利率
+              //     fenye: true, // 是否需要分页
+              //     pageNum: 0, // 当前页妈
+              //     // 表格头部的蓝点
+              //     titleUp: {
+              //       pointName: "利率"
+              //     },
+              //     // 表格头部
+              //     title: [
+              //       {
+              //         prop: "num", // 要显示的属性
+              //         label: "序号", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "qixian", // 要显示的属性
+              //         label: "期限", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "danwei", // 要显示的属性
+              //         label: "单位", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "lilv", // 要显示的属性
+              //         label: "利率(%)", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "beizhu", // 要显示的属性
+              //         label: "备注", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       }
+              //     ],
+              //     handle: [
+              //       // 表格执行的操作
+              //       {
+              //         click: "edit", // 表格操作栏的点击事件
+              //         text: "编辑" // 表格操作栏的点击事件
+              //       },
+              //       {
+              //         click: "delete", // 表格操作栏的点击事件
+              //         text: "删除" // 表格操作栏的点击事件
+              //       }
+              //     ],
+              //     // 表格数据
+              //     dataTotal: []
+              //   }
+              // };
+              // let arr = res.data.interestRates;
+
+              // if (arr.length > 0) {
+              //   for (let i = 0; i < arr.length; i++) {
+              //     let obj = {
+              //       num: i + 1,
+              //       qixian: arr[i].deadline,
+              //       danwei: arr[i].timeUnitLabel,
+              //       lilv: arr[i].interestRate,
+              //       beizhu: arr[i].remark,
+              //       id: arr[i].id,
+              //       parentID: arr[i].spuId
+              //     };
+              //     forms.dingqi.dataTotal.push(obj);
+              //   }
+              // }
+              // this.$set(this.pageData, "forForms", forms);
+            });
+          }
+        });
+    },
+    // 大额存款管理
+    get_big_xiangqing() {
+      this.$api
+        .big_info({
+          vm: this,
+          data: this.pageData.id
+        })
+        .then(res => {
+          if (res) {
+            this.$set(this.pageData, "datas", null);
+            this.$nextTick(() => {
+              this.$set(this.pageData, "datas", res.data);
+              this.lilvForms = res.data.interestRates.map(item => {
+                let obj = {
+                  id: item.id,
+                  spuId: item.spuId,
+                  minDeadline: item.fromTerm, // 最小期限
+                  min_danwei: item.fromTermUnitType, // 最小期限单位
+                  min_symbol: item.fromTermSymbolType, // 最小单位符号
+                  maxDeadline: item.toTerm, // 最大期限
+                  max_danwei: item.toTermUnitType, // 最大期限单位
+                  max_symbol: item.toTermSymbolType, // 最小单位符号
+                  lilv: item.interestRate, // 利率
+                  lockinPeriod: item.lockinPeriod, // 锁定期限
+                  showList: item.showList, // 榜单展示
+                  lockinShowList: item.lockinShowList, // 锁定期榜单展示
+                  remark: item.remark, // 备注
+                  homepageCopywriting: item.homepageCopywriting, // 首页文案
+                  detailCopywriting: item.detailCopywriting, // 详情页文案
+                  bankCopywriting: item.bankCopywriting, //  银行文案
+
+                  showProduct: item.productList, //  产品展示
+                  bangdanWrite: item.termCopywriting //  榜单期限文案
+                };
+                return obj;
+              });
             });
           }
         });
@@ -1283,80 +1823,144 @@ export default {
           if (res) {
             this.$set(this.pageData, "datas", null);
             this.$set(this.pageData, "forForms", null);
+
             this.$nextTick(() => {
               this.$set(this.pageData, "datas", res.data);
-              // 利率表格的数据
-              let forms = {
-                type: "zhineng",
-                zhineng: {
-                  topClick: true, // 表格上边的新增利率
-                  fenye: true, // 是否需要分页
-                  pageNum: 0, // 当前页妈
-                  // 表格头部的蓝点
-                  titleUp: {
-                    pointName: "利率"
-                  },
-                  // 表格头部
-                  title: [
-                    {
-                      prop: "num", // 要显示的属性
-                      label: "序号", // 要显示的文字
-                      width: "100" // 当前项的宽度
-                    },
-                    {
-                      prop: "qixian", // 要显示的属性
-                      label: "期限", // 要显示的文字
-                      width: "100" // 当前项的宽度
-                    },
-                    {
-                      prop: "danwei", // 要显示的属性
-                      label: "单位", // 要显示的文字
-                      width: "100" // 当前项的宽度
-                    },
-                    {
-                      prop: "lilv", // 要显示的属性
-                      label: "利率 %", // 要显示的文字
-                      width: "100" // 当前项的宽度
-                    },
-                    {
-                      prop: "beizhu", // 要显示的属性
-                      label: "备注", // 要显示的文字
-                      width: "100" // 当前项的宽度
-                    }
-                  ],
-                  handle: [
-                    // 表格执行的操作
-                    {
-                      click: "edit", // 表格操作栏的点击事件
-                      text: "编辑" // 表格操作栏的点击事件
-                    },
-                    {
-                      click: "delete", // 表格操作栏的点击事件
-                      text: "删除" // 表格操作栏的点击事件
-                    }
-                  ],
-                  // 表格数据
-                  dataTotal: []
-                }
-              };
-              let arr = res.data.interestRates;
-              if (arr.length > 0) {
-                for (let i = 0; i < arr.length; i++) {
-                  forms.zhineng.dataTotal.push({
-                    num: i + 1,
-                    qixian: arr[i].deadline,
-                    danwei: arr[i].timeUnitLabel,
-                    lilv: arr[i].interestRate,
-                    beizhu: arr[i].remark,
-                    id: arr[i].id,
-                    parentID: arr[i].spuId
-                  });
-                }
-              }
-              this.$set(this.pageData, "forForms", forms);
+              this.lilvForms = res.data.interestRates.map(item => {
+                let obj = {
+                  id: item.id,
+                  spuId: item.spuId,
+                  minDeadline: item.fromTerm, // 最小期限
+                  min_danwei: item.fromTermUnitType, // 最小期限单位
+                  min_symbol: item.fromTermSymbolType, // 最小单位符号
+                  maxDeadline: item.toTerm, // 最大期限
+                  max_danwei: item.toTermUnitType, // 最大期限单位
+                  max_symbol: item.toTermSymbolType, // 最小单位符号
+                  lilv: item.interestRate, // 利率
+                  lockinPeriod: item.lockinPeriod, // 锁定期限
+                  showList: item.showList, // 榜单展示
+                  lockinShowList: item.lockinShowList, // 锁定期榜单展示
+                  remark: item.remark, // 备注
+                  homepageCopywriting: item.homepageCopywriting, // 首页文案
+                  detailCopywriting: item.detailCopywriting, // 详情页文案
+                  bankCopywriting: item.bankCopywriting, //  银行文案
+
+                  showProduct: item.productList, //  产品展示
+                  bangdanWrite: item.termCopywriting //  榜单期限文案
+                };
+                return obj;
+              });
+
+              // // 利率表格的数据
+              // let forms = {
+              //   type: "zhineng",
+              //   zhineng: {
+              //     topClick: true, // 表格上边的新增利率
+              //     fenye: true, // 是否需要分页
+              //     pageNum: 0, // 当前页妈
+              //     // 表格头部的蓝点
+              //     titleUp: {
+              //       pointName: "利率"
+              //     },
+              //     // 表格头部
+              //     title: [
+              //       {
+              //         prop: "num", // 要显示的属性
+              //         label: "序号", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "qixian", // 要显示的属性
+              //         label: "期限", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "danwei", // 要显示的属性
+              //         label: "单位", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "lilv", // 要显示的属性
+              //         label: "利率(%)", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       },
+              //       {
+              //         prop: "beizhu", // 要显示的属性
+              //         label: "备注", // 要显示的文字
+              //         width: "100" // 当前项的宽度
+              //       }
+              //     ],
+              //     handle: [
+              //       // 表格执行的操作
+              //       {
+              //         click: "edit", // 表格操作栏的点击事件
+              //         text: "编辑" // 表格操作栏的点击事件
+              //       },
+              //       {
+              //         click: "delete", // 表格操作栏的点击事件
+              //         text: "删除" // 表格操作栏的点击事件
+              //       }
+              //     ],
+              //     // 表格数据
+              //     dataTotal: []
+              //   }
+              // };
+              // let arr = res.data.interestRates;
+
+              // if (arr.length > 0) {
+              //   for (let i = 0; i < arr.length; i++) {
+              //     let obj = {
+              //       num: i + 1,
+              //       qixian: arr[i].deadline,
+              //       danwei: arr[i].timeUnitLabel,
+              //       lilv: arr[i].interestRate,
+              //       beizhu: arr[i].remark,
+              //       id: arr[i].id,
+              //       parentID: arr[i].spuId
+              //     };
+
+              //     forms.zhineng.dataTotal.push(obj);
+              //   }
+              // }
+              // this.$set(this.pageData, "forForms", forms);
             });
           }
         });
+    },
+    // 显示预览的单位
+    seeDanWei1(tar) {
+      let danwei = this.dictData.deadline_type;
+      let target = danwei.filter(item => item.value == tar.min_danwei)[0];
+      if (target) {
+        return target.label;
+      }
+      return "";
+    },
+    seeDanWei2(tar) {
+      let danwei = this.dictData.deadline_type;
+      let target = danwei.filter(item => item.value == tar.max_danwei)[0];
+      if (target) {
+        return target.label;
+      }
+      return "";
+    },
+    seeFuHao1(tar) {
+      let target = this.dictData.forMax.filter(
+        item => item.value == tar.min_symbol
+      )[0];
+      if (target) {
+        return target.fuhao;
+      }
+      return "";
+    },
+    seeFuHao2(tar) {
+      let target = this.dictData.forMax.filter(
+        item => item.value == tar.max_symbol
+      )[0];
+      if (target) {
+        return target.fuhao;
+      }
+      return "";
     },
     // 结构存款数据
     get_jiegou_xiangqing() {
@@ -1393,7 +1997,7 @@ export default {
                 pageNum: 0, // 当前页妈
                 // 表格头部的蓝点
                 titleUp: {
-                  pointName: "认购费率"
+                  pointName: "认购费率规则"
                 },
                 total: res.data.total,
                 // 表格头部
@@ -1415,7 +2019,7 @@ export default {
                   },
                   {
                     prop: "feilv",
-                    label: "费率",
+                    label: "费率(%)",
                     width: "100"
                   },
                   {
@@ -1425,7 +2029,7 @@ export default {
                   },
                   {
                     prop: "youhui",
-                    label: "优惠折扣",
+                    label: "优惠折扣(%)",
                     width: "100"
                   }
                 ],
@@ -1451,7 +2055,7 @@ export default {
                   id: kk[i].id,
                   jine: kk[i].amountLabel, // 金额
                   feilv: kk[i].rate, // 费率
-                  danbi: kk[i].cost, // 单笔费用
+                  danbi: this.make_point(kk[i].cost, true), // 单笔费用
                   youhui: kk[i].rateDiscount, // 优惠折扣
                   from: kk[i] // 保存原始数据
                 });
@@ -1482,7 +2086,7 @@ export default {
                 pageNum: 0, // 当前页妈
                 // 表格头部的蓝点
                 titleUp: {
-                  pointName: "申购费率"
+                  pointName: "申购费率规则"
                 },
                 total: res.data.total,
                 // 表格头部
@@ -1500,22 +2104,22 @@ export default {
                   {
                     prop: "jine",
                     label: "金额",
-                    width: "220"
+                    width: "200"
                   },
                   {
                     prop: "feilv",
-                    label: "费率",
-                    width: "100"
+                    label: "费率(%)",
+                    width: "90"
                   },
                   {
                     prop: "danbi",
                     label: "单笔费用",
-                    width: "100"
+                    width: "110"
                   },
                   {
                     prop: "youhui",
-                    label: "优惠折扣",
-                    width: "100"
+                    label: "优惠折扣(%)",
+                    width: "90"
                   }
                 ],
                 handle: [
@@ -1540,7 +2144,7 @@ export default {
                   id: kk[i].id,
                   jine: kk[i].amountLabel,
                   feilv: kk[i].rate,
-                  danbi: kk[i].cost,
+                  danbi: this.make_point(kk[i].cost, true),
                   youhui: kk[i].rateDiscount,
                   from: kk[i] // 保存原始数据
                 });
@@ -1570,7 +2174,7 @@ export default {
                 pageNum: 0, // 当前页妈
                 // 表格头部的蓝点
                 titleUp: {
-                  pointName: "赎回费率"
+                  pointName: "赎回费率规则"
                 },
                 total: res.data.total,
                 // 表格头部
@@ -1592,7 +2196,7 @@ export default {
                   },
                   {
                     prop: "feilv",
-                    label: "费率",
+                    label: "费率(%)",
                     width: "100"
                   },
                   {
@@ -1602,7 +2206,7 @@ export default {
                   },
                   {
                     prop: "youhui",
-                    label: "优惠折扣",
+                    label: "优惠折扣(%)",
                     width: "100"
                   }
                 ],
@@ -1629,7 +2233,7 @@ export default {
                   id: kk[i].id,
                   jine: kk[i].timeLabel,
                   feilv: kk[i].rate,
-                  danbi: kk[i].cost,
+                  danbi: this.make_point(kk[i].cost, true),
                   youhui: kk[i].rateDiscount,
                   from: kk[i] // 保存原始数据
                 });
@@ -1685,10 +2289,20 @@ export default {
                             : `${res.data.performance.oneDayIncrease}%`,
                         color:
                           res.data.performance.oneDayIncrease > 0
-                            ? "green"
-                            : "red"
+                            ? "red"
+                            : "green"
                       },
-
+                      {
+                        date: "近一个月涨幅",
+                        up_down:
+                          res.data.performance.oneMonthIncrease > 0
+                            ? `+${res.data.performance.oneMonthIncrease}%`
+                            : `${res.data.performance.oneMonthIncrease}%`,
+                        color:
+                          res.data.performance.oneMonthIncrease > 0
+                            ? "red"
+                            : "green"
+                      },
                       {
                         date: "近三个月涨幅",
                         up_down:
@@ -1697,8 +2311,8 @@ export default {
                             : `${res.data.performance.threeMonthIncrease}%`,
                         color:
                           res.data.performance.threeMonthIncrease > 0
-                            ? "green"
-                            : "red"
+                            ? "red"
+                            : "green"
                       },
                       {
                         date: "近六个月涨幅",
@@ -1708,8 +2322,8 @@ export default {
                             : `${res.data.performance.sixMonthIncrease}%`,
                         color:
                           res.data.performance.sixMonthIncrease > 0
-                            ? "green"
-                            : "red"
+                            ? "red"
+                            : "green"
                       },
                       {
                         date: "近一年涨幅",
@@ -1719,13 +2333,13 @@ export default {
                             : `${res.data.performance.oneYearIncrease}%`,
                         color:
                           res.data.performance.oneYearIncrease > 0
-                            ? "green"
-                            : "red"
+                            ? "red"
+                            : "green"
                       }
                     ]
                   },
                   createTime: res.data.performance.gmtModified,
-                  who: res.data.operator
+                  who: res.data.performance.modifierName
                 },
                 simple_data = {
                   id: res.data.id,
@@ -1820,6 +2434,9 @@ export default {
         case "dingqi": // 定期存款管理编辑完
           this.get_dingqi_xiangqing();
           break;
+        case "big": // 大额存单管理
+          this.get_big_xiangqing();
+          break;
         case "zhineng": // 智能存款管理编辑完
           this.get_zhineng_xiangqing();
           break;
@@ -1831,6 +2448,9 @@ export default {
           break;
         case "licai": // 理财管理编辑完
           this.get_licai_xiangqing();
+          break;
+        case "baoxian": // 保险理财编辑完
+          this.get_baoxian_xiangqing();
           break;
         case "organizational": // 理财管理编辑完
           this.jigouguanli_data();
@@ -1865,7 +2485,8 @@ export default {
         danri: "",
         sanyue: "",
         liuyue: "",
-        yinian: ""
+        yinian: "",
+        oneMonth: ""
       };
       this.guize_httpType = "";
       this.edit_list = [];
@@ -1912,7 +2533,14 @@ export default {
       let datas = {};
       datas.pageSize = this.tableInputData.pageSize;
       datas.pageNum = this.tableInputData.pageNum;
-      datas.institutionId = this.pageData.id;
+
+      if (this.pageData.page === "organizational") {
+        datas.institutionId = this.pageData.id;
+      }
+      if (this.pageData.page === "fund_company") {
+        datas.fundHouseId = this.pageData.id;
+      }
+
       switch (this.checkTable) {
         case "货币基金":
           this.huobi_list(datas);
@@ -1934,7 +2562,7 @@ export default {
       this.loadEnd = false;
       this.tableInputData = {
         // 传给table子组件的数据
-        checkBox: true, // 判断需要不需要添加选择框
+        checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10, // 分页相关
         pageNum: 1,
         total: null,
@@ -1950,7 +2578,24 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list
+        this.tableInputData.data.list = data.list.map(item => {
+          let arr = Object.keys(item);
+          arr.forEach(str => {
+            if (str === "dailyIncrease") {
+              item[str] =
+                +item[str] > 0
+                  ? `+${(+item[str]).toFixed(2)}%`
+                  : `${(+item[str]).toFixed(2)}%`;
+            }
+            if (str === "netAssetValue") {
+              item[str] = `${(+item[str]).toFixed(4)}`;
+            }
+            if (str === "netAccumulateValue") {
+              item[str] = `${(+item[str]).toFixed(4)}`;
+            }
+          });
+          return item;
+        });
         // // 设置字体点击事件
         this.tableInputData.actions.click = {
           label: "产品名称",
@@ -2053,7 +2698,7 @@ export default {
       this.loadEnd = false;
       this.tableInputData = {
         // 传给table子组件的数据
-        checkBox: true, // 判断需要不需要添加选择框
+        checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10, // 分页相关
         pageNum: 1,
         total: null,
@@ -2069,10 +2714,8 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list
-    
-  
-  
+        this.tableInputData.data.list = data.list;
+
         // // 设置字体点击事件
         this.tableInputData.actions.click = {
           label: "产品名称",
@@ -2097,11 +2740,11 @@ export default {
             minWidth: "140"
           },
           {
-            title: "产品类型",
+            title: "类别别名",
             key: "typeAlias",
             minWidth: "120"
           },
- {
+          {
             title: "上架状态",
             key: "shelveStatusLabel",
             minWidth: "180"
@@ -2130,7 +2773,7 @@ export default {
       this.loadEnd = false;
       this.tableInputData = {
         // 传给table子组件的数据
-        checkBox: true, // 判断需要不需要添加选择框
+        checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10, // 分页相关
         pageNum: 1,
         total: null,
@@ -2146,8 +2789,22 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list
-   
+        this.tableInputData.data.list = data.list.map(item => {
+          let arr = Object.keys(item);
+          arr.forEach(str => {
+            if (str === "onThe7thOfTheYearYield") {
+              item[str] = `+${(+item[str]).toFixed(4)}%`;
+            }
+            if (str === "thousandsOfYearsYields") {
+              item[str] = `${(+item[str]).toFixed(4)}`;
+            }
+            if (str === "minAmount") {
+              item[str] = `${(+item[str]).toFixed(2)}`;
+            }
+          });
+          return item;
+        });
+
         // // 设置字体点击事件
         this.tableInputData.actions.click = {
           label: "产品名称",
@@ -2190,7 +2847,7 @@ export default {
             minWidth: "120",
             sortable: true
           },
-           {
+          {
             title: "上架状态",
             key: "shelveStatusLabel",
             minWidth: "180"
@@ -2232,7 +2889,7 @@ export default {
       this.loadEnd = false;
       this.tableInputData = {
         // 传给table子组件的数据
-        checkBox: true, // 判断需要不需要添加选择框
+        checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10, // 分页相关
         pageNum: 1,
         total: null,
@@ -2248,8 +2905,18 @@ export default {
         this.tableInputData.total = data.total;
         this.tableInputData.pageSize = data.pageSize == 0 ? 10 : data.pageSize;
         this.tableInputData.pageNum = data.pageNum == 0 ? 1 : data.pageNum;
-        this.tableInputData.data.list = data.list
- 
+
+        this.tableInputData.data.list = data.list.map(item => {
+          let arr = Object.keys(item);
+          wap: for (let i = arr.length; i--; ) {
+            if (arr[i] === "interestRate") {
+              item[arr[i]] = `+${(+item[arr[i]]).toFixed(4)}%`;
+              break wap;
+            }
+          }
+          return item;
+        });
+
         // // 设置字体点击事件
         this.tableInputData.actions.click = {
           label: "产品名称",
@@ -2278,7 +2945,7 @@ export default {
             key: "riskLevelLabel",
             minWidth: "130"
           },
-           {
+          {
             title: "上架状态",
             key: "shelveStatusLabel",
             minWidth: "180"
@@ -2315,20 +2982,6 @@ export default {
         });
     },
     /////////////////////////////////////////////////////////////////////////////
-    // 表格里的switch事件
-    switchAction(data) {
-      this.$api
-        .product_chunzhai_UpDown({
-          vm: this,
-          data: {
-            id: data.productId,
-            status: data.switch ? "YES" : "NO"
-          }
-        })
-        .then(res => {
-          this.changeFn();
-        });
-    },
     // 删除
     toDelete(id) {
       this.$confirm("确认删除吗？")
@@ -2370,6 +3023,40 @@ export default {
       this.guize_httpType = "post"; // 新增，三个checkbox都要显示出来
       this.newGuiZe = true;
     },
+    // type=true:将数据格式化：xx,xxx,xxx.xxx格式
+    // type=false:将格式化的数据转成正常的数据；
+    make_point(num, type) {
+      let isPoint = /\.+/g.test("" + num),
+        arr,
+        str1,
+        str2;
+      if (isPoint) {
+        arr = ("" + num).split(".");
+        if (type) {
+          str1 = arr[0].split("").reverse();
+          str2 = "";
+          for (let i = 0; i < str1.length; i++) {
+            str2 += str1[i];
+            if ((i + 1) % 3 === 0 && i + 1 < str1.length) {
+              str2 += ",";
+            }
+          }
+          return (
+            str2
+              .split("")
+              .reverse()
+              .join("") +
+            "." +
+            arr[1]
+          );
+        } else {
+          str1 = arr[0].split(",").join("");
+          return str1 + "." + arr[1];
+        }
+      } else {
+        return num;
+      }
+    },
     // 费率表格的emit,切换是编辑还是新增
     feilvEmit(data) {
       if (data.type === "edit") {
@@ -2382,7 +3069,7 @@ export default {
               id: data.data.id,
               rate: data.data.feilv, // 费率
               rateDiscount: data.data.youhui, // 费率折扣
-              cost: data.data.danbi, // 单笔费用
+              cost: this.make_point(data.data.danbi, false), // 单笔费用
               minTransactionAmount: data.data.from.minTransactionAmount, // 金额
               minAmountUnit: data.data.from.minAmountUnit, // 金额单位
               minAmountSymbol: data.data.from.minAmountSymbol, // 金额符号标识
@@ -2397,7 +3084,7 @@ export default {
               id: data.data.id,
               rate2: data.data.feilv, // 费率
               rateDiscount2: data.data.youhui, // 费率折扣
-              cost2: data.data.danbi, // 单笔费用
+              cost2: this.make_point(data.data.danbi, false), // 单笔费用
               minTransactionAmount2: data.data.from.minTransactionAmount, // 金额
               minAmountUnit2: data.data.from.minAmountUnit, // 金额单位
               minAmountSymbol2: data.data.from.minAmountSymbol, // 金额符号标识
@@ -2412,7 +3099,7 @@ export default {
               id: data.data.id,
               rate3: data.data.feilv, // 费率
               rateDiscount3: data.data.youhui, // 费率折扣
-              cost3: data.data.danbi, // 单笔费用
+              cost3: this.make_point(data.data.danbi, false), // 单笔费用
               minTimeLimit: data.data.from.minTimeLimit, // 期限
               minTimeSymbol: data.data.from.minTimeSymbol, // 期限符号标识
               maxTimeLimit: data.data.from.maxTimeLimit, // 天数
@@ -2479,10 +3166,26 @@ export default {
         }
       }
     },
+
+    check_rengou() {
+      let isErr = true;
+      let errArr = [];
+      if (
+        +this.rengou_forms.minTransactionAmount *
+          +this.rengou_forms.minAmountUnit >
+        +this.rengou_forms.maxTransactionAmount *
+          +this.rengou_forms.maxAmountUnit
+      ) {
+        errArr.push(1);
+        isErr = false;
+      }
+      this.errInfo = Array.from(new Set(errArr));
+      return isErr;
+    },
     // 认购保存
     save_rengou() {
       this.$refs.rengou_forms.validate(valid => {
-        if (valid) {
+        if (valid && this.check_rengou()) {
           this.isChange = false;
           let rengou_data = {
             productUuid: this.rengou.productUuid,
@@ -2528,6 +3231,7 @@ export default {
           if (this.guize_httpType === "put") {
             rengou_data.id = this.rengou_forms.id;
           }
+
           this.$api
             .put_post_rengou({
               vm: this,
@@ -2570,10 +3274,26 @@ export default {
         }
       });
     },
+
+    check_shengou() {
+      let isErr = true;
+      let errArr = [];
+      if (
+        +this.shengou_forms.minTransactionAmount2 *
+          +this.shengou_forms.minAmountUnit2 >
+        +this.shengou_forms.maxTransactionAmount2 *
+          +this.shengou_forms.maxAmountUnit2
+      ) {
+        errArr.push(2);
+        isErr = false;
+      }
+      this.errInfo = Array.from(new Set(errArr));
+      return isErr;
+    },
     // 申购保存
     save_shengou() {
       this.$refs.shengou_forms.validate(valid => {
-        if (valid) {
+        if (valid && this.check_shengou()) {
           this.isChange = false;
           let shengou_data = {
             productUuid: this.shengou.productUuid,
@@ -2594,32 +3314,33 @@ export default {
             maxAmountSymbolLabel: "" // 最大交易金额规则符号Label
           };
           // 最小金额单位Label
-          if (shengou_data.minAmountUnit2) {
+          if (shengou_data.minAmountUnit) {
             shengou_data.minAmountUnitLabel = this.dictData.currency_unit.filter(
-              item => item.value == shengou_data.minAmountUnit2
+              item => item.value == shengou_data.minAmountUnit
             )[0].label;
           }
           // 最小金额规则符号
-          if (shengou_data.minAmountSymbol2) {
+          if (shengou_data.minAmountSymbol) {
             shengou_data.minAmountSymbolLabel = this.dictData.rule_symbol.filter(
-              item => item.value == shengou_data.minAmountSymbol2
+              item => item.value == shengou_data.minAmountSymbol
             )[0].label;
           }
           // 最大交易金额单位Label
-          if (shengou_data.maxAmountUnit2) {
+          if (shengou_data.maxAmountUnit) {
             shengou_data.maxAmountUnitLabel = this.dictData.currency_unit.filter(
-              item => item.value == shengou_data.maxAmountUnit2
+              item => item.value == shengou_data.maxAmountUnit
             )[0].label;
           }
           // 最大交易金额规则符号Label
-          if (shengou_data.maxAmountSymbol2) {
+          if (shengou_data.maxAmountSymbol) {
             shengou_data.maxAmountSymbolLabel = this.dictData.rule_symbol.filter(
-              item => item.value == shengou_data.maxAmountSymbol2
+              item => item.value == shengou_data.maxAmountSymbol
             )[0].label;
           }
           if (this.guize_httpType === "put") {
             shengou_data.id = this.shengou_forms.id;
           }
+
           this.$api
             .put_post_shengou({
               vm: this,
@@ -2662,10 +3383,21 @@ export default {
         }
       });
     },
+
+    check_shuhui() {
+      let isErr = true;
+      let errArr = [];
+      if (+this.shuhui_forms.minTimeLimit > +this.shuhui_forms.maxTimeLimit) {
+        errArr.push(3);
+        isErr = false;
+      }
+      this.errInfo = Array.from(new Set(errArr));
+      return isErr;
+    },
     // 赎回保存
     save_shuhui() {
       this.$refs.shuhui_forms.validate(valid => {
-        if (valid) {
+        if (valid && this.check_shuhui()) {
           this.isChange = false;
           let shuhui_data = {
             productUuid: this.shuhui.productUuid,
@@ -2745,10 +3477,11 @@ export default {
               vm: this,
               data: {
                 productUuid: this.pageData.forLishi.productUuid,
-                oneDayIncrease: +this.ruleForm1.danri,
-                threeMonthIncrease: +this.ruleForm1.sanyue,
-                sixMonthIncrease: +this.ruleForm1.liuyue,
-                oneYearIncrease: +this.ruleForm1.yinian
+                oneDayIncrease: this.ruleForm1.danri,
+                oneMonthIncrease: this.ruleForm1.oneMonth,
+                threeMonthIncrease: this.ruleForm1.sanyue,
+                sixMonthIncrease: this.ruleForm1.liuyue,
+                oneYearIncrease: this.ruleForm1.yinian
               }
             })
             .then(res => {
@@ -2765,7 +3498,3 @@ export default {
   }
 };
 </script>
-<style>
-@import url("./allCss.scss");
-</style>
-

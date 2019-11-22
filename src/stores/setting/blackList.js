@@ -69,7 +69,7 @@ const mutations = {
      // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.blackNameList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if(jurisdiction.indexOf('black_list_detail') > -1){
             state.blackNameList.data.custom.push({
                 text: "详情",
@@ -89,7 +89,7 @@ const mutations = {
         }
         if(jurisdiction.indexOf('black_list_del') > -1){
             state.blackNameList.data.custom.push({
-                text: "删除",
+                text: "解封",
                 type: "danger",
                 size: "mini",
                 emit: "delete"

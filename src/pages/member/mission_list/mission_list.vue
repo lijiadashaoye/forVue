@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <div class="toCreateBtn">
         <el-button size="mini" type="warning" @click="buttonRowUpdata(true)">创建任务</el-button>
         <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
@@ -64,6 +67,7 @@ export default {
   props: {},
   data() {
     return {
+      env: null,
       // 表单上边搜索部分的数据
       ruleForm: {
         activityNo: "",
@@ -110,6 +114,7 @@ export default {
     isTable
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
@@ -158,7 +163,9 @@ export default {
           }
         })
         .then(res => {
-          this.getUserData();
+          if (res) {
+            this.getUserData();
+          }
         });
     },
     // 删除、批量删除
@@ -217,7 +224,6 @@ export default {
                 let numSucces = 0;
                 let numFail = 0;
                 let failName = "";
-                let titleText = `失败的数据为：\n `;
                 arr.forEach(item => {
                   if (item.ok) {
                     numSucces++;
@@ -300,7 +306,7 @@ export default {
     },
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
       let market_activity_upd = quanxian.includes("market_activity_upd");
       let market_activity_del = quanxian.includes("market_activity_del");
       let market_activity_add = quanxian.includes("market_activity_add");

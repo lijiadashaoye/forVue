@@ -4,9 +4,6 @@ import {
     AxiosPost,
     AxiosPut
 } from '../sets/axiosMethods';
-import {
-    join
-} from 'path';
 
 //获取渠道
 export const getAppChannel = (type) => {
@@ -17,6 +14,11 @@ export const upLoadImg = (data) => {
     return AxiosPost(`/admin/file/up/setting`, data)
 }
 
+//大文件接口   视频之类的
+export const bigFileUpload = (data) => {
+    return AxiosPost(`/admin/file/slice-up/setting`,data)
+}
+
 //机构列表
 export const institutionList = (data) => {
     return AxiosGet(`/product/institution/list`, data)
@@ -25,6 +27,11 @@ export const institutionList = (data) => {
 //查询产品
 export const productList = (data) => {
     return AxiosGet(`/setting/manager/confing-url/product-list`, data)
+}
+
+//直销银行
+export const searchBank = (data)=> {
+    return AxiosGet(`/setting/manager/bank-card/searchBank`,data)
 }
 
 //app按钮列表数据
@@ -449,6 +456,11 @@ export const slider_updata = (data) => {
     return AxiosPut(`/setting/manager/sidebar`, data)
 }
 
+//删除
+export const slider_delete = (id) => {
+    return AxiosDelete(`/setting/manager/sidebar/${id}`)
+}
+
 //首页期限
 
 //列表
@@ -656,7 +668,7 @@ export const sms_manage = (data) => {
 }
 // 短信模板列表获取 
 export const get_sms_list = (id) => {
-    return AxiosGet(`/message/sms-template/${id}`)
+    return AxiosGet(`/message/manager/sms-template/${id}`)
 }
 // 新增短信
 export const add_sms_manage = (data) => {
@@ -666,6 +678,11 @@ export const add_sms_manage = (data) => {
 export const get_sms_detail = (id) => {
     return AxiosGet(`/message/sms-manage/${id}`)
 }
+// 短信模版下载
+export const download_template = () => {
+    return AxiosGet('/message/sms-manage/downloadTemplate')
+}
+
 // 短信上传模板
 export const upload_file = (data,type) => {
     return AxiosPost(`/admin/file/up/${type}`, data)
@@ -772,4 +789,90 @@ export const delete_smsTemplate = (id) => {
 // 获取短信渠道列表
 export const get_sms_channel = (data) => {
     return AxiosGet(`/message/manager/sms-channel`,data)
+}
+
+
+//新增建议
+export const add_proposal = (data)=> {
+    return AxiosPost(`setting/manager/proposal`,data)
+}
+
+//系统预警配置
+
+// 获取预警信息列表
+export const get_alarm_list = (data) => {
+    return AxiosPost(`/alarm/config/pageList`,data)
+}
+// 删除系统预警条目
+export const delete_alarm  = (id) => {
+    return AxiosDelete(`/alarm/config/delete/${id}`)
+}
+// 系统预警条目详情
+export const detail_alarm  = (id) => {
+    return AxiosGet(`/alarm/config/searchDetail/${id}`)
+}
+// 新增系统预警
+export const add_alarm = (data)=> {
+    return AxiosPost(`/alarm/config/add`,data)
+}
+// 修改系统预警条目
+export const modify_alarm = (data) => {
+    return AxiosPut(`/alarm/config/update`,data)
+}
+
+
+//问题信息
+
+//列表
+export const problemInfo_list = (data) => {
+    return AxiosGet(`/setting/manager/question-info`,data)
+}
+
+//新增问题
+export const problemInfo_add = (data) => {
+    return AxiosPost(`/setting/manager/question-info`,data)
+}
+
+
+//修改问题
+export const problemInfo_update = (data) => {
+    return AxiosPut(`/setting/manager/question-info`,data)
+}
+
+//删除问题
+export const problemInfo_delete = (id) => {
+    return AxiosDelete(`/setting/manager/question-info/${id}`)
+}
+
+
+
+//问题分类
+
+//列表
+export const questionDispose_list = (data) => {
+    return AxiosGet(`/setting/manager/question-dispose`,data)
+}
+
+
+//新建
+export const questionDispose_add = (data) => {
+    return AxiosPost(`/setting/manager/question-dispose`,data)
+}
+
+//详情
+export const questionDispose_detail = (id) => {
+    return AxiosGet(`/setting/manager/question-dispose/${id}`)
+}
+
+//修改置顶
+export const questionDispose_isTop = (data)=> {
+    return AxiosPut(`/setting/manager/question-dispose/istop`,data)
+}
+
+export const questionDispose_updata = (data) => {
+    return AxiosPut(`/setting/manager/question-dispose`,data)
+}
+
+export const questionDispose_delete = (id) => {
+    return AxiosDelete(`/setting/manager/question-dispose/${id}`)
 }

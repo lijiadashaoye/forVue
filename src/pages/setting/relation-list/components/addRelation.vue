@@ -1,102 +1,97 @@
 <template>
-  <div>
-    <el-dialog
-      :close-on-click-modal="true"
-      :title="title"
-      :visible.sync="centerType"
-      width="50%"
-      @close="cancel"
-      center
-    >
-      <el-card class="box-card">
-        <el-form
-          :model="ruleForm"
-          :rules="rules"
-          ref="ruleForm"
-          label-width="140px"
-          class="demo-ruleForm"
-          width="300px"
-        >
-          <!-- 详情显示编辑按钮 -->
-          <el-button
-            v-if="fatherType=='detail' && $store.state.relation.relationList.data.quanxian.indexOf('parent_tree_upd')>-1"
-            @click="infoChange"
-            style="float:right;position:relative;z-index:2"
-            type="primary"
-            size="mini"
-          >修改</el-button>
-          <!-- 添加子关联和详情需要显示 -->
-          <template v-if="fatherType=='addChild' || fatherType=='detail'">
-            <el-form-item
-              :label="`${fatherType=='addChild'?'父级Id':'Id'}:`"
-              prop="id"
-            >{{indexInfo.id}}</el-form-item>
-            <el-form-item
-              :label="`${fatherType=='addChild'?'父级key值':'key值'}:`"
-              prop="dataKey"
-            >{{indexInfo.dataKey}}</el-form-item>
-            <el-form-item
-              :label="`${fatherType=='addChild'?'父级名称':'名称'}:`"
-              prop="name"
-            >{{indexInfo.name}}</el-form-item>
-            <el-form-item
-              :label="`${fatherType=='addChild'?'父级类型':'类型'}:`"
-              prop="linkType"
-            >{{indexInfo.linkType}}</el-form-item>
-            <el-form-item v-if="fatherType=='detail'" label="备注:">{{indexInfo.remarks}}</el-form-item>
-          </template>
+  <el-dialog
+    :close-on-click-modal="true"
+    :title="title"
+    :visible.sync="centerType"
+    width="500px"
+    @close="cancel"
+    center
+  >
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+      <!-- 详情显示编辑按钮 -->
+      <el-button
+        v-if="dialogType=='detail' && this.$parent.userInfoArr.indexOf('parent_tree_upd')>-1"
+        @click="infoChange"
+        style="float:right;position:relative;z-index:2"
+        type="primary"
+        size="mini"
+      >修改</el-button>
+      <!-- 添加子关联和详情需要显示 -->
+      <template v-if="dialogType=='addChild' || dialogType=='detail'">
+        <el-form-item :label="`${dialogType=='addChild'?'父级Id':'Id'}:`" prop="id">{{indexInfo.id}}</el-form-item>
+        <el-form-item
+          :label="`${dialogType=='addChild'?'父级key值':'key值'}:`"
+          prop="dataKey"
+        >{{indexInfo.dataKey}}</el-form-item>
+        <el-form-item
+          :label="`${dialogType=='addChild'?'父级名称':'名称'}:`"
+          prop="name"
+        >{{indexInfo.name}}</el-form-item>
+        <el-form-item
+          :label="`${dialogType=='addChild'?'父级类型':'类型'}:`"
+          prop="linkType"
+        >{{indexInfo.linkType}}</el-form-item>
+        <el-form-item v-if="dialogType=='detail'" label="备注:">{{indexInfo.remarks}}</el-form-item>
+      </template>
 
-          <!-- 详情页面不显示表单操作 -->
-          <template v-if="fatherType!='detail'">
-            <el-form-item label="关联key名:" prop="dataKey">
-              <el-input placeholder="请输入key名称" v-model="ruleForm.dataKey" type="text" clearable></el-input>
-            </el-form-item>
-            <template v-if="fatherType=='addFather' || fatherType=='edit'">
-              <el-form-item label="关联类型" prop="linkType">
-                <el-select filterable v-model="ruleForm.linkType" placeholder="请选择">
-                  <el-option
-                    v-for="(item,index) in linkTypeArr"
-                    :key="index"
-                    :label="item.name"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-              </el-form-item>
-            </template>
-            <el-form-item label="业务名称:" prop="name">
-              <el-input placeholder="请输入业务名称" v-model="ruleForm.name" type="text" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="备注:" prop="remarks">
-              <el-input
-                placeholder="请输入备注"
-                v-model="ruleForm.remarks"
-                type="textarea"
-                rowspan="2"
-                clearable
-              ></el-input>
-            </el-form-item>
-          </template>
-        </el-form>
-        <div v-if="fatherType!='detail'" class="saveButton">
-          <el-button type="primary" @click="save('ruleForm')">保存</el-button>
-          <el-button @click="cancel()">取消</el-button>
-        </div>
-      </el-card>
-    </el-dialog>
-  </div>
+      <!-- 详情页面不显示表单操作 -->
+      <template v-if="dialogType!='detail'">
+        <el-form-item label="关联key名:" prop="dataKey">
+          <el-input placeholder="请输入key名称" v-model="ruleForm.dataKey" type="text" clearable></el-input>
+        </el-form-item>
+        <template v-if="dialogType=='addFather' || dialogType=='edit'">
+          <el-form-item label="关联类型" prop="linkType">
+            <el-select filterable v-model="ruleForm.linkType" placeholder="请选择">
+              <el-option
+                v-for="(item,index) in linkTypeArr"
+                :key="index"
+                :label="item.name"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </template>
+        <el-form-item label="业务名称:" prop="name">
+          <el-input placeholder="请输入业务名称" v-model="ruleForm.name" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="备注:" prop="remarks">
+          <el-input
+            placeholder="请输入备注"
+            v-model="ruleForm.remarks"
+            type="textarea"
+            rowspan="2"
+            clearable
+          ></el-input>
+        </el-form-item>
+      </template>
+    </el-form>
+    <div v-if="dialogType!='detail'" class="saveButton">
+      <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+      <el-button @click="cancel()">取消</el-button>
+    </div>
+  </el-dialog>
 </template>
 <script>
-import { mapActions, mapState, mapMutations } from "vuex";
+import { mapActions, mapState } from "vuex";
+import { linkTypeArr } from "@/constant.js";
+import { defaultChange } from "@/sets/changeLanguage.js";
 export default {
   props: {
     centerDialogVisible: {
       type: Boolean,
       default: false
     },
-    fatherType: {
+    dialogType: {
       type: String,
       default: ""
+    },
+    itemId: {
+      type: Number,
+      default: 0
     }
+  },
+  created() {
+    this.linkTypeArr = linkTypeArr;
   },
   model: {
     prop: "centerDialogVisible",
@@ -107,14 +102,23 @@ export default {
     centerDialogVisible(value) {
       this.centerType = value;
       if (value) {
-        if (this.fatherType == "detail") {
-           // 详情修改需要清空验证
+        if (this.dialogType == "detail") {
+          // 详情修改需要清空验证
           this.$nextTick(() => {
             this.$refs["ruleForm"].clearValidate();
           });
           this.title = "关联详情";
-          this.relationDetail(this.indexInfo.id);
         } else {
+          if (this.dialogType == "addChild") {
+            this.relationDetail(this.itemId).then(() => {
+              this.$nextTick(() => {
+                this.$refs["ruleForm"].resetFields();
+                this.ruleForm.linkType = this.indexInfo.linkType;
+                this.ruleForm.dataKey = "";
+                this.ruleForm.name = "";
+              });
+            });
+          }
           // 新增需要清空表单和验证
           this.$nextTick(() => {
             this.$refs["ruleForm"].resetFields();
@@ -126,27 +130,20 @@ export default {
   },
   computed: {
     ...mapState({
-      indexInfo: ({ relation }) => relation.indexInfo //单条数据
+      indexInfo: ({ powerTable }) => {
+        powerTable.indexInfo.linkType = defaultChange(
+          powerTable.indexInfo.linkType,
+          true,
+          "linkTypeArr"
+        );
+        return powerTable.indexInfo;
+      } //单条数据
     })
   },
   data() {
     return {
       centerType: this.centerDialogVisible,
       title: "新增关联",
-      linkTypeArr: [
-        {
-          name: "资产",
-          value: "ASSETS"
-        },
-        {
-          name: "会员",
-          value: "MEMBER"
-        },
-        {
-          name: "设置",
-          value: "SETTING"
-        }
-      ], //关联类型
       ruleForm: {
         dataKey: "", //数据key
         name: "", //业务名称
@@ -157,15 +154,15 @@ export default {
         dataKey: [{ required: true, message: "数据key不能为空" }],
         name: [{ required: true, message: "业务名称不能为空" }],
         linkType: [{ required: true, message: "业务类型不能为空" }],
-        remarks: [{ required: true, message: "备注不能为空" }],
+        remarks: [{ required: true, message: "备注不能为空" }]
       }
     };
   },
   methods: {
     ...mapActions({
       addRelation: "relation/addRelation",
-      relationDetail: "relation/relationDetail",
-      modifyRelation: "relation/modifyRelation"
+      modifyRelation: "relation/modifyRelation",
+      relationDetail: "relation/relationDetail"
     }),
     cancel() {
       this.$emit("returnBack", false);
@@ -184,7 +181,7 @@ export default {
         if (valid) {
           // 判断表单类型
           let formInfo = Object.assign({}, this.ruleForm);
-          if (this.fatherType == "edit") {
+          if (this.dialogType == "edit") {
             formInfo.id = this.indexInfo.id;
             formInfo.linkLevel = this.indexInfo.linkLevel;
             formInfo.parentId = this.indexInfo.parentId;
@@ -194,14 +191,18 @@ export default {
               this.$emit("again");
             });
           } else {
-            if (this.fatherType == "addFather") {
+            if (this.dialogType == "addFather") {
               // 添加顶层依赖
               formInfo.linkLevel = 0;
               formInfo.parentId = null;
-            } else if (this.fatherType == "addChild") {
+            } else if (this.dialogType == "addChild") {
               // 添加子级依赖
               formInfo.linkLevel = +this.indexInfo.linkLevel + 1;
-              formInfo.linkType = this.indexInfo.linkType;
+              formInfo.linkType = defaultChange(
+                this.indexInfo.linkType,
+                false,
+                "linkTypeArr"
+              );
               formInfo.parentId = this.indexInfo.id;
             }
             // 新增数据
@@ -218,11 +219,11 @@ export default {
 };
 </script>
 <style scoped>
-.saveButton{
-  display:flex;
+.saveButton {
+  display: flex;
   justify-content: center;
 }
-.el-select{
-    width:100%;
-  }
+.el-select {
+  width: 100%;
+}
 </style>

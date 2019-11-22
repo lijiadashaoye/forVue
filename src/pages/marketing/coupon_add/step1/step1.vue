@@ -112,7 +112,8 @@
           <!-- </div> -->
 
           <el-form-item label="卡券使用类型" prop="useType">
-            <el-select filterable
+            <el-select
+              filterable
               v-model="formData.useType"
               placeholder="请选择卡券使用类型"
               style="width:100%;"
@@ -175,7 +176,8 @@
           </el-form-item>
 
           <el-form-item label="收益发放类型" prop="incomeGrantType">
-            <el-select filterable
+            <el-select
+              filterable
               v-model="formData.incomeGrantType"
               placeholder="请选择收益发放类型"
               style="width:100%;"
@@ -191,7 +193,8 @@
           </el-form-item>
 
           <el-form-item label="适用渠道" prop="applyChannel">
-            <el-select filterable
+            <el-select
+              filterable
               v-model="formData.applyChannel"
               placeholder="请选择适用渠道"
               style="width:100%;"
@@ -223,7 +226,8 @@
           </el-form-item>
 
           <el-form-item label="是否做关联" prop="isLink">
-            <el-select filterable
+            <el-select
+              filterable
               v-model="formData.isLink"
               placeholder="请选择"
               style="width:100%;"
@@ -328,7 +332,7 @@ export default {
       let reg = /\./;
       if (reg.test(value)) {
         callback(new Error("请输入整数"));
-      } else if (value === "") {
+      } else if (!value) {
         callback(new Error("请输入数据"));
       } else if (value < 0) {
         callback(new Error("请输入正数"));
@@ -353,7 +357,7 @@ export default {
     };
     // 验证手机号
     var checkPhone = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback();
       } else if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error("手机号码有误，请重填"));
@@ -757,7 +761,7 @@ export default {
         let one = this.toSearch("bank");
         let two = this.toSearch("product");
         this.setForForms();
-        Promise.all([one, two]).then(datas => {
+        Promise.all([one, two]).then(() => {
           // 收缩导航
           this.$store.commit("set_asideState", { data: false });
         });
@@ -1013,8 +1017,6 @@ export default {
       if (reg.test(num)) {
         // 有小数点
         let arr = num.split(".");
-        let str = "";
-
         if (type === "ORDER") {
           // 定购券
           return `${arr[0]}.${arr[1].slice(0, 2)}`;

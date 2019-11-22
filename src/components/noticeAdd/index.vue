@@ -1,6 +1,6 @@
 <template>
     <el-card class="box-card">
-        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" >
             <el-form-item label="APP标识:" prop="appChannelCode">
                  <el-radio-group v-model="ruleForm.appChannelCode">
                     <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
@@ -47,7 +47,7 @@
 
 <script>
 export default {
-    props: ['updata', 'params', 'appChannel', 'overFlag'],
+    props: ['updata', 'params', 'appChannel', 'flag'],
     data() {
         return {
             pageName: '',
@@ -82,19 +82,11 @@ export default {
             this.ruleForm.platformCode = this.params.platformCode;
             this.ruleForm.sort = this.params.sort;
             this.ruleForm.noticeTime = [this.params.startTime,this.params.endTime]
-        } else {
-            this.id = '';
-            this.ruleForm.content = '';
-            this.ruleForm.appChannelCode = '';
-            this.ruleForm.platformCode = '';
-            this.ruleForm.sort = '';
-            this.ruleForm.noticeTime = [];
         }
     }, 
     methods: {
         //点击取消
         cancel(formName) {
-            this.id = '';
             this.$refs[formName].resetFields();
             this.$emit('cancel')
         },
@@ -133,25 +125,16 @@ export default {
         }
     },
     watch: {
-        'params.id'() {
-            this.id = this.params.id ? this.params.id : null;
-            this.ruleForm.content = this.params.content;
-            this.ruleForm.appChannelCode = this.params.appChannelCode;
-            this.ruleForm.platformCode = this.params.platformCode;
-            this.ruleForm.sort = this.params.sort;
-            this.ruleForm.noticeTime = [this.params.startTime,this.params.endTime]
-        },
-        'overFlag' (){
-            console.log(this.overFlag)
-            if(this.overFlag) {
-                this.id = '';
-                this.ruleForm.content = '';
-                this.ruleForm.appChannelCode = '';
-                this.ruleForm.platformCode = '';
-                this.ruleForm.sort = '';
-                this.ruleForm.noticeTime = [];
+        'flag'() {
+            if(this.flag) {
+                this.id = this.params.id ? this.params.id : null;
+                this.ruleForm.content = this.params.content;
+                this.ruleForm.appChannelCode = this.params.appChannelCode;
+                this.ruleForm.platformCode = this.params.platformCode;
+                this.ruleForm.sort = this.params.sort;
+                this.ruleForm.noticeTime = [this.params.startTime,this.params.endTime]
             }
-        }
+        },
     }
 }
 </script>

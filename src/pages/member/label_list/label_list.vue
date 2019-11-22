@@ -1,8 +1,24 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
-      <el-input size="mini" v-model="seachInput" placeholder="请输入标签名称" style="width:180px;"></el-input>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
+      <label class="isLabel">
+        标签名称：
+        <el-input size="mini" v-model="seachInput" placeholder="请输入标签名称" style="width:180px;"></el-input>
+      </label>
+      <label class="isLabel">标签状态：</label>
+      <el-select filterable size="mini" v-model="mark_statue" placeholder="请选择">
+        <el-option
+          v-for="item in markStatueList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
+
       <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
       <el-button size="mini" type="info" style="margin-left:15px" @click="seachClick(false)">重置</el-button>
       <el-button style="margin-left:15px" size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
@@ -50,9 +66,9 @@ export default {
   components: {
     isTable
   },
-
   data() {
     return {
+      env: null,
       rules: {
         name: [{ min: 1, max: 20, message: "最多输入20个字", trigger: "blur" }]
       },
@@ -60,6 +76,17 @@ export default {
       aloneDeleteData: [], // 储存需要单独删除的数据
       pageName: "", // 当前页面名字
       seachInput: "",
+      mark_statue: "", // 标签状态
+      markStatueList: [
+        {
+          label: "启用",
+          value: "ENABLE"
+        },
+        {
+          label: "停用",
+          value: "DISABLE"
+        }
+      ],
       loadEnd: false,
       tableInputData: {
         // 传给table子组件的数据
@@ -85,6 +112,7 @@ export default {
     };
   },
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
   },
   mounted() {
@@ -174,7 +202,6 @@ export default {
                 let numSucces = 0;
                 let numFail = 0;
                 let failName = "";
-                let titleText = `失败的数据为：\n `;
                 arr.forEach(item => {
                   if (item.ok) {
                     numSucces++;
@@ -262,13 +289,15 @@ export default {
           }
         })
         .then(res => {
-          this.getUserData();
+          if (res) {
+            this.getUserData();
+          }
         });
     },
     ////////////////////////////////////////
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
 
       let member_label_add = quanxian.includes("member_label_add");
       if (member_label_add) {
@@ -359,6 +388,7 @@ export default {
     seachClick(type) {
       if (!type) {
         this.seachInput = "";
+        this.mark_statue = "";
       }
       this.tableInputData.pageSize = 10;
       this.tableInputData.pageNum = 1;
@@ -367,35 +397,26 @@ export default {
     // 获取表格数据
     getUserData() {
       let obj;
+
+      obj = {
+        pageSize: this.tableInputData.pageSize,
+        pageNum: this.tableInputData.pageNum
+      };
+
       if (this.seachInput) {
-        obj = {
-          vm: this,
-          method: "get",
-          search: {
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum,
-            name: this.seachInput
-          }
-        };
-      } else {
-        obj = {
-          vm: this,
-          method: "get",
-          search: {
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum
-          }
-        };
+        obj.name = this.seachInput;
+      }
+      if (this.mark_statue) {
+        obj.status = this.mark_statue;
       }
       this.$api
-        .member_manager_getMarkLise({
+        .member_manager_getMarkList({
           vm: this,
           data: obj
         })
         .then(res => {
           if (res) {
             this.afterGetData(res.data);
-          
           }
         });
     }
@@ -404,4 +425,8 @@ export default {
 </script>
 
 <style scoped='true' lang="scss">
+.isLabel {
+  font-size: 14px;
+  padding: 0 3px 0 15px;
+}
 </style>

@@ -49,9 +49,7 @@ let admin = [{
 ]
 
 // marketing 模块路由
-let marketing = [
-   
-    {
+let marketing = [{
         name: 'activity_create', // 创建活动
         path: '/home/marketing/activity/create',
         component: resolve => require(['./pages/marketing/activity_create/activity_create.vue'], resolve),
@@ -113,11 +111,20 @@ let marketing = [
 ]
 
 // setting 模块路由
-let setting = [
+let setting = [{
+        name: 'product_agreement_list', // 协议列表
+        path: '/home/setting/product_agreement',
+        component: resolve => require(['./pages/setting/product_agreement/list.vue'], resolve),
+    },
+    {
+        name: 'product_agreement_content', // 创建、修改协议
+        path: '/home/setting/product_agreement/content',
+        component: resolve => require(['./pages/setting/product_agreement/content.vue'], resolve),
+    },
     {
         name: 'new_create', // 创建活动
         path: '/home/setting/config/solution/list',
-        redirect:'/home/setting/config/solution/list/pzgl',
+        redirect: '/home/setting/config/solution/list/pzgl',
         component: resolve => require(['./pages/setting/solution_list/zong.vue'], resolve),
         children: [{
                 name: 'pzgl',
@@ -140,7 +147,7 @@ let setting = [
             }
         ]
     },
-    
+
     {
         name: '创建app按钮', // 创建app按钮
         path: '/home/setting/app-button/add',
@@ -249,23 +256,18 @@ let setting = [
 
     },
     {
-        name: '创建黑名单',
-        path: '/home/member/member-black-list/add',
-        component: resolve => require(['./pages/setting/member-black-list_add'], resolve),
-    },
-    {
         name: '黑名单列表',
         path: '/home/member/member-black-list/list',
         component: resolve => require(['./pages/setting/member-black-list_list'], resolve),
 
     },
     {
-        name: '创建通用配置',
+        name: '创建协议政策',
         path: '/home/setting/protocol-private/add',
         component: resolve => require(['./pages/setting/protocol-private_add'], resolve),
     },
     {
-        name: '通用配置列表',
+        name: '协议政策列表',
         path: '/home/setting/protocol-private/list',
         component: resolve => require(['./pages/setting/protocol-private_list'], resolve),
     },
@@ -291,52 +293,58 @@ let setting = [
     // 消息评论管理
     {
         name: '短信列表',
-        path: '/setting/sms/manager/list',
+        path: '/home/setting/sms/manager/list',
         component: resolve => require(['./pages/setting/short-message-list'], resolve),
-    }, 
+    },
     {
         name: '批量发送短信',
-        path: '/setting/sms/manager/list/send-message',
+        path: '/home/setting/sms/manager/list/send-message',
         component: resolve => require(['./pages/setting/short-message-list/sendMessage'], resolve),
-    }, 
+    },
     {
         name: '短息详情',
-        path: '/setting/sms/manager/list/sms-details',
+        path: '/home/setting/sms/manager/list/sms-details',
         component: resolve => require(['./pages/setting/short-message-list/smsDetails'], resolve),
-    }, 
+    },
     {
-        name: '消息管理',
-        path: '/setting/push/message/list',
+        name: '消息推送列表',
+        path: '/home/setting/push/message/list',
         component: resolve => require(['./pages/setting/message-management'], resolve),
-    }, 
+    },
     {
         name: '新增消息',
-        path: '/setting/push/message/list/new-news',
+        path: '/home/setting/push/message/list/new-news',
         component: resolve => require(['./pages/setting/message-management/newNews'], resolve),
-    }, 
+    },
     {
         name: '消息详情',
-        path: '/setting/push/message/list/message-details',
+        path: '/home/setting/push/message/list/message-details',
         component: resolve => require(['./pages/setting/message-management/messageDetails'], resolve),
-    }, 
+    },
     // 父子级列表
     {
         name: '关联列表',
-        path: '/home/setting/parent/tree/list',
+        path: '/home/setting/parent/tree/list', 
         component: resolve => require(['./pages/setting/relation-list'], resolve),
-    }, 
+    },
     // 短信规则列表
     {
-        name: '短信规则列表',
+        name: '短信规则列表',
         path: '/home/setting/sms/rule/list',
         component: resolve => require(['./pages/setting/sms-rule-list'], resolve),
-    }, 
+    },
     //短信模版列表
     {
-        name: '短信模版列表',
+        name: '短信模版列表',
         path: '/home/setting/sms/template/list',
         component: resolve => require(['./pages/setting/sms-template-list'], resolve),
-    }, 
+    },
+    // 预警中心
+    {
+        name: '系统预警配置',
+        path: '/home/alarm/config',
+        component: resolve => require(['./pages/alarm/alarmConfig/'], resolve),
+    },
     // 版本管理
     {
         name: '版本管理列表',
@@ -363,36 +371,30 @@ let setting = [
         name: '创建侧边栏',
         path: '/home/setting/sidebar/add',
         component: resolve => require(['./pages/setting/sidebar_add'], resolve),
-
     },
     {
         name: '首页期限列表',
         path: '/home/setting/index-peroid/list',
         component: resolve => require(['./pages/setting/index_peroid_list'], resolve),
-
     }, {
         name: '创建首页期限',
         path: '/home/setting/index-peroid/add',
         component: resolve => require(['./pages/setting/index_peroid_add'], resolve),
-
     },
     {
         name: '评论回复列表',
         path: '/home/setting/comment/list',
         component: resolve => require(['./pages/setting/comment_list'], resolve),
-
     },
     {
         name: '建议反馈列表',
         path: '/home/setting/proposal/list',
         component: resolve => require(['./pages/setting/proposal_list'], resolve),
-
     },
     {
         name: '公告列表',
         path: '/home/setting/notice/list',
         component: resolve => require(['./pages/setting/notice_list'], resolve),
-
     },
     {
         name: '地址列表',
@@ -400,6 +402,16 @@ let setting = [
         component: resolve => require(['./pages/setting/productUrl_list'], resolve),
 
     },
+    {
+        name: '问题信息',
+        path: '/home/setting/problem-centered/info',
+        component: resolve => require(['./pages/setting/problemInfo'], resolve)
+    },
+    {
+        name: '问题分类',
+        path: '/home/setting/problem-centered/classify',
+        component: resolve => require(['./pages/setting/questionDispose'], resolve)
+    }
 ]
 
 // 产品中心 模块路由
@@ -416,47 +428,57 @@ let Products_Management = [{ // 存款管理
             {
                 name: 'huoqi_step1',
                 path: '/home/Products_Management/deposit/huoqi/step1',
-                component: resolve => require(['./pages/Products_Management/deposit/huoqi/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/huoqi/step1.vue'], resolve)
             },
             {
                 name: 'huoqi_step2',
                 path: '/home/Products_Management/deposit/huoqi/step2',
-                component: resolve => require(['./pages/Products_Management/deposit/huoqi/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/huoqi/step2.vue'], resolve)
             },
             {
                 name: 'dingqi_step1',
                 path: '/home/Products_Management/deposit/dingqi/step1',
-                component: resolve => require(['./pages/Products_Management/deposit/dingqi/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/dingqi/step1.vue'], resolve)
             },
             {
                 name: 'dingqi_step2',
                 path: '/home/Products_Management/deposit/dingqi/step2',
-                component: resolve => require(['./pages/Products_Management/deposit/dingqi/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/dingqi/step2.vue'], resolve)
             },
             {
                 name: 'jiegou_step1',
                 path: '/home/Products_Management/deposit/jiegou/step1',
-                component: resolve => require(['./pages/Products_Management/deposit/jiegou/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/jiegou/step1.vue'], resolve)
             },
             {
                 name: 'jiegou_step2',
                 path: '/home/Products_Management/deposit/jiegou/step2',
-                component: resolve => require(['./pages/Products_Management/deposit/jiegou/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/jiegou/step2.vue'], resolve)
             },
             {
                 name: 'zhineng_step1',
                 path: '/home/Products_Management/deposit/zhineng/step1',
-                component: resolve => require(['./pages/Products_Management/deposit/zhineng/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/zhineng/step1.vue'], resolve)
             },
             {
                 name: 'zhineng_step2',
                 path: '/home/Products_Management/deposit/zhineng/step2',
-                component: resolve => require(['./pages/Products_Management/deposit/zhineng/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/deposit/zhineng/step2.vue'], resolve)
             },
             {
                 name: 'deposit_info',
                 path: '/home/Products_Management/deposit/info',
                 component: resolve => require(['./pages/Products_Management/deposit/info/info.vue'], resolve)
+            },
+            {
+                name: 'big_step1',
+                path: '/home/Products_Management/deposit/big/step1',
+                component: resolve => require(['./pages/Products_Management/deposit/big/step1.vue'], resolve)
+            },
+            {
+                name: 'big_step2',
+                path: '/home/Products_Management/deposit/big/step2',
+                component: resolve => require(['./pages/Products_Management/deposit/big/step2.vue'], resolve)
             }
         ]
     },
@@ -473,12 +495,22 @@ let Products_Management = [{ // 存款管理
             {
                 name: 'manage_money_matters_step1',
                 path: '/home/Products_Management/manage_money_matters/step1',
-                component: resolve => require(['./pages/Products_Management/manage_money_matters/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/manage_money_matters/licai/step1.vue'], resolve)
             },
             {
                 name: 'manage_money_matters_step2',
                 path: '/home/Products_Management/manage_money_matters/step2',
-                component: resolve => require(['./pages/Products_Management/manage_money_matters/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/manage_money_matters/licai/step2.vue'], resolve)
+            },
+            {
+                name: 'baoxian_step1',
+                path: '/home/Products_Management/manage_money_matters/baoxian_step1',
+                component: resolve => require(['./pages/Products_Management/manage_money_matters/baoxian/step1.vue'], resolve)
+            },
+            {
+                name: 'baoxian_step2',
+                path: '/home/Products_Management/manage_money_matters/baoxian_step2',
+                component: resolve => require(['./pages/Products_Management/manage_money_matters/baoxian/step2.vue'], resolve)
             },
             {
                 name: 'manage_money_matters_info',
@@ -495,22 +527,22 @@ let Products_Management = [{ // 存款管理
         children: [{
                 name: 'money_fund_mainPage',
                 path: '/home/Products_Management/money_fund/mainPage',
-                component: resolve => require(['./pages/Products_Management/money_fund/mainPage/mainPage.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/money_fund/mainPage.vue'], resolve)
             },
             {
                 name: 'money_fund_step1',
                 path: '/home/Products_Management/money_fund/step1',
-                component: resolve => require(['./pages/Products_Management/money_fund/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/money_fund/step1.vue'], resolve)
             },
             {
                 name: 'money_fund_step2',
                 path: '/home/Products_Management/money_fund/step2',
-                component: resolve => require(['./pages/Products_Management/money_fund/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/money_fund/step2.vue'], resolve)
             },
             {
                 name: 'money_fund_info',
                 path: '/home/Products_Management/money_fund/info',
-                component: resolve => require(['./pages/Products_Management/money_fund/info/info.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/money_fund/info.vue'], resolve)
             }
         ]
     },
@@ -522,27 +554,27 @@ let Products_Management = [{ // 存款管理
         children: [{
                 name: 'pure_debt_fund_mainPage',
                 path: '/home/Products_Management/pure_debt_fund/mainPage',
-                component: resolve => require(['./pages/Products_Management/pure_debt_fund/mainPage/mainPage.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/pure_debt_fund/mainPage.vue'], resolve)
             },
             {
                 name: 'pure_debt_fund_step1',
                 path: '/home/Products_Management/pure_debt_fund/step1',
-                component: resolve => require(['./pages/Products_Management/pure_debt_fund/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/pure_debt_fund/step1.vue'], resolve)
             },
             {
                 name: 'pure_debt_fund_step2',
                 path: '/home/Products_Management/pure_debt_fund/step2',
-                component: resolve => require(['./pages/Products_Management/pure_debt_fund/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/pure_debt_fund/step2.vue'], resolve)
             },
             {
                 name: 'pure_debt_fund_step3',
                 path: '/home/Products_Management/pure_debt_fund/step3',
-                component: resolve => require(['./pages/Products_Management/pure_debt_fund/step3/step3.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/pure_debt_fund/step3.vue'], resolve)
             },
             {
                 name: 'pure_debt_fund_info',
                 path: '/home/Products_Management/pure_debt_fund/info',
-                component: resolve => require(['./pages/Products_Management/pure_debt_fund/info/info.vue'], resolve)
+                component: resolve => require(['./pages/Products_Management/pure_debt_fund/info.vue'], resolve)
             }
         ]
     },
@@ -564,25 +596,59 @@ let Products_Management = [{ // 存款管理
         children: [{
                 name: 'organizational_mainPage',
                 path: '/home/Organizational_Management/organizational/mainPage',
-                component: resolve => require(['./pages/Organizational_Management/organizational/mainPage/mainPage.vue'], resolve)
+                component: resolve => require(['./pages/Organizational_Management/organizational/mainPage.vue'], resolve)
             },
             {
                 name: 'organizational_step1',
                 path: '/home/Organizational_Management/organizational/step1',
-                component: resolve => require(['./pages/Organizational_Management/organizational/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Organizational_Management/organizational/step1.vue'], resolve)
             },
             {
                 name: 'organizational_step2',
                 path: '/home/Organizational_Management/organizational/step2',
-                component: resolve => require(['./pages/Organizational_Management/organizational/step2/step2.vue'], resolve)
+                component: resolve => require(['./pages/Organizational_Management/organizational/step2.vue'], resolve)
             },
             {
                 name: 'organizational_info',
                 path: '/home/Organizational_Management/organizational/info',
-                component: resolve => require(['./pages/Organizational_Management/organizational/info/info.vue'], resolve)
+                component: resolve => require(['./pages/Organizational_Management/organizational/info.vue'], resolve)
             }
         ]
     },
+
+    { // 投融资管理
+        name: 'financing',
+        path: '/home/Products_Management/financing_management',
+        redirect: '/home/Products_Management/financing_management/mainPage',
+        component: resolve => require(['./pages/Products_Management/financing_management/financing_management.vue'], resolve),
+        children: [{
+                name: 'financing_mainPage',
+                path: '/home/Products_Management/financing_management/mainPage',
+                component: resolve => require(['./pages/Products_Management/financing_management/mainPage.vue'], resolve)
+            },
+            {
+                name: 'financing_step1', // 新增投融资产品
+                path: '/home/Products_Management/financing_management/step1',
+                component: resolve => require(['./pages/Products_Management/financing_management/step1.vue'], resolve)
+            },
+            {
+                name: 'financing_step2',
+                path: '/home/Products_Management/financing_management/step2',
+                component: resolve => require(['./pages/Products_Management/financing_management/step2.vue'], resolve)
+            },
+            {
+                name: 'risk_notice', // 风险告知
+                path: '/home/Products_Management/financing_management/risk_notice',
+                component: resolve => require(['./pages/Products_Management/financing_management/risk_notice.vue'], resolve)
+            },
+            {
+                name: 'project_description', // 项目说明
+                path: '/home/Products_Management/financing_management/project_description',
+                component: resolve => require(['./pages/Products_Management/financing_management/project_description.vue'], resolve)
+            }
+        ]
+    },
+
     { // 基金公司管理
         name: 'fund_company',
         path: '/home/Organizational_Management/fund_company',
@@ -591,20 +657,41 @@ let Products_Management = [{ // 存款管理
         children: [{
                 name: 'fund_company_mainPage',
                 path: '/home/Organizational_Management/fund_company/mainPage',
-                component: resolve => require(['./pages/Organizational_Management/fund_company/mainPage/mainPage.vue'], resolve)
+                component: resolve => require(['./pages/Organizational_Management/fund_company/mainPage.vue'], resolve)
             },
             {
                 name: 'fund_company_step1',
                 path: '/home/Organizational_Management/fund_company/step1',
-                component: resolve => require(['./pages/Organizational_Management/fund_company/step1/step1.vue'], resolve)
+                component: resolve => require(['./pages/Organizational_Management/fund_company/step1.vue'], resolve)
             },
             {
                 name: 'fund_company_info',
                 path: '/home/Organizational_Management/fund_company/info',
-                component: resolve => require(['./pages/Organizational_Management/fund_company/info/info.vue'], resolve)
+                component: resolve => require(['./pages/Organizational_Management/fund_company/info.vue'], resolve)
             }
         ]
+    },
+    // 标签管理
+    {
+        name: 'markManage',
+        path: '/home/Products_Management/markManage',
+        component: resolve => require(['./pages/Products_Management/markManage.vue'], resolve),
+    },
+    // 币种管理(列表)
+    {
+        name: 'coin_manage',
+        path: '/home/Products_Management/coin',
+        component: resolve => require(['./pages/Products_Management/coin_manage/coinManage.vue'], resolve),
+    },
+    // 币种管理(新增、修改)
+    {
+        name: 'coin_content',
+        path: '/home/Products_Management/coin_content',
+        component: resolve => require(['./pages/Products_Management/coin_manage/coinContent.vue'], resolve),
     }
+
+
+
 ]
 // // 异业后端管理
 // let channel = [{
@@ -702,12 +789,12 @@ let member = [{
 let log = [{
         name: '设备定位列表',
         path: '/log/device/list',
-        component: resolve => require(['./pages/log/equipmentPositioning/equipmentPositioningList.vue'], resolve),
+        component: resolve => require(['./pages/log/equipmentPositioningList.vue'], resolve),
     },
     {
         name: '点位列表',
         path: '/log/point/list',
-        component: resolve => require(['./pages/log/point/pointList.vue'], resolve),
+        component: resolve => require(['./pages/log/pointList.vue'], resolve),
     }
 ]
 // 主框架路由
@@ -781,7 +868,7 @@ let router = new Router({
 // 判断是否需要登录权限 以及是否登录
 router.beforeEach((to, from, next) => {
     if (to.meta.requireAuth) { // 判断是否需要登录权限
-        if (localStorage.getItem('token')) { // 判断是否登录
+        if (sessionStorage.getItem('token')) { // 判断是否登录
             // 显示提示
             Message({
                 message: '已成功登录了！',

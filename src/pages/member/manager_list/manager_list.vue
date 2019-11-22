@@ -1,25 +1,17 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3>{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <el-button size="mini" type="primary" style="margin-left:20px" @click="seachClick(true)">搜索</el-button>
       <el-button size="mini" type="info" @click="seachClick(false)">重置</el-button>
-      <el-button size="mini" :disabled="true" type="warning" @click="moreDengJi()">批量修改等级</el-button>
-      <el-button size="mini" type="info" @click="moreStatue()">批量修改状态</el-button>
-      <el-button size="mini" :disabled="true" type="danger" @click="moreJiFen()">批量调整积分</el-button>
-      <el-button size="mini" type="primary" @click="moreMark()">批量打标签</el-button>
-      <!-- <div class="forTableTitle">
-        <span>配置表头</span>
-        <el-select filterable v-model="tableTitle" placeholder="请选择" size="small" @change="setTableTitle">
-          <el-option
-            v-for="item in options"
-            :key="item.type"
-            :label="item.title"
-            :value="item.type"
-          ></el-option>
-        </el-select>
-      </div>-->
-
+      <el-button size="mini" :disabled="true" type="warning" @click="moreDengJi">批量修改等级</el-button>
+      <el-button size="mini" type="info" @click="moreStatue">批量修改状态</el-button>
+      <el-button size="mini" :disabled="true" type="success" @click="moreJiFen">批量调整积分</el-button>
+      <el-button size="mini" type="primary" @click="moreMark">批量打标签</el-button>
+      <el-button size="mini" plain type="danger" @click="moreBlack">批量添加黑名单</el-button>
       <el-form
         :inline="true"
         :model="searchForm"
@@ -31,6 +23,10 @@
         :rules="rules"
         style="margin-top:5px;"
       >
+        <el-form-item style="margin-bottom:5px;" label="会员ID">
+          <el-input v-model="searchForm.memberId" type="number"></el-input>
+        </el-form-item>
+
         <el-form-item label="会员等级" style="margin-bottom:5px;">
           <el-select
             filterable
@@ -220,6 +216,104 @@
           <el-button size="mini" type="primary" @click="marksDialogAction(true)">确 定</el-button>
         </span>
       </el-dialog>
+
+      <!-- 添加黑名单 -->
+      <el-dialog
+        :close-on-click-modal="false"
+        :title="blackDialog.title"
+        :visible.sync="blackDialog.show"
+        width="730px"
+        :before-close="dengjiDialogClose"
+        style="padding:0;"
+      >
+        <div v-if="blackDialog.blacked.length" class="hasBlack">
+          <p>您所选的用户中，有一些已经被添加到黑名单：</p>
+          <div>
+            <span v-for="bk in blackDialog.blacked" :key="bk.id">
+              电话号码：
+              <br />
+              {{bk.phone}}
+            </span>
+          </div>
+        </div>
+
+        <el-form
+          ref="blackForm"
+          size="normal"
+          :model="blackForm"
+          label-width="150px"
+          label-suffix=":"
+          class="isForm"
+          :rules="rules"
+        >
+          <el-form-item label="准备拉黑" prop="memberIds">
+            <el-select
+              filterable
+              style="width:100%;"
+              v-model="blackForm.memberIds"
+              clearable
+              placeholder="请选择"
+              multiple
+            >
+              <el-option
+                v-for="item in blackDialog.list"
+                :key="item.id"
+                :label="`${item.phone}：${item.name}`"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="被加入黑名单类型" prop="joinType">
+            <el-select
+              filterable
+              style="width:100%;"
+              v-model="blackForm.joinType"
+              clearable
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in joinTypeList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="处理类型" prop="dealType">
+            <el-select
+              filterable
+              style="width:100%;"
+              v-model="blackForm.dealType"
+              clearable
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in dealTypeList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="原因描述" prop="reasonDescribe">
+            <el-input
+              clearable
+              v-model="blackForm.reasonDescribe"
+              placeholder="请输入"
+              type="textarea"
+              :rows="2"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button size="mini" @click="blackDialogAction(false)">取 消</el-button>
+          <el-button size="mini" type="primary" @click="blackDialogAction(true)">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -232,31 +326,16 @@ export default {
   data() {
     // 验证手机号
     var checkPhone = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback();
-      } else if (!/^1[34578]\d{9}$/.test(value)) {
-        callback(new Error("手机号码有误，请重填"));
+      } else if (!/^1[34578]\d{1,9}$/.test(value)) {
+        callback(new Error("手机号码有误，3-11个数字！"));
       } else {
         callback();
       }
     };
     return {
-      // options: [
-      //   // 配置表头下拉
-      //   {
-      //     type: "jifen",
-      //     title: "累计积分"
-      //   },
-      //   {
-      //     type: "grow",
-      //     title: "累计成长值"
-      //   },
-      //   {
-      //     type: "time",
-      //     title: "最近登录时间"
-      //   }
-      // ],
-      // tableTitle: "", // 表格表头配置类型
+      env: null,
       loadEnd: false, // 控制当表格的数据全部获取完才显示表格
       pageName: "", // 当前页面名字
       sexList: [
@@ -273,6 +352,32 @@ export default {
           value: "UNKNOW"
         }
       ],
+      // 被加入黑名单类型
+      joinTypeList: [
+        {
+          label: "ip",
+          value: "IP"
+        },
+        {
+          label: "频次",
+          value: "TIMES"
+        },
+        {
+          label: "操作行为",
+          value: "OPERATE_ACTION"
+        }
+      ],
+      // 处理类型
+      dealTypeList: [
+        {
+          label: "提示语:您的账户异常,登录失败",
+          value: "SUSPEND"
+        },
+        {
+          label: "可登录:无法绑卡和提现",
+          value: "NOT_HANDLE"
+        }
+      ],
       dengjiList: [
         // 会员等级下拉
       ],
@@ -280,6 +385,7 @@ export default {
         // 会员标签使用
       ],
       searchForm: {
+        memberId: "", // 会员id
         levelId: "", // 等级id
         memberName: "", // 会员名称
         memberPhone: "", // 会员手机
@@ -320,10 +426,10 @@ export default {
       },
       // 控制本页面标签弹框
       dialogMark: {
+        list: [], // 准备添加黑名单的待选列表
         show: false,
         title: ""
       },
-
       // 控制本页面等级弹框
       dengjiDialog: {
         levelList: [], // 存储从服务器获取的等级列表数据
@@ -341,6 +447,20 @@ export default {
         pageSize: 100, // 分页相关
         pageNum: 1,
         ids: [] // 存储要进行变更的id
+      },
+      // 黑名单弹框
+      blackDialog: {
+        list: [], //准备添加黑名单的待选列表
+        blacked: [], // 已经被拉黑了的
+        show: false,
+        title: "添加黑名单"
+      },
+      // 添加黑名单使用的表单
+      blackForm: {
+        memberIds: [], // 账号列表
+        joinType: "", // 被加入黑名单类型
+        dealType: "", // 处理类型
+        reasonDescribe: "" // 被加入黑名单原因描述
       },
       // 控制本页面状态弹框
       statueDialog: {
@@ -360,7 +480,24 @@ export default {
         ids: [] // 存储要进行变更的id
       },
       rules: {
-        memberPhone: [{ validator: checkPhone, trigger: "blur" }]
+        memberPhone: [{ validator: checkPhone, trigger: "blur" }],
+        userNames: [
+          { required: true, message: "请选择名单", trigger: "change" }
+        ],
+        joinType: [
+          {
+            required: true,
+            message: "请选择被加入黑名单类型",
+            trigger: "change"
+          }
+        ],
+        dealType: [
+          { required: true, message: "请选择处理类型", trigger: "change" }
+        ],
+        reasonDescribe: [
+          { required: true, message: "请输入原因描述", trigger: "blur" },
+          { min: 1, max: 100, message: "最多输入100个字", trigger: "blur" }
+        ]
       }
     };
   },
@@ -369,6 +506,7 @@ export default {
     makeTag
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.loadEnd = false;
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.canDoWhat();
@@ -407,6 +545,12 @@ export default {
           break;
         case "moreDelete": // 批量修改、打标签、调整积分时选中的列表项
           this.moreAction = data.data;
+          break;
+        case "black": // 添加黑名单
+          this.blackDialog.list = [data.data];
+          this.blackDialog.show = true;
+          this.blackForm.memberIds = this.blackDialog.list.map(item => item.id);
+
           break;
       }
     },
@@ -467,21 +611,29 @@ export default {
     },
     // 查询标签，组件里也有实时搜索
     getMarkList() {
+      let obj = {
+        status: "ENABLE"
+      };
+      if (this.forMark.name) {
+        obj.name = this.forMark.name;
+      }
+
       return this.$api
-        .member_manager_getMarkLise({
+        .member_manager_getMarkList({
           vm: this,
-          data: {
-            name: this.forMark.name
-          }
+          data: obj
         })
         .then(res => {
           if (res) {
-            this.forMark.list = res.data.list.map(item => {
-              return {
-                labelId: item.id,
-                name: item.name,
-                bkColor: this.makeStyle()
-              };
+            this.forMark.list = [];
+            res.data.list.forEach(item => {
+              if (item.status === "ENABLE") {
+                this.forMark.list.push({
+                  labelId: item.id,
+                  name: item.name,
+                  bkColor: this.makeStyle()
+                });
+              }
             });
           }
         });
@@ -527,7 +679,7 @@ export default {
         if (promiseArr.length === 0) {
           this.$message.error("请选择标签！");
         } else {
-          Promise.all(promiseArr).then(res => {
+          Promise.all(promiseArr).then(() => {
             this.$message.success("操作成功！");
             this.markDialogClose();
           });
@@ -553,7 +705,9 @@ export default {
     },
     ////////////////////////////////////////////
     // 等级按钮点击
-    dengji(data) {},
+    dengji(data) {
+      console.log(data);
+    },
     // 批量修改等级
     moreDengJi() {
       // if (this.moreAction.length != 0) {
@@ -589,6 +743,18 @@ export default {
 
       this.marksDialog.show = false;
       this.marksDialog.ids = [];
+
+      this.blackDialog.show = false;
+      this.blackDialog.list = [];
+      this.blackDialog.blacked = [];
+
+      this.blackForm = {
+        memberIds: [],
+        joinType: "",
+        dealType: "",
+        reasonDescribe: ""
+      };
+      this.$refs.blackForm.resetFields();
     },
     // 等级框的取消、确定
     levelDialogAction(type) {
@@ -656,10 +822,10 @@ export default {
     //////////////////////////////////////////////////////////////////////////
     // 批量积分
     moreJiFen() {
-      if (this.moreAction.length != 0) {
-      } else {
-        this.$message.error("请选择要操作的列表项！");
-      }
+      // if (this.moreAction.length != 0) {
+      // } else {
+      //   this.$message.error("请选择要操作的列表项！");
+      // }
     },
     //////////////////////////////////////////////////////////////////////////
     // 批量标签
@@ -667,10 +833,10 @@ export default {
       if (this.moreAction.length != 0) {
         // 获取标签列表
         this.$api
-          .member_manager_getMarkLise({
+          .member_manager_getMarkList({
             vm: this,
             data: {
-              name: this.forMark.name
+              status: "ENABLE"
             }
           })
           .then(res => {
@@ -681,6 +847,40 @@ export default {
           });
       } else {
         this.$message.error("请选择要操作的列表项！");
+      }
+    },
+    // 批量添加黑名单
+    moreBlack() {
+      if (this.moreAction.length != 0) {
+        this.blackDialog.list = this.moreAction.filter(item => !item.black);
+        this.blackDialog.blacked = this.moreAction.filter(item => item.black);
+        this.blackDialog.show = true;
+        this.blackForm.memberIds = this.blackDialog.list.map(item => item.id);
+      } else {
+        this.$message.error("请选择要操作的列表项！");
+      }
+    },
+    // 执行添加黑名单
+    blackDialogAction(type) {
+      if (type) {
+        this.$refs.blackForm.validate(valid => {
+          if (valid) {
+            this.$api
+              .add_black({
+                vm: this,
+                data: this.blackForm
+              })
+              .then(res => {
+                if (res) {
+                  this.$message.success("添加成功！");
+                  this.seachClick(false);
+                  this.dengjiDialogClose();
+                }
+              });
+          }
+        });
+      } else {
+        this.dengjiDialogClose();
       }
     },
 
@@ -742,6 +942,7 @@ export default {
         });
       } else {
         this.searchForm = {
+          memberId: "", // 等级id
           levelId: "", // 等级id
           memberName: "", // 会员名称
           memberPhone: "", // 会员手机
@@ -767,7 +968,7 @@ export default {
     },
     // 用户权限判定，之后表格右侧会有不同的操作按钮
     canDoWhat() {
-      let quanxian = JSON.parse(localStorage.getItem("buttenpremissions"));
+      let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
 
       let member_manager_detail = quanxian.includes("member_manager_detail");
       let member_manager_add_label = quanxian.includes(
@@ -810,6 +1011,12 @@ export default {
       //   size: "small",
       //   emit: "jifen"
       // });
+      this.tableInputData.data.custom.push({
+        text: "拉黑",
+        type: "danger",
+        size: "small",
+        emit: "black"
+      });
 
       if (member_manager_upd_status) {
         this.tableInputData.data.quanxian.push("member_manager_upd_status");
@@ -846,11 +1053,23 @@ export default {
                   break;
               }
             }
+            if (item["black"]) {
+              obj.blacked = "是";
+              obj.show = ["xiangqing", "mark"];
+            } else {
+              obj.blacked = "否";
+              obj.show = ["xiangqing", "mark", "black"];
+            }
           });
           return obj;
         });
 
         this.tableInputData.data.title = [
+          {
+            title: "会员ID",
+            key: "id",
+            minWidth: "80"
+          },
           {
             title: "会员编号",
             key: "no",
@@ -878,8 +1097,18 @@ export default {
           },
           {
             title: "来源",
+            key: "source",
+            minWidth: "90"
+          },
+          {
+            title: "渠道",
             key: "appChannelCode",
             minWidth: "90"
+          },
+          {
+            title: "是否已拉黑",
+            key: "blacked",
+            minWidth: "80"
           },
           {
             title: "创建时间",
@@ -935,7 +1164,7 @@ export default {
     getSearchData() {
       // 获取标签数据 0 获取等级数据 1
       Promise.all([
-        this.$api.member_manager_getMarkLise({
+        this.$api.member_manager_getMarkList({
           vm: this,
           data: {}
         }),
@@ -972,5 +1201,23 @@ export default {
   width: 200px;
   display: flex !important;
   justify-content: space-between !important;
+}
+.hasBlack {
+  margin-bottom: 5px;
+}
+.hasBlack > p {
+  font-size: 14px;
+  font-weight: bold;
+  padding-bottom: 5px;
+}
+.hasBlack > div {
+  display: flex;
+}
+.hasBlack > div > span {
+  display: inline-block;
+  padding: 2px 5px;
+  margin: 0 5px 2px 0;
+  border-radius: 2px;
+  background: rgb(209, 208, 208);
 }
 </style>

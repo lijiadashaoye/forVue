@@ -1,7 +1,10 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3 style="margin-bottom:10px">{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <div class="adverAdd">
         <el-button
           type="primary"
@@ -16,7 +19,7 @@
             type="primary"
             size="mini"
             @click="getList"
-          >搜索</el-button> -->
+          >搜索</el-button>-->
         </div>
       </div>
     </div>
@@ -43,6 +46,7 @@ export default {
   },
   data() {
     return {
+      env: null,
       searchObj: {
         searchType: "",
         searchValue: ""
@@ -53,6 +57,8 @@ export default {
     };
   },
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
+
     // 将页码清1
     this.pageNumDefault("ruleList");
     // 获取按钮权限
@@ -74,7 +80,7 @@ export default {
         minWidth: "100"
       },
       {
-        title: "限制周期",
+        title: "限制周期(秒)",
         key: "cycle",
         minWidth: "80"
       },
@@ -106,7 +112,7 @@ export default {
     ...mapActions({
       getSmsRuleList: "smsRuleTemplate/getSmsRuleList",
       deleteSmsRule: "smsRuleTemplate/deleteSmsRule",
-      smsRuleDetail: "smsRuleTemplate/smsRuleDetail",
+      smsRuleDetail: "smsRuleTemplate/smsRuleDetail"
     }),
     ...mapMutations({
       pageNumDefault: "smsRuleTemplate/pageNumDefault",
@@ -118,7 +124,7 @@ export default {
       this.dialogType = "add";
       this.centerDialogVisible = true;
     },
-      // 获取短信权限列表
+    // 获取短信权限列表
     getList() {
       let obj = {
         pageNum: this.pageNum,
@@ -126,7 +132,7 @@ export default {
       };
       this.getSmsRuleList(obj);
     },
-    
+
     // table抛出事件
     tableEmit(obj) {
       switch (obj.type) {
@@ -172,21 +178,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.adverAdd {
-  width: 100%;
-  display: flex;
-  padding: 20px;
-  box-sizing: border-box;
-  justify-content: space-between;
-  align-items: center;
-  .el-input {
-    width: 200px;
-    margin-right: 20px;
-  }
-  .el-select {
-    width: 200px;
-    margin-right: 20px;
-  }
-}
-</style>

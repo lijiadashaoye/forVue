@@ -8,6 +8,7 @@
     "build:release": "vue-cli-service build --mode release",
     "build:demo": "vue-cli-service build --mode demo",
     "build:dev": "vue-cli-service build --mode dev",
+    "build:inner": "vue-cli-service build --mode inner",
     "build:prod": "vue-cli-service build --mode production",
     "lint": "vue-cli-service lint"
   },
@@ -19,16 +20,15 @@
     "js-cookie": "^2.2.0",
     "lowdb": "^1.0.0",
     "node-sass": "^4.12.0",
-    "quill": "^1.3.6",
     "sass-loader": "^7.1.0",
     "spark-md5": "^3.0.0",
     "v-charts": "^1.19.0",
     "vue": "^2.6.6",
     "vue-axios": "^2.1.4",
-    "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.1",
     "vue-video-player": "^5.0.2",
     "vuex": "^3.0.1",
+    "wangeditor": "^3.1.1",
     "zip-webpack-plugin": "^3.0.0"
   },
   "devDependencies": {

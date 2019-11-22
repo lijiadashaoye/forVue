@@ -23,12 +23,6 @@ $scrollSet: 10px; // 底部滚动条高度
     position: relative;
 }
 
-.el-table ::-webkit-scrollbar-thumb {
-    /*滚动条内滑块*/
-    border-radius: 5px !important;
-    background: rgb(112, 179, 243) !important;
-}
-
 .el-table ::-webkit-scrollbar-track-piece {
     /*滚动条滑轨*/
     border-radius: 5px !important;

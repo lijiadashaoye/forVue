@@ -1,6 +1,5 @@
 import {
-    getAdverdisList,
-    adverdis_Page_del
+    getAdverdisList
 } from '../../api/setting_use'
 const state = {
     advertisList: {
@@ -59,7 +58,7 @@ const mutations = {
     //权限认证
     userDo(state) {
         state.advertisList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('app_button_upd') > -1) {
             state.advertisList.data.custom.push({
                 text: "修改",
@@ -80,7 +79,9 @@ const mutations = {
 }
 
 const actions = {
-    getList({commit}) {
+    getList({
+        commit
+    }) {
         commit('getAdvertisListData')
     },
 }

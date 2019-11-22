@@ -1,7 +1,5 @@
 <template>
-
-  <el-card class="box-card">
-    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" label-position="left" class="demo-ruleForm">
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="160px" label-position="left" >
 
       <el-form-item label="选择App:" prop="appChannelVal">
         <el-radio-group v-model="ruleForm.appChannelVal" :disabled="upd">
@@ -38,8 +36,43 @@
           class='contentItem'
         ></el-input>
       </el-form-item>
-      <el-form-item label="服务协议/隐私政策:" prop="configContent">
-        <quill v-model="ruleForm.configContent" :url='"/admin/file/up/setting"' class='contentItem'></quill>
+
+      <el-form-item label="内容类型" prop="contentType">
+        <el-select filterable v-model="ruleForm.contentType" placeholder="请选择类型" :disabled="detailFlag" @change='contentTypeChange'>
+          <el-option
+            v-for="(item,ind) in contentTypeList"
+            :key="ind"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
+        </el-select>
+      </el-form-item>
+
+      <el-form-item v-if='ruleForm.configType !== "BICAI_DETAILS_BTN"' label="配置内容:" prop="configContent" :rules="[{ required: true, message: '请输入内容', trigger: 'blur' }]">
+        <editor-bar v-if='ruleForm.contentType != "TEXT"' v-model="ruleForm.configContent" :url="'admin/file/up/setting'" :isClear="isClear"></editor-bar>
+        <el-input
+          v-else
+          type="textarea"
+          :autosize="{ minRows: 4, maxRows: 5}"
+          placeholder="请输入配置内容"
+          v-model="ruleForm.configContent"
+          :disabled="detailFlag"
+          class='contentItem'
+        ></el-input>
+      </el-form-item>
+      <el-form-item v-else label="上传图片:" prop="configContent" :rules="[{ required: true, message: '请上传图片', trigger: 'blur' }]">
+        <el-upload
+          class="avatar-uploader"
+          action="customize"
+          :show-file-list="false"
+          :http-request="uploadButtonImg"
+          v-loading='imgLoading'
+          >
+          <img v-if="ruleForm.configContent" :src="$ImgBaseUrl +  ruleForm.configContent" class="avatar">
+          <div v-else>
+              <el-button>选择图片<br/><span style="font-size:12px;color:red">不能大于2M</span><br/><span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span></el-button>
+          </div>
+        </el-upload>
       </el-form-item>
       <el-form-item label="字体大小:" prop="fontSize">
         <el-input-number v-model="ruleForm.fontSize" controls-position="right" :min="14" :max="30"></el-input-number>
@@ -56,24 +89,35 @@
         <el-button @click="close">关闭</el-button>
       </el-form-item>
     </el-form>
-  </el-card>
 </template>
 
 <script>
 import { protocol_detail, getAppChannel } from "../../api/setting_use.js";
-import quill from '../quill';
+import { upLoadImg } from '../../api/setting_use.js';
+import EditorBar from '../wangEnduit'
 export default {
   name: "protocolAddUpt",
-  props: ["appChannel", "upd", "opts", "detailFlag"],
+  props: ["appChannel", "upd", "opts", "detailFlag", "dialogFormVisible"],
   components: {
-    // quillEditor
-    quill
+    EditorBar,
   },
   data() {
     return {
       flag: true,
+      imgLoading: false,
       id: "",
       options: [],
+      isClear: false,
+      contentTypeList:[
+        {
+          label:'纯文本',
+          value: 'TEXT'
+        },
+        {
+          label:'HTML页面',
+          value:'HTML'
+        }
+      ],
       ruleForm: {
         appChannelVal: "", //app渠道
         configType: "", //类型  服务/隐私
@@ -84,6 +128,7 @@ export default {
         configContent: "", //服务协议内容
         fontSize: 14,
         linkUrl: '',
+        contentType: 'HTML'
       },
       rules: {
         appChannelVal: [{ required: true, message: '请选择渠道', trigger: 'blur' },],
@@ -92,7 +137,7 @@ export default {
         highlight: [{ required: true, message: '请输入高亮字体说明', trigger: 'blur' },],
         highlightColor: [{ required: true, message: '请选择高亮字体颜色', trigger: 'blur' },],
         markedWords: [{ required: true, message: '请输入提示语', trigger: 'blur' },],
-        configContent: [{ required: true, message: '请输入服务协议内容', trigger: 'blur' },],
+        contentType:[{required: true, message: '请选择内容类型', trigger: 'blur'}]
       },
     };
   },
@@ -101,38 +146,63 @@ export default {
       if(res && res.success) {
         this.options = res.data
       }
-    })
-
-    //判断是修改或是添加 upd为true时是修改  detailFlag为true时是详情
-
+    });
+   
     //修改传入参数
-    if (this.opts) {
+    if (this.opts != {} && this.opts != null) {
       this.id = this.opts.id ? this.opts.id : null;
-      this.ruleForm.highlight = this.opts.highlight;
-      this.ruleForm.highlightColor = this.opts.highlightColor;
-      this.ruleForm.appChannelVal = this.opts.appChannelCode;
-      this.ruleForm.configType = this.opts.configType;
-      this.ruleForm.title = this.opts.title;
-      this.ruleForm.configContent = this.opts.configContent;
-      this.ruleForm.fontSize = this.opts.fontSize;
-      this.ruleForm.linkUrl = this.opts.linkUrl;
-      if(this.opts.id) {
-        protocol_detail(this.opts.id).then(res=> {
-          if(res && res.success) {
-            this.ruleForm.markedWords = res.data.markedWords
-          }
-        })
-      }
+      protocol_detail(this.opts.id).then(res=> {
+        if(res && res.success) {
+          this.ruleForm.markedWords = res.data.markedWords
+          this.ruleForm.highlight = res.data.highlight;
+          this.ruleForm.highlightColor = res.data.highlightColor;
+          this.ruleForm.appChannelVal = res.data.appChannelCode;
+          this.ruleForm.configType = res.data.configType;
+          this.ruleForm.title = res.data.title;
+          this.ruleForm.configContent = res.data.configContent;
+          this.ruleForm.fontSize = res.data.fontSize;
+          this.ruleForm.linkUrl = res.data.linkUrl;
+          this.ruleForm.markedWords = res.data.markedWords;
+          this.ruleForm.contentType = res.data.contentType;
+        }
+      })
     }
   },
   methods: {
+    //切换类型
+    contentTypeChange() {
+      this.ruleForm.configContent = '';
+    },
+    //上传图片
+    uploadButtonImg(params) {
+      const _file = params.file;
+      const isLt2M = _file.size / 1024 / 1024 < 2;
+      const idJPG = _file.type === "image/jpeg" ||  _file.type === "image/gif" ||  _file.type === "image/png" ||  _file.type === "image/jpg";
+      var formData = new FormData();
+      formData.append("file", _file);
+      if(!idJPG) {
+          this.$message.error("只能上传jpg/png/gif/jpeg格式的图片");
+          return false
+      }
+      if (!isLt2M) {
+          this.$message.error("请上传2M以下的图片");
+          return false;
+      }
+      this.imgLoading = true;
+      upLoadImg(formData).then(res=> {
+          this.imgLoading = false;
+          if(res && res.success){
+              this.ruleForm.configContent = res.data
+          }
+      })
+    },
     //点击保存
     save(formName) {
       this.$refs[formName].validate((valid) => {
           if (valid) {
             let appName;
             //取 appName
-            this.appChannel && this.appChannel.forEach((v, i) => {
+            this.appChannel && this.appChannel.forEach(v => {
               if (v.label == this.ruleForm.appChannelVal) {
                 appName = v.value;
               }
@@ -147,9 +217,10 @@ export default {
               highlight: this.ruleForm.highlight,
               highlightColor: this.ruleForm.highlightColor,
               markedWords: this.ruleForm.markedWords,
-              configContent: this.ruleForm.configContent,
+              configContent:this.ruleForm.configContent,
               fontSize: this.ruleForm.fontSize,
-              linkUrl: this.ruleForm.linkUrl
+              linkUrl: this.ruleForm.linkUrl,
+              contentType: this.ruleForm.contentType
             };
             this.$emit("req", obj);
           } else {
@@ -171,45 +242,26 @@ export default {
   },
   watch: {
     //监听传入的参数变化   data变化
-    "opts.id"() {
-      this.id = this.opts.id;
-      this.ruleForm.configContent = this.opts.configContent;
-      if(this.opts.id) {
+    "dialogFormVisible"() {
+      if(this.dialogFormVisible && this.opts != null && this.opts != {}) {
+        this.id = this.opts.id;
         protocol_detail(this.opts.id).then(res=> {
           if(res && res.success) {
             this.ruleForm.markedWords = res.data.markedWords
+            this.ruleForm.highlight = res.data.highlight;
+            this.ruleForm.highlightColor = res.data.highlightColor;
+            this.ruleForm.appChannelVal = res.data.appChannelCode;
+            this.ruleForm.configType = res.data.configType;
+            this.ruleForm.title = res.data.title;
+            this.ruleForm.configContent = res.data.configContent;
+            this.ruleForm.fontSize = res.data.fontSize;
+            this.ruleForm.linkUrl = res.data.linkUrl;
+            this.ruleForm.markedWords = res.data.markedWords;
+            this.ruleForm.contentType = res.data.contentType;
           }
         })
       }
     },
-    "opts.markedWords"() {
-      this.ruleForm.markedWords = this.opts.markedWords;
-    },
-    "opts.configContent"() {
-      this.ruleForm.configContent = this.opts.configContent;
-    },
-    "opts.highlight"() {
-      this.ruleForm.highlight = this.opts.highlight;
-    },
-    "opts.highlightColor"() {
-      this.ruleForm.highlightColor = this.opts.highlightColor;
-    },
-    "opts.appChannelCode"() {
-      this.ruleForm.appChannelVal = this.opts.appChannelCode;
-    },
-    "opts.configType"() {
-      this.ruleForm.configType = this.opts.configType;
-    },
-    "opts.title"() {
-      this.ruleForm.title = this.opts.title;
-    },
-    "opts.fontSize"() {
-      this.ruleForm.fontSize = this.opts.fontSize;
-    },
-    "opts.linkUrl"() {
-      this.ruleForm.linkUrl = this.opts.linkUrl;
-    },
-
   }
 };
 </script>
@@ -218,6 +270,7 @@ export default {
 .box-card{
   .contentItem{
     width:70%!important;
+    
   }
   .el-input{
     width:220px!important;
@@ -233,9 +286,6 @@ export default {
   }
   .item-input {
     width: 400px;
-  }
-  .input-quill {
-    width: 600px;
   }
 }
 .card-footer {

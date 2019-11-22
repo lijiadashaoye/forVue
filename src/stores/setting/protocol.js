@@ -1,7 +1,10 @@
-import { protocol_list, getAppChannel, protocol_delete } from '../../api/setting_use'
+import {
+    protocol_list,
+    getAppChannel
+} from '../../api/setting_use'
 
 const state = {
-    protocolList : {
+    protocolList: {
         noIndex: true,
         checkBox: false, // 判断需要不需要添加选择框
         pageSize: 10,
@@ -15,30 +18,30 @@ const state = {
             custom: []
         }
     },
-    appChannel:[]
+    appChannel: []
 }
 
 const mutations = {
     //获取appChannelName
-    getAppChannel(){
-        getAppChannel('channel_type').then(res=> {
-            if(res && res.success) {
+    getAppChannel() {
+        getAppChannel('channel_type').then(res => {
+            if (res && res.success) {
                 state.appChannel = res.data
             }
         })
     },
     //获取列表数据
-    getProtocolListData(state,data){
+    getProtocolListData(state, data) {
         protocol_list(data).then(res => {
             state.protocolList.data.list = res.data.list;
             state.protocolList.total = res.data.total;
         })
     },
-     // 用户权限判定，之后表格右侧会有不同的操作按钮
+    // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.protocolList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
-        if(jurisdiction.indexOf('protocol_private_detail') > -1){
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
+        if (jurisdiction.indexOf('protocol_private_detail') > -1) {
             state.protocolList.data.custom.push({
                 text: "详情",
                 type: "danger",
@@ -46,7 +49,7 @@ const mutations = {
                 emit: "detail"
             });
         }
-        if(jurisdiction.indexOf('protocol_private_upd') > -1){
+        if (jurisdiction.indexOf('protocol_private_upd') > -1) {
             state.protocolList.data.quanxian.push('ok')
             state.protocolList.data.custom.push({
                 text: "修改",
@@ -55,7 +58,7 @@ const mutations = {
                 emit: "edit"
             });
         }
-        if(jurisdiction.indexOf('protocol_private_del') > -1){
+        if (jurisdiction.indexOf('protocol_private_del') > -1) {
             state.protocolList.data.custom.push({
                 text: "删除",
                 type: "danger",
@@ -66,8 +69,8 @@ const mutations = {
     },
 }
 
-export  default {
-    namespaced:true,
+export default {
+    namespaced: true,
     state,
     mutations
 }

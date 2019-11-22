@@ -1,94 +1,88 @@
 <template>
-  <div>
-    <el-dialog
-      :close-on-click-modal="true"
-      :title="title"
-      :visible.sync="centerType"
-      width="50%"
-      @close="cancel"
-      center
-    >
-      <el-card class="box-card">
-        <el-form
-          :model="ruleForm"
-          :rules="rules"
-          ref="ruleForm"
-          label-width="140px"
-          class="demo-ruleForm"
-          width="300px"
-        >
-          <!-- 详情显示编辑按钮 -->
-          <el-button
-            v-if="dialogType=='detail' && $store.state.smsRuleTemplate.templateList.data.quanxian.indexOf('sms_template_upd')>-1"
-            @click="infoChange"
-            style="float:right;position:relative;z-index:2"
-            type="primary"
-            size="mini"
-          >修改</el-button>
-          <!-- 添加子模版和详情需要显示 -->
-          <template v-if="dialogType=='detail'">
-            <el-form-item prop="code" label="模版编码:">{{templateDetailInfo.code}}</el-form-item>
-            <el-form-item prop="channelId" label="渠道类型:">{{channelIdName}}</el-form-item>
-            <el-form-item prop="name" label="模版名称:">{{templateDetailInfo.name}}</el-form-item>
-            <el-form-item prop="type" label="模版类型:">{{templateDetailInfo.type}}</el-form-item>
-            <el-form-item prop="content" label="模版内容:">{{templateDetailInfo.content}}</el-form-item>
-            <el-form-item prop="rules" label="规则选项:" v-if="templateDetailInfo.rules">
-              <span
-                style="padding-right:10px;"
-                v-for="(item,index) of templateDetailInfo.rules"
-                :key="index"
-              >{{item.code}}</span>
-            </el-form-item>
-          </template>
+  <el-dialog
+    :close-on-click-modal="true"
+    :title="title"
+    :visible.sync="centerType"
+    width="600px"
+    @close="cancel"
+    center
+  >
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" width="300px">
+      <!-- 详情显示编辑按钮 -->
+      <el-button
+        v-if="dialogType=='detail' && $store.state.smsRuleTemplate.templateList.data.quanxian.indexOf('sms_template_upd')>-1"
+        @click="infoChange"
+        style="float:right;position:relative;z-index:2"
+        type="primary"
+        size="mini"
+      >修改</el-button>
+      <!-- 添加子模版和详情需要显示 -->
+      <template v-if="dialogType=='detail'">
+        <el-form-item prop="code" label="模版编码:">{{templateDetailInfo.code}}</el-form-item>
+        <el-form-item prop="uuid" label="模版Id:">{{templateDetailInfo.uuid}}</el-form-item>
+        <el-form-item prop="channelId" label="渠道类型:">{{channelIdName}}</el-form-item>
+        <el-form-item prop="name" label="模版名称:">{{templateDetailInfo.name}}</el-form-item>
+        <el-form-item prop="type" label="模版类型:">{{templateDetailInfo.type}}</el-form-item>
+        <el-form-item prop="content" label="模版内容:">{{templateDetailInfo.content}}</el-form-item>
+        <el-form-item prop="rules" label="规则选项:" v-if="templateDetailInfo.rules">
+          <span
+            style="padding-right:10px;"
+            v-for="(item,index) of templateDetailInfo.rules"
+            :key="index"
+          >{{item.code}}</span>
+        </el-form-item>
+      </template>
 
-          <!-- 详情页面不显示表单操作 -->
-          <template v-if="dialogType!='detail'">
-            <el-form-item label="模版编码:" prop="code">
-              <el-input placeholder="请输入模版编码" v-model="ruleForm.code" type="text" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="渠道类型" prop="channelId">
-              <el-select filterable v-model="ruleForm.channelId" placeholder="请选择">
-                <el-option
-                  v-for="(item,index) in channelIdArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="模版名称:" prop="name">
-              <el-input placeholder="请输入模版名称" v-model="ruleForm.name" type="text" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="模版类型:" prop="type">
-              <el-input placeholder="请输入模版类型" v-model="ruleForm.type" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="模版内容:" prop="content">
-              <el-input
-                placeholder="请输入模版内容"
-                v-model="ruleForm.content"
-                type="textarea"
-                rowspan="2"
-                clearable
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="规则选项:" prop="rules">
-              <el-checkbox-group v-model="ruleForm.rules">
-                <el-checkbox
-                  v-for="(rule,index) of rulesArr"
-                  :label="rule.id"
-                  :key="index"
-                >{{rule.code}}</el-checkbox>
-              </el-checkbox-group>
-            </el-form-item>
-          </template>
-        </el-form>
-        <div v-if="dialogType!='detail'" class="saveButton">
-          <el-button type="primary" @click="save('ruleForm')">保存</el-button>
-          <el-button @click="cancel()">取消</el-button>
-        </div>
-      </el-card>
-    </el-dialog>
-  </div>
+      <!-- 详情页面不显示表单操作 -->
+      <template v-if="dialogType!='detail'">
+        <el-form-item label="模版编码:" prop="code">
+          <el-input placeholder="请输入模版编码" v-model="ruleForm.code" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="模版Id:" prop="uuid">
+          <el-input placeholder="请输入模版Id" v-model="ruleForm.uuid" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="渠道类型" prop="channelId">
+          <el-select filterable v-model="ruleForm.channelId" placeholder="请选择" style="width:100%;">
+            <el-option
+              v-for="(item,index) in channelIdArr"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="模版名称:" prop="name">
+          <el-input placeholder="请输入模版名称" v-model="ruleForm.name" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="模版类型:" prop="type">
+          <el-input placeholder="请输入模版类型" v-model="ruleForm.type" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="模版内容:" prop="content">
+          <el-input
+            placeholder="请输入模版内容"
+            v-model="ruleForm.content"
+            type="textarea"
+            rowspan="2"
+            clearable
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="规则选项:" prop="rules">
+          <el-checkbox-group v-model="ruleForm.rules">
+            <el-checkbox
+              v-for="(rule,index) of rulesArr"
+              :label="rule.id"
+              :key="index"
+            >{{rule.code}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </template>
+    </el-form>
+
+    <div class="bottomBtn" v-if="dialogType!='detail'">
+      <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+      <el-button @click="cancel()">取消</el-button>
+    </div>
+  </el-dialog>
 </template>
 <script>
 import { mapActions, mapState } from "vuex";
@@ -143,7 +137,7 @@ export default {
       templateDetailInfo: ({ smsRuleTemplate }) =>
         smsRuleTemplate.templateDetailInfo, //单条数据
       rulesArr: ({ smsRuleTemplate }) => smsRuleTemplate.ruleList.data.list,
-      channelIdArr:({ smsRuleTemplate }) => smsRuleTemplate.channelIdArr
+      channelIdArr: ({ smsRuleTemplate }) => smsRuleTemplate.channelIdArr
     })
   },
   data() {
@@ -153,6 +147,7 @@ export default {
       title: "新增权限",
       ruleForm: {
         channelId: "", //渠道类型
+        uuid: "", //模版id
         code: "", //模版编码
         name: "", //模版名称
         type: "", //模版类型
@@ -161,6 +156,7 @@ export default {
       }, //表单数据
       rules: {
         channelId: [{ required: true, message: "渠道类型不能为空" }],
+        uuid: [{ required: true, message: "模版Id不能为空" }],
         code: [{ required: true, message: "模版编码不能为空" }],
         name: [{ required: true, message: "模版名称不能为空" }],
         type: [{ required: true, message: "模版类型不能为空" }],
@@ -225,15 +221,3 @@ export default {
   }
 };
 </script>
-<style scoped lang="scss">
-.saveButton {
-  display: flex;
-  justify-content: center;
-}
-.el-select {
-  width: 100%;
-}
-// .el-checkbox {
-//   display: block;
-// }
-</style>

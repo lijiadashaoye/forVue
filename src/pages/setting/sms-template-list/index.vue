@@ -1,23 +1,32 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3 style="margin-bottom:10px">{{pageName}}</h3>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
       <div class="adverAdd">
+        <el-select
+          filterable
+          v-model="searchObj.searchType"
+          placeholder="请选择搜索类型"
+          style="width:200px;" size="mini"
+        >
+          <el-option
+            v-for="(item,index) in searchTypeArr"
+            :key="index"
+            :label="item.name"
+            :value="item.value"
+          ></el-option>
+        </el-select>&nbsp;
+        <el-input style="width:240px;"  size="mini" placeholder="请输入搜索内容" v-model="searchObj.searchValue" type="text" clearable></el-input>
+        <el-button type="warinig" size="mini" @click="searchChange">查询</el-button>
         <el-button
           type="primary"
           @click="addSmsRule"
           size="mini"
           v-if="$store.state.smsRuleTemplate.templateList.data.quanxian.indexOf('sms_template_add')>-1"
         >新建模版</el-button>
-        <div>
-          <!-- <el-input placeholder="请输入搜索内容" v-model="searchObj.searchValue" type="text" clearable></el-input>
-          <el-button
-            v-if="$store.state.relation.relationList.data.quanxian.indexOf('parent_tree_list')>-1"
-            type="primary"
-            size="mini"
-            @click="getList"
-          >搜索</el-button>-->
-        </div>
       </div>
     </div>
     <div id="forTable">
@@ -44,15 +53,27 @@ export default {
   data() {
     return {
       searchObj: {
-        searchType: "",
+        searchType: "name",
         searchValue: ""
       }, //搜索对象
+      searchTypeArr: [
+        {
+          name: "模板名称",
+          value: "name"
+        },
+        {
+          name: "业务类型",
+          value: "type"
+        }
+      ], //搜索条件列表
       dialogType: "", //dialog显示状态/增加/详情/修改
       pageName: "", //二级title
       centerDialogVisible: false //model蒙版
     };
   },
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
+
     // 将页码清1
     this.pageNumDefault("templateList");
     // 获取按钮权限
@@ -88,11 +109,6 @@ export default {
         key: "content",
         minWidth: "180"
       }
-      // {
-      //   title: "规则",
-      //   key: "rules",
-      //   minWidth: "120"
-      // }
     ];
     // 设置table显示title
     this.setTitleList({ type: "templateList", arr: arr });
@@ -108,7 +124,14 @@ export default {
     ...mapState({
       pageNum: ({ smsRuleTemplate }) => smsRuleTemplate.templateList.pageNum,
       pageSize: ({ smsRuleTemplate }) => smsRuleTemplate.templateList.pageSize
-    })
+    }),
+    smsForm: function() {
+      return {
+        pageNum: this.pageNum,
+        pageSize: this.pageSize,
+        title: null
+      };
+    }
   },
   methods: {
     ...mapActions({
@@ -122,6 +145,16 @@ export default {
       templateUserDo: "smsRuleTemplate/templateUserDo",
       setTitleList: "smsRuleTemplate/setTitleList"
     }),
+    // 查询信息
+    searchChange() {
+      // 恢复数据操作
+      this.pageNumDefault("templateList");
+      // 获取推送信息列表
+      if (this.searchObj.searchType) {
+        this.smsForm[this.searchObj.searchType] = this.searchObj.searchValue;
+      }
+      this.getList();
+    },
     // 新建短信权限
     addSmsRule() {
       this.dialogType = "add";
@@ -129,11 +162,7 @@ export default {
     },
     // 获取短信权限列表
     getList() {
-      let obj = {
-        pageNum: this.pageNum,
-        pageSize: this.pageSize
-      };
-      this.getTemplateRuleList(obj);
+      this.getTemplateRuleList(this.smsForm);
     },
 
     // table抛出事件
@@ -183,21 +212,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.adverAdd {
-  width: 100%;
-  display: flex;
-  padding: 20px;
-  box-sizing: border-box;
-  justify-content: space-between;
-  align-items: center;
-  .el-input {
-    width: 200px;
-    margin-right: 20px;
-  }
-  .el-select {
-    width: 200px;
-    margin-right: 20px;
-  }
-}
-</style>

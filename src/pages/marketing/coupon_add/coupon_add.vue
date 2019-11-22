@@ -1,12 +1,12 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
-      <h3>{{pageName}}</h3>
+    <div id="forHeader">
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
     </div>
-    <div
-      id='forTable'
-      style="padding-bottom:0;"
-    >
+    <div id="forTable" style="padding-bottom:0;">
       <router-view v-if="again"></router-view>
     </div>
   </div>
@@ -16,6 +16,7 @@ export default {
   props: {},
   data() {
     return {
+      env: null,
       pageName: "", // 当前页面名字
       again: true
     };
@@ -30,6 +31,7 @@ export default {
     this.$store.commit("set_asideState", { data: true });
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.setPage();
   },
   watch: {
@@ -46,7 +48,6 @@ export default {
           });
         });
       }
-      let str = this.$route.name.substr(-1);
       this.pageName = kk;
     }
   },
@@ -65,7 +66,6 @@ export default {
         }
         resolve();
       }).then(() => {
-        let str = this.$route.name.substr(-1);
         this.pageName = sessionStorage.getItem("page");
       });
     }

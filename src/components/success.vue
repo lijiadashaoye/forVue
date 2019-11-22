@@ -5,14 +5,8 @@
       <p class="okText">完成！</p>
     </div>
     <div class="buttons">
-      <el-button
-        @click="action('back')"
-        type="primary"
-      >返回列表</el-button>
-      <el-button
-        @click="action('another')"
-        type="primary"
-      >新 建</el-button>
+      <el-button @click="action('back')" type="primary">返回列表</el-button>
+      <el-button @click="action('another')" type="warning">新 建</el-button>
     </div>
   </div>
 </template>
@@ -30,6 +24,3 @@ export default {
   }
 };
 </script>
-<style>
-@import url("./allCss.scss");
-</style>

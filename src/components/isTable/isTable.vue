@@ -52,27 +52,55 @@
       >
         <template slot-scope="scope">
           <div v-if="!item.imgArr">
+            <!-- 
+            一张图片的，只需在表格内如此设置：看badgewall_info.vue组件
+              {
+            title: "LOGO",
+            key: "logo",
+            minWidth: "80",
+            isImg: true
+            }-->
             <img
               style="width:40px;"
               v-if="item.isImg"
-              :src="ImgBaseUrl + scope.row[item.key]"
+              :src="scope.row[item.key] ? ImgBaseUrl + scope.row[item.key] : ''"
             />
-            <span
-              :style="{color:item.color?item.color:''}"
-              v-if="!item.isImg"
-            >{{ scope.row[item.key] }}</span>
+            <p v-if="!item.isImg">
+              <span
+                v-if="!('fuWenBen' in item)"
+                :style="{color:item.color?item.color:''}"
+              >{{ scope.row[item.key] }}</span>
+              <span v-if="'fuWenBen' in item" v-html="scope.row[item.fuWenBen]"></span>
+            </p>
           </div>
           <!--活动管理配置管理设置素材 -->
           <ul v-if="item.imgArr" class="imgArr">
-            <li v-for="tar of scope.row[item.key]" :key="tar.img">
-              <img style="width:30px;height:30px;" :src="ImgBaseUrl + tar.img" />
-              <p>{{ tar.text }}</p>
+            <li
+              v-for="tar of scope.row[item.key]"
+              :key="tar.img"
+              title="点击预览内容"
+              @click="show_media(tar)"
+            >
+              <div class="forType">
+                <img
+                  style="width:40px;height:40px;"
+                  :src="ImgBaseUrl + tar.img"
+                  v-if="tar.type!='mp4'"
+                />
+                <video width="40" height="40" v-if="tar.type=='mp4'">
+                  <source :src="ImgBaseUrl +tar.img" type="video/mp4" />
+                </video>
+                <div class="type_text"> {{`( ${tar.type} )`}}</div>
+              </div>
             </li>
           </ul>
-          <div v-if='item.isColor' :style="{'background':scope.row[item.key],'width':'100px','padding':'4px 5px'}"></div>
+          <div
+            v-if="item.isColor"
+            :style="{'background':scope.row[item.key],'width':'100px','padding':'4px 5px'}"
+          ></div>
         </template>
       </el-table-column>
-
+      <!-- 带颜色文字 -->
       <el-table-column
         v-if="inputData.actions['setColor']"
         :label="inputData.actions['setColor'].label"
@@ -84,7 +112,7 @@
           >{{scope.row[inputData.actions['setColor']['from']]}}</p>
         </template>
       </el-table-column>
-
+      <!-- 滑块 -->
       <el-table-column
         v-if="inputData.actions['switch']"
         :label="inputData.actions['switch'].label"
@@ -136,6 +164,17 @@
         background
       ></el-pagination>
     </div>
+    <el-dialog
+      :title="yulan_dailog.title"
+      :visible.sync="yulan_dailog.show"
+      width="400px"
+      :before-close="handleClose"
+    >
+      <div v-html="yulan_dailog.data"></div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleClose">关 闭</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -149,13 +188,41 @@ export default {
       caozuoWith: 0, // 操作那一栏的宽度
       loadEnd: false,
       isJiaZai: null,
-      ImgBaseUrl: '',
+      ImgBaseUrl: "",
+      yulan_dailog: {
+        // 图片，视频预览窗口
+        show: false,
+        title: "",
+        data: null
+      }
     };
   },
   created() {
     this.ImgBaseUrl = this.$ImgBaseUrl;
   },
   methods: {
+    // 图片，视频预览窗口
+    show_media(item) {
+      this.yulan_dailog.title = item.text;
+      if (item.type != "mp4") {
+        this.yulan_dailog.data = `<img style="width:100%" src="${this
+          .ImgBaseUrl + item.img}"/>`;
+      } else {
+        this.yulan_dailog.data = `<video width="320" height="240" controls muted>
+                                   <source src="${this.ImgBaseUrl +
+                                     item.img}" type="video/mp4" />
+                                  </video>`;
+      }
+      this.yulan_dailog.show = true;
+    },
+    // 关闭图片，视频预览窗口
+    handleClose() {
+      this.yulan_dailog = {
+        show: false,
+        title: "",
+        data: null
+      };
+    },
     // 用来判断按钮是否可用
     seeWhichButton(scope, item) {
       let arr = this.inputData.data.custom.map(tar => tar.emit);
@@ -266,9 +333,15 @@ export default {
 }
 .imgArr > li {
   margin-right: 3px;
+  position: relative;
+  min-width: 80px;
+  min-height: 60px;
+  cursor: pointer;
 }
-.imgArr li img {
-  vertical-align: middle;
-  margin-right: 2px;
+
+.type_text {
+  font-size: 12px;
+  line-height: 10px;
+  zoom: 0.5;
 }
 </style>

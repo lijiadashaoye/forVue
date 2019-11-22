@@ -1,32 +1,31 @@
 <template>
   <div class="componentWaper">
     <div id="forHeader">
-      <h3 style="margin-bottom:10px">{{pageName}}</h3>
-      <div class="explosiveAdd">
-        <div>
-          <router-link
-            v-if="$store.state.message.newsList.data.quanxian.indexOf('push_message_add')>-1"
-            :to="{path:'/setting/push/message/list/new-news'}"
-          >
-            <el-button type="primary" size="mini">新建消息</el-button>
-          </router-link>
-          <el-button
-            style="margin-left:10px;"
-            v-if="$store.state.message.newsList.data.quanxian.indexOf('push_message_del')>-1"
-            type="danger"
-            size="mini"
-            @click="deleteIndex()"
-          >删除选中</el-button>
-        </div>
-        <div>
-          <el-input
-            placeholder="请输入消息关键字"
-            v-model="searchValue"
-            prefix-icon="el-icon-search"
-            size="mini"
-          ></el-input>
-          <el-button type="primary" size="mini" @click="searchChange" style="marginLeft:10px">查询</el-button>
-        </div>
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
+      <div class="adverAdd">
+        <el-input style="width:200px;"
+          placeholder="请输入查询的标题关键字"
+          v-model="searchValue"
+          prefix-icon="el-icon-search"
+          size="mini"
+        ></el-input>
+        <el-button type="warning" size="mini" @click="searchChange" style="marginLeft:10px">查询</el-button>&nbsp;
+        <router-link
+          v-if="$store.state.message.newsList.data.quanxian.indexOf('push_message_add')>-1"
+          :to="{path:'/home/setting/push/message/list/new-news'}"
+        >
+          <el-button type="primary" size="mini">新建消息</el-button>
+        </router-link>
+        <el-button
+          style="margin-left:10px;"
+          v-if="$store.state.message.newsList.data.quanxian.indexOf('push_message_del')>-1"
+          type="danger"
+          size="mini"
+          @click="deleteIndex()"
+        >删除选中</el-button>
       </div>
     </div>
     <div id="forTable">
@@ -38,23 +37,27 @@
 <script>
 import { mapActions, mapMutations, mapState } from "vuex";
 import isTable from "../../../components/isTable/isTable";
+// import powerTableMixin from "@/mixin/powerTable.js";
 export default {
   name: "message-management",
   components: {
     isTable
   },
+
   data() {
     return {
+      env: null,
+
       pageName: "", //二级title
       searchValue: "", //查询的消息
-      deleteArr: [], //多个删除的数组
+      deleteArr: [] //多个删除的数组
     };
   },
   computed: {
     ...mapState({
       pageNum: ({ message }) => message.newsList.pageNum
     }),
-    productForm: function(){
+    productForm: function() {
       return {
         pageNum: this.pageNum,
         pageSize: this.$store.state.message.newsList.pageSize,
@@ -63,6 +66,8 @@ export default {
     }
   },
   created() {
+    this.env = sessionStorage.getItem("env") === "development";
+
     // 将列表pagenum还原为1
     this.pageNumDefault("newsList");
     // 获取二级title
@@ -98,11 +103,6 @@ export default {
         title: "创建时间",
         key: "gmtCreated",
         minWidth: "160"
-      },
-      {
-        title: "最后操作者",
-        key: "creatorName",
-        minWidth: "120"
       },
       {
         title: "发送状态",
@@ -147,7 +147,7 @@ export default {
       switch (obj.type) {
         case "detail": //详情
           this.$router.push({
-            path: "/setting/push/message/list/message-details",
+            path: "/home/setting/push/message/list/message-details",
             query: { id: obj.data.id }
           });
           break;
@@ -165,8 +165,8 @@ export default {
     },
     // 删除信息
     deleteIndex(id) {
-      if(id==undefined&&this.deleteArr.length==0){
-         this.$message({
+      if (id == undefined && this.deleteArr.length == 0) {
+        this.$message({
           type: "error",
           message: "请选择删除项!"
         });
@@ -217,17 +217,3 @@ export default {
   }
 };
 </script>
-<style lang="scss" scoped>
-.explosiveAdd {
-  width: 100%;
-  height: 68px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  box-sizing: border-box;
-  .el-input {
-    width: 200px;
-  }
-}
-</style>

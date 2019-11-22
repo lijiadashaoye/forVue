@@ -41,7 +41,7 @@ const mutations = {
      // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.yuebaoRateList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         // if(jurisdiction.indexOf('yuebao_rate_detail') > -1){
         //     state.yuebaoRateList.data.custom.push({
         //         text: "详情",

@@ -1,85 +1,70 @@
 <template>
-  <div>
-    <el-dialog
-      :close-on-click-modal="true"
-      :title="title"
-      :visible.sync="centerType"
-      width="50%"
-      @close="cancel"
-      center
-    >
-      <el-card class="box-card">
-        <el-form
-          :model="ruleForm"
-          :rules="rules"
-          ref="ruleForm"
-          label-width="140px"
-          class="demo-ruleForm"
-          width="300px"
-        >
-          <!-- 详情显示编辑按钮 -->
-          <el-button
-            v-if="dialogType=='detail' && $store.state.smsRuleTemplate.ruleList.data.quanxian.indexOf('sms_rule_upd')>-1"
-            @click="infoChange"
-            style="float:right;position:relative;z-index:2"
-            type="primary"
-            size="mini"
-          >修改</el-button>
-          <!-- 添加子关联和详情需要显示 -->
-          <template v-if="dialogType=='detail'">
-            <el-form-item label="规则编码:" prop="code">{{ruleDetailInfo.code}}</el-form-item>
-            <el-form-item label="类型:" prop="type">{{ruleDetailInfo.type=="HF"?"高频":"非高频"}}</el-form-item>
-            <el-form-item label="限制周期:" prop="cycle">{{ruleDetailInfo.cycle}}</el-form-item>
-            <el-form-item label="限制次数:" prop="limit">{{ruleDetailInfo.limit}}</el-form-item>
-            <el-form-item
-              label="备注:"
-              prop="memo"
-              v-if="ruleDetailInfo.memo"
-            >{{ruleDetailInfo.memo}}</el-form-item>
-          </template>
+  <el-dialog
+    :close-on-click-modal="true"
+    :title="title"
+    :visible.sync="centerType"
+    width="500px"
+    @close="cancel"
+    center
+  >
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="110px">
+      <!-- 详情显示编辑按钮 -->
+      <el-button
+        v-if="dialogType=='detail' && $store.state.smsRuleTemplate.ruleList.data.quanxian.indexOf('sms_rule_upd')>-1"
+        @click="infoChange"
+        style="float:right;position:relative;z-index:2"
+        type="primary"
+        size="mini"
+      >修改</el-button>
+      <!-- 添加子关联和详情需要显示 -->
+      <template v-if="dialogType=='detail'">
+        <el-form-item label="规则编码:" prop="code">{{ruleDetailInfo.code}}</el-form-item>
+        <el-form-item label="类型:" prop="type">{{ruleDetailInfo.type=="HF"?"高频":"非高频"}}</el-form-item>
+        <el-form-item label="限制周期:" prop="cycle">{{ruleDetailInfo.cycle}}秒</el-form-item>
+        <el-form-item label="限制次数:" prop="limit">{{ruleDetailInfo.limit}}</el-form-item>
+        <el-form-item label="备注:" prop="memo" v-if="ruleDetailInfo.memo">{{ruleDetailInfo.memo}}</el-form-item>
+      </template>
 
-          <!-- 详情页面不显示表单操作 -->
-          <template v-if="dialogType!='detail'">
-            <el-form-item label="规则编码:" prop="code">
-              <el-input placeholder="请输入规则编码" v-model="ruleForm.code" type="text" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="类型" prop="type">
-              <el-select filterable v-model="ruleForm.type" placeholder="请选择">
-                <el-option
-                  v-for="(item,index) in typeArr"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="限制周期:" prop="cycle">
-              <el-input placeholder="请输入周期秒数" v-model="ruleForm.cycle" type="text" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="限制次数:" prop="limit">
-              <el-input placeholder="请输入限制次数" v-model="ruleForm.limit" type="number" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="备注:" prop="memo">
-              <el-input
-                placeholder="请输入备注"
-                v-model="ruleForm.memo"
-                type="textarea"
-                rowspan="2"
-                clearable
-              ></el-input>
-            </el-form-item>
-          </template>
-        </el-form>
-        <div v-if="dialogType!='detail'" class="saveButton">
-          <el-button type="primary" @click="save('ruleForm')">保存</el-button>
-          <el-button @click="cancel()">取消</el-button>
-        </div>
-      </el-card>
-    </el-dialog>
-  </div>
+      <!-- 详情页面不显示表单操作 -->
+      <template v-if="dialogType!='detail'">
+        <el-form-item label="规则编码:" prop="code">
+          <el-input placeholder="请输入规则编码" v-model="ruleForm.code" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-select filterable v-model="ruleForm.type" placeholder="请选择">
+            <el-option
+              v-for="(item,index) in typeArr"
+              :key="index"
+              :label="item.name"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="限制周期(秒):" prop="cycle">
+          <el-input placeholder="请输入周期秒数" v-model="ruleForm.cycle" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="限制次数:" prop="limit">
+          <el-input placeholder="请输入限制次数" v-model="ruleForm.limit" type="number" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="备注:" prop="memo">
+          <el-input
+            placeholder="请输入备注"
+            v-model="ruleForm.memo"
+            type="textarea"
+            rowspan="2"
+            clearable
+          ></el-input>
+        </el-form-item>
+      </template>
+    </el-form>
+    <div v-if="dialogType!='detail'" class="saveButton">
+      <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+      <el-button @click="cancel()">取消</el-button>
+    </div>
+  </el-dialog>
 </template>
 <script>
-import { mapActions, mapState} from "vuex";
+import { mapActions, mapState } from "vuex";
 import { intNum } from "@/sets/regex.js";
 export default {
   props: {
@@ -124,7 +109,7 @@ export default {
   },
   data() {
     const validateIntNum = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback(new Error("内容不能为空"));
       } else if (!intNum(value)) {
         callback("请输入正整数");

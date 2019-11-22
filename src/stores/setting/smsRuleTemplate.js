@@ -88,7 +88,7 @@ const mutations = {
         state.templateList.total = res.data.total;
         state.templateList.data.list.forEach((item) => {
             state.channelIdArr.forEach((info) => {
-                if (item.channelId = info.id) {
+                if (item.channelId == info.id) {
                     item.channelId = info.name;
                 }
             })
@@ -98,7 +98,7 @@ const mutations = {
     ruleUserDo(state) {
         state.ruleList.data.custom = [];
         state.ruleList.data.quanxian = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         for (let item of state.ruleDoArr) {
             if (jurisdiction.indexOf(item) > -1) {
                 state.ruleList.data.quanxian.push(item);
@@ -125,7 +125,7 @@ const mutations = {
     templateUserDo(state) {
         state.templateList.data.custom = [];
         state.templateList.data.quanxian = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         for (let item of state.templateDoArr) {
             if (jurisdiction.indexOf(item) > -1) {
                 state.templateList.data.quanxian.push(item);
@@ -162,7 +162,6 @@ const actions = {
                 }
             })
         })
-
     },
     // 增加短信权限
     addSmsRule({commit}, data) {
@@ -209,10 +208,11 @@ const actions = {
 
     // 获取短信模版列表
     getTemplateRuleList({ commit }, data) {
-        return new Promise(() => {
+        return new Promise((resolve) => {
             get_templateRule_list(data).then(res => {
                 if (res && res.success) {
                     commit('setTemplateList', res);
+                    resolve(res);
                 }
             })
         })

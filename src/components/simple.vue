@@ -101,6 +101,3 @@ export default {
   }
 };
 </script>
-<style>
-@import url("./allCss.scss");
-</style>

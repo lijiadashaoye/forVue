@@ -24,7 +24,8 @@
           </el-form-item>
 
           <el-form-item label="活动类型" prop="activityType">
-            <el-select filterable
+            <el-select
+              filterable
               v-model="formData.activityType"
               placeholder="请选择活动类型"
               style="width:100%;"
@@ -743,6 +744,7 @@ export default {
     },
     // 监听表格的操作
     tableEmit(type, data) {
+      let arr = this.whichAddJP.jiangpin.map(tar => tar.id);
       switch (type.type) {
         case "regetData": // 分页的emit
           if (data === "coupon") {
@@ -762,7 +764,6 @@ export default {
           }
           break;
         case "toUse": // 添加活动奖励
-          let arr = this.whichAddJP.jiangpin.map(tar => tar.id);
           if (!arr.includes(type.data.id)) {
             let obj = {
               num: +this.forNum++,
@@ -1090,7 +1091,7 @@ td {
 .hasAfter > span {
   position: absolute;
   right: 8px;
-  top: 7px;
+  top: 28%;
   font-weight: bold;
 }
 </style>

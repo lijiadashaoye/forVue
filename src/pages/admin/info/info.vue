@@ -1,9 +1,12 @@
 <template>
   <div class="componentWaper">
-    <div id='forHeader'>
-      <h3>{{pageName}}</h3>
+    <div id="forHeader">
+      <p class="isPageName">
+        <span :class="env?'lineSpan1':'lineSpan'">|</span>
+        位置：{{$store.state.for_layout.titles}}{{pageName}}
+      </p>
     </div>
-    <div id='forTable'>
+    <div id="forTable">
       <div class="content">
         <el-form
           :model="menuData"
@@ -11,63 +14,36 @@
           :rules="rules2"
           ref="menuData"
           label-width="100px"
-          class="demo-ruleForm"
+          
         >
-          <el-form-item
-            label="用户名"
-            prop="username"
-          >
-            <el-input
-              readonly
-              v-model="menuData.username"
-            ></el-input>
+          <el-form-item label="用户名" prop="username">
+            <el-input readonly v-model="menuData.username"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="原密码"
-            prop="oldPass"
-          >
-            <el-input
-              type='password'
-              v-model="menuData.oldPass"
-            ></el-input>
+          <el-form-item label="原密码" prop="oldPass">
+            <el-input type="password" v-model="menuData.oldPass"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="新密码"
-            prop="pass"
-          >
-            <el-input
-              type='password'
-              placeholder="请输入新密码，最多32字符"
-              v-model="menuData.pass"
-            ></el-input>
+          <el-form-item label="新密码" prop="pass">
+            <el-input type="password" placeholder="请输入新密码，最多32字符" v-model="menuData.pass"></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="确认新密码"
-            prop="checkPass"
-          >
+          <el-form-item label="确认新密码" prop="checkPass">
             <el-input
-              type='password'
+              type="password"
               placeholder="请再次输入新密码"
               v-model="menuData.checkPass"
               autocomplete="off"
             ></el-input>
           </el-form-item>
 
-          <el-form-item
-            label="手机"
-            prop="phone"
-          >
+          <el-form-item label="手机" prop="phone">
             <el-input v-model="menuData.phone"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-button
-              type="primary"
-              @click="submitForm()"
-            >提交</el-button>
-            <el-button @click="resetForm('menuData')">重置</el-button>
+          <el-form-item style="display:flex;justify-content:space-around;">
+            <el-button size="mini" type="primary" @click="submitForm">提交</el-button>
+            <el-button size="mini" type="danger" @click="resetForm">重置</el-button>
+            <el-button size="mini" type="warning" @click="isBack">返回</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -93,7 +69,7 @@ export default {
     };
     // 验证手机号
     var checkPhone = (rule, value, callback) => {
-      if (value === "") {
+      if (!value) {
         callback();
       } else if (!/^1[34578]\d{9}$/.test(value)) {
         callback(new Error("手机号码有误，请重填"));
@@ -102,6 +78,7 @@ export default {
       }
     };
     return {
+      env: null,
       pageName: "", // 当前页面名字
       menuData: {
         oldPass: "",
@@ -128,13 +105,17 @@ export default {
     };
   },
   mounted() {
+    this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page");
-    let kk = JSON.parse(localStorage.getItem("userData"));
+    let kk = JSON.parse(sessionStorage.getItem("userData"));
     this.menuData.username = kk.username;
     this.menuData.userId = kk.userId;
     this.menuData.phone = kk.phone;
   },
   methods: {
+    isBack() {
+      self.history.back();
+    },
     submitForm() {
       this.$refs.menuData.validate(valid => {
         if (valid) {
@@ -172,20 +153,12 @@ export default {
         }
       });
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-      let kk = JSON.parse(localStorage.getItem("userData"));
+    resetForm() {
+      this.$refs["menuData"].resetFields();
+      let kk = JSON.parse(sessionStorage.getItem("userData"));
       this.menuData.username = kk.username;
       this.menuData.phone = kk.phone;
     }
   }
 };
 </script>
-
-
-<style scoped='true' lang="scss">
-.content {
-  width: 400px;
-  margin: 20px auto 0;
-}
-</style>

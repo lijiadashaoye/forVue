@@ -44,7 +44,7 @@ const mutations = {
      // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.bankList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if(jurisdiction.indexOf('bank_detail') > -1){
             state.bankList.data.custom.push({
                 text: "详情",

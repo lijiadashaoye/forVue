@@ -48,7 +48,7 @@ const mutations = {
     //权限认证
     userDo(state) {
         state.noticeList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('notice_upd') > -1) {
             state.noticeList.data.custom.push({
                 text: "修改",

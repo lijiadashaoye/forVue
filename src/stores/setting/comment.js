@@ -41,7 +41,7 @@ const mutations = {
     //权限认证
     userDo(state) {
         state.commentList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if (jurisdiction.indexOf('comment_del') > -1) {
             state.commentList.data.custom.push({
                 text: "删除",

@@ -59,7 +59,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" @click="search('searchForm')" size="mini">查询</el-button>
+          <el-button type="primary" @click="search" size="mini">查询</el-button>
           <el-button @click="resetForm('searchForm')" size="mini" type="info" plain>清除</el-button>
           <el-button @click="exportForm" size="mini" type="success">导出</el-button>
         </el-form-item>
@@ -82,7 +82,7 @@ import {
   cash_out_applyFor,
   cash_out_turnDown,
   cash_out_operation,
-  cash_out_export
+  // cash_out_export
 } from "../../../api/setting_use";
 export default {
   components: {
@@ -255,7 +255,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(res => {
+        .then(() => {
           cash_out_applyFor(data.id).then(res => {
             if (res && res.success) {
               this.getList({
@@ -304,9 +304,7 @@ export default {
             }
           });
         })
-        .catch(() => {
-          return;
-        });
+        .catch(() => {});
     },
     //驳回申请
     turnDown(data) {
@@ -315,7 +313,7 @@ export default {
         cancelButtonText: "取消",
         type: "warning"
       })
-        .then(res => {
+        .then(() => {
           cash_out_turnDown(data.id).then(res => {
             if (res && res.success) {
               this.getList({
@@ -450,7 +448,7 @@ export default {
           break;
       }
     },
-    search(formName) {
+    search() {
       this.getList({
         pageNum: 1,
         pageSize: this.$store.state.cashOut.cashList.pageSize,
@@ -576,7 +574,7 @@ export default {
         responseType: "blob"
       }).then(res => {
         var reader = new FileReader();
-        reader.onload = e => {
+        reader.onload = () => {
           let url = window.URL.createObjectURL(new Blob([res]));
           let link = document.createElement("a");
           link.style.display = "none";

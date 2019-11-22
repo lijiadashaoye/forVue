@@ -58,11 +58,11 @@ const mutations = {
      // 用户权限判定，之后表格右侧会有不同的操作按钮
     userDo(state) {
         state.commendList.data.custom = [];
-        let jurisdiction = JSON.parse(localStorage.getItem("buttenpremissions"));
+        let jurisdiction = JSON.parse(sessionStorage.getItem("buttenpremissions"));
         if(jurisdiction.indexOf('commend_detail') > -1){
             state.commendList.data.custom.push({
                 text: "详情",
-                type: "danger",
+                type: "warning",
                 size: "mini",
                 emit: "detail"
             });
@@ -71,7 +71,7 @@ const mutations = {
             state.commendList.data.quanxian.push('ok')
             state.commendList.data.custom.push({
                 text: "修改",
-                type: "warning",
+                type: "primary",
                 size: "small",
                 emit: "edit"
             });
