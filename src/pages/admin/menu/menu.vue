@@ -123,6 +123,14 @@
             <el-button size="mini" type="danger" @click="clearData">取消</el-button>
           </div>
         </div>
+
+        <!-- 查看图标库 -->
+        <ul style="padding:5px;overflow-y:auto;" v-if="false">
+          <li v-for="name in iconList" :key="name">
+            <i :class="`myIcon22px icon-${name}`"></i>
+            <span>{{name}}</span>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -204,7 +212,51 @@ export default {
         path: [
           { min: 1, max: 100, message: "请输入1-100个字符", trigger: "blur" }
         ]
-      }
+      },
+
+      // 图标名
+      iconList: [
+        "jigou01",
+        "success",
+        "jianpan",
+        "heimingdan",
+        "shuangyou",
+        "app",
+        "huizhang",
+        "xinshou",
+        "yuebao",
+        "add",
+        "kaihu",
+        "chanpinzhongxin",
+        "huodong",
+        "49shurushanchu-1",
+        "qiaquan",
+        "down-trangle",
+        "yinhangqia",
+        "yingxiao",
+        "tuichu",
+        "hongbao",
+        "chanpin",
+        "wenhaoyuanyiwenxianxing",
+        "iconDeleteitem",
+        "user",
+        "xieyi",
+        "huiyuan",
+        "allLeft",
+        "renwu",
+        "Bursting",
+        "xiasanjiaoxiangxiamianxing",
+        "SysManagement",
+        "down-trangle-copy",
+        "yemian-copy",
+        "fujindehuodong",
+        "jichuguanli",
+        "yonghu",
+        "yinhang",
+        "qichejietubiaoku-",
+        "yousanjiaoxiangyoumianxing",
+        "shezhi"
+      ]
     };
   },
   mounted() {

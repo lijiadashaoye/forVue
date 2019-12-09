@@ -75,7 +75,6 @@
               clearable
               remote
               reserve-keyword
-              @change="selectChange"
               :remote-method="searchChange"
               v-loadmore="loadmore"
               v-model="ruleForm.linkId"
@@ -306,16 +305,6 @@ export default {
       addProduct: "message/addProduct",
       changePushManage: "message/changePushManage"
     }),
-
-    // 产品关联改变时触发记录linkName
-    selectChange(id) {
-      for (let item of this.productArr) {
-        if (item.id == id) {
-          this.ruleForm.linkName = item.name;
-          return;
-        }
-      }
-    },
     //产品类型发生改变
     typeChange(value) {
       this.productInfo.defaultType = false;
@@ -330,7 +319,7 @@ export default {
         value == "DEPOSIT" ||
         value == "CONSULT_PAGE" ||
         value == "ACTIVITY" ||
-        value == "Institution_Page"
+        value == "INSTITUTION_PAGE"
       ) {
         // }else{
         //  清空二级列表的已选属性
@@ -339,19 +328,31 @@ export default {
         }
         this.productInfo.defaultType = true;
         this.productInfo.inputType = false;
+        // 记录linkUrl 和 linkName
+        this.linkChange(value);
         // 请求关联产品 条件（货币基金、理财产品、纯 债产品、存款产品）
         this.productForm.linkModel = value;
         if (value == "CONSULT_PAGE") {
           this.changeTitle = "关联咨询";
         } else if (value == "ACTIVITY") {
           this.changeTitle = "关联已上线活动";
-        } else if (value == "Institution_Page") {
+        } else if (value == "INSTITUTION_PAGE") {
           this.changeTitle = "关联机构";
         } else {
           this.changeTitle = "关联产品";
         }
         // 获取关联产品列表
         this.getproList();
+      }
+    },
+    // 有二级数据记录父级link
+    linkChange(value){
+      for(let item of this.productTypeArr){
+        if(item.linkModel == value){
+          this.ruleForm.linkUrl = item.linkUrl;
+          this.ruleForm.linkName = item.linkName;
+          return;
+        }
       }
     },
     // 获取关联产品列表
@@ -422,10 +423,7 @@ export default {
             // 附属链接
             delete this.ruleMiddleForm["linkId"];
             delete this.ruleMiddleForm["linkName"];
-          } else {
-            // 附属关联
-            delete this.ruleMiddleForm["linkUrl"];
-          }
+          } 
           // 部分用户才有选择地区
           if (this.ruleMiddleForm.sendTarget == "TOTAL_USER") {
             delete this.ruleMiddleForm["sendLocationList"];
@@ -456,6 +454,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.componentWaper{
+  background:white;
+}
 .form-box {
   padding: 20px;
   margin-top: 40px;

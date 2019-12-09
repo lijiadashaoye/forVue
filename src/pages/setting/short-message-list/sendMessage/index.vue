@@ -101,7 +101,7 @@
                   <i class="el-icon-upload el-icon--right"></i>
                 </el-button>
               </el-upload>
-              <span  class="download" style="padding-left:20px;color:#409EFF">
+              <span class="download" style="padding-left:20px;color:#409EFF">
                 <a :href="downloadUrl">下载模板</a>
               </span>
             </el-form-item>
@@ -121,7 +121,8 @@
             <el-input style="width:400px;" v-model="ruleForm.title" placeholder="请输入标题"></el-input>
           </el-form-item>
           <el-form-item label="短信内容" prop="name">
-            <el-select   @change = "codeChange"
+            <el-select
+              @change="codeChange"
               filterable
               v-model="ruleForm.name"
               v-loadmore="loadmore"
@@ -162,7 +163,7 @@ import { spreadLocationList } from "@/constant.js";
 import { mapActions } from "vuex";
 import { phoneRegx } from "@/sets/regex.js";
 import messageMixin from "../messageMixin.js";
-import { BaseUrl } from '@/sets/axios_set.js'
+import { BaseUrl } from "@/sets/axios_set.js";
 export default {
   name: "sendMessage",
   components: {},
@@ -185,12 +186,12 @@ export default {
       }
     };
     return {
-      downloadUrl:BaseUrl+'message/sms-manage/downloadTemplate',
+      downloadUrl: BaseUrl + "message/sms-manage/downloadTemplate",
       loadObj: {
         pageNum: 1,
         pageSize: 50
       }, //loadmore info
-      fileName:'', //上传的文件名称
+      fileName: "", //上传的文件名称
       loadCount: 0, //下拉列表的总页数
       sendType: 0, //自定义时间类型
       locationList: [],
@@ -215,8 +216,8 @@ export default {
         changeLocation: "PHONE_LOCATION", //发送地区选择手机号
         sendLocation: [], //发送地区数组
         templateCode: "", //模板code
-        name:"", //模版名称
-        smsChannel:0,//模版的渠道关联id
+        name: "", //模版名称
+        smsChannel: 0, //模版的渠道关联id
         sendPhone: "", //发送的文本手机号
         smsContent: "", //短信内容
         title: "", //短信标题
@@ -269,17 +270,17 @@ export default {
       getSmsTemplate: "message/getSmsTemplate",
       addSmsManage: "message/addSmsManage",
       upLoadFile: "message/upLoadFile",
-      downloadTemplate:"message/downloadTemplate"
+      downloadTemplate: "message/downloadTemplate"
     }),
     // 短信模版下载
-    download(){
+    download() {
       this.downloadTemplate();
     },
     // 模版更改触发
-    codeChange(id){
-      let item = this.templateArr.find((item)=>{
-        return item.id==id
-      })
+    codeChange(id) {
+      let item = this.templateArr.find(item => {
+        return item.id == id;
+      });
       this.ruleForm.templateCode = item.code;
       this.ruleForm.name = item.name;
       this.ruleForm.smsChannel = item.channeModel;
@@ -288,7 +289,8 @@ export default {
       this.getTemplateRuleList(this.loadObj)
         .then(res => {
           // 总条目
-          this.loadCount = res.data && Math.ceil(res.data.total / this.loadObj.pageSize);
+          this.loadCount =
+            res.data && Math.ceil(res.data.total / this.loadObj.pageSize);
           // 拼接数据
           if (res.data && res.data.list != null && res.data.list != []) {
             const _res = res.data.list;
@@ -393,7 +395,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.download:hover{
+.download:hover {
   cursor: pointer;
 }
 .form-box {

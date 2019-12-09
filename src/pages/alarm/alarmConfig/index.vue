@@ -1,5 +1,5 @@
 <template>
-  <div class="componentWaper">
+  <div>
     <div id="forHeader">
       <p class="isPageName">
         <span :class="env?'lineSpan1':'lineSpan'">|</span>
@@ -10,25 +10,10 @@
           v-if="userInfoArr.indexOf('alarm_add')>-1"
           type="primary"
           @click="addInfo"
+
+          
           size="mini"
         >新增预警</el-button>
-        <div>
-          <!-- <el-select filterable v-model="searchObj.searchType" placeholder="请选择搜索类型">
-            <el-option
-              v-for="(item,index) in searchTypeArr"
-              :key="index"
-              :label="item.name"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-          <el-input placeholder="请输入搜索内容" v-model="searchObj.searchValue" type="text" clearable></el-input>
-          <el-button
-            v-if="$store.state.relation.relationList.data.quanxian.indexOf('parent_tree_list')>-1"
-            type="primary"
-            size="mini"
-            @click="getList"
-          >搜索</el-button>-->
-        </div>
       </div>
     </div>
     <div id="forTable">

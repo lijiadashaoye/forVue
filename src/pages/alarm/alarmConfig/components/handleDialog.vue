@@ -1,87 +1,81 @@
 <template>
-  <div>
-    <el-dialog
-      :close-on-click-modal="true"
-      :title="title"
-      :visible.sync="centerType"
-      width="500px"
-      @close="cancel"
-      center
-    >
-      <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
-        <!--  详情显示编辑按钮  -->
-        <el-button
-          v-if="dialogType=='detail'  &&  this.$parent.userInfoArr.indexOf('alarm_upd')>-1"
-          @click="infoChange"
-          style="float:right;position:relative;z-index:2"
-          type="primary"
-          size="mini"
-        >修改</el-button>
-        <!--  添加子关联和详情需要显示  -->
-        <template v-if="dialogType=='detail'">
-          <el-form-item label="系统编码" prop="systemCode">{{indexInfo.systemCode}}</el-form-item>
-          <el-form-item label="系统名称" prop="systemName">{{indexInfo.systemName}}</el-form-item>
-          <el-form-item label="系统负责人" prop="systemLeader">{{indexInfo.systemLeader}}</el-form-item>
-          <el-form-item label="负责人邮箱" prop="leaderEmail">{{indexInfo.leaderEmail}}</el-form-item>
-          <el-form-item label="负责人手机" prop="leaderMobile">{{indexInfo.leaderMobile}}</el-form-item>
-          <el-form-item label="负责人微信" prop="leaderWechat">{{indexInfo.leaderWechat}}</el-form-item>
-          <el-form-item label="负责人钉钉" prop="leaderDing">{{indexInfo.leaderDing}}</el-form-item>
-          <el-form-item prop="notifyType" label="通知类型:" v-if="detailNotiy.length">
-            <span
-              style="padding-right:10px;"
-              v-for="(item,index) of detailNotiy"
-              :key="index"
-            >{{item}}</span>
-          </el-form-item>
-        </template>
+  <el-dialog
+    :close-on-click-modal="true"
+    :title="title"
+    :visible.sync="centerType"
+    width="500px"
+    @close="cancel"
+    center
+  >
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px">
+      <!--  详情显示编辑按钮  -->
+      <el-button
+        v-if="dialogType=='detail'  &&  this.$parent.userInfoArr.indexOf('alarm_upd')>-1"
+        @click="infoChange"
+        style="float:right;position:relative;z-index:2"
+        type="primary"
+        size="mini"
+      >修改</el-button>
+      <!--  添加子关联和详情需要显示  -->
+      <template v-if="dialogType=='detail'">
+        <el-form-item label="系统编码" prop="systemCode">{{indexInfo.systemCode}}</el-form-item>
+        <el-form-item label="系统名称" prop="systemName">{{indexInfo.systemName}}</el-form-item>
+        <el-form-item label="系统负责人" prop="systemLeader">{{indexInfo.systemLeader}}</el-form-item>
+        <el-form-item label="负责人邮箱" prop="leaderEmail">{{indexInfo.leaderEmail}}</el-form-item>
+        <el-form-item label="负责人手机" prop="leaderMobile">{{indexInfo.leaderMobile}}</el-form-item>
+        <el-form-item label="负责人微信" prop="leaderWechat">{{indexInfo.leaderWechat}}</el-form-item>
+        <el-form-item label="负责人钉钉" prop="leaderDing">{{indexInfo.leaderDing}}</el-form-item>
+        <el-form-item prop="notifyType" label="通知类型:" v-if="detailNotiy.length">
+          <span
+            style="padding-right:10px;"
+            v-for="(item,index) of detailNotiy"
+            :key="index"
+          >{{item}}</span>
+        </el-form-item>
+      </template>
 
-        <!--  详情页面不显示表单操作  -->
-        <template v-if="dialogType!='detail'">
-          <el-form-item label="系统编码:" prop="systemCode">
-            <el-input placeholder="请输入编码" v-model="ruleForm.systemCode" type="text" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="系统名称:" prop="systemName">
-            <el-input placeholder="请输入系统名称" v-model="ruleForm.systemName" type="text" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="系统负责人:" prop="systemLeader">
-            <el-input placeholder="请输入系统负责人" v-model="ruleForm.systemLeader" type="text" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="负责人邮箱:" prop="leaderEmail">
-            <el-input placeholder="请输入邮箱" v-model="ruleForm.leaderEmail" type="text" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="手机号:" prop="leaderMobile">
-            <el-input placeholder="请输入手机号" v-model="ruleForm.leaderMobile" type="text" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="微信:" prop="leaderWechat">
-            <el-input placeholder="请输入微信号" v-model="ruleForm.leaderWechat" type="text" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="钉钉: " prop="leaderDing">
-            <el-input placeholder="请输入钉钉号" v-model="ruleForm.leaderDing" type="text" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="通知类型:" prop="notifyType">
-            <el-checkbox
-              :indeterminate="isIndeterminate"
-              v-model="checkAll"
-              @change="handleCheckAllChange"
-            >全选</el-checkbox>
-            <el-checkbox-group v-model="ruleForm.notifyType" @change="handleCheckedCitiesChange">
-              <template v-for="(item,index) of notifyTypeArr">
-                <el-checkbox
-                  v-if="item.value!=='ALL'"
-                  :label="item.value"
-                  :key="index"
-                >{{item.name}}</el-checkbox>
-              </template>
-            </el-checkbox-group>
-          </el-form-item>
-        </template>
-      </el-form>
-      <div v-if="dialogType!='detail'" class="saveButton">
-        <el-button type="primary" @click="save('ruleForm')">保存</el-button>
-        <el-button @click="cancel()">取消</el-button>
-      </div>
-    </el-dialog>
-  </div>
+      <!--  详情页面不显示表单操作  -->
+      <template v-if="dialogType!='detail'">
+        <el-form-item label="系统编码:" prop="systemCode">
+          <el-input placeholder="请输入编码" v-model="ruleForm.systemCode" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="系统名称:" prop="systemName">
+          <el-input placeholder="请输入系统名称" v-model="ruleForm.systemName" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="系统负责人:" prop="systemLeader">
+          <el-input placeholder="请输入系统负责人" v-model="ruleForm.systemLeader" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="负责人邮箱:" prop="leaderEmail">
+          <el-input placeholder="请输入邮箱" v-model="ruleForm.leaderEmail" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="手机号:" prop="leaderMobile">
+          <el-input placeholder="请输入手机号" v-model="ruleForm.leaderMobile" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="微信:" prop="leaderWechat">
+          <el-input placeholder="请输入微信号" v-model="ruleForm.leaderWechat" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="钉钉: " prop="leaderDing">
+          <el-input placeholder="请输入钉钉号" v-model="ruleForm.leaderDing" type="text" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="通知类型:" prop="notifyType">
+          <el-checkbox
+            :indeterminate="isIndeterminate"
+            v-model="checkAll"
+            @change="handleCheckAllChange"
+          >全选</el-checkbox>
+          <el-checkbox-group v-model="ruleForm.notifyType" @change="handleCheckedCitiesChange">
+            <template v-for="(item,index) of notifyTypeArr">
+              <el-checkbox v-if="item.value!=='ALL'" :label="item.value" :key="index">{{item.name}}</el-checkbox>
+            </template>
+          </el-checkbox-group>
+        </el-form-item>
+      </template>
+    </el-form>
+    <div v-if="dialogType!='detail'" class="saveButton">
+      <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+      <el-button @click="cancel()">取消</el-button>
+    </div>
+  </el-dialog>
 </template>
 <script>
 import { mapActions, mapState } from "vuex";

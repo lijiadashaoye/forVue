@@ -4,6 +4,8 @@
     </div>
 </template>
 <script>
+import devicePosition from '../../stores/log/devicePosition';//log 设备定位
+import pointLocation from '../../stores/log/pointLocation';//log 点位
     export default {
         props: {},
         data() {
@@ -12,9 +14,13 @@
             };
         },
         created() {
-
+            this.$store.registerModule('devicePosition', devicePosition);
+            this.$store.registerModule('pointLocation', pointLocation);
         },
-
+        beforeDestroy() {
+            this.$store.unregisterModule('devicePosition');
+            this.$store.unregisterModule('pointLocation');
+        },
         methods: {}
     };
 </script>

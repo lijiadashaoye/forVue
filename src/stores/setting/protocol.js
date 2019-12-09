@@ -44,16 +44,16 @@ const mutations = {
         if (jurisdiction.indexOf('protocol_private_detail') > -1) {
             state.protocolList.data.custom.push({
                 text: "详情",
-                type: "danger",
+                type: "warning",
                 size: "mini",
                 emit: "detail"
             });
         }
         if (jurisdiction.indexOf('protocol_private_upd') > -1) {
             state.protocolList.data.quanxian.push('ok')
-            state.protocolList.data.custom.push({
+            state.protocolList.data.custom.push({ 
                 text: "修改",
-                type: "warning",
+                type: "primary",
                 size: "small",
                 emit: "edit"
             });

@@ -120,7 +120,7 @@ export default {
     this.getList();
   },
   computed: {
-    nowTableInfo: () => {
+    nowTableInfo: function (){
         this.tableInfo.data.list = this.tableInfo.data.list.map(item => {
             item.sendTarget = defaultChange(
             item.sendTarget,

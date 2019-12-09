@@ -62,6 +62,7 @@ import {
   app_button_del
 } from "../../../api/setting_use.js";
 import { mapMutations } from "vuex";
+
 export default {
   props: {},
   components: {
@@ -114,7 +115,8 @@ export default {
       rules: {}
     };
   },
-  created() {
+  mounted() {
+    
     this.env = sessionStorage.getItem("env") === "development";
     this.$store.state.app_button_add.tableMenu.pageNum = 1;
     this.canDoWhat();
@@ -337,7 +339,8 @@ export default {
         //   break;
       }
     }
-  }
+  },
+  
 };
 </script>
 

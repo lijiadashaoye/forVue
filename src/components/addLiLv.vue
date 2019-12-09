@@ -7,7 +7,7 @@
     label-suffix=":"
     class="isForm"
     :rules="rules"
-    style="margin:0;width:91%"
+    style="margin:0;width:100%"
   >
     <el-form-item style="width:100%;margin-bottom:0;" required label="新增利率">
       <el-button
@@ -45,17 +45,17 @@
           @change="isChange_tiaojian"
           placeholder="限制条件"
           v-model="lilvForm.min_symbol"
-          style="width:15%;flex-shrink:0;"
+          style="width:16%;flex-shrink:0;"
         >
           <el-option
             v-for="item in dictData.forMax"
             :key="item.value"
-            :label="item.fuhao"
+            :label="item.fuhao +' '+ item.label"
             :value="item.value"
           ></el-option>
         </el-select>
 
-        <h3 style="width:8%;flex-shrink:0;text-align:center;">存期</h3>
+        <h3 style="width:6%;flex-shrink:0;text-align:center;">存期</h3>
 
         <el-select
           :disabled="placeHolder == '期限'"
@@ -63,12 +63,12 @@
           @change="isChange"
           placeholder="限制条件"
           v-model="lilvForm.max_symbol"
-          style="width:15%;flex-shrink:0;"
+          style="width:16%;flex-shrink:0;"
         >
           <el-option
             v-for="item in dictData.forMax"
             :key="item.value"
-            :label="item.fuhao"
+            :label="item.fuhao +' '+ item.label"
             :value="item.value"
           ></el-option>
         </el-select>&nbsp;

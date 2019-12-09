@@ -21,8 +21,6 @@
     <div id="forTable" v-if="loadEnd">
       <isTable :inputData="tableInputData" @tableEmit="tableEmit" />
     </div>
-
-   
   </div>
 </template>
 <script>
@@ -37,7 +35,6 @@ export default {
   },
   data() {
     return {
-   
       env: null,
       pageName: "", // 当前页面名字
       loadEnd: false,
@@ -103,7 +100,7 @@ export default {
     // toSee() {
     //   console.log("概览");
     // },
-   
+
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
@@ -152,7 +149,7 @@ export default {
     // 添加按钮、编辑按钮
     buttonRowUpdata(data) {
       if (data) {
-        sessionStorage.setItem("page", "编辑素材");
+        sessionStorage.setItem("page", "方案配置 > 编辑素材");
         // 编辑
         this.$router.push({
           name: "scbj",
@@ -162,7 +159,7 @@ export default {
           }
         });
       } else {
-        sessionStorage.setItem("page", "添加素材");
+        sessionStorage.setItem("page", "方案配置 > 添加素材");
         // 添加
         this.$router.push({
           name: "scbj",

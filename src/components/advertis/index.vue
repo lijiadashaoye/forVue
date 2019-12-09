@@ -1,342 +1,227 @@
 <template>
-  <el-card class="box-card">
-    <h4 v-if="this.showType != 'VIDEO'">广告内容</h4>
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" label-position="left" class="demo-ruleForm">
+        <el-form-item v-show="this.ruleForm.showType != 'VIDEO'" label-width="0">
+            <h4>广告内容</h4>
+        </el-form-item>
 
-    <div class="card-item">
-      <span class="item-text">*选择App：</span>
+        <el-form-item label="选择App" prop="appChannelCode">
+            <el-radio-group v-model="ruleForm.appChannelCode">
+            <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
+            </el-radio-group>
+        </el-form-item>
 
-      <div class="item-input">
-        <el-radio-group v-model="appChannelCode">
-          <el-radio v-for="(val,ind) in appChannel" :key="ind" :label="val.label">{{val.value}}</el-radio>
-        </el-radio-group>
-      </div>
-    </div>
+        <el-form-item label="名称" prop="advertisName">
+            <el-input v-model="ruleForm.advertisName" placeholder="请输入名称"></el-input>
+        </el-form-item>
 
-    <div class="card-item">
-      <span class="item-text">*名称:</span>
+        <el-form-item label="类型" prop="showType">
+            <el-radio-group v-model="ruleForm.showType" :disabled="showTypeFlag" @change.native='showTypeChange(ruleForm.showType)'>
+                <el-radio label="OPENSCREEN">开屏</el-radio>
+                <el-radio label="FLASHSCREEN">闪屏</el-radio>
+                <el-radio label="VIDEO">视频</el-radio>
+            </el-radio-group>
+        </el-form-item>
 
-      <div class="item-input">
-        <el-input v-model="advertisName" placeholder="请输入名称"></el-input>
-      </div>
-    </div>
+        <el-form-item label="适用平台" prop="platformCode">
+            <el-radio-group v-model="ruleForm.platformCode">
+                <el-radio label="android" :disabled="upDataFlag">安卓</el-radio>
+                <el-radio label="ios" :disabled="upDataFlag">IOS</el-radio>
+            </el-radio-group>
+        </el-form-item>
 
-    <div class="card-item">
-      <span class="item-text">*类型:</span>
+        <el-form-item label="状态" prop="status" v-if="this.ruleForm.showType == 'OPENSCREEN'">
+            <el-radio-group v-model="ruleForm.status">
+                <el-radio label="ENABLE">启用</el-radio>
+                <el-radio label="DISABLE">停用</el-radio>
+            </el-radio-group>
+        </el-form-item>
 
-      <div class="item-input">
-        <el-radio-group v-model="showType" :disabled="showTypeFlag">
-          <el-radio label="OPENSCREEN">开屏</el-radio>
-
-          <el-radio label="FLASHSCREEN">闪屏</el-radio>
-
-          <el-radio label="VIDEO">视频</el-radio>
-        </el-radio-group>
-      </div>
-    </div>
-
-    <div class="card-item" v-if="this.showType == 'OPENSCREEN'">
-      <span class="item-text">*状态:</span>
-
-      <div class="item-input">
-        <el-radio-group v-model="status">
-          <el-radio label="ENABLE">启用</el-radio>
-
-          <el-radio label="DISABLE">停用</el-radio>
-        </el-radio-group>
-      </div>
-    </div>
-
-    <div class="card-item">
-      <span class="item-text">*适用平台:</span>
-
-      <div class="item-input">
-        <el-radio-group v-model="platformCode">
-          <el-radio label="android" :disabled="upDataFlag">安卓</el-radio>
-
-          <el-radio label="ios" :disabled="upDataFlag">IOS</el-radio>
-        </el-radio-group>
-      </div>
-    </div>
-
-    <!-- 开屏 -->
-
-    <div v-if="this.showType === 'OPENSCREEN'">
-      <div class="card-img-list">
-        <span class="item-text">*广告图片:</span>
-
-        <div class="item-imgList-up">
-          <el-upload
-            class="upload-demo"
-            auto-upload
-            action="https://develop-gateway.bicai365.com/admin/file/up/setting"
-            :headers="myHeaders"
-            :limit="6"
-            :file-list="fileList"
-            :on-success="upImg"
-            :on-remove="handleRemove"
-            :before-upload="beforeAvatarUpload"
-            :on-exceed="exceed"
-            list-type="picture"
-          >
-            <el-button>点击上传</el-button>
-          </el-upload>
-        </div>
-      </div>
-    </div>
-
-    <div class="card-item" v-if="this.showType === 'FLASHSCREEN' || this.showType === 'VIDEO'">
-      <span class="item-text">*分辨率:</span>
-
-      <div class="item-input">
-        <el-select filterable v-model="resolution" clearable placeholder="请选择">
-          <el-option
-            v-for="(item,ind) in resolutionOpt"
-            :key="ind"
-            :label="item.label"
-            :value="item.value"
-          ></el-option>
-        </el-select>
-      </div>
-    </div>
-
-    <!-- 闪屏 -->
-
-    <div v-if="this.showType === 'FLASHSCREEN'">
-      <div class="card-item">
-        <span class="item-text">*闪屏时间:</span>
-
-        <div class="item-input-time">
-          <span>
-            <el-input v-model="displayTime" placeholder="只能输入数字"></el-input>&nbsp;&nbsp;&nbsp;毫秒
-          </span>
-        </div>
-      </div>
-
-      <div class="card-item">
-        <span class="item-text">*点击效果连接位置:</span>
-
-        <div class="item-input">
-          <el-select
-            filterable
-            v-model="productType"
-            clearable
-            placeholder="请选择产品类型"
-            @change="typeSelect(productType)"
-          >
-            <el-option
-              v-for="(item,ind) in linkLocationOpt"
-              :key="ind"
-              :label="item.linkName"
-              :value="item.linkModel"
+        <el-form-item label="广告图片" prop="launchAdvertisingDetails" v-if="this.ruleForm.showType == 'OPENSCREEN'">
+            <el-upload
+                class="upload-demo"
+                auto-upload
+                action="https://develop-gateway.bicai365.com/admin/file/up/setting"
+                :headers="myHeaders"
+                :limit="6"
+                :file-list="fileList"
+                :on-success="upImg"
+                :on-remove="handleRemove"
+                :before-upload="beforeAvatarUpload"
+                :on-exceed="exceed"
+                list-type="picture"
             >
-              <span style="float: left">{{ item.linkName }}</span>
-
-              <!-- <span style="float: right; color: #8492a6; font-size: 13px">{{ item.linkUrl }}</span> -->
-            </el-option>
-          </el-select>
-        </div>
-      </div>
-
-      <div class="card-item" v-if="inputFlag">
-        <span class="item-text">网址链接:</span>
-
-        <div class="item-input">
-          <el-input v-model="linkUrl" placeholder="请输入产品链接"></el-input>
-        </div>
-      </div>
-
-      <div class="card-item" v-else>
-        <span class="item-text">关联产品:</span>
-
-        <div class="item-input">
-          <el-select
-            filterable
-            v-model="linkId"
-            clearable
-            :disabled="productCodeFlag"
-            v-loadmore="loadmore"
-            remote
-            reserve-keyword
-            :remote-method="fuzzySearch"
-            placeholder="请选择产品名称"
-          >
+                <el-button>点击上传</el-button>
+            </el-upload>
+        </el-form-item>
+        
+        <el-form-item label="分辨率" prop="resolution" v-if="this.ruleForm.showType === 'FLASHSCREEN' || this.ruleForm.showType === 'VIDEO'">
+            <el-select filterable v-model="ruleForm.resolution" clearable placeholder="请选择">
             <el-option
-              v-for="(item,ind) in productOpt"
-              :key="ind"
-              :label="item.name"
-              :value="item.id"
-            >
-              <span style="float: left">{{ item.institutionName }}</span>
+                v-for="(item,ind) in resolutionOpt"
+                :key="ind"
+                :label="item.label"
+                :value="item.value"
+            ></el-option>
+            </el-select>
+        </el-form-item>
 
-              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
-            </el-option>
-          </el-select>
-        </div>
-      </div>
+        <el-form-item label="闪屏时间" prop="displayTime" v-if="this.ruleForm.showType === 'FLASHSCREEN'">
+            <el-input v-model="ruleForm.displayTime" placeholder="只能输入数字"><template slot="append">毫秒</template></el-input>
+        </el-form-item>
 
-      <div class="card-item card-img">
-        <span class="item-text">*广告:</span>
-
-        <div class="item-img">
-          <el-upload
-            class="avatar-uploader"
-            action="customize"
-            :show-file-list="false"
-            :http-request="uploadAdvertis"
-            v-loading="advertisLoading"
-          >
-            <img v-if="flashScreenUrl" :src="ImgBaseUrl + flashScreenUrl" class="avatar" />
-
-            <div v-else>
-              <el-button>
-                选择图片
-                <br />
-
-                <span style="font-size:12px;color:red">不能大于2M</span>
-
-                <br />
-
-                <span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span>
-              </el-button>
-            </div>
-          </el-upload>
-        </div>
-      </div>
-
-      <div class="card-item">
-        <span class="item-text">*广告开始时间:</span>
-
-        <div class="item-input">
-          <el-date-picker v-model="startTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
-        </div>
-      </div>
-
-      <div class="card-item">
-        <span class="item-text">*广告结束时间:</span>
-
-        <div class="item-input">
-          <el-date-picker v-model="endTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
-        </div>
-      </div>
-
-      <h4>推广用户</h4>
-
-      <div class="card-item">
-        <span class="item-text">用户选择:</span>
-
-        <div class="item-input">
-          <el-radio-group v-model="pushUser">
-            <el-radio label="TOTAL">发送给全部用户</el-radio>
-
-            <el-radio label="PORTION">发送给部分用户</el-radio>
-          </el-radio-group>
-        </div>
-      </div>
-
-      <!-- 部分用户地区 -->
-
-      <div v-if="this.pushUser === 'PORTION'">
-        <h4>推广地区选择</h4>
-
-        <div class="card-item province">
-          <span class="item-text">选择省份:</span>
-
-          <div class="item-input">
+        <el-form-item label="点击效果连接位置" prop="productType" v-if="this.ruleForm.showType === 'FLASHSCREEN'">
             <el-select
-              filterable
-              v-model="provinceList"
-              multiple
-              allow-create
-              default-first-option
-              placeholder="请选择省份"
+                filterable
+                v-model="ruleForm.productType"
+                clearable
+                placeholder="请选择产品类型"
+                @change="typeSelect(ruleForm.productType)"
             >
-              <el-option
+                <el-option
+                v-for="(item,ind) in linkLocationOpt"
+                :key="ind"
+                :label="item.linkName"
+                :value="item.linkModel"
+                >
+                <span style="float: left">{{ item.linkName }}</span>
+                </el-option>
+            </el-select>
+        </el-form-item>
+
+        <el-form-item label="网址链接" prop="linkUrl" v-if="this.ruleForm.showType === 'FLASHSCREEN' && this.inputFlag">
+            <el-input v-model="ruleForm.linkUrl" placeholder="请输入产品链接"></el-input>
+        </el-form-item>
+
+        <el-form-item label="关联产品" prop="linkId" v-else-if="this.ruleForm.showType === 'FLASHSCREEN'">
+            <el-select
+                filterable
+                v-model="ruleForm.linkId"
+                clearable
+                :disabled="productCodeFlag"
+                v-loadmore="loadmore"
+                remote
+                reserve-keyword
+                :remote-method="fuzzySearch"
+                placeholder="请选择产品名称"
+            >
+                <el-option
+                v-for="(item,ind) in productOpt"
+                :key="ind"
+                :label="item.name"
+                :value="item.id"
+                >
+                <span style="float: left">{{ item.institutionName }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
+                </el-option>
+            </el-select>
+        </el-form-item>
+    
+        <el-form-item label="广告" prop="flashScreenUrl" v-if="this.ruleForm.showType === 'FLASHSCREEN'">
+            <el-upload
+                class="avatar-uploader"
+                action="customize"
+                :show-file-list="false"
+                :http-request="uploadAdvertis"
+                v-loading="advertisLoading"
+            >
+                <img v-if="ruleForm.flashScreenUrl" :src="ImgBaseUrl + ruleForm.flashScreenUrl" class="avatar" />
+                <div v-else>
+                <el-button>
+                    选择图片
+                    <br />
+                    <span style="font-size:12px;color:red">不能大于2M</span>
+                    <br />
+                    <span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span>
+                </el-button>
+                </div>
+            </el-upload>
+        </el-form-item>
+        
+        <el-form-item label="广告开始时间" prop="startTime" v-if="this.ruleForm.showType === 'FLASHSCREEN'">
+            <el-date-picker v-model="ruleForm.startTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+        </el-form-item>
+        
+        <el-form-item label="广告结束时间" prop="endTime" v-if="this.ruleForm.showType === 'FLASHSCREEN'">
+            <el-date-picker v-model="ruleForm.endTime" type="datetime" placeholder="选择日期时间"></el-date-picker>
+        </el-form-item>
+
+        <el-form-item v-show="this.ruleForm.showType === 'FLASHSCREEN'" label-width="0">
+            <h4>推广用户</h4>
+        </el-form-item>
+
+        <el-form-item label="用户选择" prop="pushUser" v-if="this.ruleForm.showType === 'FLASHSCREEN'">
+            <el-radio-group v-model="ruleForm.pushUser">
+                <el-radio label="TOTAL">发送给全部用户</el-radio>
+                <el-radio label="PORTION">发送给部分用户</el-radio>
+            </el-radio-group>
+        </el-form-item>
+
+        <el-form-item v-show="this.ruleForm.showType === 'FLASHSCREEN' && this.ruleForm.pushUser == 'PORTION'" label-width="0">
+            <h4>推广地区选择</h4>
+        </el-form-item>
+
+        <el-form-item label="选择省份" prop="provinceList" v-if="this.ruleForm.showType === 'FLASHSCREEN' && this.ruleForm.pushUser === 'PORTION'">
+            <el-select
+                filterable
+                v-model="ruleForm.provinceList"
+                multiple
+                allow-create
+                default-first-option
+                placeholder="请选择省份"
+            >
+                <el-option
                 v-for="(item,ind) in provinceOpt"
                 :key="ind"
                 :label="item.label"
                 :value="item.value"
-              ></el-option>
+                ></el-option>
             </el-select>
-          </div>
-        </div>
+        </el-form-item>
 
-        <div class="card-item area">
-          <span class="area-text">已选省份:</span>
+        <el-form-item label="广告" prop="videoUrl" v-if="this.ruleForm.showType === 'VIDEO'">
+            <el-upload
+                class="avatar-uploader"
+                action="customize"
+                :show-file-list="false"
+                :http-request="uploadVideo"
+                v-loading="videoLoading"
+            >
+                <video
+                v-if="ruleForm.videoUrl !==''"
+                :src="ImgBaseUrl + ruleForm.videoUrl"
+                width="350"
+                height="180"
+                controls="controls"
+                ></video>
+                <el-button v-else-if="ruleForm.videoUrl ==''">选择视频</el-button>
+            </el-upload>
+        </el-form-item>
 
-          <div class="area-tag">
-            <el-tag
-              v-for="(tag,ind) in provinceList"
-              :key="ind"
-              closable
-              @close="handleClose(tag)"
-            >{{tag}}</el-tag>
-          </div>
-        </div>
-      </div>
-    </div>
+        <el-form-item label="首帧图片" prop="frameUrl" v-if="this.ruleForm.showType === 'VIDEO'">
+            <el-upload
+                class="avatar-uploader"
+                action="customize"
+                :show-file-list="false"
+                :http-request="uploadFrame"
+                v-loading="frameLoading"
+            >
+                <img v-if="ruleForm.frameUrl" :src="ImgBaseUrl + ruleForm.frameUrl" class="avatar" />
+                <el-button v-else>
+                    选择图片
+                    <br />
+                    <span style="font-size:12px;color:red">不能大于2M</span>
+                    <br />
+                    <span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span>
+                </el-button>
+            </el-upload>
+        </el-form-item>
 
-    <!-- 视频 -->
-
-    <div v-if="this.showType === 'VIDEO'">
-      <div class="card-item card-img">
-        <span class="item-text">广告:</span>
-
-        <div class="item-img">
-          <el-upload
-            class="avatar-uploader"
-            action="customize"
-            :show-file-list="false"
-            :http-request="uploadVideo"
-            v-loading="videoLoading"
-          >
-            <video
-              v-if="videoUrl !==''"
-              :src="ImgBaseUrl + videoUrl"
-              width="350"
-              height="180"
-              controls="controls"
-            ></video>
-
-            <el-button v-else-if="videoUrl ==''">选择视频</el-button>
-          </el-upload>
-        </div>
-      </div>
-
-      <div class="card-item card-img">
-        <span class="item-text">首帧图片:</span>
-
-        <div class="item-img">
-          <el-upload
-            class="avatar-uploader"
-            action="customize"
-            :show-file-list="false"
-            :http-request="uploadFrame"
-            v-loading="frameLoading"
-          >
-            <img v-if="frameUrl" :src="ImgBaseUrl + frameUrl" class="avatar" />
-
-            <div v-else>
-              <el-button>
-                选择图片
-                <br />
-
-                <span style="font-size:12px;color:red">不能大于2M</span>
-
-                <br />
-
-                <span style="font-size:12px;color:red">jpg/png/gif/jpeg格式</span>
-              </el-button>
-            </div>
-          </el-upload>
-        </div>
-      </div>
-    </div>
-
-    <div class="bottomBtn">
-      <el-button @click="cancel">取消</el-button>
-      <el-button type="primary" @click="save">保存</el-button>
-    </div>
-  </el-card>
+        <el-form-item>
+            <el-button type="primary" @click="save('ruleForm')">保存</el-button>
+            <el-button @click="cancel('ruleForm')">取消</el-button>
+        </el-form-item>
+    
+    </el-form>
 </template>
 
 <script>
@@ -352,6 +237,46 @@ export default {
   props: ["appChannel", "params", "dialogFormVisible"],
   data() {
     return {
+        ruleForm: {
+            appChannelCode: "", //渠道标识码
+            advertisName: "", //名称
+            showType: null, //显示类型
+            platformCode: "", //平台码
+            status: "ENABLE", //状态
+            resolution: "", //分辨率
+            displayTime: "", //闪屏时间
+            productType: "", //点击效果链接位置
+            launchAdvertisingDetails: [], //广告详情
+            linkId: "", //产品标识码
+            linkUrl: "",
+            flashScreenUrl: "", //开屏图片地址
+            startTime: "", //广告开始时间
+            endTime: "", //广告结束时间
+            pushUser: "TOTAL", //推广用户
+            provinceList: [], //已选省份列表
+            videoUrl: "", //视频地址
+            frameUrl: "", //首帧图片地址
+        },
+        fileList: [],
+        rules: {
+            appChannelCode: [{ required: true, message: '请选择App', trigger: 'blur' }],
+            advertisName: [{ required: true, message: '请填写名称', trigger: 'blur' }],
+            showType: [{ required: true, message: '请选择类型', trigger: 'blur' }],
+            platformCode: [{ required: true, message: '请选择适用平台', trigger: 'blur' }],
+            status: [{ required: true, message: '请选择状态', trigger: 'blur' }],
+            launchAdvertisingDetails: [{ required: true, message: '请上传开屏图片', trigger: 'change' }],
+            resolution: [{ required: true, message: '请选择分辨率', trigger: 'change' }],
+            displayTime: [{ required: true, message: '请输入闪屏时间', trigger: 'blur' }],
+            productType: [{required: true, message: '请选择效果链接位置', trigger: 'blur'}],
+            linkUrl: [{required: true, message: '请填写天传地址', trigger: 'blur'}],
+            flashScreenUrl: [{required: true, message: '请上传图片', trigger: 'blur'}],
+            startTime: [{required: true, message: '请选择时间', trigger: 'blur'}],
+            endTime: [{required: true, message: '请选择时间', trigger: 'blur'}],
+            pushUser: [{required: true, message: '请选择推广用户', trigger: 'change'}],
+            // provinceList: [{required: true, message: '请选择省份', trigger: 'change'}],
+            videoUrl: [{required: true, message: '请上传视频', trigger: 'change'}],
+            frameUrl: [{required: true, message: '请上传图片', trigger: 'change'}]
+        },
       id: "",
       productId: "",
       inputFlag: false,
@@ -369,29 +294,11 @@ export default {
         name: null
       },
       productPageCount: 1,
-      fileList: [], //开屏列表
       appChannelName: "", //渠道名称
-      appChannelCode: "", //渠道标识码
-      advertisName: "", //名称
-      showType: "", //显示类型
-      status: "ENABLE", //状态
-      platformCode: "", //平台码
       platformName: "", //平台名称
-      launchAdvertisingDetails: [], //广告详情
-      productType: "", //点击效果链接位置
-      displayTime: "", //闪屏时间
-      linkId: "", //产品标识码
-      linkUrl: "",
+      
       productName: "", //产品名称
-      resolution: "", //分辨率
-      flashScreenUrl: "", //开屏图片地址
-      startTime: "", //广告开始时间
-      endTime: "", //广告结束时间
-      pushUser: "TOTAL", //推广用户
       locationManage: [], //推广用户地区列表
-      provinceList: [], //已选省份列表
-      videoUrl: "", //视频地址
-      frameUrl: "", //首帧图片地址
       launchAdvertisId: "",
       linkLocationOpt: [], //点击效果连接列表,
       productOpt: [], //产品列表
@@ -570,7 +477,7 @@ export default {
     if (this.params != null && this.dialogFormVisible) {
       this.upDataFlag = true;
       if (this.params.showType == "FLASHSCREEN") {
-        this.productType = this.params.productRelationDetailsVo.productType;
+        this.ruleForm.productType = this.params.productRelationDetailsVo.productType;
         if (
           this.params.productRelationDetailsVo != null &&
           this.params.productRelationDetailsVo.productType != "" &&
@@ -593,12 +500,12 @@ export default {
         } else {
           this.productCodeFlag = true;
         }
-        this.linkId =
+        this.ruleForm.linkId =
           this.params.productRelationDetailsVo.linkId != null &&
           this.params.productRelationDetailsVo.linkId != ""
             ? this.params.productRelationDetailsVo.linkId
             : null;
-        this.linkUrl =
+        this.ruleForm.linkUrl =
           this.params.productRelationDetailsVo.linkUrl != null &&
           this.params.productRelationDetailsVo.linkUrl != ""
             ? this.params.productRelationDetailsVo.linkUrl
@@ -612,56 +519,56 @@ export default {
       this.showTypeFlag = true;
       this.id = this.params.id;
       this.appChannelName = this.params.appChannelName;
-      this.appChannelCode = this.params.appChannelCode;
-      this.advertisName = this.params.advertisName;
-      this.showType = this.params.showType;
-      this.status = this.params.status;
-      this.platformCode = this.params.platformCode;
+      this.ruleForm.appChannelCode = this.params.appChannelCode;
+      this.ruleForm.advertisName = this.params.advertisName;
+      this.ruleForm.showType = this.params.showType;
+      this.ruleForm.status = this.params.status;
+      this.ruleForm.platformCode = this.params.platformCode;
       this.platformName = this.params.platformName;
-      this.displayTime = this.params.displayTime;
-      this.resolution = this.params.resolution;
+      this.ruleForm.displayTime = this.params.displayTime;
+      this.ruleForm.resolution = this.params.resolution;
       this.productName = this.params.productName;
-      this.startTime = this.params.startTime;
-      this.endTime = this.params.endTime;
-      this.pushUser = this.params.pushUser;
+      this.ruleForm.startTime = this.params.startTime;
+      this.ruleForm.endTime = this.params.endTime;
+      this.ruleForm.pushUser = this.params.pushUser;
       if (
         this.params.showType == "FLASHSCREEN" &&
         this.params.pushUser === "PORTION"
       ) {
         if (this.params.locationManage.length > 0) {
-          this.provinceList = [];
+          this.ruleForm.provinceList = [];
           this.params.locationManage.forEach(v => {
-            this.provinceList.push(v.province);
+            this.ruleForm.provinceList.push(v.province);
           });
         } else {
-          this.provinceList = [];
+          this.ruleForm.provinceList = [];
         }
       } else {
-        this.provinceList = [];
+        this.ruleForm.provinceList = [];
       }
       if (this.params.launchAdvertisingDetails.length > 0) {
         this.fileList = [];
         this.params.launchAdvertisingDetails.forEach(v => {
-          if (this.showType == "FLASHSCREEN") {
-            this.flashScreenUrl = v.advertisUrl;
-          } else if (this.showType == "OPENSCREEN") {
+          if (this.ruleForm.showType == "FLASHSCREEN") {
+            this.ruleForm.flashScreenUrl = v.advertisUrl;
+          } else if (this.ruleForm.showType == "OPENSCREEN") {
             this.fileList.push({
               url: this.$ImgBaseUrl + v.advertisUrl
             });
-          } else if (this.showType === "VIDEO") {
+          } else if (this.ruleForm.showType === "VIDEO") {
             if (v.advertisType === "VIDEO") {
-              this.videoUrl = v.advertisUrl;
+              this.ruleForm.videoUrl = v.advertisUrl;
             } else if (v.advertisType === "FIRST_IMAGE") {
-              this.frameUrl = v.advertisUrl;
+              this.ruleForm.frameUrl = v.advertisUrl;
             } else {
-              this.frameUrl = "";
+              this.ruleForm.frameUrl = "";
             }
           }
         });
       } else {
         this.fileList = [];
       }
-      this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
+      this.ruleForm.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
       this.locationManage = this.params.locationManage;
     } else {
       this.id = null;
@@ -671,35 +578,21 @@ export default {
     ...mapActions({
       getList: "productUrl/getList"
     }),
-    cancel() {
-      this.id = null;
-      this.$emit("cancel");
-      this.fileList = [];
-      this.appChannelName = "";
-      this.appChannelCode = "";
-      this.advertisName = "";
-      this.showType = "";
-      this.status = "ENABLE";
-      this.platformCode = "";
-      this.platformName = "";
-      this.launchAdvertisingDetails = [];
-      this.productType = "";
-      this.displayTime = "";
-      this.linkId = "";
-      this.linkUrl = "";
-      this.productName = "";
-      this.resolution = "";
-      this.flashScreenUrl = "";
-      this.startTime = "";
-      this.endTime = "";
-      this.pushUser = "TOTAL";
-      this.locationManage = [];
-      this.provinceList = [];
-      this.videoUrl = "";
-      this.frameUrl = "";
-      this.launchAdvertisId = "";
-      this.linkLocationOpt = [];
-      this.productOpt = [];
+    cancel(formName) {
+        this.id = null;
+        this.$emit("cancel");
+        this.id = null;
+        this.fileList = [];
+        this.appChannelName = "";
+        this.platformName = "";
+        this.productName = "";
+        this.locationManage = [];
+        this.launchAdvertisId = "";
+        this.linkLocationOpt = [];
+        this.productOpt = [];
+        this.$nextTick(() => {
+            this.$refs[formName].resetFields();
+        });
     },
     //选择产品类型
     getChannelData() {
@@ -730,20 +623,20 @@ export default {
       });
     },
     fuzzySearch(query) {
-      if (query != "" && this.productType != "") {
+      if (query != "" && this.ruleForm.productType != "") {
         this.productOpt = [];
         this.productForm.linkName = query;
-        this.productForm.linkModel = this.productType;
+        this.productForm.linkModel = this.ruleForm.productType;
         this.getproList(this.productForm);
       } else {
         this.productOpt = [];
         this.productForm.linkName = null;
-        this.productForm.linkModel = this.productType;
+        this.productForm.linkModel = this.ruleForm.productType;
         this.getproList(this.productForm);
       }
     },
     typeSelect(val) {
-      this.linkId = "";
+      this.ruleForm.linkId = "";
       this.productForm = {
         pageSize: 200,
         pageNum: 1,
@@ -751,192 +644,120 @@ export default {
         name: null
       };
       this.productOpt = [];
-      if (
-        this.productType != "" &&
-        this.productType != null &&
-        this.productType != "undefined"
-      ) {
+      if ( this.ruleForm.productType != "" && this.ruleForm.productType != null && this.ruleForm.productType != "undefined" ) {
         this.productCodeFlag = false;
         if (val == "EXTERNAL_LINK") {
           this.inputFlag = true;
         } else {
           this.inputFlag = false;
           this.productForm.linkModel = val;
-          this.linkUrl = "";
+          this.ruleForm.linkUrl = "";
           this.getproList(this.productForm);
         }
       } else {
         this.productCodeFlag = true;
       }
     },
+    showTypeChange() {
+        this.$refs.ruleForm.clearValidate();
+    },
     //点击保存
-    save() {
-      if (
-        this.appChannelCode &&
-        this.advertisName &&
-        this.showType &&
-        this.status &&
-        this.platformCode
-      ) {
-        //渠道
-        this.appChannel.forEach(v => {
-          if (this.appChannelCode == v.label) {
-            this.appChannelName = v.value;
-          }
-        });
-        //平台
-        if (this.platformCode === "android") {
-          this.platformName = "安卓";
-        } else if (this.platformCode === "ios") {
-          this.platformName = "苹果";
-        }
-        //产品
-        if (
-          this.productType != "EXTERNAL_LINK" &&
-          this.linkId != "" &&
-          this.linkId != null
-        ) {
-          this.productOpt.forEach(v => {
-            if (this.linkId == v.id) {
-              this.productName = v.name;
-            }
-          });
-        } else {
-          this.productName = "";
-        }
-        if (this.showType === "OPENSCREEN") {
-          //开屏
-          if (this.launchAdvertisingDetails.length > 0) {
-            let obj = {
-              id: this.id != "" ? this.id : null,
-              advertisName: this.advertisName,
-              appChannelCode: this.appChannelCode,
-              appChannelName: this.appChannelName,
-              platformCode: this.platformCode,
-              platformName: this.platformName,
-              showType: this.showType,
-              launchAdvertisingDetails: this.launchAdvertisingDetails,
-              productRelationDetailsVo: {}
-            };
-            this.$emit("send", obj);
-          } else {
-            this.$alert("*号是必填项", "提交失败", {
-              confirmButtonText: "确定",
-              callback: action => {
-                this.$message({
-                  type: "info",
-                  message: `action: ${action}`
+    save(formName) {
+        this.$refs[formName].validate((valid) => {
+            if (valid) {
+            //渠道
+                this.appChannel.forEach(v => {
+                    if (this.ruleForm.appChannelCode == v.label) {
+                        this.appChannelName = v.value;
+                    }
                 });
-              }
-            });
-          }
-        } else if (this.showType === "FLASHSCREEN") {
-          //闪屏
-          if (
-            this.resolution &&
-            this.displayTime &&
-            this.productType &&
-            this.startTime &&
-            this.endTime &&
-            this.launchAdvertisingDetails.length > 0
-          ) {
-            if (this.pushUser == "PORTION") {
-              this.locationManage = [];
-              this.provinceList.forEach(v => {
-                this.locationManage.push({
-                  province: v,
-                  modelType: "ADVERT_START"
-                });
-              });
+                //平台
+                if (this.ruleForm.platformCode === "android") {
+                    this.platformName = "安卓";
+                } else if (this.ruleForm.platformCode === "ios") {
+                    this.platformName = "苹果";
+                }
+                //产品
+                if ( this.ruleForm.productType != "EXTERNAL_LINK" && this.ruleForm.linkId != "" && this.ruleForm.linkId != null ) {
+                    this.productOpt.forEach(v => {
+                        if (this.ruleForm.linkId == v.id) {
+                            this.productName = v.name;
+                        }
+                    });
+                } else {
+                    this.productName = "";
+                }
+
+                if (this.ruleForm.showType === "OPENSCREEN") {
+                    let obj = {
+                        id: this.id != "" ? this.id : null,
+                        advertisName: this.ruleForm.advertisName,
+                        appChannelCode: this.ruleForm.appChannelCode,
+                        appChannelName: this.appChannelName,
+                        platformCode: this.ruleForm.platformCode,
+                        platformName: this.platformName,
+                        showType: this.ruleForm.showType,
+                        launchAdvertisingDetails: this.ruleForm.launchAdvertisingDetails,
+                        productRelationDetailsVo: {}
+                    };
+                    this.$emit("send", obj);
+                } else if(this.ruleForm.showType === "FLASHSCREEN" ) {
+                    if (this.ruleForm.pushUser == "PORTION") {
+                        this.locationManage = [];
+                        this.ruleForm.provinceList.forEach(v => {
+                            this.locationManage.push({
+                                province: v,
+                                modelType: "ADVERT_START"
+                            });
+                        });
+                    } else {
+                        this.locationManage = [];
+                    }
+                    let obj = {
+                        id: this.id != "" && this.id != null ? this.id : null,
+                        advertisName: this.ruleForm.advertisName,
+                        appChannelCode: this.ruleForm.appChannelCode,
+                        appChannelName: this.appChannelName,
+                        platformCode: this.ruleForm.platformCode,
+                        platformName: this.platformName,
+                        showType: this.ruleForm.showType,
+                        resolution: this.ruleForm.resolution,
+                        displayTime: this.ruleForm.displayTime,
+                        productRelationDetailsVo: {
+                            productType: this.ruleForm.productType,
+                            productName: this.productName != null && this.productName != "" ? this.productName : null,
+                            linkUrl: this.ruleForm.linkUrl != null && this.ruleForm.linkUrl != "" ? this.ruleForm.linkUrl : null,
+                            linkId: this.ruleForm.linkId != null && this.ruleForm.linkId != "" ? this.ruleForm.linkId : null,
+                            modelType: "LAUNCHPAGE",
+                            id: this.productId != null && this.productId != "" ? this.productId : null
+                        },
+                        startTime: new Date(this.ruleForm.startTime).getTime(),
+                        endTime: new Date(this.ruleForm.endTime).getTime(),
+                        pushUser: this.ruleForm.pushUser,
+                        launchAdvertisingDetails: this.ruleForm.launchAdvertisingDetails,
+                        locationManage: this.locationManage
+                        };
+                    this.$emit("send", obj);
+                } else if (this.ruleForm.showType === "VIDEO") {
+                    let obj = {
+                        id: this.id,
+                        advertisName: this.ruleForm.advertisName,
+                        appChannelCode: this.ruleForm.appChannelCode,
+                        appChannelName: this.appChannelName,
+                        platformCode: this.ruleForm.platformCode,
+                        platformName: this.platformName,
+                        showType: this.ruleForm.showType,
+                        resolution: this.ruleForm.resolution,
+                        launchAdvertisingDetails: this.ruleForm.launchAdvertisingDetails,
+                        productRelationDetailsVo: {}
+                    };
+                    this.$emit("send", obj);
+                }
             } else {
-              this.locationManage = [];
+                this.$message.error("保存失败")
+                return false;
             }
-            let obj = {
-              id: this.id != "" && this.id != null ? this.id : null,
-              advertisName: this.advertisName,
-              appChannelCode: this.appChannelCode,
-              appChannelName: this.appChannelName,
-              platformCode: this.platformCode,
-              platformName: this.platformName,
-              showType: this.showType,
-              resolution: this.resolution,
-              displayTime: this.displayTime,
-              productRelationDetailsVo: {
-                productType: this.productType,
-                productName:
-                  this.productName != null && this.productName != ""
-                    ? this.productName
-                    : null,
-                linkUrl:
-                  this.linkUrl != null && this.linkUrl != ""
-                    ? this.linkUrl
-                    : null,
-                linkId:
-                  this.linkId != null && this.linkId != "" ? this.linkId : null,
-                modelType: "LAUNCHPAGE",
-                id:
-                  this.productId != null && this.productId != ""
-                    ? this.productId
-                    : null
-              },
-              startTime: new Date(this.startTime).getTime(),
-              endTime: new Date(this.endTime).getTime(),
-              pushUser: this.pushUser,
-              launchAdvertisingDetails: this.launchAdvertisingDetails,
-              locationManage: this.locationManage
-            };
-            this.$emit("send", obj);
-          } else {
-            this.$alert("*号是必填项", "提交失败", {
-              confirmButtonText: "确定",
-              callback: action => {
-                this.$message({
-                  type: "info",
-                  message: `action: ${action}`
-                });
-              }
-            });
-          }
-        } else if (this.showType === "VIDEO") {
-          //视频
-          if (this.launchAdvertisingDetails.length > 0 && this.resolution) {
-            console.log(this.launchAdvertisingDetails, "856");
-            let obj = {
-              id: this.id,
-              advertisName: this.advertisName,
-              appChannelCode: this.appChannelCode,
-              appChannelName: this.appChannelName,
-              platformCode: this.platformCode,
-              platformName: this.platformName,
-              showType: this.showType,
-              resolution: this.resolution,
-              launchAdvertisingDetails: this.launchAdvertisingDetails,
-              productRelationDetailsVo: {}
-            };
-            this.$emit("send", obj);
-          } else {
-            this.$alert("*号是必填项", "提交失败", {
-              confirmButtonText: "确定",
-              callback: action => {
-                this.$message({
-                  type: "info",
-                  message: `action: ${action}`
-                });
-              }
-            });
-          }
-        }
-      } else {
-        this.$alert("*号是必填项", "提交失败", {
-          confirmButtonText: "确定",
-          callback: action => {
-            this.$message({
-              type: "info",
-              message: `action: ${action}`
-            });
-          }
         });
-      }
     },
 
     //闪屏
@@ -963,20 +784,20 @@ export default {
       upLoadImg(formData).then(res => {
         if (res.success) {
           this.advertisLoading = false;
-          this.launchAdvertisingDetails = [];
-          this.flashScreenUrl = res.data;
-          this.launchAdvertisingDetails.push({
+          this.ruleForm.launchAdvertisingDetails = [];
+          this.ruleForm.flashScreenUrl = res.data;
+          this.ruleForm.launchAdvertisingDetails.push({
             advertisType: "IMAGE",
-            advertisUrl: this.flashScreenUrl
+            advertisUrl: this.ruleForm.flashScreenUrl
           });
         }
       });
     },
     //已选中区域删除
     handleClose(tag) {
-      this.provinceList.forEach((v, i) => {
+      this.ruleForm.provinceList.forEach((v, i) => {
         if (v === tag) {
-          this.provinceList.splice(i, 1);
+          this.ruleForm.provinceList.splice(i, 1);
         }
       });
     },
@@ -985,12 +806,12 @@ export default {
 
     //上传视屏
     uploadVideo(params) {
-      this.launchAdvertisingDetails = this.launchAdvertisingDetails.filter(
+      this.ruleForm.launchAdvertisingDetails = this.ruleForm.launchAdvertisingDetails.filter(
         (v, i) => {
           return v.advertisType != "VIDEO";
         }
       );
-      console.log(this.launchAdvertisingDetails, "946");
+      console.log(this.ruleForm.launchAdvertisingDetails, "946");
       const _file = params.file;
       const isLt5M = _file.size / 1024 / 1024 < 10;
       var formData = new FormData();
@@ -1003,11 +824,11 @@ export default {
       bigFileUpload(formData).then(res => {
         if (res && res.success) {
           this.videoLoading = false;
-          this.videoUrl = res.data;
+          this.ruleForm.videoUrl = res.data;
 
-          this.launchAdvertisingDetails.push({
+          this.ruleForm.launchAdvertisingDetails.push({
             advertisType: "VIDEO",
-            advertisUrl: this.videoUrl
+            advertisUrl: this.ruleForm.videoUrl
           });
         }
       });
@@ -1035,15 +856,15 @@ export default {
       upLoadImg(formData).then(res => {
         if (res && res.success) {
           this.frameLoading = false;
-          this.frameUrl = res.data;
-          this.launchAdvertisingDetails = this.launchAdvertisingDetails.filter(
+          this.ruleForm.frameUrl = res.data;
+          this.ruleForm.launchAdvertisingDetails = this.ruleForm.launchAdvertisingDetails.filter(
             (v, i) => {
               return v.advertisType != "FIRST_IMAGE";
             }
           );
-          this.launchAdvertisingDetails.push({
+          this.ruleForm.launchAdvertisingDetails.push({
             advertisType: "FIRST_IMAGE",
-            advertisUrl: this.frameUrl
+            advertisUrl: this.ruleForm.frameUrl
           });
         }
       });
@@ -1069,7 +890,7 @@ export default {
     },
     //点击上传 开屏图片
     upImg(res, file) {
-      this.launchAdvertisingDetails.push({
+      this.ruleForm.launchAdvertisingDetails.push({
         advertisType: "IMAGE",
         advertisUrl: file.response.data
       });
@@ -1079,9 +900,9 @@ export default {
       var url = file.response
         ? this.$ImgBaseUrl + file.response.data
         : file.url;
-      this.launchAdvertisingDetails.forEach((v, i) => {
+      this.ruleForm.launchAdvertisingDetails.forEach((v, i) => {
         if (this.$ImgBaseUrl + v.advertisUrl == url) {
-          this.launchAdvertisingDetails.splice(i, 1);
+          this.ruleForm.launchAdvertisingDetails.splice(i, 1);
         }
       });
     },
@@ -1103,7 +924,7 @@ export default {
         this.params != null &&
         this.params.showType == "FLASHSCREEN"
       ) {
-        this.productType = this.params.productRelationDetailsVo.productType;
+        this.ruleForm.productType = this.params.productRelationDetailsVo.productType;
         if (
           this.params.productRelationDetailsVo != null &&
           this.params.productRelationDetailsVo.productType != "" &&
@@ -1126,12 +947,12 @@ export default {
         } else {
           this.productCodeFlag = true;
         }
-        this.linkId =
+        this.ruleForm.linkId =
           this.params.productRelationDetailsVo.linkId != null &&
           this.params.productRelationDetailsVo.linkId != ""
             ? this.params.productRelationDetailsVo.linkId
             : null;
-        this.linkUrl =
+        this.ruleForm.linkUrl =
           this.params.productRelationDetailsVo.linkUrl != null &&
           this.params.productRelationDetailsVo.linkUrl != ""
             ? this.params.productRelationDetailsVo.linkUrl
@@ -1149,33 +970,33 @@ export default {
           this.params != null && this.params.appChannelName
             ? this.params.appChannelName
             : "";
-        this.appChannelCode =
+        this.ruleForm.appChannelCode =
           this.params != null && this.params.appChannelCode
             ? this.params.appChannelCode
             : "";
-        this.advertisName = this.params.advertisName;
-        this.showType = this.params.showType;
-        this.status = this.params.status;
-        this.platformCode = this.params.platformCode;
+        this.ruleForm.advertisName = this.params.advertisName;
+        this.ruleForm.showType = this.params.showType;
+        this.ruleForm.status = this.params.status;
+        this.ruleForm.platformCode = this.params.platformCode;
         this.platformName = this.params.platformName;
-        this.displayTime = this.params.displayTime;
-        this.resolution = this.params.resolution;
+        this.ruleForm.displayTime = this.params.displayTime;
+        this.ruleForm.resolution = this.params.resolution;
         this.productName = this.params.productName;
-        this.startTime = this.params.startTime;
-        this.endTime = this.params.endTime;
-        this.pushUser = this.params.pushUser;
+        this.ruleForm.startTime = this.params.startTime;
+        this.ruleForm.endTime = this.params.endTime;
+        this.ruleForm.pushUser = this.params.pushUser;
 
         if (
           this.params.showType == "FLASHSCREEN" &&
           this.params.pushUser === "PORTION"
         ) {
           if (this.params.locationManage.length > 0) {
-            this.provinceList = [];
+            this.ruleForm.provinceList = [];
             this.params.locationManage.forEach(v => {
-              this.provinceList.push(v.province);
+              this.ruleForm.provinceList.push(v.province);
             });
           } else {
-            this.provinceList = [];
+            this.ruleForm.provinceList = [];
           }
         }
         if (
@@ -1184,56 +1005,29 @@ export default {
         ) {
           this.fileList = [];
           this.params.launchAdvertisingDetails.forEach(v => {
-            if (this.showType == "FLASHSCREEN") {
-              this.flashScreenUrl = v.advertisUrl;
-            } else if (this.showType == "OPENSCREEN") {
+            if (this.ruleForm.showType == "FLASHSCREEN") {
+              this.ruleForm.flashScreenUrl = v.advertisUrl;
+            } else if (this.ruleForm.showType == "OPENSCREEN") {
               this.fileList.push({
                 url: this.$ImgBaseUrl + v.advertisUrl
               });
-            } else if (this.showType === "VIDEO") {
+            } else if (this.ruleForm.showType === "VIDEO") {
               if (v.advertisType === "VIDEO") {
-                this.videoUrl = v.advertisUrl;
+                this.ruleForm.videoUrl = v.advertisUrl;
               } else if (v.advertisType === "FIRST_IMAGE") {
-                this.frameUrl = v.advertisUrl;
+                this.ruleForm.frameUrl = v.advertisUrl;
               } else {
-                this.frameUrl = "";
+                this.ruleForm.frameUrl = "";
               }
             }
           });
         } else {
           this.fileList = [];
         }
-        this.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
+        this.ruleForm.launchAdvertisingDetails = this.params.launchAdvertisingDetails;
         this.locationManage = this.params.locationManage;
       } else {
-        this.id = null;
-        this.$emit("cancel");
-        this.fileList = [];
-        this.appChannelName = "";
-        this.appChannelCode = "";
-        this.advertisName = "";
-        this.showType = "";
-        this.status = "ENABLE";
-        this.platformCode = "";
-        this.platformName = "";
-        this.launchAdvertisingDetails = [];
-        this.productType = "";
-        this.displayTime = "";
-        this.linkId = "";
-        this.linkUrl = "";
-        this.productName = "";
-        this.resolution = "";
-        this.flashScreenUrl = "";
-        this.startTime = "";
-        this.endTime = "";
-        this.pushUser = "TOTAL";
-        this.locationManage = [];
-        this.provinceList = [];
-        this.videoUrl = "";
-        this.frameUrl = "";
-        this.launchAdvertisId = "";
-        this.linkLocationOpt = [];
-        this.productOpt = [];
+        this.cancel("rouleFOrm")
       }
     }
   }
@@ -1241,145 +1035,10 @@ export default {
 </script>
 
 <style lang="scss">
-.box-card {
-  // width:70%;
-  border: 0;
-  box-shadow: 0 0 0 0 !important;
-  margin: 0 auto;
-  overflow-x: auto;
-}
 
 h4 {
   height: 60px;
   line-height: 60px;
-}
-
-.card-item {
-  width: 100%; // height:60px;
-  padding: 4px 10px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  .item-text {
-    width: 200px;
-    flex-shrink: 0;
-  }
-  .item-input {
-    width: 400px;
-    .el-radio-group {
-      white-space: nowrap;
-    }
-    .el-select {
-      width: 100%;
-    }
-  }
-  .item-input-time {
-    width: 400px;
-    span {
-      width: 100%;
-      white-space: nowrap;
-    }
-    .el-input {
-      width: 85%;
-    }
-  }
-  .item-img {
-    width: 100px;
-    height: 80px;
-    display: flex;
-    align-items: center;
-    img {
-      width: 80px;
-      height: 80px;
-    }
-  }
-}
-
-.province {
-  height: auto;
-}
-
-.area {
-  width: 100%;
-  height: auto;
-  flex-direction: column;
-  margin-top: 10px;
-  padding: 5px 10px;
-  box-sizing: border-box;
-  align-items: flex-start;
-  .area-text {
-    height: 40px;
-    line-height: 40px;
-  }
-  .area-tag {
-    width: 100%;
-    max-width: 700px;
-    min-height: 200px;
-    border: 1px solid #ccc;
-    .el-tag {
-      margin: 4px;
-    }
-  }
-}
-
-.card-img {
-  height: auto;
-  .item-img {
-    width: auto;
-    height: auto;
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    box-sizing: border-box;
-    img {
-      width: 100%;
-      height: auto;
-    }
-  }
-}
-
-.card-img-list {
-  width: 100%;
-  height: auto;
-  padding: 4px 10px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  .item-text {
-    width: 200px;
-    flex-shrink: 0;
-  }
-  .item-imgList-up {
-    flex: 1;
-    .upload-demo {
-      width: 100%;
-      text-align: center;
-      .el-upload,
-      .el-upload--picture {
-        width: 120px;
-        text-align: center;
-      }
-      .el-upload-list {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        flex-wrap: wrap;
-        padding: 0 5px;
-        box-sizing: border-box;
-        .el-upload-list__item,
-        .is-success {
-          width: 45%;
-        }
-      }
-    }
-  }
-}
-
-.card-footer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>
 

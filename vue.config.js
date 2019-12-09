@@ -2,7 +2,6 @@ const ZipPlugin = require('zip-webpack-plugin') // 将文件打包称zip压缩�
 const path = require('path')
 
 module.exports = {
-
     publicPath: "./",
     configureWebpack: (config) => {
         // if (process.env.NODE_ENV === 'release') {

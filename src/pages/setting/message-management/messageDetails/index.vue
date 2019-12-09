@@ -9,7 +9,6 @@
         <el-button size="mini" type="warning" @click="$router.go(-1)">返回</el-button>
       </div>
     </div>
-    
     <el-button
       v-if="infoType"
       @click="editChange"
@@ -19,8 +18,6 @@
     >编辑</el-button>
     <div class="formContent">
       <span class="boldTitle">基本信息</span>
-      <br />
-      <br />
       <el-form labelWidth="100px" label-position="left">
         <el-form-item label="标题:">{{infoObj.title}}</el-form-item>
         <el-form-item label="内容:">{{infoObj.pushContent}}</el-form-item>
@@ -28,8 +25,6 @@
         <el-form-item label="推送类型:">{{infoObj.pushWay}}</el-form-item>
         <template v-if="infoObj.linkUrl || infoObj.linkName">
           <span class="boldTitle">消息类型</span>
-          <br />
-          <br />
           <el-form-item label="点击类型:">{{infoObj.productType}}</el-form-item>
           <el-form-item label="外部链接:" v-if="infoObj.linkUrl">
             <a :href="infoObj.linkUrl" target="_blank">{{infoObj.linkUrl}}</a>
@@ -37,17 +32,11 @@
           <el-form-item label="产品名称:" v-else>{{infoObj.linkName}}</el-form-item>
         </template>
         <span class="boldTitle">设定发送时间</span>
-        <br />
-        <br />
         <el-form-item label="发送时间:">{{infoObj.sendTime}}</el-form-item>
         <span class="boldTitle">收信联系人</span>
-        <br />
-        <br />
         <el-form-item label="用户选择:">{{infoObj.sendTarget}}</el-form-item>
         <template v-if="infoObj.sendLocation">
           <span class="boldTitle">消息推广地区选择</span>
-          <br />
-          <br />
           <el-form-item label="地区类型:">{{infoObj.changeLocation}}</el-form-item>
           <el-form-item v-if="infoObj.sendLocation" label="省份/城市:">{{infoObj.sendLocation}}</el-form-item>
         </template>
@@ -64,7 +53,6 @@ export default {
   data() {
     return {
       env: null,
-
       infoType: false, //判断详情信息是否已经请求到
       pageName: "", // 当前页面名字
       infoObj: {}, //请求的 数据对象
@@ -139,30 +127,16 @@ export default {
 };
 </script>
 <style scoped lang="scss">
+.componentWaper {
+  background: white;
+}
 .formContent {
   padding: 80px;
   overflow: auto;
-
-  // 返回按钮
-  .goBack {
-    background: #409eff;
-    width: 60px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    float: right;
-    margin-right: 20px;
-    color: white;
-    position: relative;
-    z-index: 4;
-    &:hover {
-      cursor: pointer;
-    }
-  }
   // 加黑标题
   .boldTitle {
     font-weight: bold;
+    padding-bottom:20px;
     display: block;
     position: relative;
     left: -20px;

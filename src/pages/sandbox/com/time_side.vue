@@ -1,0 +1,157 @@
+<template>
+  <el-form :inline="true" :rules="rules" ref="ruleForm" :model="ruleForm" style="display:flex;">
+    <el-form-item prop="type">
+      <el-radio-group v-model="ruleForm.type" style="width:160px;padding:12px 0;">
+        <el-radio label="日期"></el-radio>
+        <el-radio label="周期"></el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <div v-if="ruleForm.type==='日期'" style="padding-left:20px;width:100%;display:flex">
+      <el-form-item prop="startTime" label-width="30px">
+        <el-date-picker v-model="ruleForm.startTime" size="mini" type="datetime" placeholder="开始时间"></el-date-picker>
+      </el-form-item>
+      <span style="padding:0 10px;">至</span>
+      <el-form-item prop="endTime" label-width="0">
+        <el-date-picker
+          v-model="ruleForm.endTime"
+          size="mini"
+          type="datetime"
+          placeholder="结束时间(选填)"
+        ></el-date-picker>
+      </el-form-item>
+    </div>
+    <el-form-item v-if="ruleForm.type==='周期'" style="padding-left:20px;width:100%;" prop="zhouqi">
+      <el-select
+        multiple
+        filterable
+        size="mini"
+        placeholder="选择时间"
+        v-model="ruleForm.zhouqi"
+        style="width:400px"
+      >
+        <el-option v-for="item in list" :key="item.value" :label="item.label" :value="item.value"></el-option>
+      </el-select>
+    </el-form-item>
+
+    <el-popover placement="top-end" width="160" v-model="visible" v-if="ruleForm.type!==''">
+      <p>确定删除吗？</p>
+      <div style="text-align: right; margin: 0">
+        <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+        <el-button type="primary" size="mini" @click="timeAction({type:'delete'})">确定</el-button>
+      </div>
+      <i class="el-icon-delete isI" slot="reference" title="删除"></i>
+    </el-popover>
+  </el-form>
+</template>  
+<script>
+export default {
+  props: {
+    data: Object
+  },
+  data() {
+    var check_startTime = (rule, value, callback) => {
+      if (this.ruleForm.type === "日期") {
+        let start = this.ruleForm.startTime,
+          end = this.ruleForm.endTime;
+        if (!start) {
+          callback(new Error("请选择开始时间！"));
+        } else if (end && end <= start) {
+          callback(new Error("开始时间不能晚于结束时间！"));
+        } else {
+          callback();
+        }
+      }
+    };
+    var check_endTime = (rule, value, callback) => {
+      if (this.ruleForm.type === "日期") {
+        let start = this.ruleForm.startTime,
+          end = this.ruleForm.endTime;
+        if (!end) {
+          callback(new Error("请选择结束时间！"));
+        } else if (start && end <= start) {
+          callback(new Error("结束时间不能早于开始时间！"));
+        } else {
+          callback();
+        }
+      }
+    };
+    var check_zhouqi = (rule, value, callback) => {
+      if (this.ruleForm.type === "周期") {
+        if (value.length === 0) {
+          callback(new Error("请输入周期时间！"));
+        } else {
+          callback();
+        }
+      }
+    };
+    var check_type = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("请选择时间类型！"));
+      } else {
+        callback();
+      }
+    };
+
+    return {
+      ruleForm: {
+        type: "",
+        startTime: "",
+        endTime: "",
+        zhouqi: []
+      },
+      rules: {
+        type: { validator: check_type, trigger: "blur" },
+        startTime: { validator: check_startTime, trigger: "change" },
+        endTime: { validator: check_endTime, trigger: "change" },
+        zhouqi: { validator: check_zhouqi, trigger: "change" }
+      },
+
+      visible: false,
+      list: [
+        {
+          value: "value1",
+          label: "label1"
+        },
+        {
+          value: "value2",
+          label: "label3"
+        }
+      ]
+    };
+  },
+  methods: {
+    timeAction(obj) {
+      this.$emit("timeaction", { type: obj.type, data: this.data });
+    },
+    // 根据标签的数据变动生成数据
+    save() {
+      this.$refs.ruleForm.validate(valid => {
+        if (valid) {
+          this.data.type = this.ruleForm.type;
+          if (this.ruleForm.type === "周期") {
+            this.data.time = this.ruleForm.zhouqi;
+          } else {
+            this.data.time[0] = this.ruleForm.startTime;
+            this.data.time[1] = this.ruleForm.endTime;
+          }
+        }
+      });
+    }
+  }
+};
+</script>
+<style scoped>
+.isI {
+  font-size: 22px;
+  color: rgb(78, 75, 75);
+  padding: 2px;
+  border-radius: 3px;
+}
+.isI:hover {
+  font-size: 22px;
+  cursor: pointer;
+  background: rgb(134, 134, 134);
+  color: #fff;
+}
+</style>

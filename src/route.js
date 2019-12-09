@@ -3,48 +3,40 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 import login from "./pages/layout/login.vue";
-import home from "./pages/layout/home.vue";
 
 import {
     Message
 } from 'element-ui';
-
 
 // admin 模块路由
 let admin = [{
         name: 'user', // 用户管理
         path: '/home/admin/user',
         component: resolve => require(['./pages/admin/user/user.vue'], resolve),
-
     },
     {
         name: 'menu', // 菜单管理
         path: '/home/admin/menu',
         component: resolve => require(['./pages/admin/menu/menu.vue'], resolve),
-
     },
     {
         name: 'rule', // 角色管理
         path: '/home/admin/role',
         component: resolve => require(['./pages/admin/role/role.vue'], resolve),
-
     },
     {
         name: 'department', // 部门管理
         path: '/home/admin/department',
         component: resolve => require(['./pages/admin/department/department.vue'], resolve),
-
     }, {
         name: 'dict', // 字典管理
         path: '/home/admin/dict',
         component: resolve => require(['./pages/admin/dict/dict.vue'], resolve),
-
     },
     {
         name: 'info', // 修改信息
         path: '/home/admin/info',
         component: resolve => require(['./pages/admin/info/info.vue'], resolve),
-
     },
 ]
 
@@ -88,7 +80,6 @@ let marketing = [{
         path: '/home/marketing/coupon/coupon_group',
         component: resolve => require(['./pages/marketing/coupon_info/coupon_group.vue'], resolve)
     },
-
     {
         name: 'coupon_list', // 卡券列表
         path: '/home/marketing/coupon/list',
@@ -147,7 +138,9 @@ let setting = [{
             }
         ]
     },
-
+    /**
+     * app配置
+     */
     {
         name: '创建app按钮', // 创建app按钮
         path: '/home/setting/app-button/add',
@@ -173,13 +166,42 @@ let setting = [{
         name: '创建活动按钮', // 创建活动按钮
         path: '/home/setting/activity-button/add',
         component: resolve => require(['./pages/setting/activity_button_add'], resolve),
-
     },
     {
         name: '活动按钮列表', // 活动按钮列表
         path: '/home/setting/activity-button/list',
         component: resolve => require(['./pages/setting/activity_button_list'], resolve),
+    },
+    // app-广告位置模块
+    {
+        name: '广告位置列表',
+        path: '/home/banner/:type',
+        component: resolve => require(['./pages/setting/app_advertising_position'], resolve),
+    },
+    //app-广告图模块
+    {
+        name: '广告图列表',
+        path:'/home/banner/:type/list',
+        component: resolve => require(['./pages/setting/app_mapList'], resolve),
+    },
+    // app-新增广告
+    {
+        name:'新增广告',
+        path:'/home/banner/:type/list/add',
+        component: resolve => require(['./pages/setting/app_mapList/add_map'], resolve),
 
+    },
+    // app-系统升级弹框
+    {
+        name:'升级弹框',
+        path:'/home/setting/banner-upgrade/list',
+        component: resolve => require(['./pages/setting/app_upgrade_box'], resolve),
+    },
+    // app-功能区管理
+    {
+        name:"app-底部菜单",
+        path:'/home/setting/banner-menu/list',
+        component: resolve => require(['./pages/setting/app_function'],resolve)
     },
     {
         name: '创建爆款', // 创建爆款
@@ -323,8 +345,8 @@ let setting = [{
     },
     // 父子级列表
     {
-        name: '关联列表',
-        path: '/home/setting/parent/tree/list', 
+        name: '值域配置列表',
+        path: '/home/setting/parent/relation/list',
         component: resolve => require(['./pages/setting/relation-list'], resolve),
     },
     // 短信规则列表
@@ -338,12 +360,6 @@ let setting = [{
         name: '短信模版列表',
         path: '/home/setting/sms/template/list',
         component: resolve => require(['./pages/setting/sms-template-list'], resolve),
-    },
-    // 预警中心
-    {
-        name: '系统预警配置',
-        path: '/home/alarm/config',
-        component: resolve => require(['./pages/alarm/alarmConfig/'], resolve),
     },
     // 版本管理
     {
@@ -413,7 +429,6 @@ let setting = [{
         component: resolve => require(['./pages/setting/questionDispose'], resolve)
     }
 ]
-
 // 产品中心 模块路由
 let Products_Management = [{ // 存款管理
         name: 'deposit',
@@ -528,6 +543,11 @@ let Products_Management = [{ // 存款管理
                 name: 'money_fund_mainPage',
                 path: '/home/Products_Management/money_fund/mainPage',
                 component: resolve => require(['./pages/Products_Management/money_fund/mainPage.vue'], resolve)
+            },
+            {
+                name: '关联列表',
+                path: '/home/setting/parent/tree/list',
+                component: resolve => require(['./pages/setting/relation-list'], resolve),
             },
             {
                 name: 'money_fund_step1',
@@ -693,23 +713,6 @@ let Products_Management = [{ // 存款管理
 
 
 ]
-// // 异业后端管理
-// let channel = [{
-//         name: 'channel_index',
-//         path: '/home/channel/index',
-//         component: resolve => require(['./pages/channel/channel_index/channel_index.vue'], resolve)
-//     },
-//     {
-//         name: 'channel_opening',
-//         path: '/home/channel/opening',
-//         component: resolve => require(['./pages/channel/channel_opening/channel_opening.vue'], resolve)
-//     },
-//     {
-//         name: 'home/channel_transaction',
-//         path: '/home/channel/transaction',
-//         component: resolve => require(['./pages/channel/channel_transaction/channel_transaction.vue'], resolve)
-//     }
-// ]
 // member 模块路由
 let member = [{
         name: 'badgewall_create',
@@ -745,6 +748,11 @@ let member = [{
         path: '/home/member/manager_info',
         component: resolve => require(['./pages/member/manager_info/manager_info.vue'], resolve),
 
+    },
+    {
+        name: '会员登录记录',
+        path: '/home/member/member-login-record/list',
+        component: resolve => require(['./pages/member/loginRecord'],resolve)
     },
     {
         name: 'mission_create',
@@ -797,6 +805,55 @@ let log = [{
         component: resolve => require(['./pages/log/pointList.vue'], resolve),
     }
 ]
+//沙盒
+let sandbox = [{
+        name: 'platform', // 平台配置列表
+        path: '/home/sandbox/platform/list',
+        component: resolve => require(['./pages/sandbox/platform.vue'], resolve),
+    },
+    {
+        name: 'platform_add', // 新增配置
+        path: '/home/sandbox/platform/add_platform',
+        component: resolve => require(['./pages/sandbox/platform_add.vue'], resolve),
+    },
+    { 
+        name: 'sandbox_bank', // 银行管理
+        path: '/home/sandbox/platform/bank',
+        component: resolve => require(['./pages/sandbox/bank.vue'], resolve),
+    },
+    {
+        name: 'bank_product', // 银行产品管理
+        path: '/home/sandbox/platform/product',
+        component: resolve => require(['./pages/sandbox/bankproduct.vue'], resolve),
+    },
+    {
+        name: 'add_bank_product', // 新增配置
+        path: '/home/sandbox/platform/toAdd',
+        component: resolve => require(['./pages/sandbox/add_bank_product.vue'], resolve),
+    },
+]
+//资讯中心
+let information = [{
+    name: '文章管理',
+    path: '/home/information/essay/list',
+    component: resolve => require(['./pages/information/article'], resolve)
+},{
+    name: '文章栏目管理',
+    path: '/home/information/essay/title/list',
+    component: resolve => require(['./pages/information/articleType'], resolve)
+},{
+    name: '文章标签管理',
+    path: '/home/information/essay/lable/list',
+    component: resolve => require(['./pages/information/articleTags'], resolve)
+},{
+    name: '文章评论管理',
+    path: '/home/information/essay/discuss/list',
+    component: resolve => require(['./pages/information/articleComments'], resolve)
+},{
+    name: '新闻设置',
+    path: '/home/information/essay/new-set/list',
+    component: resolve => require(['./pages/information/news'], resolve)
+}]
 // 主框架路由
 let router = new Router({
     mode: 'hash',
@@ -812,7 +869,7 @@ let router = new Router({
         {
             name: 'home',
             path: '/home',
-            component: home,
+            component: resolve => require(['./pages/layout/home.vue'], resolve),
             meta: {
                 requireAuth: true, // 添加该字段，表示进入这个路由是需要登录的
             },
@@ -846,17 +903,28 @@ let router = new Router({
                     component: resolve => require(['./pages/setting/setting.vue'], resolve),
                     children: [...setting]
                 },
-                // {
-                //     name: 'channel',
-                //     path: '/home/channel',
-                //     component: resolve => require(['./pages/channel/channel.vue'], resolve),
-                //     children: [...channel]
-                // },
+                {
+                    name: 'sandbox',
+                    path: '/home/sandbox',
+                    component: resolve => require(['./pages/sandbox/shahe_mainpage.vue'], resolve),
+                    children: [...sandbox]
+                },
                 {
                     name: 'log',
                     path: '/log',
                     component: resolve => require(['./pages/log/log.vue'], resolve),
                     children: [...log]
+                },
+                {
+                    name: '预警系统配置',
+                    path: '/home/alarm/config',
+                    component: resolve => require(['./pages/alarm/alarmConfig/index.vue'], resolve),
+                },
+                {
+                    name: 'information',
+                    path: '/home/information',
+                    component: resolve => require(['./pages/information/index.vue'],resolve),
+                    children: [...information]
                 }
             ]
 

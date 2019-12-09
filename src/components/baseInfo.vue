@@ -583,7 +583,7 @@
       :close-on-click-modal="false"
       title="编辑"
       :visible.sync="bianjieDialog"
-      width="840px"
+      width="900px"
       :before-close="toClosebianjieDialog"
     >
       <el-form

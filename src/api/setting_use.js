@@ -5,6 +5,8 @@ import {
     AxiosPut
 } from '../sets/axiosMethods';
 
+
+
 //获取渠道
 export const getAppChannel = (type) => {
     return AxiosGet(`/admin/dict/type/${type}`)
@@ -45,6 +47,7 @@ export const app_button_status = (data) => {
 }
 
 
+
 //新增app按钮
 export const app_button_add = (data) => {
     return AxiosPost(`setting/manager/app-button`, data)
@@ -58,6 +61,78 @@ export const app_button_upd = (data) => {
 //删除app按钮
 export const app_button_del = (id) => {
     return AxiosDelete(`setting/manager/app-button/${id}`)
+}
+
+/**
+ * app配置-广告图位置模块
+ */
+// app-广告图位置-列表
+export const position_map_list = (data) => {
+    return AxiosPost(`configuration/bannerPosition/select`, data)
+}
+// app-广告图位置-添加
+export const position_map_add = (data) => {
+    return AxiosPost(`configuration/bannerPosition`,data)
+}
+// app-广告图位置-修改
+export const position_map_upd = (data) => {
+    return AxiosPut(`configuration/bannerPosition`,data)
+}
+// app-广告图位置-删除
+export const position_map_del = (data) => {
+    return AxiosPost(`configuration/bannerPosition/delete`,data)
+}
+// app-广告图位置-详情
+export const position_map_detail = (id) => {
+    // let obj = {
+    //     id:id
+    // }
+    return AxiosGet(`configuration/bannerPosition/${id}`)
+}
+/**
+ * app配置-广告图模块
+ */
+// app-广告图-列表
+export const activity_map_list = (data) => {
+    return AxiosPost(`configuration/banner/select`, data)
+}
+// app-广告图-添加
+export const activity_map_add = (data) => {
+    return AxiosPost(`configuration/banner`,data)
+}
+// app-广告图-修改
+export const activity_map_upd = (data) => {
+    return AxiosPut(`configuration/banner`,data)
+}
+// app-广告图-删除
+export const activity_map_del = (id) => {
+    return AxiosDelete(`configuration/banner/${id}`)
+}
+// app-广告图-详情
+export const activity_map_detail = (id) => {
+    return AxiosGet(`configuration/banner/${id}`)
+}
+/**
+ * app配置-升级弹框
+ */
+// app-升级弹框-更新弹框
+export const upgrade_box_add = (data) => {
+    return AxiosPost(`configuration/bannerUpgrade`,data)
+}
+// app-升级弹框-查询最新一条信息
+export const upgrade_box_detail = (id) => {
+    return AxiosGet(`configuration/bannerUpgrade/${id}`)
+}
+/**
+ * app配置-底部菜单和导航条
+ */
+// app-创建底部菜单和导航条
+export const bannerMenu_add = (data) => {
+    return AxiosPost(`configuration/bannerMenu`,data)
+}
+// app-查询所有的底部菜单和导航条
+export const bannerMenu_list = (data) => {
+    return AxiosGet(`configuration/bannerMenu`,data)
 }
 
 
@@ -95,45 +170,44 @@ export const activity_button_upd = (data) => {
 
 //爆款获取列表数据
 export const explosive_list = (data) => {
-    return AxiosGet('setting/manager/explosive', data)
+    return AxiosGet('product/manager/explosive', data)
 }
 
 //爆款删除
 export const explosive_delete = (id) => {
-    return AxiosDelete(`setting/manager/explosive/${id}`)
+    return AxiosDelete(`product/manager/explosive/${id}`)
 }
 
 //新增爆款
 export const explosive_add = (obj) => {
-    return AxiosPost(`setting/manager/explosive`, obj)
+    return AxiosPost(`product/manager/explosive`, obj)
 }
 
 //修改爆款产品
 export const explosive_updata = (obj) => {
-    return AxiosPut(`setting/manager/explosive`, obj)
+    return AxiosPut(`product/manager/explosive`, obj)
 }
 
 //新手专享
 
 //新手列表
 export const commend_list = (data) => {
-    return AxiosGet(`setting/manager/explosive`, data)
+    return AxiosGet(`product/manager/explosive`, data)
 }
 
 //新增新手
 export const commend_add = (obj) => {
-    return AxiosPost(`setting/manager/explosive`, obj)
+    return AxiosPost(`product/manager/explosive`, obj)
 }
 
 //修改新手产品
 export const commend_updata = (obj) => {
-    console.log(obj.dataType)
-    return AxiosPut(`setting/manager/explosive`, obj)
+    return AxiosPut(`product/manager/explosive`, obj)
 }
 
 //删除新手
 export const commend_delete = (id) => {
-    return AxiosDelete(`setting/manager/explosive/${id}`)
+    return AxiosDelete(`product/manager/explosive/${id}`)
 }
 
 //余额宝
@@ -875,4 +949,12 @@ export const questionDispose_updata = (data) => {
 
 export const questionDispose_delete = (id) => {
     return AxiosDelete(`/setting/manager/question-dispose/${id}`)
+}
+
+
+
+//  会员登录记录
+
+export const login_record_list = (data) => {
+    return AxiosGet(`/member/manager/login-record`, data)
 }

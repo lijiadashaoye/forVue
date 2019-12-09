@@ -283,3 +283,78 @@ export const spreadLocationList = [
     value: "台湾"
   }
 ] 
+/**
+ * app 静态数据
+ */
+// 广告类型数据
+export const bannerTypeList = [
+  {
+    name:'全部',
+    value:''
+  },
+  {
+    name:'单图弹窗',
+    value:'0'
+  },
+  {
+    name:'单图广告位',
+    value:'1'
+  },
+  {
+    name:'多图广告位',
+    value:'2'
+  },
+  {
+    name:'升级弹窗',
+    value:'3'
+  },
+  {
+    name:'功能区icon',
+    value:'4'
+  }
+]
+// 广告位状态
+export const bannerStatus = [
+  {
+    name:'全部',
+    value:''
+  },
+  {
+    name:'启用',
+    value:'0'
+  },
+  {
+    name:'不启用',
+    value:'1'
+  }
+]
+// 终端类型
+export const terminalType = [
+  {
+    name:'全部',
+    value:''
+  },
+  {
+    name:'比财APP',
+    value:'0'
+  },
+  {
+    name:'亚财APP',
+    value:'1'
+  }
+]
+// 系统类型
+export const sysTypeList = [
+  {
+    name:'通用',
+    value:'0'
+  },
+  {
+    name:'IOS',
+    value:'1'
+  },
+  {
+    name:'Android',
+    value:'2'
+  }
+]

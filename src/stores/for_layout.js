@@ -3,7 +3,7 @@ const state = {
     titles: '',
     asideState: true,
     reGetAsideData: 0,
-    whicePath: '' // 记录上一次的路由路径
+    areaList: []
 };
 
 // 存放可以被组件直接将名字作为属性使用的函数
@@ -26,7 +26,7 @@ const mutations = {
     set_title: (state, data) => {
         state.titles = data;
         sessionStorage.setItem('road', data)
-    },
+    }
 }
 // 异步执行状态变更
 const actions = {
@@ -139,7 +139,8 @@ const actions = {
             "/product/institution/list", // 机构列表 1
             '/product/institution/topList', // 获取隶属机构数据 2
             '/log/common/area/tree/two', // 区域数据 3
-            '/product/product_currency/all_currency' // 币种 4
+            '/product/product_currency/all_currency', // 币种 4
+            "/log/common/area/tree/three" // 具体到市的区域数据 5
         ]
 
         arr2.forEach((str) => {
@@ -277,6 +278,27 @@ const actions = {
                 obj.bizhong = []
             }
 
+            if (kk2[5]) {
+                obj.china = kk2[5].filter(tar => tar.adcode === '100000')[0].children
+                    .map(item => {
+                        let obj = {
+                            adcode: item.adcode,
+                            name: item.name,
+                            children: []
+                        };
+                        if (item.children) {
+                            obj.children = item.children.map(tar => ({
+                                adcode: tar.adcode,
+                                name: tar.name
+                            }));
+                        }
+                        return obj;
+                    });
+            } else {
+                obj.bizhong = []
+            }
+
+
             obj.qianyueList = [{
                     label: "是",
                     value: "YES"
@@ -288,10 +310,16 @@ const actions = {
             ];
 
             obj.forMax = []
+            obj.forAge = []
             obj.rule_symbol.forEach(tar => {
                 switch (tar.value) {
                     case "&lt":
                         obj.forMax.push({
+                            label: tar.label,
+                            fuhao: "<",
+                            value: tar.value
+                        });
+                        obj.forAge.push({
                             label: tar.label,
                             fuhao: "<",
                             value: tar.value
@@ -301,6 +329,25 @@ const actions = {
                         obj.forMax.push({
                             label: tar.label,
                             fuhao: "≤",
+                            value: tar.value
+                        });
+                        obj.forAge.push({
+                            label: tar.label,
+                            fuhao: "≤",
+                            value: tar.value
+                        });
+                        break;
+                    case "&gt":
+                        obj.forAge.push({
+                            label: tar.label,
+                            fuhao: ">",
+                            value: tar.value
+                        });
+                        break;
+                    case "&ge":
+                        obj.forAge.push({
+                            label: tar.label,
+                            fuhao: "≥",
                             value: tar.value
                         });
                         break;

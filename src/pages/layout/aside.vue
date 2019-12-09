@@ -142,22 +142,22 @@ export default {
     toRoute(key, keyPath) {
       let arr = [];
       let dataArr = this.asideData,
-        obj = null,
-        digui = data_arr => {
-          data_arr.forEach(item => {
-            if (item.path === key) {
-              obj = item;
-            } else {
-              if (keyPath.includes(item.path)) {
-                arr.push(item.label);
-              }
-              digui(item.children);
+        obj = null;
+
+      let digui = data_arr => {
+        data_arr.forEach(item => {
+          if (item.path === key) {
+            obj = item;
+          } else {
+            if (keyPath.includes(item.path)) {
+              arr.push(item.label);
             }
-          });
-        };
+            digui(item.children);
+          }
+        });
+      };
       digui(dataArr);
       this.$store.commit("set_title", arr.join(" > ") + " > "); // 变更面包屑导航
-
       sessionStorage.setItem("page", obj.label);
       this.$router.push({ path: obj.path });
       sessionStorage.setItem("now", this.$route.path);
@@ -168,6 +168,7 @@ export default {
       if (this.asideData) {
         let digui = tar => {
           for (let i = tar.length; i--; ) {
+            // if (!tar[i].path) continue;
             let path1 = new RegExp(tar[i].path),
               kk = path1.test(paths);
             if (kk) {

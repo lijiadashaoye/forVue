@@ -6,7 +6,11 @@ import {
     messageType,
     sendType,
     pushType,
-    changeLocationType
+    changeLocationType,
+    terminalType,
+    bannerStatus,
+    bannerTypeList,
+    sysTypeList
 } from '@/constant.js'
 
 /**
@@ -41,6 +45,18 @@ export function defaultChange(value, type, arrName) {
             break;
         case 'changeLocationType':
             forArr = changeLocationType;
+            break;
+        case 'terminalType':
+            forArr = terminalType;
+            break;
+        case 'bannerStatus':
+            forArr = bannerStatus;
+            break;
+        case 'bannerTypeList':
+            forArr = bannerTypeList;
+            break;
+        case 'sysTypeList':
+            forArr = sysTypeList;
             break;
     }
     for (let item of forArr) {

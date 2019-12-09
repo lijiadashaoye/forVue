@@ -148,6 +148,9 @@
         <el-form-item label="显示数量" prop="showNum">
           <el-input-number size="mini" v-model="addForm.showNum" :min="0" :max="10"></el-input-number>
         </el-form-item>
+        <el-form-item label="排序" prop="sort">
+          <el-input v-model="addForm.sort" placeholder="请输入小于10的数字"></el-input>
+        </el-form-item>
         <el-form-item label="显示问题" prop="questionInfoListIds">
           <el-select
             v-model="addForm.questionInfoListIds"
@@ -217,6 +220,7 @@ export default {
         questionType: "",
         status: "",
         showNum: 0,
+        sort: null,
         questionInfoListIds: []
       },
       addRules: {
@@ -236,7 +240,8 @@ export default {
         status: [{ required: true, message: "请选择上下架", trigger: "blur" }],
         showNum: [
           { required: true, message: "请选择显示数量", trigger: "blur" }
-        ]
+        ],
+        sort: [{ pattern: /^([0-9]|10)$/,  message: "只能输入大于等于0小于10的正整数", trigger: "blur" }]
       },
       appList: [],
       entryTypeList: [],
@@ -283,46 +288,51 @@ export default {
       pageNum: this.$store.state.questionDispose.questionList.pageNum
     });
     this.$store.state.questionDispose.questionList.data.title = [
-      {
-        title: "Id",
-        key: "id",
-        minWidth: "80"
-      },
-      {
-        title: "渠道",
-        key: "appChannelName",
-        minWidth: "100"
-      },
-      {
-        title: "平台",
-        key: "platformName",
-        minWidth: "100"
-      },
-      {
-        title: "入口名称",
-        key: "entryName",
-        minWidth: "120"
-      },
-      {
-        title: "问题类型",
-        key: "questionName",
-        minWidth: "160"
-      },
-      {
-        title: "上下架",
-        key: "statusCN",
-        minWidth: "100"
-      },
-      {
-        title: "创建时间",
-        key: "gmtCreated",
-        minWidth: "160"
-      },
-      {
-        title: "修改时间",
-        key: "gmtModified",
-        minWidth: "160"
-      }
+        {
+            title: "Id",
+            key: "id",
+            minWidth: "80"
+        },
+        {
+            title: "渠道",
+            key: "appChannelName",
+            minWidth: "100"
+        },
+        {
+            title: "平台",
+            key: "platformName",
+            minWidth: "100"
+        },
+        {
+            title: "入口名称",
+            key: "entryName",
+            minWidth: "120"
+        },
+        {
+            title: "问题类型",
+            key: "questionName",
+            minWidth: "160"
+        },
+        {
+            title: "上下架",
+            key: "statusCN",
+            minWidth: "100"
+        },
+        {
+            title: '排序',
+            key: 'sort',
+            minWidth: '80'
+        },
+        {
+            title: "创建时间",
+            key: "gmtCreated",
+            minWidth: "160"
+        },
+        {
+            title: "修改时间",
+            key: "gmtModified",
+            minWidth: "160"
+        }
     ];
   },
   methods: {
@@ -445,10 +455,10 @@ export default {
             (this.addForm.questionType = res.data.questionType),
             (this.addForm.status = res.data.status),
             (this.addForm.showNum = res.data.showNum),
+            (this.addForm.sort = res.data.sort),
             (this.addForm.questionInfoListIds = []);
-          res.data.infoListVos &&
-            res.data.infoListVos.forEach(v => {
-              this.addForm.questionInfoListIds.push(v.id);
+            res.data.infoListVos && res.data.infoListVos.forEach(v => {
+                this.addForm.questionInfoListIds.push(v.id);
             });
           // this.addForm.questionInfoListIds = res.data.infoListVos != [] && res.data.infoListVos != null ? res.data.infoListVos : [];
         }
@@ -494,7 +504,8 @@ export default {
             questionName: this.questionName,
             status: this.addForm.status,
             showNum: this.addForm.showNum,
-            questionInfoListIds: this.addForm.questionInfoListIds
+            questionInfoListIds: this.addForm.questionInfoListIds,
+            sort: this.addForm.sort
           };
           if (this.addFlag) {
             //新建

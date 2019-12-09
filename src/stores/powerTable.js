@@ -26,6 +26,8 @@ const mutations = {
     },
     // 获取权限
     USERDO(state,data) {
+        state.tableInfo.data.custom = [];
+        state.tableInfo.data.quanxian = [];
         let localInfo = getPremissions();
         let jurisdiction = JSON.parse(localInfo);
         for (let item of data) {

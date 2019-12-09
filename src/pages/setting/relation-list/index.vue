@@ -164,7 +164,7 @@ export default {
     this.getList();
   },
   computed: {
-    nowTableInfo: () => {
+    nowTableInfo: function() {
       this.tableInfo.data.list = this.tableInfo.data.list.map(item => {
         item.linkType = defaultChange(item.linkType, true, "linkTypeArr");
         return item;

@@ -3,7 +3,7 @@
     <el-table
       ref="isTable"
       :stripe="true"
-      :data="inputData.data.list"
+      :data="linshiArr"
       :max-height="setMaxHeight"
       :height="setMaxHeight"
       tooltip-effect="dark"
@@ -90,7 +90,7 @@
                 <video width="40" height="40" v-if="tar.type=='mp4'">
                   <source :src="ImgBaseUrl +tar.img" type="video/mp4" />
                 </video>
-                <div class="type_text"> {{`( ${tar.type} )`}}</div>
+                <div class="type_text">{{`( ${tar.type} )`}}</div>
               </div>
             </li>
           </ul>
@@ -184,6 +184,9 @@ export default {
   },
   data() {
     return {
+      dragTar: null,
+      linshiArr: [],
+      dragArr: [],
       setMaxHeight: null, // 设置表格的 maxHeight
       caozuoWith: 0, // 操作那一栏的宽度
       loadEnd: false,
@@ -200,6 +203,16 @@ export default {
   created() {
     this.ImgBaseUrl = this.$ImgBaseUrl;
   },
+  watch: {
+    inputData: {
+      handler(newName) {
+        this.linshiArr = [...newName.data.list];
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+
   methods: {
     // 图片，视频预览窗口
     show_media(item) {
@@ -318,6 +331,36 @@ export default {
         this.setMaxHeightFn();
       });
     });
+
+    // 实现表格可拖动
+    if (this.inputData.dragable) {
+      let that = this;
+      let digui2 = () => {
+        let kk = document.querySelectorAll(".el-table__row"),
+          tarH;
+        if (kk.length) {
+          kk.forEach(tar => {
+            tar.draggable = true;
+            tar.addEventListener("dragstart", e => {
+              tarH = e.target.offsetHeight; // 取得一个tr的高
+              that.dragArr = [...that.linshiArr];
+              that.dragTar = that.dragArr.splice(e.target.rowIndex, 1)[0];
+            });
+            tar.addEventListener("dragend", e => {
+              let offsetY = Math.floor(e.layerY / tarH); // layerY 为鼠标举例当前父元素top的距离
+              if (offsetY >= 0 && offsetY <= that.linshiArr.length) {
+                that.dragArr.splice(offsetY, 0, that.dragTar);
+                that.linshiArr = [...that.dragArr];
+                this.$emit("tableEmit", { type: "drag", data: that.dragTar });
+              }
+            });
+          });
+        } else {
+          setTimeout(digui2, 300);
+        }
+      };
+      digui2();
+    }
   }
 };
 </script>
