@@ -1,40 +1,35 @@
 <template>
-  <el-form :inline="true" :rules="rules" ref="ruleForm" :model="ruleForm" style="display:flex;">
+  <el-form :inline="true" :rules="rules" ref="inData" :model="inData" style="display:flex;">
     <el-form-item prop="type">
-      <el-radio-group v-model="ruleForm.type" style="width:160px;padding:12px 0;">
+      <el-radio-group v-model="inData.type" style="width:160px;padding:12px 0;">
         <el-radio label="日期"></el-radio>
         <el-radio label="周期"></el-radio>
       </el-radio-group>
     </el-form-item>
 
-    <div v-if="ruleForm.type==='日期'" style="padding-left:20px;width:100%;display:flex">
+    <div v-if="inData.type==='日期'" style="width:100%;display:flex">
       <el-form-item prop="startTime" label-width="30px">
-        <el-date-picker v-model="ruleForm.startTime" size="mini" type="datetime" placeholder="开始时间"></el-date-picker>
+        <el-date-picker v-model="inData.startTime" size="mini" type="datetime" placeholder="开始时间"></el-date-picker>
       </el-form-item>
-      <span style="padding:0 10px;">至</span>
+      <span style="padding-right:10px;">至</span>
       <el-form-item prop="endTime" label-width="0">
-        <el-date-picker
-          v-model="ruleForm.endTime"
-          size="mini"
-          type="datetime"
-          placeholder="结束时间(选填)"
-        ></el-date-picker>
+        <el-date-picker v-model="inData.endTime" size="mini" type="datetime" placeholder="结束时间(选填)"></el-date-picker>
       </el-form-item>
     </div>
-    <el-form-item v-if="ruleForm.type==='周期'" style="padding-left:20px;width:100%;" prop="zhouqi">
+    <el-form-item v-if="inData.type==='周期'" style="width:100%;" prop="zhouqi">
       <el-select
         multiple
         filterable
         size="mini"
         placeholder="选择时间"
-        v-model="ruleForm.zhouqi"
-        style="width:400px"
+        v-model="inData.zhouqi"
+        style="width:440px"
       >
         <el-option v-for="item in list" :key="item.value" :label="item.label" :value="item.value"></el-option>
       </el-select>
     </el-form-item>
 
-    <el-popover placement="top-end" width="160" v-model="visible" v-if="ruleForm.type!==''">
+    <el-popover placement="top-end" width="160" v-model="visible" v-if="inData.type!==''">
       <p>确定删除吗？</p>
       <div style="text-align: right; margin: 0">
         <el-button size="mini" type="text" @click="visible = false">取消</el-button>
@@ -47,13 +42,13 @@
 <script>
 export default {
   props: {
-    data: Object
+    inData: Object
   },
   data() {
     var check_startTime = (rule, value, callback) => {
-      if (this.ruleForm.type === "日期") {
-        let start = this.ruleForm.startTime,
-          end = this.ruleForm.endTime;
+      if (this.inData.type === "日期") {
+        let start = this.inData.startTime,
+          end = this.inData.endTime;
         if (!start) {
           callback(new Error("请选择开始时间！"));
         } else if (end && end <= start) {
@@ -64,9 +59,9 @@ export default {
       }
     };
     var check_endTime = (rule, value, callback) => {
-      if (this.ruleForm.type === "日期") {
-        let start = this.ruleForm.startTime,
-          end = this.ruleForm.endTime;
+      if (this.inData.type === "日期") {
+        let start = this.inData.startTime,
+          end = this.inData.endTime;
         if (!end) {
           callback(new Error("请选择结束时间！"));
         } else if (start && end <= start) {
@@ -77,7 +72,7 @@ export default {
       }
     };
     var check_zhouqi = (rule, value, callback) => {
-      if (this.ruleForm.type === "周期") {
+      if (this.inData.type === "周期") {
         if (value.length === 0) {
           callback(new Error("请输入周期时间！"));
         } else {
@@ -94,46 +89,59 @@ export default {
     };
 
     return {
-      ruleForm: {
-        type: "",
-        startTime: "",
-        endTime: "",
-        zhouqi: []
-      },
       rules: {
         type: { validator: check_type, trigger: "blur" },
         startTime: { validator: check_startTime, trigger: "change" },
         endTime: { validator: check_endTime, trigger: "change" },
         zhouqi: { validator: check_zhouqi, trigger: "change" }
       },
-
       visible: false,
       list: [
         {
-          value: "value1",
-          label: "label1"
+          value: 1,
+          label: "周日"
         },
         {
-          value: "value2",
-          label: "label3"
+          value: 2,
+          label: "周一"
+        },
+        {
+          value: 3,
+          label: "周二"
+        },
+        {
+          value: 4,
+          label: "周三"
+        },
+        {
+          value: 5,
+          label: "周四"
+        },
+        {
+          value: 6,
+          label: "周五"
+        },
+        {
+          value: 7,
+          label: "周日"
         }
       ]
     };
   },
   methods: {
     timeAction(obj) {
-      this.$emit("timeaction", { type: obj.type, data: this.data });
+      this.$emit("timeaction", { type: obj.type, data: this.data }); 
     },
     // 根据标签的数据变动生成数据
     save() {
-      this.$refs.ruleForm.validate(valid => {
+      this.$refs.inData.validate(valid => {
         if (valid) {
-          this.data.type = this.ruleForm.type;
-          if (this.ruleForm.type === "周期") {
-            this.data.time = this.ruleForm.zhouqi;
+          this.data.type = this.inData.type;
+          if (this.inData.type === "周期") {
+            this.data.time = this.inData.zhouqi;
           } else {
-            this.data.time[0] = this.ruleForm.startTime;
-            this.data.time[1] = this.ruleForm.endTime;
+            this.data.time[0] = this.inData.startTime;
+            this.data.time[1] = this.inData.endTime;
           }
         }
       });

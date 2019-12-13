@@ -1190,6 +1190,7 @@ ul {
 .everyTJ_kong1 {
     border: 1px dashed rgb(170, 168, 168);
     padding: 5px 0;
+    margin-top: 10px;
 }
 
 .everyTJ_kong:hover,
@@ -1204,12 +1205,12 @@ ul {
     top: 40px;
     bottom: 0;
     z-index: 20;
-    width: 85%;
-    transition: left 1s;
+    width: 100%;
+    transition: left 800ms;
 }
 
 .addTiaoJian {
-    left: 15%;
+    left: 0;
 }
 
 .notAddTiaoJian {
@@ -1224,13 +1225,22 @@ ul {
     border: 1px dashed rgb(170, 168, 168);
     font-size: 12px;
     padding: 8px 0;
-    margin: 5px 0 15px 0;
+    margin: 7px 0 15px 0;
     border-radius: 5px;
     letter-spacing: 3px;
     color: rgb(133, 129, 129);
+    position: relative;
 }
 
-.add_new_area:hover {
+.add_new_area>span {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+    font-size: 12px;
+    color: red;
+}
+
+.add_new_area>p:hover {
     color: rgb(0, 0, 0);
     cursor: pointer;
     font-weight: bold;

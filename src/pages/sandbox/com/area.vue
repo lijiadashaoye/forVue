@@ -4,10 +4,10 @@
       <el-select
         filterable
         size="mini"
-        @change="setArea"
         placeholder="选择省"
         v-model="data.sheng"
         style="width:160px;flex-shrink:0;margin-right:10px;"
+        @change="resetList"
       >
         <el-option
           v-for="item in $store.state.areaList"
@@ -22,9 +22,8 @@
         size="mini"
         placeholder="选择市"
         v-model="data.shi"
-        style="width:220px;flex-shrink:0;margin-right:10px;"
+        style="width:400px;flex-shrink:0;margin-right:10px;color:red;"
         multiple
-        @change="shiEmit"
       >
         <el-option
           v-for="item in sheng_shi"
@@ -33,95 +32,42 @@
           :value="item.adcode"
         ></el-option>
       </el-select>
-
       <div class="withSpan">
         <span>请选择限制条件：</span>
-        <el-checkbox-group v-model="data.tiaojian" size="mini">
+        <el-checkbox-group v-model="data.tiaojian" size="mini" @change="checkboxChange">
           <el-checkbox label="注册手机号归属地"></el-checkbox>
           <el-checkbox label="身份证地址"></el-checkbox>
           <el-checkbox label="GPS地理位置"></el-checkbox>
         </el-checkbox-group>
       </div>
     </div>
-
-    <el-popover placement="top-end" width="160" v-model="visible">
-      <p>确定删除吗？</p>
-      <div style="text-align: right; margin: 0">
-        <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-        <el-button type="primary" size="mini" @click="action(data)">确定</el-button>
-      </div>
-      <i class="el-icon-delete isI" slot="reference" title="删除"></i>
-    </el-popover>
   </div>
 </template>
 
 <script>
 export default {
-  props: {
-    data: Object
-  },
   data() {
     return {
       sheng_shi: null,
-      visible: false,
-      dictData: null,
-      beforeDatas: [],
-      china: null
+      data: {
+        sheng: "",
+        shi: [],
+        tiaojian: []
+      }
     };
   },
-  created() {
-    this.china = JSON.parse(sessionStorage.getItem("dict")).china;
-  },
   methods: {
-    // 动态调整省市数据
-    setArea() {
-      this.data.shi = [];
-      this.regetList();
-    },
-    // 删除地域限制
-    action(tar) {
-      this.$emit("areaAction", { type: "delete", data: tar });
-      this.visible = false;
-      let kk = this.china.filter(tar => tar.adcode === this.data.sheng)[0];
-      if (kk) {
-        this.sheng_shi = kk.children;
+    checkboxChange() {
+      // 限制条件产生数据后，要清除错误提示
+      if (this.data.tiaojian.length) {
+        this.$emit("areaAction", { type: "noError" });
       }
     },
-    // 市选项变更
-    shiEmit(e) {
-      let before = [...this.beforeDatas];
-      if (before.length < e.length) {
-        // 判断执行的操作类型，如果是添加数据，则正常刷新列表
-        this.$emit("areaAction", { type: "deleteShi" });
-      } else {
-        // 如果是删除市数据，需要判断一下列表中是否有市对应的省数据
-        let isIn = this.$store.state.areaList.filter(
-          tar => tar.adcode === this.data.sheng
-        )[0]; // 从store里查省
-
-        if (!isIn) {
-          let sheng = this.china.filter(
-            tar => tar.adcode === this.data.sheng
-          )[0]; // 从字典里查省
-          this.$store.state.areaList.push(sheng);
-        }
-        this.$emit("areaAction", { type: "deleteShi" });
-      }
-      this.$nextTick(() => {
-        this.beforeDatas = this.data.shi;
-      });
-    },
-    // 重新获取市下拉数据
-    regetList() {
-      let kk = this.$store.state.areaList.filter(
+    // 根据省，动态获取市
+    resetList() {
+      this.sheng_shi = this.$store.state.areaList.filter(
         tar => tar.adcode === this.data.sheng
-      )[0];
-
-      if (kk) {
-        this.sheng_shi = kk.children;
-      } else {
-        this.sheng_shi = [];
-      }
+      )[0].children;
     }
   }
 };
@@ -154,17 +100,5 @@ export default {
 .withSpan > div {
   display: flex;
   align-items: center;
-}
-.isI {
-  font-size: 22px;
-  color: rgb(78, 75, 75);
-  padding: 2px;
-  border-radius: 3px;
-}
-.isI:hover {
-  font-size: 22px;
-  cursor: pointer;
-  background: rgb(134, 134, 134);
-  color: #fff;
 }
 </style>

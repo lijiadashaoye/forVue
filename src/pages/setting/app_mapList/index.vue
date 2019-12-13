@@ -122,7 +122,11 @@ export default {
           userType: "banner_add"
         },
         {
-          userType: "banner_upd"
+          userType: "banner_upd",
+          text: "修改",
+          type: "primary",
+          size: "mini",
+          emit: "upd"
         },
         {
           userType: "banner_detail",
@@ -224,6 +228,10 @@ export default {
           break;
         case "regetData": //条目更改
           this.getList();
+          break;
+        case "upd": //修改
+          let routePath = this.$route.path;
+          this.$router.push({ path: routePath + "/add?id=" + obj.data.id+"&type=upd" });
           break;
       }
     }

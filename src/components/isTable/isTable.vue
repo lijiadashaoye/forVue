@@ -12,13 +12,7 @@
       size="mini"
     >
       <!-- checkbox -->
-      <el-table-column
-        v-if="inputData.checkBox"
-        padding="5px"
-        type="selection"
-        width="30"
-        fixed="left"
-      ></el-table-column>
+      <el-table-column v-if="inputData.checkBox" type="selection" width="30" fixed="left"></el-table-column>
 
       <el-table-column v-if="!inputData.noIndex" label="序号" type="index" width="50" order="2"></el-table-column>
 

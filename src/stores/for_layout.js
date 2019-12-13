@@ -115,6 +115,8 @@ const actions = {
             'product_area', // 地区标签
             'application_type', // app名称
             'continent_type', // 币种分类   
+            'inner_channel', // 内部渠道  
+            'out_channel', // 外部渠道  
         ];
 
         arr.forEach((str) => {
@@ -280,8 +282,9 @@ const actions = {
 
             if (kk2[5]) {
                 obj.china = kk2[5].filter(tar => tar.adcode === '100000')[0].children
-                    .map(item => {
+                    .map((item, index) => {
                         let obj = {
+                            index: index,
                             adcode: item.adcode,
                             name: item.name,
                             children: []

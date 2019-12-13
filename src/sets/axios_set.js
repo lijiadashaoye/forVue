@@ -17,6 +17,8 @@ if (process.env.NODE_ENV === "development") {
   baseURL = 'https://develop-gateway.bicai365.com/';
 } else if (process.env.NODE_ENV === "inner") {
   baseURL = 'http://gateway.bicai365.com/';
+} else if (process.env.NODE_ENV === "auto") {
+  baseURL = 'https://auto-gateway.bicai365.com/';
 }
 axios.defaults.baseURL = baseURL;
 

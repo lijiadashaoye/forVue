@@ -25,12 +25,12 @@
             placeholder="请选择"
             style="width:497px;"
           >
-            <el-option-group v-for="group in kkk" :key="group.label" :label="group.label">
+            <el-option-group v-for="group in bankList" :key="group.label" :label="group.label">
               <el-option
                 v-for="item in group.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               ></el-option>
             </el-option-group>
           </el-select>
@@ -50,7 +50,11 @@
                 v-model="ruleForm.inset"
                 @change="handleCheckedCitiesChange1"
               >
-                <el-checkbox v-for="t in insetList" :label="t" :key="t">{{t}}</el-checkbox>
+                <el-checkbox
+                  v-for="t in dictData.inner_channel"
+                  :label="t.value"
+                  :key="t.value"
+                >{{t.label}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
             <el-form-item label="外部渠道">
@@ -65,7 +69,11 @@
                 v-model="ruleForm.outset"
                 @change="handleCheckedCitiesChange2"
               >
-                <el-checkbox v-for="t in outsetList" :label="t" :key="t">{{t}}</el-checkbox>
+                <el-checkbox
+                  v-for="t in dictData.out_channel"
+                  :label="t.value"
+                  :key="t.value"
+                >{{t.label}}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </div>
@@ -95,42 +103,7 @@ export default {
   props: {},
   data() {
     return {
-      kkk: [
-        {
-          label: "未配置过",
-          options: [
-            {
-              value: "Shanghai",
-              label: "上海"
-            },
-            {
-              value: "Beijing",
-              label: "北京"
-            }
-          ]
-        },
-        {
-          label: "已配置过",
-          options: [
-            {
-              value: "Chengdu",
-              label: "成都"
-            },
-            {
-              value: "Shenzhen",
-              label: "深圳"
-            },
-            {
-              value: "Guangzhou",
-              label: "广州"
-            },
-            {
-              value: "Dalian",
-              label: "大连"
-            }
-          ]
-        }
-      ],
+      bankList: [],
       env: "",
       pageName: "",
       dictData: "",
@@ -146,8 +119,6 @@ export default {
         inset: [],
         outset: []
       },
-      insetList: ["比财APP", "拼财APP", "拼财小程序"],
-      outsetList: ["异业", "同业", "直投"],
       tableInputData: {
         // 传给table子组件的数据
         checkBox: true, // 判断需要不需要添加选择框
@@ -172,10 +143,40 @@ export default {
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
 
+    this.getBankList();
     this.canDoWhat();
     this.search();
   },
   methods: {
+    // 获取银行列表
+    getBankList() {
+      this.$api
+        .getBankList({
+          vm: this
+        })
+        .then(res => {
+          if (res) {
+            this.bankList = [
+              {
+                label: "未配置银行",
+                options: res.data.notConfigured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: true
+                }))
+              },
+              {
+                label: "已配置银行",
+                options: res.data.configured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: false
+                }))
+              }
+            ];
+          }
+        });
+    },
     // 查询
     search() {
       let obj = {
@@ -183,13 +184,18 @@ export default {
         pageNum: this.tableInputData.pageNum
       };
       if (this.ruleForm.inset.length) {
-        obj.inset = this.ruleForm.inset;
+        obj.channels = [];
+        obj.channels.push(...this.ruleForm.inset);
       }
       if (this.ruleForm.outset.length) {
-        obj.outset = this.ruleForm.outset;
+        if (!obj.channels) {
+          obj.channels = [];
+        }
+        obj.channels.push(...this.ruleForm.outset);
       }
-      if (this.ruleForm.bank) {
-        obj.bank = this.ruleForm.bank;
+      if (this.ruleForm.bank.length) {
+        obj.bankIds = [];
+        obj.bankIds.push(...this.ruleForm.bank);
       }
       this.getListData(obj);
     },
@@ -210,25 +216,29 @@ export default {
     },
     // 内部渠道checkbox
     handleCheckAllChange1(val) {
-      this.ruleForm.inset = val ? this.insetList : [];
+      this.ruleForm.inset = val
+        ? this.dictData.inner_channel.map(tar => tar.value)
+        : [];
       this.isIndeterminate1 = false;
     },
     handleCheckedCitiesChange1(value) {
       let checkedCount = value.length;
-      this.checkAll1 = checkedCount === this.insetList.length;
+      this.checkAll1 = checkedCount === this.dictData.inner_channel.length;
       this.isIndeterminate1 =
-        checkedCount > 0 && checkedCount < this.insetList.length;
+        checkedCount > 0 && checkedCount < this.dictData.inner_channel.length;
     },
     // 内部渠道checkbox
     handleCheckAllChange2(val) {
-      this.ruleForm.outset = val ? this.outsetList : [];
+      this.ruleForm.outset = val
+        ? this.dictData.out_channel.map(tar => tar.value)
+        : [];
       this.isIndeterminate2 = false;
     },
     handleCheckedCitiesChange2(value) {
       let checkedCount = value.length;
-      this.checkAll2 = checkedCount === this.outsetList.length;
+      this.checkAll2 = checkedCount === this.dictData.out_channel.length;
       this.isIndeterminate2 =
-        checkedCount > 0 && checkedCount < this.outsetList.length;
+        checkedCount > 0 && checkedCount < this.dictData.out_channel.length;
     },
     // 新增
     add_new(type, data) {
@@ -273,20 +283,11 @@ export default {
           break;
         case "delete": // 单独删除按钮
           this.aloneDeleteData = [];
-          data.data.productSubtype === "wmp"
-            ? this.aloneDeleteData.push({ type: "", id: data.data.id })
-            : this.aloneDeleteData.push({
-                type: "insurance/",
-                id: data.data.id
-              });
+          this.aloneDeleteData.push(data.data);
           this.toDelete("alone");
           break;
         case "moreDelete": // 批量删除按钮
           this.moreDeleteData = data.data;
-          // .map(item => {
-
-          //   return item.id ;
-          // });
           break;
       }
     },
@@ -296,15 +297,14 @@ export default {
         this.$confirm("确认删除吗？")
           .then(() => {
             this.$api
-              .product_licai_delete({
+              .deleteItemData({
                 vm: this,
-                type: this.aloneDeleteData[0].type,
-                data: this.aloneDeleteData[0].id
+                id: this.aloneDeleteData[0].id
               })
               .then(res => {
                 if (res) {
                   this.$message.success("删除成功！");
-                  this.seachClick("search");
+                  this.search();
                 }
               });
           })
@@ -317,25 +317,23 @@ export default {
           this.$confirm("确认删除吗？")
             .then(() => {
               let promiseArr = [];
-              let tableData = this.tableInputData.data.list; // 获取表格的数据
               this.moreDeleteData.forEach(item => {
                 let del = this.$api
-                  .product_licai_delete({
+                  .deleteItemData({
                     vm: this,
-                    data: item.id,
-                    type: item.type
+                    id: item.id
                   })
                   .then(res => {
                     let obj;
                     if (res) {
                       obj = {
                         ok: true,
-                        data: item.id
+                        data: item
                       };
                     } else {
                       obj = {
                         ok: false,
-                        data: tableData.filter(tar => tar.id == item.id)
+                        data: item
                       };
                     }
                     return obj;
@@ -354,7 +352,7 @@ export default {
                     numSucces++;
                   } else {
                     numFail++;
-                    failName += `<li>名称：${item.data[0].name}</li>`;
+                    failName += `<li>名称：${item.data.bankName}</li>`;
                   }
                 });
                 let str = `<p>共操作 ${arr.length} 条数据，成功 ${numSucces} 个，失败 ${numFail} 个</p>`;
@@ -368,7 +366,7 @@ export default {
                 this.$alert(str, "操作结果提示", {
                   confirmButtonText: "确定",
                   dangerouslyUseHTMLString: true,
-                  callback: this.seachClick("reset")
+                  callback: this.search()
                 });
               });
             })
@@ -389,11 +387,11 @@ export default {
             obj = {};
           arr.forEach(str => {
             obj[str] = item[str];
-            if (str === "inset" || str === "outset") {
+            if (str === "innerChannel" || str === "outChannel") {
               obj[str] = "";
               if (item[str].length) {
                 item[str].forEach(tar => {
-                  obj[str] += tar.name + " ; ";
+                  obj[str] += tar.channelLabel + " ; ";
                 });
               } else {
                 obj[str] = "";
@@ -406,24 +404,24 @@ export default {
         this.tableInputData.data.title = [
           {
             title: "银行",
-            key: "name",
+            key: "bankName",
             minWidth: "180"
           },
           {
             title: "内部渠道",
-            key: "inset",
-            minWidth: "180"
+            key: "innerChannel",
+            minWidth: "240"
           },
           {
             title: "外部渠道",
-            key: "outset",
-            minWidth: "180"
+            key: "outChannel",
+            minWidth: "140"
           },
 
           {
             title: "创建时间",
-            key: "time",
-            minWidth: "140"
+            key: "gmtCreated",
+            minWidth: "160"
           }
         ];
         resolve();
@@ -433,89 +431,20 @@ export default {
     },
     // 获取列表数据
     getListData(obj) {
-      // this.$api
-      //   .get_licaiList({
-      //     vm: this,
-      //     data: obj
-      //   })
-      //   .then(res => {
-      //     if (res) {
-      //       this.shelveStatus(res.data);
-      //     }
-      //   });
-      let datas = {
-        total: 10,
-        pageSize: 10,
-        pageNum: 1,
-        list: [
-          {
-            id: 1,
-            name: "银行",
-            inset: [
-              {
-                name: "比财APP",
-                value: "bicai"
-              },
-              {
-                name: "拼财APP",
-                value: "pincai"
-              }
-            ],
-            outset: [
-              {
-                name: "直投",
-                value: "zhitou"
-              }
-            ],
-            time: "2019-12-2"
-          },
-          {
-            id: 2,
-            name: "银行",
-            inset: [
-              {
-                name: "拼财小程序",
-                value: "xiaochengxu"
-              }
-            ],
-            outset: [
-              {
-                name: "异业",
-                value: "yiye"
-              }
-            ],
-            time: "2019-12-2"
-          },
-          {
-            id: 3,
-            name: "银行",
-            inset: [],
-            outset: [
-              {
-                name: "异业",
-                value: "yiye"
-              },
-              {
-                name: "同业",
-                value: "tongye"
-              }
-            ],
-            time: "2019-12-2"
+      this.$api
+        .getPlatformList({
+          vm: this,
+          data: obj
+        })
+        .then(res => {
+          if (res) {
+            this.shelveStatus(res.data);
           }
-        ]
-      };
-
-      this.shelveStatus(datas);
+        });
     },
     // 查询权限，设定表格操作按钮
     canDoWhat() {
       // let quanxian = JSON.parse(sessionStorage.getItem("buttenpremissions"));
-      // this.tableInputData.data.custom.push({
-      //   text: "复制",
-      //   type: "primary",
-      //   size: "mini",
-      //   emit: "copy"
-      // });
       this.tableInputData.data.custom.push({
         text: "修改",
         type: "primary",

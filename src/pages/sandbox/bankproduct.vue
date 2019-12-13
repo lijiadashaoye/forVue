@@ -17,13 +17,15 @@
               clearable
               placeholder="请选择"
               style="width:300px"
+              @visible-change="bankBlur($event)"
             >
-              <el-option-group v-for="group in kkk" :key="group.label" :label="group.label">
+              <el-option-group v-for="group in bankList" :key="group.label" :label="group.label">
                 <el-option
                   v-for="item in group.options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                  :disabled="item.use"
                 ></el-option>
               </el-option-group>
             </el-select>
@@ -38,12 +40,12 @@
               placeholder="请选择"
               style="width:300px"
             >
-              <el-option-group v-for="group in kkk" :key="group.label" :label="group.label">
+              <el-option-group v-for="group in productList" :key="group.label" :label="group.label">
                 <el-option
                   v-for="item in group.options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
                 ></el-option>
               </el-option-group>
             </el-select>
@@ -80,42 +82,8 @@ export default {
   },
   data() {
     return {
-      kkk: [
-        {
-          label: "未配置过",
-          options: [
-            {
-              value: "Shanghai",
-              label: "上海"
-            },
-            {
-              value: "Beijing",
-              label: "北京"
-            }
-          ]
-        },
-        {
-          label: "已配置过",
-          options: [
-            {
-              value: "Chengdu",
-              label: "成都"
-            },
-            {
-              value: "Shenzhen",
-              label: "深圳"
-            },
-            {
-              value: "Guangzhou",
-              label: "广州"
-            },
-            {
-              value: "Dalian",
-              label: "大连"
-            }
-          ]
-        }
-      ],
+      bankList: [],
+      productList: [],
       env: "",
       pageName: "",
       dictData: "",
@@ -144,8 +112,65 @@ export default {
     this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.search();
+    this.getBankList();
   },
   methods: {
+    bankBlur(e) {
+      if (!e && this.ruleForm.bank.length > 0) {
+        this.getProductList();
+      }
+    },
+    // 根据银行选取产品
+    getProductList() {
+      this.$api
+        .getProductList({
+          vm: this,
+          data: {
+            ids: this.ruleForm.bank
+          }
+        })
+        .then(res => {
+          if (res) {
+            this.productList = res.data.map(tar => ({
+              id: tar.bankId,
+              label: tar.bankName,
+              options: tar.sandBoxProducts.map(item => ({
+                id: item.productId,
+                name: item.productName
+              }))
+            }));
+          }
+        });
+    },
+    // 获取银行列表
+    getBankList() {
+      this.$api
+        .getBankList({
+          vm: this
+        })
+        .then(res => {
+          if (res) {
+            this.bankList = [
+              {
+                label: "已配置的银行",
+                options: res.data.configured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: false
+                }))
+              },
+              {
+                label: "未配置的银行",
+                options: res.data.notConfigured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: true
+                }))
+              }
+            ];
+          }
+        });
+    },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
@@ -351,19 +376,22 @@ export default {
     },
     addProduct(type, data) {
       if (type) {
+        // 编辑、复制
         this.$router.push({
           name: "add_bank_product",
           query: {
             from: "bank_product",
             type: type,
-            data: data
+            data: data,
+            bankList: JSON.stringify(this.bankList)
           }
         });
       } else {
         this.$router.push({
           name: "add_bank_product",
           query: {
-            from: "bank_product"
+            from: "bank_product",
+            bankList: JSON.stringify(this.bankList)
           }
         });
       }

@@ -10,6 +10,7 @@
     "build:dev": "vue-cli-service build --mode dev",
     "build:inner": "vue-cli-service build --mode inner",
     "build:prod": "vue-cli-service build --mode production",
+    "build:auto": "vue-cli-service build --mode auto",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

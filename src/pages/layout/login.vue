@@ -85,6 +85,7 @@ export default {
   },
   methods: {
     changeBK(num) {
+      // 变化小熊猫
       let isS = this.$refs.isS;
       isS.className = `isS${num}`;
     },

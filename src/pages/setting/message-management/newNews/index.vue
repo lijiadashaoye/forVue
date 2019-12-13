@@ -357,6 +357,7 @@ export default {
     },
     // 获取关联产品列表
     getproList() {
+      this.productArr = [];
       this.getProductList(this.productForm).then(data => {
         if (data) {
           if (data.list) {

@@ -4,8 +4,8 @@
       <p>配置条件</p>
       <i class="el-icon-close" @click="close"></i>
     </div>
-    <div style="height:calc(100% - 43px);overflow-y: auto;padding:15px;">
-      <el-form ref="ruleForm" :rules="rules" :model="ruleForm" label-width="124px" label-suffix="：">
+    <div style="height:calc(100% - 43px);overflow: auto;padding:15px;min-width: 950px;">
+      <el-form ref="ruleForm" :model="ruleForm" label-width="124px" label-suffix="：">
         <el-form-item label="配置可见条件" style="margin-bottom:5px;">
           <el-radio-group v-model="ruleForm.canSee">
             <el-radio label="可见条件"></el-radio>
@@ -116,6 +116,7 @@
               type="datetime"
               @change="validStatue"
               placeholder="请选择时间"
+              value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>&nbsp;&nbsp;&nbsp;&nbsp;
             <el-radio-group
               :disabled="!ruleForm.statue"
@@ -149,6 +150,7 @@
               size="mini"
               type="datetime"
               placeholder="请选择时间"
+              value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>
           </el-form-item>
         </div>
@@ -301,6 +303,7 @@
               type="datetime"
               @change="validBankStatue"
               placeholder="请选择时间"
+              value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>&nbsp;&nbsp;&nbsp;&nbsp;
             <el-radio-group
               :disabled="!ruleForm.bankStatue"
@@ -334,6 +337,7 @@
               size="mini"
               type="datetime"
               placeholder="请选择时间"
+              value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>
           </el-form-item>
         </div>
@@ -439,127 +443,182 @@
           </div>
         </el-form-item>
 
-        <p class="canDelete">
-          限制地域:
-          <span v-if="hasError.canDelete.act">{{hasError.canDelete.content}}</span>
-        </p>
-        <el-form-item prop="areaTJ" label-width="0" style="margin-bottom:0;">
-          <Area
-            @areaAction="areaAction"
-            v-for="(tar,index) in ruleForm.areaTJ"
-            :key="index"
-            :data="tar"
-            ref="child"
-          />
+        <p class="canDelete">限制地域:</p>
+        <el-form-item label-width="0" style="margin-bottom:0;">
+          <div>
+            <div v-for="tar in ruleForm.areaTJ" :key="tar.num" class="selectList">
+              <div>
+                <p>
+                  省份：
+                  <span>{{tar.sheng.name}}</span>
+                </p>
+                <p>
+                  市区：
+                  <span v-for="shi in tar.shi" :key="shi.adcode">{{shi.name}}</span>
+                </p>
+                <p>
+                  条件：
+                  <span v-for="tiao in tar.tiaojian" :key="tiao">{{tiao}}</span>
+                </p>
+              </div>
+              <div>
+                <i
+                  class="el-icon-edit isI"
+                  slot="reference"
+                  @click="areaAction({ type: 'edit', data: tar })"
+                  title="编辑"
+                ></i>
+                <el-popover placement="top-end" width="160" v-model="visible">
+                  <p>确定删除吗？</p>
+                  <div style="text-align: right; margin: 0">
+                    <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+                    <el-button
+                      type="primary"
+                      size="mini"
+                      @click="areaAction({ type: 'delete', data: tar })"
+                    >确定</el-button>
+                  </div>
+                  <i class="el-icon-delete isI" slot="reference" title="删除"></i>
+                </el-popover>
+              </div>
+            </div>
+          </div>
+          <Area @areaAction="areaAction" ref="child" />
         </el-form-item>
-        <p class="add_new_area" @click="areaAction({type:'add'})">新增限制地域</p>
+        <div class="add_new_area" @click="areaAction({type:'add'})">
+          <p style="padding:5px;">新增限制地域</p>
+          <span v-if="hasError.canDelete.act">{{hasError.canDelete.content}}</span>
+        </div>
+        <div v-if="yingxiaoDatas">
+          <p class="pagePart">
+            营销管理配置
+            <span>(*以下条件至少配置一项)</span>
+            <el-button size="mini" type="primary" @click="selectAll">以下全选</el-button>
+          </p>
 
-        <p class="pagePart">
-          营销管理配置
-          <span>(*以下条件至少配置一项)</span>
-          <el-button size="mini" type="primary" @click="selectAll">全 选</el-button>
-        </p>
+          <p style="font-size: 14px;color: #606266;padding-bottom:10px;">
+            产品展示位置与时间:
+            <el-button size="mini" type="info" @click="resetSide" class="resetBtn">重 置</el-button>
+          </p>
 
-        <p style="font-size: 14px;color: #606266;padding-bottom:10px;">
-          产品展示位置与时间:
-          <el-button size="mini" type="info" @click="resetSide" class="resetBtn">重 置</el-button>
-        </p>
+          <div class="forSta">
+            <el-form-item :label="`${type==='bank'?'银行展示':'产品展示'}位置`" style="margin-bottom:0;">
+              <el-select
+                v-if="type==='bank'"
+                multiple
+                filterable
+                size="mini"
+                placeholder="限制条件"
+                v-model="ruleForm.side"
+                style="width:50%"
+                @change="timeAction({type:'new'})"
+              >
+                <el-option
+                  v-for="item in yingxiaoDatas.weizhi_bank"
+                  :key="item.positionNo"
+                  :label="item.positionTitle"
+                  :value="item.positionNo"
+                ></el-option>
+              </el-select>
 
-        <div class="forSta">
-          <el-form-item label="位置" style="margin-bottom:0;">
+              <el-select
+                v-if="type==='bank_product'"
+                multiple
+                filterable
+                size="mini"
+                placeholder="限制条件"
+                v-model="ruleForm.side"
+                style="width:50%"
+                @change="timeAction({type:'new'})"
+              >
+                <el-option
+                  v-for="item in yingxiaoDatas.weizhi_product"
+                  :key="item.positionNo"
+                  :label="item.positionTitle"
+                  :value="item.positionNo"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="时间" style="  position: relative;">
+              <div class="setTime">
+                <TimeSide
+                  ref="sideTime"
+                  @timeaction="timeAction"
+                  v-for="tar in ruleForm.time"
+                  :key="tar.num"
+                  :inData="tar"
+                />
+              </div>
+              <div class="add_new_area" @click="timeAction({type:'add'})" style="padding:0;">
+                <p>新增限制位置时间</p>
+                <span v-if="hasError.sideTime.act">{{hasError.sideTime.content}}</span>
+              </div>
+            </el-form-item>
+          </div>
+
+          <el-form-item label="广告位">
             <el-select
-              multiple
               filterable
+              multiple
               size="mini"
-              placeholder="限制条件"
-              v-model="ruleForm.side"
+              placeholder="请选择广告位"
+              v-model="ruleForm.ad_side"
               style="width:50%"
-              @change="timeAction({type:'new'})"
             >
               <el-option
-                v-for="item in list"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="item in yingxiaoDatas.guangao"
+                :key="item.positionNo"
+                :label="item.positionTitle"
+                :value="item.positionNo"
               ></el-option>
             </el-select>
+            <el-button size="mini" type="info" @click="ruleForm.ad_side=[]" class="resetBtn">重 置</el-button>
+          </el-form-item>
+          <el-form-item label="活动">
+            <el-select
+              filterable
+              multiple
+              size="mini"
+              placeholder="请选择活动"
+              v-model="ruleForm.active"
+              style="width:50%;"
+            >
+              <el-option
+                v-for="item in yingxiaoDatas.huodong"
+                :key="item.positionNo"
+                :label="item.positionTitle"
+                :value="item.positionNo"
+              ></el-option>
+            </el-select>
+            <el-button size="mini" type="info" @click="ruleForm.active=[]" class="resetBtn">重 置</el-button>
+          </el-form-item>
+          <el-form-item label="内容">
+            <el-select
+              filterable
+              multiple
+              size="mini"
+              placeholder="请选择内容"
+              v-model="ruleForm.content"
+              style="width:50%"
+            >
+              <el-option
+                v-for="item in yingxiaoDatas.neirong"
+                :key="item.positionNo"
+                :label="item.positionTitle"
+                :value="item.positionNo"
+              ></el-option>
+            </el-select>
+            <el-button size="mini" type="info" @click="ruleForm.content=[]" class="resetBtn">重 置</el-button>
           </el-form-item>
 
-          <el-form-item label="时间" style="  position: relative;">
-            <div class="setTime">
-              <TimeSide
-                ref="sideTime"
-                @timeaction="timeAction"
-                v-for="tar in ruleForm.time"
-                :key="tar.num"
-                :data="tar"
-              />
-            </div>
-            <p class="add_new_area" @click="timeAction({type:'add'})" style="padding:0;">新增限制位置时间</p>
+          <el-form-item label="创新层">
+            <el-radio-group v-model="ruleForm.chuang" size="mini">
+              <el-radio label="组合购买"></el-radio>
+            </el-radio-group>
+            <el-button size="mini" type="info" @click="ruleForm.chuang=''" class="resetBtn">重 置</el-button>
           </el-form-item>
         </div>
-
-        <el-form-item label="广告位">
-          <el-select
-            filterable
-            multiple
-            size="mini"
-            placeholder="请选择广告位"
-            v-model="ruleForm.ad_side"
-            style="width:50%"
-          >
-            <el-option
-              v-for="item in list"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-          <el-button size="mini" type="info" @click="ruleForm.ad_side=[]" class="resetBtn">重 置</el-button>
-        </el-form-item>
-        <el-form-item label="活动">
-          <el-select
-            filterable
-            multiple
-            size="mini"
-            placeholder="请选择活动"
-            v-model="ruleForm.active"
-            style="width:50%;"
-          >
-            <el-option
-              v-for="item in list"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-          <el-button size="mini" type="info" @click="ruleForm.active=[]" class="resetBtn">重 置</el-button>
-        </el-form-item>
-        <el-form-item label="内容">
-          <el-select
-            filterable
-            multiple
-            size="mini"
-            placeholder="请选择内容"
-            v-model="ruleForm.content"
-            style="width:50%"
-          >
-            <el-option
-              v-for="item in list"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-          <el-button size="mini" type="info" @click="ruleForm.content=[]" class="resetBtn">重 置</el-button>
-        </el-form-item>
-
-        <el-form-item label="创新层">
-          <el-radio-group v-model="ruleForm.chuang" size="mini">
-            <el-radio label="组合购买"></el-radio>
-          </el-radio-group>
-          <el-button size="mini" type="info" @click="ruleForm.chuang=''" class="resetBtn">重 置</el-button>
-        </el-form-item>
 
         <el-form-item>
           <el-button size="mini" type="primary" @click="save">保存</el-button>
@@ -574,24 +633,17 @@
 import Area from "./area.vue";
 import TimeSide from "./time_side.vue";
 export default {
+  props: {
+    type: String
+  },
   components: { Area, TimeSide },
   data() {
-    // 验证数字
-    var check_areaTJ = (rule, value, callback) => {
-      console.log(value);
-      // if (+value < 0 || +value >= 10000000 || !value) {
-      //   callback(new Error("请输入0--10000000正数"));
-      // } else {
-      //   this.ruleForm.purchaseAmount = (+value).toFixed(2);
-      //   callback();
-      // }
-    };
-
     return {
       time: null,
       env: "",
       pageName: "",
       num: 1,
+      visible: false, // 删除确认框
       hasError: {
         hasError: false,
         // 页面内各种验证的错误提示
@@ -624,9 +676,15 @@ export default {
           // 限制地域的错误提示
           act: false,
           content: ""
+        },
+        sideTime: {
+          // 产品展示位置与时间的错误提示
+          act: false,
+          content: ""
         }
       },
       ruleForm: {
+        // 用户管理配置
         canSee: "可见条件", // 可见条件
         minAge: "", // 左边年龄
         minAge_symbol: "", // 左边年龄的符号
@@ -662,6 +720,7 @@ export default {
         bankTouZi: "", //本银行投资状态
         bankChiCang: "", //本银行持仓状态
         areaTJ: [], //地域限制条件
+        // 营销管理配置
         side: [], // 位置
         time: [], // 时间数据
         ad_side: [], // 广告位
@@ -669,21 +728,10 @@ export default {
         content: [], // 内容
         chuang: "" // 创新层
       },
+      // 暂存产品展示位置与时间之前的位置数据
+      sideTimeBefore: [],
 
-      list: [
-        {
-          value: "value1",
-          label: "label1"
-        },
-        {
-          value: "value2",
-          label: "label3"
-        }
-      ],
-
-      rules: {
-        areaTJ: [{ required: true, validator: check_areaTJ, trigger: "blur" }]
-      }
+      yingxiaoDatas: null // 营销管理配置各个下拉列表的数据集合
     };
   },
   created() {
@@ -692,16 +740,32 @@ export default {
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
 
     this.$store.state.areaList = this.dictData.china;
-    this.ruleForm.areaTJ.push({
-      num: this.num++,
-      sheng: "",
-      shi: [],
-      tiaojian: []
-    });
+    this.forYingXiaoSet();
   },
   methods: {
+    // 获取营销管理使用的下拉数据
+    forYingXiaoSet() {
+      let pro = [];
+      for (let i = 1; i < 6; i++) {
+        pro.push(
+          this.$api.forYingXiaoSet({
+            vm: this,
+            data: { regionalType: i }
+          })
+        );
+      }
+      //  1广告 2产品展示 3银行展示 4活动 5内容
+      Promise.all(pro).then(res => {
+        this.yingxiaoDatas = {};
+        this.yingxiaoDatas.neirong = res[4].data.list;
+        this.yingxiaoDatas.huodong = res[3].data.list;
+        this.yingxiaoDatas.guangao = res[0].data.list;
+        this.yingxiaoDatas.weizhi_bank = res[2].data.list;
+        this.yingxiaoDatas.weizhi_product = res[1].data.list;
+      });
+    },
     deepCopy(data) {
-      // 只接收数组
+      // 对数据数据深拷贝、只接收数组
       let arr = [];
       for (let i = 0; i < data.length; i++) {
         let obj = {};
@@ -726,57 +790,72 @@ export default {
       }
       return arr;
     },
-    // 过滤省市字典数据
-    toFilterList() {
-      let china = this.deepCopy(this.dictData.china), // 神拷贝一下
+    // 过滤省、市字典数据
+    toResetList() {
+      // 初始化store深拷贝一下字典数据
+      let china = this.deepCopy(this.dictData.china), // 深拷贝一下字典数据
         hasSelect = this.ruleForm.areaTJ;
+
       for (let i = hasSelect.length; i--; ) {
-        if (hasSelect[i].sheng) {
-          let sheng = china.filter(tar => tar.adcode === hasSelect[i].sheng)[0]; // 获取省对应的字典列表数据
-          let shi = hasSelect[i].shi; // 获取已经选择的市
+        if (hasSelect[i].sheng.adcode) {
+          let num = hasSelect[i].sheng.index;
 
-          for (let j = china.length; j--; ) {
-            // 遍历字典数据，将已使用的省、市排除，再重新生成给子组件使用的下拉数据
-            if (shi.length && china[j].adcode === hasSelect[i].sheng) {
-              china[j].children = china[j].children.filter(
-                tar => !shi.includes(tar.adcode)
-              );
-
-              if (china[j].children.length === 0) {
-                // 如果市全部选中，则清除省
-                china = china.filter(tar => tar.adcode != hasSelect[i].sheng);
-              }
-            } else {
-              china[j].children = china[j].children;
-              continue;
-            }
+          // 获取省对应的字典列表数据
+          let shiList = china.splice(num, 1)[0],
+            shi = hasSelect[i].shi.map(tar => tar.adcode); // 获取已经选择的市
+          if (shi.length > 0 && shi.length < shiList.children.length) {
+            shiList.children = shiList.children.filter(
+              tar => !shi.includes(tar.adcode)
+            );
+            china.splice(num, 0, shiList);
           }
         }
       }
       this.$store.state.areaList = china;
-      this.$refs.child.forEach(tar => {
-        setTimeout(() => {
-          tar.regetList();
-        });
+    },
+    // 用来检查页面是否输入过数据
+    checkIsInput() {
+      let isInput = false;
+      Object.keys(this.ruleForm).forEach(str => {
+        let data = this.ruleForm[str],
+          type = Object.prototype.toString
+            .call(data)
+            .slice(-7, -1)
+            .toLowerCase();
+
+        if (type === "string") {
+          if ((str !== "canSee" || str !== "chuang") && data !== "") {
+            isInput = true;
+          }
+        } else if (str !== "areaTJ" && data.length > 0) {
+          isInput = true;
+        } else if (
+          str === "areaTJ" &&
+          data.length > 1 &&
+          data[0].sheng !== ""
+        ) {
+          isInput = true;
+        }
       });
+      return isInput;
     },
 
     save() {
       if (
-        this.ruleForm.side.length === 0 ||
-        this.ruleForm.side.time === 0 ||
-        this.ruleForm.side.ad_side === 0 ||
-        this.ruleForm.side.active === 0 ||
-        this.ruleForm.side.content === 0 ||
-        this.ruleForm.side.chuang === ""
+        this.ruleForm.side.length > 0 ||
+        this.ruleForm.time.length > 0 ||
+        this.ruleForm.ad_side.length > 0 ||
+        this.ruleForm.active.length > 0 ||
+        this.ruleForm.content.length > 0 ||
+        this.ruleForm.chuang !== ""
       ) {
-        this.$message.error("营销管理配置至少配置一项!");
+        console.log(this.checkIsInput());
       } else {
-        console.log(this.ruleForm);
-        // this.$emit("TiaoJianEmit", { kk: 9 });
+        this.$message.error("营销管理配置至少配置一项!");
       }
     },
     close() {
+      // 这里需要判断页面的内有没有填入数据
       if (true) {
         this.$confirm("是否暂存已填写的数据?", "提示", {
           confirmButtonText: "是",
@@ -784,16 +863,13 @@ export default {
           type: "warning"
         })
           .then(() => {
-            this.$emit("TiaoJianEmit", this.ruleForm);
-            setTimeout(this.resetAll, 2000);
+            this.save();
           })
           .catch(() => {
             this.$emit("TiaoJianEmit");
-            setTimeout(this.resetAll, 2000);
           });
       } else {
         this.$emit("TiaoJianEmit");
-        setTimeout(this.resetAll, 2000);
       }
     },
     // 重置年龄
@@ -997,32 +1073,71 @@ export default {
     // 监听地域限制组件
     areaAction(data) {
       switch (data.type) {
-        case "delete":
-          if (this.ruleForm.areaTJ.length < 2) {
+        case "delete": // 删除限制地域
+          this.visible = false;
+          this.ruleForm.areaTJ = this.ruleForm.areaTJ.filter(
+            tar => tar.num != data.data.num
+          );
+          this.toResetList();
+          break;
+        case "add": // 新增一条限制地域数据
+          let isOk = true,
+            child = this.$refs.child.data; // 拿到子组件的数据
+
+          if (child.sheng === "") {
+            isOk = false;
+            this.hasError.canDelete.content = "请选择地域限的省份！";
             this.hasError.canDelete.act = true;
-            this.hasError.canDelete.content = "最少要有一条！";
-            setTimeout(() => {
-              this.hasError.canDelete.act = false;
-              this.hasError.canDelete.content = "";
-            }, 5000);
-          } else {
-            this.ruleForm.areaTJ = this.ruleForm.areaTJ.filter(
-              tar => tar.num != data.data.num
-            );
-            this.toFilterList();
+          } else if (child.tiaojian.length === 0) {
+            isOk = false;
+            this.hasError.canDelete.content = "请将地域限的限制条件正确填写！";
+            this.hasError.canDelete.act = true;
+          }
+
+          if (isOk) {
+            let sheng = [...this.deepCopy(this.dictData.china)].filter(
+              tar => tar.adcode === child.sheng
+            )[0]; // 深拷贝一下字典数据
+            // 生成最终数据到ruleForm中
+            this.ruleForm.areaTJ.push({
+              num: this.num++,
+              sheng: {
+                adcode: sheng.adcode,
+                name: sheng.name,
+                index: sheng.index
+              },
+              shi: sheng.children.filter(tar => child.shi.includes(tar.adcode)),
+              tiaojian: child.tiaojian
+            });
+            // 重置子组件
+            this.$refs.child.data = {
+              sheng: "",
+              shi: [],
+              tiaojian: []
+            };
+            this.toResetList();
           }
           break;
-        case "add":
-          this.ruleForm.areaTJ.push({
-            num: this.num++,
-            sheng: "",
-            shi: [],
-            tiaojian: []
-          });
-          this.toFilterList();
+        case "noError":
+          this.hasError.canDelete.content = "";
+          this.hasError.canDelete.act = false;
           break;
-        case "deleteShi":
-          this.toFilterList();
+        case "edit": // 编辑
+          let obj;
+          this.ruleForm.areaTJ = this.ruleForm.areaTJ.filter(tar => {
+            if (tar.num === data.data.num) {
+              obj = { ...tar };
+            }
+            return tar.num != data.data.num;
+          });
+
+          this.toResetList();
+          this.$refs.child.data = {
+            sheng: obj.sheng.adcode,
+            shi: obj.shi.map(tar => tar.adcode),
+            tiaojian: obj.tiaojian
+          };
+          this.$refs.child.resetList();
           break;
       }
     },
@@ -1075,57 +1190,105 @@ export default {
     resetSide() {
       this.ruleForm.side = []; // 位置
       this.ruleForm.time = []; // 时间
-      this.ruleForm.ad_side = []; // 广告位
-      this.ruleForm.active = []; // 活动
-      this.ruleForm.content = []; // 内容
-      this.ruleForm.chuang = ""; // 创新层
-      this.timeType = "";
-      this.timeData = "";
+      this.hasError.sideTime.content = "";
+      this.hasError.sideTime.act = false;
     },
-    // 全选按钮
+    // 产品展示位置与时间,全选按钮
     selectAll() {
-      console.log(9);
+      let kk;
+      if (this.type === "bank") {
+        kk = this.yingxiaoDatas.weizhi_bank;
+      } else {
+        kk = this.yingxiaoDatas.weizhi_product;
+      }
+
+      this.ruleForm.side = kk.map(tar => tar.positionNo);
+      this.ruleForm.ad_side = this.yingxiaoDatas.guangao.map(
+        tar => tar.positionNo
+      );
+      this.ruleForm.active = this.yingxiaoDatas.huodong.map(
+        tar => tar.positionNo
+      );
+      this.ruleForm.content = this.yingxiaoDatas.neirong.map(
+        tar => tar.positionNo
+      );
+      this.ruleForm.chuang = "组合购买";
+
+      let date = new Date(),
+        year = date.getFullYear(),
+        month = date.getMonth(),
+        day = date.getDate();
+
+      this.ruleForm.time = [
+        {
+          type: "日期",
+          startTime: `${year}-${month}-${day} 00:00:00`,
+          endTime: "",
+          zhouqi: []
+        }
+      ];
     },
-    // 选择时间
+    // 新增限制位置时间
     timeAction(obj) {
       switch (obj.type) {
-        case "new":
-          if (
-            this.ruleForm.side.length === 1 &&
-            this.ruleForm.time.length === 0
-          ) {
-            this.ruleForm.time.push({
-              num: this.num++,
-              type: "",
-              time: []
-            });
+        case "new": // 选择好位置，但还未选时间
+          if (this.sideTimeBefore.length === 0) {
+            if (
+              this.ruleForm.side.length === 1 &&
+              this.ruleForm.time.length === 0
+            ) {
+              this.ruleForm.time.push({
+                num: this.num++,
+                type: "",
+                startTime: "",
+                endTime: "",
+                zhouqi: []
+              });
+            }
+            this.sideTimeBefore = this.ruleForm.side;
+          } else {
+            // 添加位置
+            if (this.sideTimeBefore.length < this.ruleForm.side.length) {
+              this.sideTimeBefore = this.ruleForm.side;
+            } else {
+              // 减少
+              if (this.ruleForm.side.length === 0) {
+                this.ruleForm.time = [];
+              }
+              this.sideTimeBefore = this.ruleForm.side;
+            }
           }
           break;
-        case "add":
+        case "add": // 已选址位置、时间
           if (this.ruleForm.side.length > 0) {
             this.$refs.sideTime.forEach(tar => {
               tar.save();
             });
-            let isOk = true;
+            let isOk = true; // 判断时间类型、时间数据是否已选好
             this.ruleForm.time.forEach(item => {
-              if (!item.type || item.time.length === 0) {
+              if (!item.type || item.startTime === "") {
                 isOk = false;
               }
             });
-
             if (isOk) {
+              this.hasError.sideTime.act = false;
+              this.hasError.sideTime.content = "";
+              // 选好了才会新增
               this.ruleForm.time.push({
                 num: this.num++,
                 type: "",
-                time: []
+                startTime: "",
+                endTime: "",
+                zhouqi: []
               });
             } else {
-              this.$message.error("请先输入上一个数据！");
+              this.hasError.sideTime.act = true;
+              this.hasError.sideTime.content = "请先将当前一个数据输入完整！";
             }
           } else {
-            this.$message.error("请先选择位置！");
+            this.hasError.sideTime.act = true;
+            this.hasError.sideTime.content = "请先选择位置！";
           }
-
           break;
         case "delete":
           if (this.ruleForm.time.length > 1) {
@@ -1133,93 +1296,11 @@ export default {
               tar.num != obj.data.num;
             });
           } else {
-            this.$message.error("请至少保留一个或者完全重置！");
+            this.hasError.sideTime.act = true;
+            this.hasError.sideTime.content = "请至少保留一个或者完全重置！";
           }
           break;
       }
-    },
-    // 编写完数据重置
-    resetAll() {
-      this.$store.state.areaList = this.dictData.china;
-
-      this.ruleForm = {
-        canSee: "可见条件", // 可见条件
-        minAge: "", // 左边年龄
-        minAge_symbol: "", // 左边年龄的符号
-        maxAge: "", // 右边年龄
-        maxAge_symbol: "", // 右边年龄的符号
-        age_fuhao: "", // 中间的且、或
-        statue: "", // 状态
-        time1: "", // 左边的时间
-        time1_symbol: "", // 左边时间的符号
-        time2: "", // 右边的时间
-        time2_symbol: "", // 右边时间的符号
-        time1_time2: "", // 时间中间的且或
-        realName: "", //比财实名状态
-        kaihu: "", //比财开户状态
-        touzi: "", //比财投资状态
-        chicang: "", //比财持仓状态
-        minChiCang: "", // 左边持仓
-        minChiCang_symbol: "", // 左边持仓的符号
-        maxChiCang: "", // 右边持仓
-        maxChiCang_symbol: "", // 右边持仓的符号
-        ChiCang_fuhao: "", // 中间的且、或
-        bankStatue: "", // 状态
-        bank1: "", // 左边的时间
-        bank1_symbol: "", // 左边时间的符号
-        bank2: "", // 右边的时间
-        bank2_symbol: "", // 右边时间的符号
-        bank1_bank2: "", // 时间中间的且或
-        minBankChiCang: "", // 左边持仓
-        minBankChiCang_symbol: "", // 左边持仓的符号
-        maxBankChiCang: "", // 右边持仓
-        maxBankChiCang_symbol: "", // 右边持仓的符号
-        bankChiCang_fuhao: "", // 中间的且、或
-        bankTouZi: "", //本银行投资状态
-        bankChiCang: "", //本银行持仓状态
-        areaTJ: [], //地域限制条件
-        side: [], // 位置
-        time: [], // 时间数据
-        ad_side: [], // 广告位
-        active: [], // 活动
-        content: [], // 内容
-        chuang: "" // 创新层
-      };
-
-      this.hasError = {
-        hasError: false,
-        // 页面内各种验证的错误提示
-        age: {
-          // 年龄
-          act: false,
-          content: ""
-        },
-        time: {
-          // 比财注册状态与时间
-          act: false,
-          content: ""
-        },
-        chicang: {
-          // 比财持仓金额
-          act: false,
-          content: ""
-        },
-        bank: {
-          // 本银行开户状态与时间
-          act: false,
-          content: ""
-        },
-        bankChiCang: {
-          // 本银行持仓金额
-          act: false,
-          content: ""
-        },
-        canDelete: {
-          // 限制地域
-          act: false,
-          content: ""
-        }
-      };
     }
   }
 };
@@ -1227,7 +1308,6 @@ export default {
 <style scoped>
 .AddTiaoJianPage {
   background: rgb(253, 253, 253);
-  box-shadow: 0px 5px 10px 5px rgb(167, 166, 166);
 }
 
 .pageTop {
@@ -1306,5 +1386,37 @@ export default {
   border: 1px solid rgb(161, 159, 159);
   padding: 0 10px;
   margin: 10px 0;
+}
+
+.isI {
+  font-size: 22px;
+  color: rgb(78, 75, 75);
+  padding: 2px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+.isI:hover {
+  font-size: 22px;
+  cursor: pointer;
+  background: rgb(134, 134, 134);
+  color: #fff;
+}
+
+.selectList {
+  display: flex;
+  justify-content: space-between;
+  background: rgb(206, 223, 243);
+  margin-bottom: 4px;
+}
+.selectList > div:nth-of-type(1) > p {
+  line-height: 16px;
+  padding: 0 5px;
+  margin: 0;
+  font-size: 12px;
+  color: rgb(68, 67, 67);
+}
+.selectList > div:nth-of-type(1) > p span {
+  display: inline-block;
+  padding: 2px 5px;
 }
 </style>

@@ -434,3 +434,24 @@ body {
     transform-origin: center center;
 }
 
+// 广告上传
+.colItem .el-upload {
+    display: flex;
+    min-width:200px;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    outline: 0;
+}
+// 广告详情 字体picker
+.showForm .el-color-picker__mask{
+    height: 38px;
+    width: 38px;
+    border-radius: 4px;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    z-index: 1;
+    cursor: not-allowed;
+    background-color:transparent!important;
+}

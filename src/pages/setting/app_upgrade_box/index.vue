@@ -11,7 +11,7 @@
       <el-menu-item index="2">Android系统</el-menu-item>
     </el-menu>
     <el-form
-    class="form-box"
+      class="form-box"
       v-if="infoStatus"
       label-width="100px"
       label-suffix=":"
@@ -25,7 +25,7 @@
       <el-form-item label="强制升级标志">{{detailInfo.forceFlag==0?'是':'否'}}</el-form-item>
     </el-form>
     <el-form
-    v-else
+      v-else
       class="form-box"
       ref="ruleForm"
       :rules="rules"
@@ -81,7 +81,7 @@ export default {
         upgradeTitle: "", //升级弹框标题
         upgradeVerison: "", //升级版本号
         positionNo: "", //位置编号
-        upSysType: '',
+        upSysType: ""
       },
       rules: {
         upgradeVerison: [{ required: true, message: "版本号不能为空" }],
@@ -104,18 +104,18 @@ export default {
     }),
     // 保存数据
     saveFn(ruleForm) {
-      if(this.infoStatus){
-        this.infoStatus = !this.infoStatus
-        for(let key in this.detailInfo){
-          if(this.ruleForm.hasOwnProperty(key)){
-            this.ruleForm[key] = this.detailInfo[key]
+      if (this.infoStatus) {
+        this.infoStatus = !this.infoStatus;
+        for (let key in this.detailInfo) {
+          if (this.ruleForm.hasOwnProperty(key)) {
+            this.ruleForm[key] = this.detailInfo[key];
           }
         }
         return;
       }
       this.$refs[ruleForm].validate(valid => {
         if (valid) {
-          this.ruleForm['upSysType'] = this.activeIndex;
+          this.ruleForm["upSysType"] = this.activeIndex;
           this.upgradeBoxAdd(this.ruleForm).then(() => {
             this.$message.success("添加成功");
             this.getDetailInfo();
@@ -124,9 +124,12 @@ export default {
       });
     },
     handleSelect(key) {
+      if (key == this.activeIndex) return;
       this.infoStatus = false;
       this.activeIndex = key;
-      this.$refs['ruleForm'].resetFields();
+      this.$nextTick(() => {
+        this.$refs["ruleForm"].resetFields();
+      });
       this.getDetailInfo();
     },
     // 信息详情

@@ -10,19 +10,21 @@
       <el-form ref="ruleForm" :rules="rules" :model="ruleForm" label-width="100px">
         <el-form-item label="银行：" size="mini" prop="bank">
           <el-select
-            @change="setProduct"
             filterable
             v-model="ruleForm.bank"
             clearable
             placeholder="请选择"
             style="width:480px;"
+            @visible-change="bankBlur($event)"
+            @clear="bankBlur"
           >
-            <el-option-group v-for="group in kkk" :key="group.label" :label="group.label">
+            <el-option-group v-for="group in bankList" :key="group.label" :label="group.label">
               <el-option
                 v-for="item in group.options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+                :disabled="item.use"
               ></el-option>
             </el-option-group>
           </el-select>
@@ -39,9 +41,9 @@
           >
             <el-option
               v-for="item in productList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -53,10 +55,12 @@
               size="mini"
               type="datetime"
               placeholder="开始时间"
+              value-format="yyyy-MM-dd HH:mm:ss"
             ></el-date-picker>
           </el-form-item>
           <el-form-item label="至" prop="endTime" label-width="40px">
             <el-date-picker
+              value-format="yyyy-MM-dd HH:mm:ss"
               v-model="ruleForm.endTime"
               size="mini"
               type="datetime"
@@ -89,11 +93,17 @@
           </p>
 
           <!-- 一类条件和二类条件中间 -->
-          <el-radio-group v-model="ruleForm.peizhi.one_two" size="mini" class="howCan_Not">
+          <el-radio-group
+            v-model="ruleForm.peizhi.one_two"
+            size="mini"
+            class="howCan_Not"
+            v-if="ruleForm.peizhi.two.length>0"
+          >
             <el-radio-button label="且"></el-radio-button>
             <el-radio-button label="或"></el-radio-button>
           </el-radio-group>
 
+          <!-- 二类条件 -->
           <div class="everyTJ" v-for="(tar,index) in ruleForm.peizhi.two" :key="tar.num">
             <div>
               <p class="canseeTitle" v-if="tar.type===1">可见条件：</p>
@@ -130,8 +140,10 @@
       </el-form>
     </div>
     <addTiaoJian
+      v-if="toAdd2"
       @TiaoJianEmit="TiaoJianEmit"
       :class="{'AddTiaoJian':true,'addTiaoJian':toAdd,'notAddTiaoJian':!toAdd}"
+      :type="pageType"
     />
   </div>
 </template>
@@ -143,44 +155,10 @@ export default {
   data() {
     return {
       toAdd: false, // 控制添加条件页面的显示
+      toAdd2: false, // 控制添加条件页面的显示
       env: "",
       pageName: "",
-      kkk: [
-        {
-          label: "未配置过",
-          options: [
-            {
-              value: "Shanghai",
-              label: "上海"
-            },
-            {
-              value: "Beijing",
-              label: "北京"
-            }
-          ]
-        },
-        {
-          label: "已配置过",
-          options: [
-            {
-              value: "Chengdu",
-              label: "成都"
-            },
-            {
-              value: "Shenzhen",
-              label: "深圳"
-            },
-            {
-              value: "Guangzhou",
-              label: "广州"
-            },
-            {
-              value: "Dalian",
-              label: "大连"
-            }
-          ]
-        }
-      ],
+      bankList: [],
       productList: [], // 银行产品
       ruleForm: {},
       rules: {},
@@ -190,6 +168,7 @@ export default {
   created() {
     this.env = sessionStorage.getItem("env") === "development";
     this.pageType = this.$route.query.from;
+    this.bankList = JSON.parse(this.$route.query.bankList);
     switch (this.pageType) {
       case "bank":
         this.ruleForm = {
@@ -200,7 +179,7 @@ export default {
                 num: this.num,
                 tiaojian: [],
                 howOne: "",
-                type: 3 // 可见
+                type: 3 //  可见条件、不可见条件
               }
             ],
             one_two: "且",
@@ -215,12 +194,15 @@ export default {
             { required: true, validator: this.check_peizhi, trigger: "blur" }
           ],
           startTime: [
-            { required: true, message: "请选择生效开始时间", trigger: "change" }
+            {
+              required: true,
+              validator: this.check_startTime,
+              trigger: "change"
+            }
           ],
           endTime: [
             {
               validator: this.check_endTime,
-              message: "结束时间不得早于或等于开始时间",
               trigger: "change"
             }
           ]
@@ -242,7 +224,7 @@ export default {
                 num: this.num,
                 tiaojian: [],
                 howOne: "",
-                type: 3 // 可见
+                type: 3 // 可见条件、不可见条件
               }
             ],
             one_two: "或",
@@ -282,7 +264,35 @@ export default {
         break;
     }
   },
+
   methods: {
+    bankBlur(e) {
+      if (e === false && this.ruleForm.bank !== "") {
+        this.getProductList();
+      } else {
+        this.productList = [];
+        this.ruleForm.product = "";
+      }
+    },
+    // 根据银行选取产品
+    getProductList() {
+      this.$api
+        .getProductList({
+          vm: this,
+          data: {
+            ids: [this.ruleForm.bank]
+          }
+        })
+        .then(res => {
+          if (res) {
+            this.productList = res.data[0].sandBoxProducts.map(item => ({
+              id: item.productId,
+              name: item.productName
+            }));
+          }
+        });
+    },
+    // 选择时间的验证函数
     check_startTime() {
       if (!this.ruleForm.startTime) {
         arguments[2](new Error("请输入开始时间"));
@@ -290,16 +300,23 @@ export default {
         this.ruleForm.endTime &&
         this.ruleForm.startTime >= this.ruleForm.endTime
       ) {
-        arguments[2](new Error("结束时间不得早于或等于开始时间"));
+        arguments[2](new Error("开始时间不得晚于或等于结束时间"));
       } else {
         arguments[2]();
       }
     },
     check_endTime() {
-      if (this.ruleForm.startTime >= this.ruleForm.endTime) {
-        arguments[2](new Error("结束时间不得早于或等于开始时间"));
+      if (!this.ruleForm.startTime) {
+        arguments[2](new Error("没有开始时间，结束时间无效"));
+        setTimeout(() => {
+          this.ruleForm.endTime = "";
+        }, 2000);
       } else {
-        arguments[2]();
+        if (this.ruleForm.startTime >= this.ruleForm.endTime) {
+          arguments[2](new Error("结束时间不得早于或等于开始时间"));
+        } else {
+          arguments[2]();
+        }
       }
     },
     check_peizhi(rule, value, callback) {
@@ -319,9 +336,9 @@ export default {
         this.num++;
         this.ruleForm.peizhi.one.push({
           num: this.num,
-          tiaojian: ["≥22岁", "本银行已开户", "辽宁省-沈阳市"],
-          howOne: "且",
-          type: 1 // 可见
+          tiaojian: [],
+          howOne: "",
+          type: 3 // 可见
         });
       }
     },
@@ -329,19 +346,25 @@ export default {
       this.num++;
       this.ruleForm.peizhi.two.push({
         num: this.num * 1000,
-        tiaojian: ["≥22岁", "本银行已开户", "辽宁省-沈阳市", "1218理财节"],
-        howTwo: "且",
-        type: 2 // 可见
+        tiaojian: [],
+        howTwo: "",
+        type: 3 // 可见
       });
     },
     // 编辑、删除图标
     action(num, tar) {
       switch (num) {
         case 1: // 首次添加一类条件
-          this.toAdd = true;
+          this.toAdd2 = true;
+          setTimeout(() => {
+            this.toAdd = true;
+          }, 100);
           break;
         case 2: // 编辑
-          this.toAdd = true;
+          this.toAdd2 = true;
+          setTimeout(() => {
+            this.toAdd = true;
+          }, 100);
           console.log(tar);
           break;
         case 3: // 删除
@@ -352,32 +375,26 @@ export default {
             .catch(() => {});
           break;
         case 4: // 首次添加二类条件
-          this.toAdd = true;
+          this.toAdd2 = true;
+          setTimeout(() => {
+            this.toAdd = true;
+          }, 100);
           break;
       }
     },
-    TiaoJianEmit(data) {
+    TiaoJianEmit(data) {  // 接收添加好的条件，暂存
       if (data) {
         console.log(data);
       }
+
       this.toAdd = false;
-    },
-    // 根据银行获取产品
-    setProduct() {
-      this.productList = [
-        {
-          value: "Shanghai",
-          label: "上海"
-        },
-        {
-          value: "Beijing",
-          label: "北京"
-        }
-      ];
+      setTimeout(() => {
+        this.toAdd2 = false;
+      }, 1000);
     },
     // 提交
     save() {
-      console.log(9);
+      console.log(this.ruleForm);
     },
 
     back() {

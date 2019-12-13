@@ -311,6 +311,10 @@ export const bannerTypeList = [
   {
     name:'功能区icon',
     value:'4'
+  },
+  {
+    name:'其他',
+    value:'5'
   }
 ]
 // 广告位状态
@@ -356,5 +360,28 @@ export const sysTypeList = [
   {
     name:'Android',
     value:'2'
+  }
+]
+// 广告位置-区域类型
+export const regionalTypeList = [
+  {
+    name:'广告',
+    value:1
+  },
+  {
+    name:'产品展示',
+    value:2
+  },
+  {
+    name:'银行展示',
+    value:3
+  },
+  {
+    name:'活动',
+    value:4
+  },
+  {
+    name:'内容',
+    value:5
   }
 ]

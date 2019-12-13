@@ -18,12 +18,13 @@
               placeholder="请选择"
               style="width:300px"
             >
-              <el-option-group v-for="group in kkk" :key="group.label" :label="group.label">
+              <el-option-group v-for="group in bankList" :key="group.label" :label="group.label">
                 <el-option
                   v-for="item in group.options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                  :disabled="item.use"
                 ></el-option>
               </el-option-group>
             </el-select>
@@ -31,7 +32,7 @@
           <el-button size="mini" type="primary" @click="search">查询</el-button>
           <el-button size="mini" type="info" @click="reset">重置</el-button>
           <div class="addPlatformButtons">
-            <el-button size="mini" type="primary" @click="addProduct(null)">新增产品配置</el-button>
+            <el-button size="mini" type="primary" @click="addProduct(null)">新增银行配置</el-button>
             <el-button size="mini" type="info" @click="toDelete('more')">批量删除</el-button>
             <div>
               <el-radio-group v-model="ruleForm.type" size="mini" @change="search()">
@@ -59,42 +60,7 @@ export default {
   },
   data() {
     return {
-      kkk: [
-        {
-          label: "未配置过",
-          options: [
-            {
-              value: "Shanghai",
-              label: "上海"
-            },
-            {
-              value: "Beijing",
-              label: "北京"
-            }
-          ]
-        },
-        {
-          label: "已配置过",
-          options: [
-            {
-              value: "Chengdu",
-              label: "成都"
-            },
-            {
-              value: "Shenzhen",
-              label: "深圳"
-            },
-            {
-              value: "Guangzhou",
-              label: "广州"
-            },
-            {
-              value: "Dalian",
-              label: "大连"
-            }
-          ]
-        }
-      ],
+      bankList: [],
       env: "",
       pageName: "",
       dictData: "",
@@ -122,8 +88,38 @@ export default {
     this.env = sessionStorage.getItem("env") === "development";
     this.pageName = sessionStorage.getItem("page"); // 获取页面名称
     this.search();
+    this.getBankList();
   },
   methods: {
+    // 获取银行列表
+    getBankList() {
+      this.$api
+        .getBankList({
+          vm: this
+        })
+        .then(res => {
+          if (res) {
+            this.bankList = [
+              {
+                label: "已配置银行",
+                options: res.data.configured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: false
+                }))
+              },
+              {
+                label: "未配置银行",
+                options: res.data.notConfigured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: true
+                }))
+              }
+            ];
+          }
+        });
+    },
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
@@ -325,19 +321,22 @@ export default {
     },
     addProduct(type, data) {
       if (type) {
+        // 编辑、复制
         this.$router.push({
           name: "add_bank_product",
           query: {
             from: "bank",
             type: type,
-            data: data
+            data: data,
+            bankList: JSON.stringify(this.bankList)
           }
         });
       } else {
         this.$router.push({
           name: "add_bank_product",
           query: {
-            from: "bank"
+            from: "bank",
+            bankList: JSON.stringify(this.bankList)
           }
         });
       }

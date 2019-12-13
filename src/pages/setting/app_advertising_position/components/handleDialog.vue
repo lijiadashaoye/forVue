@@ -19,33 +19,42 @@
       <!-- &&  this.$parent.userInfoArr.indexOf('position_upd')>-1 -->
       <!--  添加子关联和详情需要显示  -->
       <template v-if="dialogType=='detail'">
-        <el-form-item label="位置编号" prop="positionNo">{{indexInfo.positionNo}}</el-form-item>
-        <el-form-item label="位置描述" prop="positionTitle">{{indexInfo.positionTitle}}</el-form-item>
-        <el-form-item label="广告类型" prop="bannerType">{{indexInfo.bannerType}}</el-form-item>
-        <el-form-item label="系统类型" prop="sysType">{{indexInfo.sysType}}</el-form-item>
-        <el-form-item label="终端类型" prop="terminalType">{{indexInfo.terminalType}}</el-form-item>
-        <el-form-item label="启用状态" prop="status">{{indexInfo.status}}</el-form-item>
+        <el-form-item label="位置编号" >{{indexInfo.positionNo}}</el-form-item>
+        <el-form-item label="位置描述" >{{indexInfo.positionTitle}}</el-form-item>
+        <el-form-item label="广告类型" >{{indexInfo.bannerType}}</el-form-item>
+        <el-form-item label="系统类型" >{{indexInfo.sysType}}</el-form-item>
+        <el-form-item label="终端类型" >{{indexInfo.terminalType}}</el-form-item>
+        <el-form-item label="区域类型" >{{defaultChange(indexInfo.regionalType,true,'regionalTypeList')}}</el-form-item>
+        <el-form-item label="启用状态" >{{indexInfo.status}}</el-form-item>
       </template>
       <!--  详情页面不显示表单操作  -->
       <template v-if="dialogType!='detail'">
-        <el-form-item
-          v-if="dialogType=='edit'"
-          label="位置编号"
-          prop="positionNo"
-        >{{indexInfo.positionNo}}</el-form-item>
-        <el-form-item v-else label="位置编号" prop="positionNo">
-          <el-input placeholder="请输入位置名编号" v-model="ruleForm.positionNo" type="text" clearable></el-input>
-        </el-form-item>
-        <template v-if="indexInfo.isCoupon=='01'">
-          <el-form-item label="广告类型" prop="bannerType">{{indexInfo.bannerType}}</el-form-item>
-          <el-form-item label="系统类型" prop="sysType">{{indexInfo.sysType}}</el-form-item>
-          <el-form-item label="终端类型" prop="terminalType">{{indexInfo.terminalType}}</el-form-item>
-          <el-form-item label="启用状态" prop="status">{{indexInfo.status}}</el-form-item>
-           <el-form-item label="展示位置名称" prop="positionTitle">
-            <el-input placeholder="请输入位置名称" v-model="ruleForm.positionTitle" type="text" clearable></el-input>
+         <el-form-item
+            v-if="dialogType=='edit'"
+            label="位置编号"
+            prop="positionNo"
+          >{{indexInfo.positionNo}}</el-form-item>
+          <el-form-item v-else label="位置编号" prop="positionNo">
+            <el-input placeholder="请输入位置名编号" v-model="ruleForm.positionNo" type="text" clearable></el-input>
           </el-form-item>
+        <template v-if="dialogType=='edit'">
+          <template v-if="indexInfo.isCoupon=='01'">
+            <el-form-item label="广告类型" prop="bannerType">{{indexInfo.bannerType}}</el-form-item>
+            <el-form-item label="系统类型" prop="sysType">{{indexInfo.sysType}}</el-form-item>
+            <el-form-item label="终端类型" prop="terminalType">{{indexInfo.terminalType}}</el-form-item>
+            <el-form-item label="区域类型" prop="regionalType">{{defaultChange(indexInfo.regionalType,true,'regionalTypeList')}}</el-form-item>
+            <el-form-item label="启用状态" prop="status">{{indexInfo.status}}</el-form-item>
+            <el-form-item label="展示位置名称" prop="positionTitle">
+              <el-input
+                placeholder="请输入位置名称"
+                v-model="ruleForm.positionTitle"
+                type="text"
+                clearable
+              ></el-input>
+            </el-form-item>
+          </template>
         </template>
-       
+
         <template v-if="dialogType=='add' || indexInfo.isCoupon=='02'">
           <el-form-item label="展示位置名称" prop="positionTitle">
             <el-input placeholder="请输入位置名称" v-model="ruleForm.positionTitle" type="text" clearable></el-input>
@@ -62,7 +71,18 @@
               ></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="广告位类型" prop="bannerType">
+          <el-form-item label="区域类型" prop="regionalType">
+            <el-select v-model="ruleForm.regionalType" clearable placeholder="请选择">
+              <el-option
+                size="mini"
+                v-for="(item,index) in regionalTypeList"
+                :key="index"
+                :label="item.name"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="位置类型" prop="bannerType">
             <el-select v-model="ruleForm.bannerType" clearable placeholder="请选择">
               <el-option
                 size="mini"
@@ -104,7 +124,7 @@ import { mapActions, mapState } from "vuex";
 import { notifyType } from "@/constant.js";
 import { defaultChange } from "@/sets/changeLanguage.js";
 import { phoneRegx, emailRegx } from "@/sets/regex.js";
-import { bannerTypeList, terminalType, sysTypeList } from "@/constant.js";
+import { bannerTypeList, terminalType, sysTypeList,regionalTypeList } from "@/constant.js";
 export default {
   props: {
     centerDialogVisible: {
@@ -117,6 +137,9 @@ export default {
     }
   },
   created() {
+    this.defaultChange = defaultChange;
+    // 区域类型
+    this.regionalTypeList = regionalTypeList;
     // 广告类型数据
     this.bannerTypeList = Object.assign([], bannerTypeList);
     // 广告终端列表
@@ -188,6 +211,7 @@ export default {
       centerType: this.centerDialogVisible,
       title: "新增广告位置",
       ruleForm: {
+        regionalType: "", //区域类型
         positionTitle: "", //位置描述
         positionNo: "", //位置编号
         terminalType: "", //终端类型
@@ -199,6 +223,7 @@ export default {
         positionTitle: [{ required: true, message: "位置描述不能为空" }],
         positionNo: [{ required: true, message: "位置编号不能为空" }],
         terminalType: [{ required: true, message: "终端类型不能为空" }],
+        regionalType: [{ required: true, message: "区域类型不能为空" }],
         bannerType: [{ required: true, message: "广告类型不能为空" }],
         status: [{ required: true }],
         sysType: [{ required: true, message: "系统类型不能为空" }]

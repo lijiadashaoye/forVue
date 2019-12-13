@@ -10,7 +10,8 @@ import {
     terminalType,
     bannerStatus,
     bannerTypeList,
-    sysTypeList
+    sysTypeList,
+    regionalTypeList
 } from '@/constant.js'
 
 /**
@@ -58,8 +59,12 @@ export function defaultChange(value, type, arrName) {
         case 'sysTypeList':
             forArr = sysTypeList;
             break;
+        case 'regionalTypeList':
+            forArr = regionalTypeList;
+            break;
     }
     for (let item of forArr) {
+        console.log(value,item.value)
         if (type) {
             if (value == item.value) {
                 return item.name

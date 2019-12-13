@@ -18,18 +18,20 @@
         >
           <el-form-item label="银行" size="mini" prop="bank">
             <el-select
+              :disabled="this.pageType==='edit'"
               filterable
               v-model="ruleForm.bank"
               clearable
               placeholder="请选择"
               style="width:508px;"
             >
-              <el-option-group v-for="group in kkk" :key="group.label" :label="group.label">
+              <el-option-group v-for="group in bankList" :key="group.label" :label="group.label">
                 <el-option
                   v-for="item in group.options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                  :disabled="!item.use"
                 ></el-option>
               </el-option-group>
             </el-select>
@@ -49,7 +51,11 @@
                   v-model="ruleForm.qudao.inset"
                   @change="handleCheckedCitiesChange1"
                 >
-                  <el-checkbox v-for="t in insetList" :label="t" :key="t">{{t}}</el-checkbox>
+                  <el-checkbox
+                    v-for="t in dictData.inner_channel"
+                    :label="t.label"
+                    :key="t.label"
+                  >{{t.label}}</el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
               <el-form-item label="外部渠道">
@@ -64,7 +70,11 @@
                   v-model="ruleForm.qudao.outset"
                   @change="handleCheckedCitiesChange2"
                 >
-                  <el-checkbox v-for="t in outsetList" :label="t" :key="t">{{t}}</el-checkbox>
+                  <el-checkbox
+                    v-for="t in dictData.out_channel"
+                    :label="t.label"
+                    :key="t.label"
+                  >{{t.label}}</el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
             </div>
@@ -89,42 +99,7 @@ export default {
       }
     };
     return {
-      kkk: [
-        {
-          label: "未配置过",
-          options: [
-            {
-              value: "Shanghai",
-              label: "上海"
-            },
-            {
-              value: "Beijing",
-              label: "北京"
-            }
-          ]
-        },
-        {
-          label: "已配置过",
-          options: [
-            {
-              value: "Chengdu",
-              label: "成都"
-            },
-            {
-              value: "Shenzhen",
-              label: "深圳"
-            },
-            {
-              value: "Guangzhou",
-              label: "广州"
-            },
-            {
-              value: "Dalian",
-              label: "大连"
-            }
-          ]
-        }
-      ],
+      bankList: [],
       env: "",
       pageName: "",
       dictData: "",
@@ -140,8 +115,7 @@ export default {
           outset: []
         }
       },
-      insetList: ["比财APP", "拼财APP", "拼财小程序"],
-      outsetList: ["异业", "同业", "直投"],
+
       rules: {
         bank: [{ required: true, message: "请选择银行", trigger: "change" }],
         qudao: [{ required: true, validator: check_qudao, trigger: "blur" }]
@@ -151,45 +125,157 @@ export default {
   created() {
     this.env = sessionStorage.getItem("env") === "development";
     this.pageType = this.$route.query.type;
+
     switch (this.pageType) {
       case undefined:
+        this.pageName = sessionStorage.getItem("page") + " > 新增银行配置"; // 获取页面名称
+        break;
       case "copy":
         this.pageName = sessionStorage.getItem("page") + " > 新增银行配置"; // 获取页面名称
+        this.getItemData(this.$route.query.id, "copy");
         break;
       case "edit":
         this.pageName = sessionStorage.getItem("page") + " > 编辑银行配置"; // 获取页面名称
+        this.getItemData(this.$route.query.id, "edit");
         break;
     }
     this.dictData = JSON.parse(sessionStorage.getItem("dict"));
+    this.getBankList();
   },
   methods: {
+    // 获取银行列表
+    getBankList() {
+      this.$api
+        .getBankList({
+          vm: this
+        })
+        .then(res => {
+          if (res) {
+            this.bankList = [
+              {
+                label: "未配置银行",
+                options: res.data.notConfigured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: true
+                }))
+              },
+              {
+                label: "已配置银行",
+                options: res.data.configured.map(tar => ({
+                  id: tar.id,
+                  name: tar.name,
+                  use: false
+                }))
+              }
+            ];
+          }
+        });
+    },
     // 内部渠道checkbox
     handleCheckAllChange1(val) {
-      this.ruleForm.qudao.inset = val ? this.insetList : [];
+      this.ruleForm.qudao.inset = val
+        ? this.dictData.inner_channel.map(tar => tar.label)
+        : [];
       this.isIndeterminate1 = false;
     },
     handleCheckedCitiesChange1(value) {
       let checkedCount = value.length;
-      this.checkAll1 = checkedCount === this.insetList.length;
+      this.checkAll1 = checkedCount === this.dictData.inner_channel.length;
       this.isIndeterminate1 =
-        checkedCount > 0 && checkedCount < this.insetList.length;
+        checkedCount > 0 && checkedCount < this.dictData.inner_channel.length;
     },
     // 内部渠道checkbox
     handleCheckAllChange2(val) {
-      this.ruleForm.qudao.outset = val ? this.outsetList : [];
+      this.ruleForm.qudao.outset = val
+        ? this.dictData.out_channel.map(tar => tar.label)
+        : [];
       this.isIndeterminate2 = false;
     },
     handleCheckedCitiesChange2(value) {
       let checkedCount = value.length;
-      this.checkAll2 = checkedCount === this.outsetList.length;
+      this.checkAll2 = checkedCount === this.dictData.out_channel.length;
       this.isIndeterminate2 =
-        checkedCount > 0 && checkedCount < this.outsetList.length;
+        checkedCount > 0 && checkedCount < this.dictData.out_channel.length;
     },
+    // 保存
     next() {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
-          console.log(this.ruleForm);
-          this.reset();
+          let notConfigured,
+            httpType = "",
+            url = "";
+          if (this.pageType === "edit") {
+            notConfigured = this.bankList[1].options;
+            httpType = "put";
+            url = "/product/sandBox/platform/update";
+          } else {
+            notConfigured = this.bankList[0].options;
+            httpType = "post";
+            url = `/product/sandBox/platform/add`;
+          }
+
+          let obj = {
+            bankId: this.ruleForm.bank,
+            bankName: notConfigured.filter(
+              tar => tar.id == this.ruleForm.bank
+            )[0].name,
+            innerChannel: [],
+            outChannel: []
+          };
+
+          if (this.ruleForm.qudao.inset.length) {
+            let kk = this.dictData.inner_channel;
+            this.ruleForm.qudao.inset.forEach(str => {
+              for (let i = kk.length; i--; ) {
+                if (kk[i].label === str) {
+                  obj.innerChannel.push({
+                    channelLabel: kk[i].label,
+                    channelCode: kk[i].value,
+                    channelType: "inner",
+                    bankId: this.ruleForm.bank
+                  });
+                } else {
+                  continue;
+                }
+              }
+            });
+          }
+          if (this.ruleForm.qudao.outset.length) {
+            let kk = this.dictData.out_channel;
+            this.ruleForm.qudao.outset.forEach(str => {
+              for (let i = kk.length; i--; ) {
+                if (kk[i].label === str) {
+                  obj.outChannel.push({
+                    channelLabel: kk[i].label,
+                    channelCode: kk[i].value,
+                    channelType: "out",
+                    bankId: this.ruleForm.bank
+                  });
+                } else {
+                  continue;
+                }
+              }
+            });
+          }
+
+          if (this.pageType === "edit") {
+            obj.id = this.ruleForm.id;
+          }
+          this.$api
+            .addPlatform({
+              vm: this,
+              data: obj,
+              httpType: httpType,
+              url: url
+            })
+            .then(res => {
+              if (res) {
+                this.reset();
+                this.$message.success("新增成功！");
+                this.getBankList();
+              }
+            });
         }
       });
     },
@@ -207,6 +293,36 @@ export default {
       this.ruleForm.bank = "";
       this.ruleForm.qudao.inset = [];
       this.ruleForm.qudao.outset = [];
+    },
+    // 获取详情
+    getItemData(id, type) {
+      this.$api
+        .getItemData({
+          vm: this,
+          id: id
+        })
+        .then(res => {
+          if (res) {
+            if (type === "edit") {
+              this.ruleForm = {
+                id: res.data.id,
+                bank: res.data.bankId,
+                qudao: {
+                  inset: res.data.innerChannel.map(tar => tar.channelLabel),
+                  outset: res.data.outChannel.map(tar => tar.channelLabel)
+                }
+              };
+            } else {
+              this.ruleForm = {
+                bank: "",
+                qudao: {
+                  inset: res.data.innerChannel.map(tar => tar.channelLabel),
+                  outset: res.data.outChannel.map(tar => tar.channelLabel)
+                }
+              };
+            }
+          }
+        });
     }
   }
 };

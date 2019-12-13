@@ -181,27 +181,27 @@ let setting = [{
     //app-广告图模块
     {
         name: '广告图列表',
-        path:'/home/banner/:type/list',
+        path: '/home/banner/:type/list',
         component: resolve => require(['./pages/setting/app_mapList'], resolve),
     },
     // app-新增广告
     {
-        name:'新增广告',
-        path:'/home/banner/:type/list/add',
+        name: '新增广告',
+        path: '/home/banner/:type/list/add',
         component: resolve => require(['./pages/setting/app_mapList/add_map'], resolve),
 
     },
     // app-系统升级弹框
     {
-        name:'升级弹框',
-        path:'/home/setting/banner-upgrade/list',
+        name: '升级弹框',
+        path: '/home/setting/banner-upgrade/list',
         component: resolve => require(['./pages/setting/app_upgrade_box'], resolve),
     },
     // app-功能区管理
     {
-        name:"app-底部菜单",
-        path:'/home/setting/banner-menu/list',
-        component: resolve => require(['./pages/setting/app_function'],resolve)
+        name: "app-底部菜单",
+        path: '/home/setting/banner-menu/list',
+        component: resolve => require(['./pages/setting/app_function'], resolve)
     },
     {
         name: '创建爆款', // 创建爆款
@@ -752,7 +752,7 @@ let member = [{
     {
         name: '会员登录记录',
         path: '/home/member/member-login-record/list',
-        component: resolve => require(['./pages/member/loginRecord'],resolve)
+        component: resolve => require(['./pages/member/loginRecord'], resolve)
     },
     {
         name: 'mission_create',
@@ -816,7 +816,7 @@ let sandbox = [{
         path: '/home/sandbox/platform/add_platform',
         component: resolve => require(['./pages/sandbox/platform_add.vue'], resolve),
     },
-    { 
+    {
         name: 'sandbox_bank', // 银行管理
         path: '/home/sandbox/platform/bank',
         component: resolve => require(['./pages/sandbox/bank.vue'], resolve),
@@ -837,19 +837,19 @@ let information = [{
     name: '文章管理',
     path: '/home/information/essay/list',
     component: resolve => require(['./pages/information/article'], resolve)
-},{
+}, {
     name: '文章栏目管理',
     path: '/home/information/essay/title/list',
     component: resolve => require(['./pages/information/articleType'], resolve)
-},{
+}, {
     name: '文章标签管理',
     path: '/home/information/essay/lable/list',
     component: resolve => require(['./pages/information/articleTags'], resolve)
-},{
+}, {
     name: '文章评论管理',
     path: '/home/information/essay/discuss/list',
     component: resolve => require(['./pages/information/articleComments'], resolve)
-},{
+}, {
     name: '新闻设置',
     path: '/home/information/essay/new-set/list',
     component: resolve => require(['./pages/information/news'], resolve)
@@ -923,7 +923,7 @@ let router = new Router({
                 {
                     name: 'information',
                     path: '/home/information',
-                    component: resolve => require(['./pages/information/index.vue'],resolve),
+                    component: resolve => require(['./pages/information/index.vue'], resolve),
                     children: [...information]
                 }
             ]
@@ -937,15 +937,8 @@ let router = new Router({
 router.beforeEach((to, from, next) => {
     if (to.meta.requireAuth) { // 判断是否需要登录权限
         if (sessionStorage.getItem('token')) { // 判断是否登录
-            // 显示提示
-            Message({
-                message: '已成功登录了！',
-                type: 'success',
-                duration: 3 * 1000
-            })
             next()
         } else { // 没登录则跳转到登录界面
-
             // 显示提示
             Message({
                 message: '请登录！',
