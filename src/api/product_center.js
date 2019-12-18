@@ -267,7 +267,6 @@ export default {
     },
     // 新增理财产品
     add_licai(data) {
-        // console.log(data)
         return data.vm.$axios({
             method: 'post',
             url: '/product/wmp',

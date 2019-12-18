@@ -1117,23 +1117,59 @@ ul {
 .canseeTitle {
     color: rgb(76, 174, 240);
     font-size: 12px;
-    padding: 10px 0 0 14px;
-    background: rgb(243, 243, 243);
+    padding-left: 14px;
+    background: rgba(250, 249, 249);
     font-weight: bold;
 }
 
 .everyTJ ul {
     font-size: 12px;
     display: flex;
-    background: rgb(243, 243, 243);
+    background: rgba(250, 249, 249, 0.9);
     padding: 15px;
+    flex-wrap: wrap;
 }
 
-.everyTJ ul>li {
-    border: 1px solid;
-    padding: 5px 16px;
-    margin-right: 12px;
+.showSheng1 {
+    border: 1px solid rgb(151, 150, 150);
+    border-radius: 2px;
+    padding: 1px 12px;
+    margin: 0 10px 6px 0;
 }
+
+.showSheng2 {
+    border: 1px solid rgb(151, 150, 150);
+    border-radius: 2px;
+    margin: 0 10px 6px 0;
+}
+
+.showSheng3 {
+    border: 1px solid rgb(151, 150, 150);
+    border-radius: 2px;
+    padding: 1px 12px;
+    margin: 0 10px 6px 0;
+}
+
+.showSheng2>div {
+    border: 1px dashed rgb(209, 223, 250);
+    border-radius: 2px;
+    padding: 4px 12px;
+    margin: 5px;
+}
+
+.forTime,
+.showSheng3>div>p,
+.showSheng2>div>p {
+    line-height: 18px;
+}
+
+.showSheng1>span:nth-of-type(2),
+.showSheng3>div>p>span,
+.showSheng2>div>p>span {
+    margin-right: 10px;
+}
+
+
 
 .notseeTitle {
     color: rgb(243, 87, 87);
@@ -1165,7 +1201,7 @@ ul {
 
 .icon5 {
     padding-left: 15px;
-    background: rgb(243, 243, 243);
+    background: rgba(250, 249, 249, 0.9);
 }
 
 .icon5 i {
@@ -1223,7 +1259,7 @@ ul {
     width: 100%;
     box-sizing: border-box;
     border: 1px dashed rgb(170, 168, 168);
-    font-size: 12px;
+    font-size: 14px;
     padding: 8px 0;
     margin: 7px 0 15px 0;
     border-radius: 5px;

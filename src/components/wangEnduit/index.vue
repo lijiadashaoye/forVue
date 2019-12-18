@@ -118,7 +118,6 @@ export default {
         customInsert: (insertImg, result, editor) => {
           // 图片上传成功，插入图片的回调
           //result为上传图片成功的时候返回的数据，这里我打印了一下发现后台返回的是data：[{url:"路径的形式"},...]
-          // console.log(result.data[0].url)
           //insertImg()为插入图片的函数
           //循环插入图片
           if (result.success) {

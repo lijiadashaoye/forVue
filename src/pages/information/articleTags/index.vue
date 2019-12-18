@@ -99,7 +99,10 @@
         },
         mounted() {
             this.pageName = this.$route.name;
-            this.getListData();
+            this.getListData({
+                pageNum: this.tableInputData.pageNum,
+                pageSize: this.tableInputData.pageSize
+            });
             this.userDo();
         },
         methods: {
@@ -125,12 +128,7 @@
             },
             //获取列表数据
             getListData(data = {}) {
-                let requireData = Object.assign(data,{
-                    pageNum : this.tableInputData.pageNum,
-                    pageSize : this.tableInputData.pageSize
-                });
                 articleTagsList(data).then(res=> {
-                    // console.log(res)
                     if(res && res.success) {
                         this.tableInputData.data.list = res.data.list
                         this.tableInputData.total = res.data.total
@@ -178,7 +176,11 @@
             },
             //查询
             search() {
-                this.getListData(this.searchForm);
+                let requireData = Object.assign(this.searchForm,{
+                    pageNum : this.tableInputData.pageNum,
+                    pageSize : this.tableInputData.pageSize
+                });
+                this.getListData(requireData);
             },
             //清楚查询条件
             rest(formName) {

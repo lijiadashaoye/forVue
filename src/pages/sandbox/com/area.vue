@@ -3,6 +3,7 @@
     <div>
       <el-select
         filterable
+        clearable
         size="mini"
         placeholder="选择省"
         v-model="data.sheng"
@@ -20,10 +21,11 @@
       <el-select
         filterable
         size="mini"
-        placeholder="选择市"
+        placeholder="默认为全部"
         v-model="data.shi"
-        style="width:400px;flex-shrink:0;margin-right:10px;color:red;"
+        style="width:300px;flex-shrink:0;"
         multiple
+        @change="checkChange"
       >
         <el-option
           v-for="item in sheng_shi"
@@ -34,7 +36,7 @@
       </el-select>
       <div class="withSpan">
         <span>请选择限制条件：</span>
-        <el-checkbox-group v-model="data.tiaojian" size="mini" @change="checkboxChange">
+        <el-checkbox-group v-model="data.tiaojian" size="mini" @change="checkChange">
           <el-checkbox label="注册手机号归属地"></el-checkbox>
           <el-checkbox label="身份证地址"></el-checkbox>
           <el-checkbox label="GPS地理位置"></el-checkbox>
@@ -57,17 +59,28 @@ export default {
     };
   },
   methods: {
-    checkboxChange() {
-      // 限制条件产生数据后，要清除错误提示
-      if (this.data.tiaojian.length) {
-        this.$emit("areaAction", { type: "noError" });
+    checkChange() {
+      if (
+        !this.data.sheng &&
+        this.data.shi.length === 0 &&
+        this.data.tiaojian.length === 0
+      ) {
+        this.$emit("areaAction", { type: "isAdd", data: true });
+      } else {
+        this.$emit("areaAction", { type: "isAdd", data: false });
       }
     },
     // 根据省，动态获取市
     resetList() {
-      this.sheng_shi = this.$store.state.areaList.filter(
-        tar => tar.adcode === this.data.sheng
-      )[0].children;
+      if (this.data.sheng) {
+        this.sheng_shi = this.$store.state.areaList.filter(
+          tar => tar.adcode === this.data.sheng
+        )[0].children;
+        this.$emit("areaAction", { type: "noError" });
+      } else {
+        this.sheng_shi = [];
+      }
+      this.checkChange();
     }
   }
 };

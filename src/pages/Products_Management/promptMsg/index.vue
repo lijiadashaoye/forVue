@@ -22,7 +22,6 @@
         :model="ruleForm"
         :rules="rules"
         ref="ruleForm"
-        
         label-width="140px"
         label-position="left"
       >
@@ -239,7 +238,6 @@ export default {
         this.ruleForm.institutionId != ""
       ) {
         getProList(this.ruleForm.institutionId).then(res => {
-          // console.log(res)
           this.productList = res.data;
         });
       }
@@ -297,22 +295,22 @@ export default {
                 this.$message.success("保存成功");
                 this.close();
                 this.getList({
-                    pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
+                  pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
                   pageSize: this.$store.state.promptMsg.promptMsgList.pageSize
                 });
               }
             });
           } else {
-              //修改
+            //修改
             prompt_upd(obj).then(res => {
-                if (res && res.success) {
-                    this.$message.success("保存成功");
-                    this.close();
-                    this.getList({
-                        pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
-                        pageSize: this.$store.state.promptMsg.promptMsgList.pageSize
-                    });
-                }
+              if (res && res.success) {
+                this.$message.success("保存成功");
+                this.close();
+                this.getList({
+                  pageNum: this.$store.state.promptMsg.promptMsgList.pageNum,
+                  pageSize: this.$store.state.promptMsg.promptMsgList.pageSize
+                });
+              }
             });
           }
         } else {

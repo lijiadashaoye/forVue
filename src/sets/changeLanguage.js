@@ -11,7 +11,8 @@ import {
     bannerStatus,
     bannerTypeList,
     sysTypeList,
-    regionalTypeList
+    regionalTypeList,
+    imageTypeList
 } from '@/constant.js'
 
 /**
@@ -62,9 +63,11 @@ export function defaultChange(value, type, arrName) {
         case 'regionalTypeList':
             forArr = regionalTypeList;
             break;
+        case "imageTypeList":
+            forArr = imageTypeList;
+            break;
     }
     for (let item of forArr) {
-        console.log(value,item.value)
         if (type) {
             if (value == item.value) {
                 return item.name
@@ -78,4 +81,3 @@ export function defaultChange(value, type, arrName) {
     return '--'
 
 }
-

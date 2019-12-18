@@ -1428,7 +1428,6 @@ export default {
     //         id: data.data.id
     //       })
     //       .then(res => {
-    //         console.log(res.data)
     //         if (res) {
     //           this.newLiLvDia = {
     //             type: data.type,

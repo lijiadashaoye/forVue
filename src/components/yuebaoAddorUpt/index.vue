@@ -122,7 +122,6 @@ export default {
           //向父组件传递 obj  父组件发送请求
           this.$emit("reqest", obj);
         } else {
-          console.log("error submit!!");
           return false;
         }
       });

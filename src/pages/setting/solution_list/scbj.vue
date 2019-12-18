@@ -50,18 +50,18 @@
               </el-select>
             </el-form-item>
 
-            <el-form-item label="配置点" prop="peizhi" style="width:50%;margin-right:0;">
+            <el-form-item label="配置点" prop="positionNo" style="width:50%;margin-right:0;">
               <el-select
                 filterable
-                v-model="leftForm.peizhi"
+                v-model="leftForm.positionNo"
                 placeholder="请选择"
                 @change="set_peizhidian"
               >
                 <el-option
                   v-for="item of peizhiList"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+                  :key="item.positionNo"
+                  :label="item.positionTitle"
+                  :value="item.positionNo"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -154,22 +154,11 @@
         </div>
 
         <div class="toright">
-          <el-form :inline="true" ref="rightForm" :model="rightForm" label-width="80px">
-            <el-form-item label="APP标识">
-              <el-select filterable v-model="rightForm.appChannelCode" placeholder="请选择" clearable>
-                <el-option
-                  v-for="item of selectData"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-
+          <el-form :inline="true" ref="rightForm" :model="rightForm" label-width="40px">
             <el-form-item label="平台">
-              <el-select filterable v-model="rightForm.platformCode" placeholder="请选择" clearable>
+              <el-select filterable v-model="rightForm.sysType" placeholder="请选择" clearable>
                 <el-option
-                  v-for="item of pingtai"
+                  v-for="item of pingtai2"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -179,7 +168,7 @@
 
             <el-form-item>
               <el-button size="mini" type="primary" @click="getList">查询</el-button>
-              <el-button size="mini" type="warning" @click="reset">重置</el-button>
+              <el-button size="mini" type="info" @click="reset">重置</el-button>
             </el-form-item>
           </el-form>
 
@@ -243,11 +232,7 @@ export default {
         data: {
           list: [], // 给表格的数据
           quanxian: [], // 记录用户的权限，当前页面显示哪些按钮、表格是否显示操作列
-          title: [
-            { name: "Test one" },
-            { name: "Test two" },
-            { name: "Test three" }
-          ], // 给表格表头
+          title: [], // 给表格表头
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
       },
@@ -289,32 +274,12 @@ export default {
         { label: "苹果", value: "IOS" },
         { label: "安卓", value: "ANDROID" }
       ],
-      peizhiList: [
-        {
-          label: "侧边栏-左侧",
-          value: "sidebar_left"
-        },
-        {
-          label: "首页按钮",
-          value: "button_top"
-        },
-        {
-          label: "活动按钮",
-          value: "activity_button_top"
-        },
-        {
-          label: "启动页",
-          value: "launch_advertis"
-        },
-        {
-          label: "侧边栏广告",
-          value: "sidebar_banner"
-        },
-        {
-          label: "首页广告",
-          value: "index_banner"
-        }
+      pingtai2: [
+        { label: "全部", value: "0" },
+        { label: "苹果", value: "1" },
+        { label: "安卓", value: "2" }
       ],
+      peizhiList: [],
       num: 0, // 其它条件添加时，前端用来计数
       pageName: "", // 当前页面名字,
       // 左侧表单
@@ -323,18 +288,17 @@ export default {
         appMark: "", // APP标识
         paixu: "", // 排序值
         youxiao: "", // 是否有效
-        peizhi: "", // 配置点
+        positionNo: "", // 配置点
         loginStatus: "", // 登录状态
-        pingtai: "IOS", // 登录状态
+        pingtai: "IOS", // 平台
         miaoshu: "", // 描述信息
         other: [], // 其他条件
         hasSelect: [] // 如果是编辑，保存已选择的
       },
       // 右边查询
       rightForm: {
-        solutionGroup: "",
-        appChannelCode: "", // APP标识
-        platformCode: "" // 平台
+        positionNo: "", // 配置点
+        sysType: "" // 平台
       },
       beforeSelect: [], // 记录当前分页里，素材列表之前已选择的
       rules: {
@@ -348,7 +312,7 @@ export default {
         youxiao: [
           { required: true, message: "请输选择是否有效", trigger: "change" }
         ],
-        peizhi: [
+        positionNo: [
           { required: true, message: "请输选择配置点", trigger: "change" }
         ],
         loginStatus: [
@@ -364,18 +328,18 @@ export default {
       }
     };
   },
-  mounted() {
+  created() {
     this.env = sessionStorage.getItem("env") === "development";
-
     this.pageName = sessionStorage.getItem("page");
+    this.peizhiList = JSON.parse(this.$route.query["list"]);
     this.init();
   },
   methods: {
     init() {
       this.show = false;
       this.ID = this.$route.query["id"];
-      this.leftForm.peizhi = this.$route.query["weizhi"];
-      this.rightForm.solutionGroup = this.leftForm.peizhi;
+      this.leftForm.positionNo = this.$route.query["weizhi"];
+      this.rightForm.positionNo = this.leftForm.positionNo;
       if (this.ID) {
         this.getUserData(this.ID);
       } else {
@@ -397,6 +361,7 @@ export default {
           .filter(item => Boolean(item));
 
         if (!arr.includes(this.num)) {
+          // 排除num和id冲突
           this.leftForm.other.push({
             num: this.num++,
             ruleType: "",
@@ -425,14 +390,14 @@ export default {
         if (valid) {
           let httpType = "",
             obj = {
-              solutionGroup: this.leftForm.peizhi,
-              solutionDesc: this.leftForm.name,
-              platformType: this.leftForm.pingtai,
-              appType: this.leftForm.appMark,
-              loginType: this.leftForm.loginStatus,
-              displayName: this.leftForm.miaoshu,
-              defaultFlag: this.leftForm.youxiao,
-              sortIndex: +this.leftForm.paixu,
+              solutionGroup: this.leftForm.positionNo, // 配置点
+              solutionDesc: this.leftForm.name, // 显示名称
+              platformType: this.leftForm.pingtai, // 平台
+              appType: this.leftForm.appMark, // APP标识
+              loginType: this.leftForm.loginStatus, // 登录状态
+              displayName: this.leftForm.miaoshu, // 描述信息
+              defaultFlag: this.leftForm.youxiao, // 是否有效
+              sortIndex: +this.leftForm.paixu, // 排序值
               solutionCondition: this.leftForm.other.map(tar => {
                 let obj = {
                   ruleType: tar.ruleType,
@@ -470,6 +435,7 @@ export default {
         }
       });
     },
+    // 返回上一个页面
     toList(type) {
       if (type) {
         this.$router.push({
@@ -485,7 +451,7 @@ export default {
             appMark: "", // APP标识
             paixu: "", // 排序值
             youxiao: "", // 是否有效
-            peizhi: "", // 配置点
+            positionNo: this.$route.query["weizhi"], // 配置点
             loginStatus: "", // 登录状态
             pingtai: "IOS", // 登录状态
             miaoshu: "", // 描述信息
@@ -493,11 +459,9 @@ export default {
             hasSelect: [] // 如果是编辑，保存已选择的
           };
           // 右边查询
-          this.rightForm = {
-            solutionGroup: "",
-            appChannelCode: "", // APP标识
-            platformCode: "" // 平台
-          };
+          this.rightForm.sysType = ""; // 平台
+          this.rightForm.positionNo = this.leftForm.positionNo;
+
           this.beforeSelect = []; // 记录当前分页里，素材列表之前已选择的
           this.$refs.leftForm.resetFields();
         }
@@ -507,9 +471,8 @@ export default {
     // 右侧的重置
     reset() {
       // 重置
-      this.rightForm.solutionGroup = this.$route.query["weizhi"];
-      this.rightForm.appChannelCode = ""; // APP标识
-      this.rightForm.platformCode = ""; // 平台
+      this.rightForm.positionNo = this.$route.query["weizhi"]; // 配置点
+      this.rightForm.sysType = ""; // 平台
       this.tableInputData.pageSize = 10;
       this.tableInputData.pageNum = 1;
       this.getList();
@@ -538,7 +501,6 @@ export default {
                 if (!arr.includes(this.beforeSelect[i].id)) {
                   // 如果当前页选择的素材，不包含在hasSelect，就表示是取消选中状态，要
                   // 从 hasSelect 数组中删除
-
                   this.leftForm.hasSelect = this.leftForm.hasSelect.filter(
                     jj => jj.id != this.beforeSelect[i].id
                   );
@@ -567,10 +529,8 @@ export default {
         pageSize: this.tableInputData.pageSize,
         pageNum: this.tableInputData.pageNum
       };
-      for (let i in this.rightForm) {
-        if (this.rightForm[i]) {
-          obj[i] = this.rightForm[i];
-        }
+      if (this.rightForm.sysType) {
+        obj["sysType"] = this.rightForm.sysType;
       }
       // 获取素材列表
       this.$api
@@ -594,47 +554,61 @@ export default {
         this.tableInputData.pageSize =
           data1.pageSize == 0 ? 10 : data1.pageSize;
         this.tableInputData.pageNum = data1.pageNum == 0 ? 1 : data1.pageNum;
+
+        let kk = this.leftForm.hasSelect.map(tar => {
+          if (typeof tar === "number") {
+            return data1.list.filter(t => t.id === tar)[0];
+          } else {
+            return tar;
+          }
+        });
+
+        this.leftForm.hasSelect = [...kk];
+
         this.tableInputData.data.list = data1.list.map(item => {
           let obj = {},
             arr = Object.keys(item);
           arr.forEach(str => {
             obj[str] = item[str];
-            // 活动管理配置管理设置素材，属性名： sucai
-            obj.sucai = [
-              {
-                text: item.title,
-                img: item.imageUrl,
-                type: item.imageUrl.split(".")[1]
+            if (str === "sysType") {
+              // 0:通用 1:IOS 2:Android)
+              switch (item[str]) {
+                case "0":
+                  obj[str] = "全部";
+                  break;
+                case "1":
+                  obj[str] = "IOS";
+                  break;
+                case "2":
+                  obj[str] = "Android";
+                  break;
               }
-            ];
-            obj.afterText = item.appChannelCode
-              ? `${item.appChannelName + " / " + item.platformName}`
-              : "";
+            }
           });
           return obj;
         });
         // 表示是编辑
         if (this.leftForm.id) {
-          let hasSelect = this.leftForm.hasSelect.map(tar => tar.id);
-          this.tableInputData.data.setCheck = this.tableInputData.data.list.filter(
-            item => hasSelect.includes(item.id)
+          // 选出已使用的素材
+          this.tableInputData.data["setCheck"] = this.leftForm.hasSelect.map(
+            tar => tar.id
           );
         }
         this.tableInputData.data.title = [
           {
             title: "名称",
-            key: "title",
+            key: "bannerTitle",
             minWidth: "80"
           },
           {
             title: "素材预览",
-            key: "sucai",
+            key: "imageUrl",
             minWidth: "100",
-            imgArr: true // 展示图片数组
+            isImg: true // 展示图片数组
           },
           {
-            title: "App标识/平台",
-            key: "afterText",
+            title: "显示系统类型",
+            key: "sysType",
             minWidth: "100"
           }
         ];
@@ -659,21 +633,21 @@ export default {
               appMark: datas.appType, // APP标识
               paixu: datas.sortIndex, // 排序值
               youxiao: datas.defaultFlag, // 是否有效
-              peizhi: datas.solutionGroup, // 配置点
+              positionNo: datas.solutionGroup, // 配置点
               loginStatus: datas.loginType, // 登录状态
               pingtai: datas.platformType, // 平台
               miaoshu: datas.displayName, // 描述信息
               other: datas.solutionCondition, // 其他条件
-              hasSelect: datas.previewResourceListVos // 已经添加使用的素材
+              hasSelect: datas.resourceIdList // 已经添加使用的素材
             };
-            this.rightForm.solutionGroup = this.leftForm.peizhi;
+            this.rightForm.positionNo = this.leftForm.positionNo;
             this.getList();
           }
         });
     },
     // 与配置点联动
     set_peizhidian() {
-      this.rightForm.solutionGroup = this.leftForm.peizhi;
+      this.rightForm.positionNo = this.leftForm.positionNo;
       this.tableInputData.pageSize = 10;
       this.tableInputData.pageNum = 1;
       this.getList();

@@ -57,7 +57,7 @@
       </el-form-item>
     </el-form>
     <el-button
-      style="width:120px;margin:0px auto;"
+      style="width:120px;margin:0px 250px;"
       type="primary"
       @click="saveFn('ruleForm')"
     >{{infoStatus?'修改':'保存'}}</el-button>

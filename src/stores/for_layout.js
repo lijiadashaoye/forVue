@@ -3,6 +3,7 @@ const state = {
     titles: '',
     asideState: true,
     reGetAsideData: 0,
+    whicePath: '',
     areaList: []
 };
 

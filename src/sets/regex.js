@@ -18,3 +18,8 @@ export function intNum(num){
     let pattern = /^[1-9]\d*$/;
     return pattern.test(num);
 }
+// 验证数字和字母 
+export function numberRegx(value){
+    let pattern = /^[0-9a-zA-Z]*$/g;
+    return pattern.test(value);
+}

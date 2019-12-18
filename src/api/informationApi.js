@@ -30,6 +30,12 @@ export const updateArticle = (data) => {
     return AxiosPut('/information/manager/news-article',data)
 }
 
+
+//更改文章状态
+export const updateArticleStatus = (data) => {
+    return AxiosPut(`/information/manager/news-article/status`,data)
+}
+
 //删除文章
 export const deleteArticle = (id) => {
     return AxiosDelete(`/information/manager/news-article/${id}`)
@@ -86,4 +92,37 @@ export const deleteArticleTag = (id) => {
 //修改
 export const updateArticleTag = (data) => {
     return AxiosPut(`/information/manager/news-tags`,data)
+}
+
+
+
+
+//文章栏目
+//列表
+export const articleTypeList = (data) => {
+    return AxiosGet(`/information/manager/news-type`,data)
+}
+
+//新增
+export const addArticleType = (data)=> {
+    return AxiosPost(`/information/manager/news-type`,data)
+}
+
+//修改
+export const updateArticleType = (data) => {
+    return AxiosPut(`/information/manager/news-type`,data)
+}
+
+//删除
+export const deleteArticleType = (id)=> {
+    return AxiosDelete(`/information/manager/news-type/${id}`)
+}
+
+
+
+
+
+//文章评论
+export const articleCommentList = (data) => {
+    return AxiosGet(`/information/manager/comment`,data)
 }

@@ -385,3 +385,46 @@ export const regionalTypeList = [
     value:5
   }
 ]
+
+// 分辨率
+export const resolutionOpt = [
+  {
+    name: "1242*2688",
+    value: "1242*2688"
+  },
+  {
+    name: "1242*2208",
+    value: "1242*2208"
+  },
+  {
+    name: "1125*2436",
+    value: "1125*2436"
+  },
+  {
+    name: "828*1792",
+    value: "828*1792"
+  },
+  {
+    name: "750*1334",
+    value: "750*1334"
+  },
+  {
+    name: "640*1136",
+    value: "640*1136"
+  }
+]
+// 图片类型
+export const imageTypeList = [
+  {
+    name: "图片",
+    value: 1
+  },
+  {
+    name: "视频",
+    value: 2
+  },
+  {
+    name: "开屏页",
+    value: 3
+  }
+]

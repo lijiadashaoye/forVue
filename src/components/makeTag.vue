@@ -58,9 +58,6 @@ export default {
       searchText: ""
     };
   },
-  mounted() {
-    // console.log(this.inputData)
-  },
   methods: {
     // 搜索按钮
     toSearch() {

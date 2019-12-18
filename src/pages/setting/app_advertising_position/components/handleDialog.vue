@@ -29,6 +29,7 @@
       </template>
       <!--  详情页面不显示表单操作  -->
       <template v-if="dialogType!='detail'">
+        
          <el-form-item
             v-if="dialogType=='edit'"
             label="位置编号"
@@ -123,7 +124,7 @@
 import { mapActions, mapState } from "vuex";
 import { notifyType } from "@/constant.js";
 import { defaultChange } from "@/sets/changeLanguage.js";
-import { phoneRegx, emailRegx } from "@/sets/regex.js";
+import { numberRegx } from "@/sets/regex.js";
 import { bannerTypeList, terminalType, sysTypeList,regionalTypeList } from "@/constant.js";
 export default {
   props: {
@@ -165,13 +166,15 @@ export default {
             this.$refs["ruleForm"].clearValidate();
           });
           this.title = "广告位置详情";
+        } else if (this.dialogType == "upd"){
+          this.infoChange();
         } else {
           // 新增需要清空表单和验证
           this.$nextTick(() => {
             this.$refs["ruleForm"].clearValidate();
             this.$refs["ruleForm"].resetFields();
           });
-          this.title = "新增广告位置";
+          this.title = "新增位置";
         }
       }
     }
@@ -206,6 +209,16 @@ export default {
     })
   },
   data() {
+          // 广告位置编号正则
+    const validateNumber = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error("位置编号不能为空"));
+      } else if (!numberRegx(value)) {
+        callback("请输入数字或者字母");
+      } else {
+        callback();
+      }
+    };
     return {
       nowInfo: {}, //中转数据
       centerType: this.centerDialogVisible,
@@ -221,7 +234,7 @@ export default {
       }, //表单数据
       rules: {
         positionTitle: [{ required: true, message: "位置描述不能为空" }],
-        positionNo: [{ required: true, message: "位置编号不能为空" }],
+        positionNo: [{ required: true, validator: validateNumber,}],
         terminalType: [{ required: true, message: "终端类型不能为空" }],
         regionalType: [{ required: true, message: "区域类型不能为空" }],
         bannerType: [{ required: true, message: "广告类型不能为空" }],

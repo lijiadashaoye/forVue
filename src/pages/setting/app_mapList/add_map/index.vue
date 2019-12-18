@@ -20,6 +20,8 @@
           <el-color-picker disabled v-model="ruleForm.highlightColor"></el-color-picker>
         </el-form-item>
         <el-form-item label="显示系统">{{defaultChange(ruleForm.sysType,true,'sysTypeList')}}</el-form-item>
+        <el-form-item label="显示分辨率">{{ruleForm.resolvingPower}}</el-form-item>
+        <el-form-item label="图片类型">{{defaultChange(ruleForm.imageType,true,'imageTypeList')}}</el-form-item>
         <el-form-item label="广告图片">
           <img v-if="ruleForm.imageUrl !='' " :src="ImgBaseUrl + ruleForm.imageUrl" height="40px" />
         </el-form-item>
@@ -53,11 +55,33 @@
         <el-form-item label="高亮字体颜色" prop="highlightColor">
           <el-color-picker v-model="ruleForm.highlightColor"></el-color-picker>
         </el-form-item>
-        <el-form-item label="显示系统" style="margin-bottom:5px;" prop="sysType">
+        <el-form-item label="显示系统"  prop="sysType">
           <el-select v-model="ruleForm.sysType" clearable placeholder="请选择">
             <el-option
               size="mini"
               v-for="item of sysTypeList"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="分辨率"  >
+          <el-select v-model="ruleForm.resolvingPower" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item of resolutionOpt"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="图片类型"  prop="imageType">
+          <el-select v-model="ruleForm.imageType" clearable placeholder="请选择">
+            <el-option
+              size="mini"
+              v-for="item of imageTypeList"
               :key="item.value"
               :label="item.name"
               :value="item.value"
@@ -186,7 +210,7 @@
   </div>
 </template>
 <script>
-import { sysTypeList } from "@/constant.js";
+import { sysTypeList, resolutionOpt,imageTypeList } from "@/constant.js";
 import { upLoadImg } from "@/api/setting_use.js";
 import { mapActions } from "vuex";
 import { defaultChange } from "@/sets/changeLanguage.js";
@@ -215,6 +239,8 @@ export default {
       pageName: "",
       ruleForm: {
         bannerTitle: "", //广告图标题
+        imageType:"", //图片类型
+        resolvingPower:"", //分辨率
         bannerType: "", //广告图类型
         positionNo: "", //广告图位置编号
         sysType: "", //显示系统
@@ -251,11 +277,15 @@ export default {
       },
       rules: {
         bannerTitle: [{ required: true, message: "广告图标题不能为空" }],
-        timeArr: [{ required: true, message: "时间不能为空" }]
-      }
+        timeArr: [{ required: true, message: "时间不能为空" }],
+        imageType:[{ required: true, message: "图片类型不能为空" }]      }
     };
   },
   created() {
+    // 图片类型
+    this.imageTypeList = imageTypeList;
+    // 分辨率
+    this.resolutionOpt = resolutionOpt;
     this.defaultChange = defaultChange;
     // 新增页面逻辑
     if (this.$route.query.positionNo !== undefined) {

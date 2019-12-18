@@ -49,8 +49,7 @@
         </el-form-item>
       </el-form>
       <div class="headerButton">
-        <el-button type="primary" @click="addInfo" size="mini">新增</el-button>
-        <!-- userInfoArr.indexOf('position_add')>-1&& -->
+        <el-button type="primary" v-if="userInfoArr.indexOf('banner_add')>-1" @click="addInfo" size="mini">新增</el-button>
         <div>
           <el-button size="mini" type="warning" @click="getList">查询</el-button>
           <el-button size="mini" type="info" @click="searchDefault">重置</el-button>

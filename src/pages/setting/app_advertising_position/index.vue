@@ -1,4 +1,4 @@
-<template>
+<template >
   <div class="componentWaper">
     <div id="forHeader">
       <p class="isPageName">
@@ -70,18 +70,24 @@
       </el-form>
       <div
         class="headerButton"
-        :style="{justifyContent:pageType=='position'?'space-between':'flex-end'}"
+        :style="{justifyContent:pageType=='position'?'flex-start':'flex-start'}"
       >
-        <el-button type="primary" @click="addInfo" v-if="pageType=='position'" size="mini">新增</el-button>
-        <!-- userInfoArr.indexOf('position_add')>-1&& -->
-        <div>
+        <el-button
+          type="primary"
+          @click="addInfo"
+          v-if="userInfoArr.indexOf('position_add')>-1&&pageType=='position'"
+          size="mini"
+        >新增</el-button>
           <el-button size="mini" type="warning" @click="getList">查询</el-button>
           <el-button size="mini" type="info" @click="searchDefault">重置</el-button>
-        </div>
+        <!-- <div>
+          <el-button size="mini" type="warning" @click="getList">查询</el-button>
+          <el-button size="mini" type="info" @click="searchDefault">重置</el-button>
+        </div> -->
       </div>
     </div>
     <div id="forTable">
-      <isTable @tableEmit="tableEmit" :inputData="nowTableInfo" />
+      <isTable :key="pageType" @tableEmit="tableEmit" :inputData="nowTableInfo" />
     </div>
     <handle-dialog
       @edit="dialogType='edit'"
@@ -128,10 +134,14 @@ export default {
       },
       listUser: [
         {
-          userType: "advertising_map_add"
+          userType: "position_add"
         },
         {
-          userType: "advertising_map_upd"
+          userType: "position_upd",
+          text: "修改",
+          type: "primary",
+          size: "mini",
+          emit: "upd"
         },
         {
           userType: "position_detail",
@@ -296,6 +306,14 @@ export default {
             this.centerDialogVisible = true;
           });
           break;
+        case "upd":
+          this.dialogType = "upd";
+          this.centerDialogVisible = true;
+          // 保证详情数据已经存储
+          this.positionMapDetail(obj.data.id).then(() => {
+            this.centerDialogVisible = true;
+          });
+          break;
         case "delete": //单个删除
           let sendInfo = {
             positionId: obj.data.id,
@@ -306,7 +324,7 @@ export default {
         case "regetData": //条目更改
           this.getList();
           break;
-        case "edit": //修改
+        case "edit": //单图/多图/编辑
           // 存储单条信息
           setAdvertisement(JSON.stringify(obj.data));
           this.$router.push({ path: `/home/banner/${this.pageType}/list` });

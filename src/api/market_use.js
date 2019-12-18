@@ -41,7 +41,6 @@ export default {
     },
     // 上传图片
     UPImg(data) {
-        // console.log(data)
         return data.vm.$axios({
             method: 'post',
             url: data.url,

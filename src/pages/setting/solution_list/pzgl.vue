@@ -9,13 +9,12 @@
       <el-select filterable size="mini" v-model="actNO" placeholder="请选择" @change="getUserData">
         <el-option
           v-for="item in searchList"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          :key="item.positionNo"
+          :label="item.positionTitle"
+          :value="item.positionNo"
         ></el-option>
       </el-select>&nbsp;&nbsp;&nbsp;
       <el-button size="mini" type="primary" @click="buttonRowUpdata(null)">添加</el-button>
-      <!-- <el-button size="mini" type="warning" @click="toSee()">概览</el-button> -->
       <el-button size="mini" type="danger" @click="toDelete('more')">批量删除</el-button>
     </div>
     <div id="forTable" v-if="loadEnd">
@@ -24,8 +23,7 @@
   </div>
 </template>
 <script>
-import isTable from "../../../components/isTable/isTable.vue";
-// import imgUpload from "../../../components/upImg.vue";
+import isTable from "@/components/isTable/isTable.vue";
 
 export default {
   props: {},
@@ -40,7 +38,7 @@ export default {
       loadEnd: false,
       deleteData: [], // 储存需要删除的数据
       aloneDeleteData: [], // 储存需要单独删除的数据
-      actNO: "sidebar_left", // 配置位置
+      actNO: "", // 配置位置
       tableInputData: {
         // 传给table子组件的数据
         checkBox: true, // 判断需要不需要添加选择框
@@ -55,52 +53,36 @@ export default {
           custom: [] // 给表格按钮数量、类型（编辑、删除等）
         }
       },
-      searchList: [
-        {
-          label: "侧边栏-左侧",
-          value: "sidebar_left"
-        },
-        {
-          label: "首页按钮",
-          value: "button_top"
-        },
-        {
-          label: "活动按钮",
-          value: "activity_button_top"
-        },
-        {
-          label: "启动页",
-          value: "launch_advertis"
-        },
-        {
-          label: "侧边栏广告",
-          value: "sidebar_banner"
-        },
-        {
-          label: "首页广告",
-          value: "index_banner"
-        }
-      ]
+      searchList: [] // 终端类型下拉数据
     };
   },
-  mounted() {
+  created() {
     this.env = sessionStorage.getItem("env") === "development";
-
     this.pageName = sessionStorage.getItem("page");
-    if (this.$route.query["weizhi"]) {
-      this.actNO = this.$route.query["weizhi"];
-    }
-
     this.canDoWhat();
-    this.getUserData();
+
+    // 配置位置的下拉数据
+    this.$api
+      .get_side_list({
+        vm: this,
+        data: {
+          positionNo: null
+        }
+      })
+      .then(res => {
+        if (res) {
+          this.searchList = res.data.list;
+          this.afterGetData({
+            total: 0,
+            pageSize: this.tableInputData.pageSize,
+            pageNum: this.tableInputData.pageNum,
+            list: []
+          });
+        }
+      });
   },
 
   methods: {
-    // 概览
-    // toSee() {
-    //   console.log("概览");
-    // },
-
     // 监听表格的操作
     tableEmit(data) {
       switch (data.type) {
@@ -125,27 +107,6 @@ export default {
           break;
       }
     },
-    // 表格里的switch事件
-    switchAction(data) {
-      let obj = {
-        id: data.id,
-        status: data.switch ? "ENABLE" : "DISABLE"
-      };
-      this.$api
-        .switch_change({
-          vm: this,
-          data: obj
-        })
-        .then(res => {
-          if (res) {
-            this.getUserData();
-          }
-        });
-    },
-    // 图片上传
-    sharePageImg(data) {
-      this.menuData.img = data.url;
-    },
     // 添加按钮、编辑按钮
     buttonRowUpdata(data) {
       if (data) {
@@ -155,7 +116,8 @@ export default {
           name: "scbj",
           query: {
             id: data.data.id,
-            weizhi: this.actNO
+            weizhi: data.data.positionNo,
+            list: JSON.stringify(this.searchList)
           }
         });
       } else {
@@ -164,7 +126,8 @@ export default {
         this.$router.push({
           name: "scbj",
           query: {
-            weizhi: this.actNO
+            weizhi: this.actNO,
+            list: JSON.stringify(this.searchList)
           }
         });
       }
@@ -342,10 +305,27 @@ export default {
         this.loadEnd = true;
       });
     },
+    // 表格里的switch事件
+    switchAction(data) {
+      let obj = {
+        id: data.id,
+        status: data.switch ? "ENABLE" : "DISABLE"
+      };
+      this.$api
+        .switch_change({
+          vm: this,
+          data: obj
+        })
+        .then(res => {
+          if (res) {
+            this.getUserData();
+          }
+        });
+    },
     // 获取表格数据
     getUserData() {
       this.$api
-        .setting_peizhi_list({
+        .get_peizhi_list({
           vm: this,
           data: {
             solutionGroup: this.actNO,
@@ -357,13 +337,6 @@ export default {
           if (res) {
             if (res.data) {
               this.afterGetData(res.data);
-            } else {
-              this.afterGetData({
-                total: 0,
-                pageSize: this.tableInputData.pageSize,
-                pageNum: this.tableInputData.pageNum,
-                list: []
-              });
             }
           }
         });

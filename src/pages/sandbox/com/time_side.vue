@@ -1,7 +1,13 @@
 <template>
-  <el-form :inline="true" :rules="rules" ref="inData" :model="inData" style="display:flex;">
+  <el-form
+    :inline="true"
+    :rules="rules"
+    ref="inData"
+    :model="inData"
+    style="display:flex;padding-bottom:12px;"
+  >
     <el-form-item prop="type">
-      <el-radio-group v-model="inData.type" style="width:160px;padding:12px 0;">
+      <el-radio-group v-model="inData.type" @change="hasChange" style="width:160px;">
         <el-radio label="日期"></el-radio>
         <el-radio label="周期"></el-radio>
       </el-radio-group>
@@ -9,11 +15,23 @@
 
     <div v-if="inData.type==='日期'" style="width:100%;display:flex">
       <el-form-item prop="startTime" label-width="30px">
-        <el-date-picker v-model="inData.startTime" size="mini" type="datetime" placeholder="开始时间"></el-date-picker>
+        <el-date-picker
+          v-model="inData.startTime"
+          size="mini"
+          type="datetime"
+          placeholder="开始时间(必填)"
+          value-format="yyyy-MM-dd HH:mm:ss"
+        ></el-date-picker>
       </el-form-item>
       <span style="padding-right:10px;">至</span>
       <el-form-item prop="endTime" label-width="0">
-        <el-date-picker v-model="inData.endTime" size="mini" type="datetime" placeholder="结束时间(选填)"></el-date-picker>
+        <el-date-picker
+          value-format="yyyy-MM-dd HH:mm:ss"
+          v-model="inData.endTime"
+          size="mini"
+          type="datetime"
+          placeholder="结束时间(选填)"
+        ></el-date-picker>
       </el-form-item>
     </div>
     <el-form-item v-if="inData.type==='周期'" style="width:100%;" prop="zhouqi">
@@ -29,11 +47,11 @@
       </el-select>
     </el-form-item>
 
-    <el-popover placement="top-end" width="160" v-model="visible" v-if="inData.type!==''">
+    <el-popover placement="top-end" width="160" v-model="visible">
       <p>确定删除吗？</p>
       <div style="text-align: right; margin: 0">
         <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-        <el-button type="primary" size="mini" @click="timeAction({type:'delete'})">确定</el-button>
+        <el-button type="primary" size="mini" @click="timeAction">确定</el-button>
       </div>
       <i class="el-icon-delete isI" slot="reference" title="删除"></i>
     </el-popover>
@@ -130,21 +148,11 @@ export default {
   },
   methods: {
     timeAction(obj) {
-      this.$emit("timeaction", { type: obj.type, data: this.data }); 
+      this.$emit("timeaction", { type: "delete", data: this.inData });
     },
-    // 根据标签的数据变动生成数据
-    save() {
-      this.$refs.inData.validate(valid => {
-        if (valid) {
-          this.data.type = this.inData.type;
-          if (this.inData.type === "周期") {
-            this.data.time = this.inData.zhouqi;
-          } else {
-            this.data.time[0] = this.inData.startTime;
-            this.data.time[1] = this.inData.endTime;
-          }
-        }
-      });
+    // 监听组件是否填入数据了
+    hasChange() {
+      this.$emit("timeaction", { type: "change" });
     }
   }
 };

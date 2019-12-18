@@ -7,10 +7,6 @@
       </p>
     </div>
     <div style="padding:0px 40px">
-      <div class="buttonGroup">
-        <el-button type="primary" @click="save('ruleForm','save')">{{saveShow?'保存':'编辑'}}</el-button>
-        <el-button v-if="saveShow" @click="saveShow=false">取消</el-button>
-      </div>
       <p class="titleName">菜单button</p>
       <el-row :gutter="1">
         <el-col :span="4">
@@ -93,12 +89,12 @@
         </el-col>
         <el-col :span="10">
           <div class="colItem">
-            <el-input style="width:80%" v-model="anotherInfo.jumpUrl" placeholder="请输入跳转地址"></el-input>
+            <el-input style="width:80%" :disabled="!saveShow" v-model="anotherInfo.jumpUrl" placeholder="请输入跳转地址"></el-input>
           </div>
         </el-col>
         <el-col :span="10">
           <div class="colItem">
-            <el-radio-group v-model="anotherInfo.showFlag">
+            <el-radio-group :disabled="!saveShow" v-model="anotherInfo.showFlag">
               <el-radio label="0">展示</el-radio>
               <el-radio label="1">不展示</el-radio>
             </el-radio-group>
@@ -139,6 +135,10 @@
           </div>
         </el-col>
       </el-row>
+      <div class="buttonGroup">
+        <el-button type="primary" @click="save('ruleForm','save')">{{saveShow?'保存':'编辑'}}</el-button>
+        <el-button v-if="saveShow" @click="saveShow=false">取消</el-button>
+      </div>
     </div>
     <!-- <handle-dialog :buttonType="buttonType"  @again="getList" v-model="centerDialogVisible"></handle-dialog> -->
   </div>
@@ -254,7 +254,7 @@ export default {
           this.showImages = true;
         }
         // 背景图地址
-        if(res.data.menuInfos[0].backgroundImage){
+        if (res.data.menuInfos[0].backgroundImage) {
           this.bgUrl = res.data.menuInfos[0].backgroundImage;
         }
         this.listInfo = res.data.menuButtons;
@@ -305,11 +305,11 @@ export default {
         this.saveShow = true;
         return;
       }
-       // 不必要的代码 /后台原因
+      // 不必要的代码 /后台原因
       if (this.bgUrl) {
         for (let item of this.listInfo) {
           if (item.buttonName == "其他") {
-            item['backgroundImage'] = this.bgUrl
+            item["backgroundImage"] = this.bgUrl;
           }
         }
       }

@@ -69,21 +69,69 @@
           </el-form-item>
         </div>
 
-        <el-form-item label="配置条件：" size="mini" prop="peizhi">
+        <el-form-item label="配置条件：" size="mini">
           <div class="everyTJ" v-for="(tar,index) in ruleForm.peizhi.one" :key="tar.num">
             <div>
               <p class="canseeTitle" v-if="tar.type===1">可见条件：</p>
               <p class="notseeTitle" v-if="tar.type===2">不可见条件：</p>
               <ul>
-                <p class="everyTJ_kong" v-if="!tar.tiaojian.length" @click="action(1)">编辑限制条件</p>
-                <li v-for="can in tar.tiaojian" :key="can">{{can}}</li>
+                <p
+                  class="everyTJ_kong"
+                  v-if="!tar.tiaojian.length"
+                  @click="action({num:1,data:tar})"
+                >编辑限制条件</p>
+                <li v-for="can in tar.tiaojian" :key="can.num">
+                  <div
+                    v-if="can.showDatas.length>0&&can.text!=='限制地域'&&can.text!=='产品展示位置与时间'"
+                    class="showSheng1"
+                  >
+                    <span style="font-weight:bold;">{{can.text+'：'}}</span>
+                    <span v-for="t in can.showDatas" :key="t.num">{{t}}</span>
+                  </div>
+
+                  <div
+                    v-if="can.showDatas.length>0&&can.text!=='限制地域'&&can.text==='产品展示位置与时间'"
+                    class="showSheng3"
+                  >
+                    <div v-for="t in can.showDatas" :key="t.num">
+                      <p>
+                        <span style="font-weight:bold;">位置：</span>
+                        <span>{{t.side}}</span>
+                      </p>
+                      <p>
+                        <span style="font-weight:bold;">时间：</span>
+                        <span>{{t.time}}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    v-if="can.showDatas.length>0&&can.text==='限制地域'&&can.text!=='产品展示位置与时间'"
+                    class="showSheng2"
+                  >
+                    <div v-for="t in can.showDatas" :key="t.num">
+                      <p>
+                        <span style="font-weight:bold;">省名称：</span>
+                        <span>{{t.sheng.name}}</span>
+                      </p>
+                      <p>
+                        <span style="font-weight:bold;">市名称：</span>
+                        <span v-for="(shi,index) in t.shi" :key="shi+index">{{shi.name}}</span>
+                      </p>
+                      <p>
+                        <span style="font-weight:bold;">限制条件：</span>
+                        <span v-for="(j,index) in t.tiaojian" :key="j+index">{{j}}</span>
+                      </p>
+                    </div>
+                  </div>
+                </li>
               </ul>
               <div class="icon5" v-if="!!tar.tiaojian.length">
-                <i class="el-icon-edit" title="编辑" @click="action(2,tar)"></i>
-                <i class="el-icon-delete" title="删除" @click="action(3,tar)"></i>
+                <i class="el-icon-edit" title="编辑" @click="action({num:1,data:tar})"></i>
+                <i class="el-icon-delete" title="删除" @click="action({num:2,data:tar,from:'one'})"></i>
               </div>
             </div>
-            <el-radio-group v-if="index!== 1" v-model="tar.howOne" size="mini" class="howCan_Not">
+            <el-radio-group v-if="index!== 1" v-model="tar.how" size="mini" class="howCan_Not">
               <el-radio-button label="且"></el-radio-button>
               <el-radio-button label="或"></el-radio-button>
             </el-radio-group>
@@ -109,18 +157,67 @@
               <p class="canseeTitle" v-if="tar.type===1">可见条件：</p>
               <p class="notseeTitle" v-if="tar.type===2">不可见条件：</p>
               <ul>
-                <p class="everyTJ_kong" v-if="!tar.tiaojian.length" @click="action(4)">编辑限制条件</p>
-                <li v-for="can in tar.tiaojian" :key="can">{{can}}</li>
+                <p
+                  class="everyTJ_kong"
+                  v-if="!tar.tiaojian.length"
+                  @click="action({num:1,data:tar})"
+                >编辑限制条件</p>
+
+                <li v-for="can in tar.tiaojian" :key="can.num">
+                  <div
+                    v-if="can.showDatas.length>0&&can.text!=='限制地域'&&can.text!=='产品展示位置与时间'"
+                    class="showSheng1"
+                  >
+                    <span style="font-weight:bold;">{{can.text+'：'}}</span>
+                    <span v-for="t in can.showDatas" :key="t.num">{{t}}</span>
+                  </div>
+
+                  <div
+                    v-if="can.showDatas.length>0&&can.text!=='限制地域'&&can.text==='产品展示位置与时间'"
+                    class="showSheng3"
+                  >
+                    <div v-for="t in can.showDatas" :key="t.num">
+                      <p>
+                        <span style="font-weight:bold;">位置：</span>
+                        <span>{{t.side}}</span>
+                      </p>
+                      <p>
+                        <span style="font-weight:bold;">时间：</span>
+                        <span>{{t.time}}</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <div
+                    v-if="can.showDatas.length>0&&can.text==='限制地域'&&can.text!=='产品展示位置与时间'"
+                    class="showSheng2"
+                  >
+                    <div v-for="t in can.showDatas" :key="t.num">
+                      <p>
+                        <span style="font-weight:bold;">省名称：</span>
+                        <span>{{t.sheng.name}}</span>
+                      </p>
+                      <p>
+                        <span style="font-weight:bold;">市名称：</span>
+                        <span v-for="(shi,index) in t.shi" :key="shi+index">{{shi.name}}</span>
+                      </p>
+                      <p>
+                        <span style="font-weight:bold;">限制条件：</span>
+                        <span v-for="(j,index) in t.tiaojian" :key="j+index">{{j}}</span>
+                      </p>
+                    </div>
+                  </div>
+                </li>
               </ul>
               <div class="icon5" v-if="!!tar.tiaojian.length">
-                <i class="el-icon-edit" title="编辑" @click="action(2,tar)"></i>
-                <i class="el-icon-delete" title="删除" @click="action(3,tar)"></i>
+                <i class="el-icon-edit" title="编辑" @click="action({num:1,data:tar})"></i>
+                <i class="el-icon-delete" title="删除" @click="action({num:2,data:tar,from:'two'})"></i>
               </div>
             </div>
 
             <el-radio-group
               v-if="index<ruleForm.peizhi.two.length-1"
-              v-model="tar.howTwo"
+              v-model="tar.how"
               size="mini"
               class="howCan_Not"
             >
@@ -133,17 +230,21 @@
           </p>
           <p class="everyTJ_kong1" v-if="!ruleForm.peizhi.two.length" @click="addTwo">新增条件</p>
         </el-form-item>
+
         <el-form-item>
           <el-button size="mini" type="primary" @click="save">提交</el-button>
           <el-button size="mini" type="info" @click="back">取消</el-button>
+
+          <el-button size="mini" type="info" @click="fuzhi">fuzhi</el-button>
         </el-form-item>
       </el-form>
     </div>
     <addTiaoJian
       v-if="toAdd2"
-      @TiaoJianEmit="TiaoJianEmit"
+      @TiaoJianEmit="action"
       :class="{'AddTiaoJian':true,'addTiaoJian':toAdd,'notAddTiaoJian':!toAdd}"
       :type="pageType"
+      :forEdit="editWhitch"
     />
   </div>
 </template>
@@ -162,7 +263,8 @@ export default {
       productList: [], // 银行产品
       ruleForm: {},
       rules: {},
-      num: 1 // 用于计数
+      num: 1, // 用于计数
+      editWhitch: null // 用于记录编辑条件时传递给子组件的数据
     };
   },
   created() {
@@ -170,19 +272,19 @@ export default {
     this.pageType = this.$route.query.from;
     this.bankList = JSON.parse(this.$route.query.bankList);
     switch (this.pageType) {
-      case "bank":
+      case "bank": // 银行管理
         this.ruleForm = {
           bank: "",
           peizhi: {
             one: [
               {
-                num: this.num,
-                tiaojian: [],
-                howOne: "",
+                num: ++this.num,
+                tiaojian: [], // 对象数组
+                how: "",
                 type: 3 //  可见条件、不可见条件
               }
             ],
-            one_two: "且",
+            one_two: "",
             two: []
           },
           startTime: "",
@@ -190,9 +292,6 @@ export default {
         };
         this.rules = {
           bank: [{ required: true, message: "请选择银行", trigger: "change" }],
-          peizhi: [
-            { required: true, validator: this.check_peizhi, trigger: "blur" }
-          ],
           startTime: [
             {
               required: true,
@@ -214,20 +313,20 @@ export default {
           this.pageName = sessionStorage.getItem("page") + " > 新增配置-银行"; // 获取页面名称
         }
         break;
-      case "bank_product":
+      case "bank_product": // 银行产品管理
         this.ruleForm = {
           bank: "",
           product: "",
           peizhi: {
             one: [
               {
-                num: this.num,
-                tiaojian: [],
-                howOne: "",
+                num: ++this.num,
+                tiaojian: [], // 对象数据
+                how: "",
                 type: 3 // 可见条件、不可见条件
               }
             ],
-            one_two: "或",
+            one_two: "",
             two: []
           },
           startTime: "",
@@ -235,9 +334,6 @@ export default {
         };
         this.rules = {
           bank: [{ required: true, message: "请选择银行", trigger: "change" }],
-          peizhi: [
-            { required: true, validator: this.check_peizhi, trigger: "blur" }
-          ],
           product: [
             { required: true, message: "请选择银行产品", trigger: "change" }
           ],
@@ -266,6 +362,7 @@ export default {
   },
 
   methods: {
+    // 选择银行的事件监听
     bankBlur(e) {
       if (e === false && this.ruleForm.bank !== "") {
         this.getProductList();
@@ -319,81 +416,96 @@ export default {
         }
       }
     },
-    check_peizhi(rule, value, callback) {
-      console.log(rule);
-
-      console.log(value);
-      console.log(callback);
-
-      // if (value.length) {
-      //   callback();
-      // } else {
-      //   callback(new Error("请输入配置内容！"));
-      // }
-    },
+    // 添加一类条件
     addOne() {
       if (this.ruleForm.peizhi.one.length < 2) {
-        this.num++;
         this.ruleForm.peizhi.one.push({
-          num: this.num,
+          num: ++this.num,
           tiaojian: [],
-          howOne: "",
-          type: 3 // 可见
+          how: "",
+          type: 3 // 1可见，2不可见
         });
+      } else {
+        if (this.ruleForm.peizhi.one[0].tiaojian.length === 0) {
+          this.$message.error("请先编辑好当前的条件!");
+        } else {
+          this.ruleForm.peizhi.one.push({
+            num: ++this.num,
+            tiaojian: [],
+            how: "",
+            type: 3 // 1可见，2不可见
+          });
+        }
       }
     },
+    // 添加二类条件
     addTwo() {
-      this.num++;
-      this.ruleForm.peizhi.two.push({
-        num: this.num * 1000,
-        tiaojian: [],
-        howTwo: "",
-        type: 3 // 可见
-      });
+      if (this.ruleForm.peizhi.two.length === 0) {
+        this.ruleForm.peizhi.two.push({
+          num: ++this.num,
+          tiaojian: [],
+          how: "",
+          type: 3 // 1可见，2不可见
+        });
+        if (!this.ruleForm.peizhi.one_two) {
+          this.ruleForm.peizhi.one_two = "或";
+        }
+      } else {
+        let isHasEdit = ""; // 用来查看是否已添加好条件
+        this.ruleForm.peizhi.two.forEach((tar, index) => {
+          if (tar.tiaojian.length === 0) {
+            isHasEdit = "请先编辑好当前的条件!";
+          } else if (index > 0 && !this.ruleForm.peizhi.two[index - 1].how) {
+            isHasEdit = "请先确认好条件之间的关系（且、或）！";
+          }
+        });
+        if (isHasEdit !== "") {
+          this.$message.error(isHasEdit);
+        } else {
+          this.ruleForm.peizhi.two.push({
+            num: ++this.num,
+            tiaojian: [],
+            how: "",
+            type: 3 // 1可见，2不可见
+          });
+        }
+      }
     },
-    // 编辑、删除图标
-    action(num, tar) {
-      switch (num) {
-        case 1: // 首次添加一类条件
+    // 新增、编辑、删除图标
+    action(data) {
+      switch (data.num) {
+        case 1: // 编辑条件
+          this.editWhitch = data.data;
           this.toAdd2 = true;
           setTimeout(() => {
             this.toAdd = true;
           }, 100);
           break;
-        case 2: // 编辑
-          this.toAdd2 = true;
-          setTimeout(() => {
-            this.toAdd = true;
-          }, 100);
-          console.log(tar);
-          break;
-        case 3: // 删除
+        case 2: // 删除
           this.$confirm("确定放弃已经添加好的条件吗？")
             .then(() => {
-              console.log(tar);
+              this.ruleForm.peizhi[data.from] = this.ruleForm.peizhi[
+                data.from
+              ].filter(ter => ter.num !== data.data.num);
             })
             .catch(() => {});
           break;
-        case 4: // 首次添加二类条件
-          this.toAdd2 = true;
+        case 3: // 什么也不做，只是关闭添加条件页面
+          this.num = ++data.data;
+          this.toAdd = false;
           setTimeout(() => {
-            this.toAdd = true;
-          }, 100);
+            this.toAdd2 = false;
+            this.editWhitch = null;
+          }, 850);
           break;
       }
     },
-    TiaoJianEmit(data) {  // 接收添加好的条件，暂存
-      if (data) {
-        console.log(data);
-      }
-
-      this.toAdd = false;
-      setTimeout(() => {
-        this.toAdd2 = false;
-      }, 1000);
-    },
     // 提交
     save() {
+      sessionStorage.setItem("add_bank", JSON.stringify(this.ruleForm));
+    },
+    fuzhi() {
+      this.ruleForm = JSON.parse(sessionStorage.getItem("add_bank"));
       console.log(this.ruleForm);
     },
 

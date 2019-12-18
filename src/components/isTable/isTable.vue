@@ -301,12 +301,18 @@ export default {
     }
     setTimeout(() => {
       // 设置默认选中checkbox
-      if (this.inputData.data.setCheck) {
+      if (
+        this.inputData.data.setCheck &&
+        this.inputData.data.setCheck.length > 0
+      ) {
         let digui = () => {
           let ref = this.$refs.isTable;
+
           if (ref) {
-            this.inputData.data.setCheck.forEach(row => {
-              ref.toggleRowSelection(row);
+            this.inputData.data.list.forEach(row => {
+              if (this.inputData.data.setCheck.includes(row.id)) {
+                ref.toggleRowSelection(row);
+              }
             });
           } else {
             digui();
@@ -316,7 +322,8 @@ export default {
       }
       this.setWidth();
       this.setMaxHeightFn();
-    }, 100);
+    });
+
     // 动态设置表格的 max-height，并防抖
     let isTimeOut;
     window.addEventListener("resize", () => {
@@ -366,7 +373,7 @@ export default {
 }
 .imgArr {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
 }
 .imgArr > li {
   margin-right: 3px;

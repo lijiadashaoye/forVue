@@ -26,7 +26,7 @@
           </el-menu-item>
 
           <el-submenu :index="''+item2.path" v-if="item2.children&&item2.children.length!=0">
-            <template slot="title" style="background:red;">
+            <template slot="title">
               <i :class="`myIcon18px icon-${item2.icon}`"></i>
               <span style="font-size:16px">{{item2.label}}</span>
             </template>
@@ -40,7 +40,7 @@
               </el-menu-item>
 
               <el-submenu :index="''+item3.path" v-if="item3.children&&item3.children.length!=0">
-                <template slot="title" class>
+                <template slot="title">
                   <i :class="`myIcon18px icon-${item3.icon}`"></i>
                   <span style="font-size:14px;">{{item3.label}}</span>
                 </template>

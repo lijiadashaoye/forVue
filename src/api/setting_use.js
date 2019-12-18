@@ -18,7 +18,7 @@ export const upLoadImg = (data) => {
 
 //大文件接口   视频之类的
 export const bigFileUpload = (data) => {
-    return AxiosPost(`/admin/file/slice-up/setting`,data)
+    return AxiosPost(`/admin/file/slice-up/setting`, data)
 }
 
 //机构列表
@@ -32,8 +32,8 @@ export const productList = (data) => {
 }
 
 //直销银行
-export const searchBank = (data)=> {
-    return AxiosGet(`/setting/manager/bank-card/searchBank`,data)
+export const searchBank = (data) => {
+    return AxiosGet(`/setting/manager/bank-card/searchBank`, data)
 }
 
 //app按钮列表数据
@@ -72,15 +72,15 @@ export const position_map_list = (data) => {
 }
 // app-广告图位置-添加
 export const position_map_add = (data) => {
-    return AxiosPost(`configuration/bannerPosition`,data)
+    return AxiosPost(`configuration/bannerPosition`, data)
 }
 // app-广告图位置-修改
 export const position_map_upd = (data) => {
-    return AxiosPut(`configuration/bannerPosition`,data)
+    return AxiosPut(`configuration/bannerPosition`, data)
 }
 // app-广告图位置-删除
 export const position_map_del = (data) => {
-    return AxiosPost(`configuration/bannerPosition/delete`,data)
+    return AxiosPost(`configuration/bannerPosition/delete`, data)
 }
 // app-广告图位置-详情
 export const position_map_detail = (id) => {
@@ -98,11 +98,11 @@ export const activity_map_list = (data) => {
 }
 // app-广告图-添加
 export const activity_map_add = (data) => {
-    return AxiosPost(`configuration/banner`,data)
+    return AxiosPost(`configuration/banner`, data)
 }
 // app-广告图-修改
 export const activity_map_upd = (data) => {
-    return AxiosPut(`configuration/banner`,data)
+    return AxiosPut(`configuration/banner`, data)
 }
 // app-广告图-删除
 export const activity_map_del = (id) => {
@@ -117,7 +117,7 @@ export const activity_map_detail = (id) => {
  */
 // app-升级弹框-更新弹框
 export const upgrade_box_add = (data) => {
-    return AxiosPost(`configuration/bannerUpgrade`,data)
+    return AxiosPost(`configuration/bannerUpgrade`, data)
 }
 // app-升级弹框-查询最新一条信息
 export const upgrade_box_detail = (id) => {
@@ -128,11 +128,11 @@ export const upgrade_box_detail = (id) => {
  */
 // app-创建底部菜单和导航条
 export const bannerMenu_add = (data) => {
-    return AxiosPost(`configuration/bannerMenu`,data)
+    return AxiosPost(`configuration/bannerMenu`, data)
 }
 // app-查询所有的底部菜单和导航条
 export const bannerMenu_list = (data) => {
-    return AxiosGet(`configuration/bannerMenu`,data)
+    return AxiosGet(`configuration/bannerMenu`, data)
 }
 
 
@@ -236,7 +236,6 @@ export const yuebao_updata = (obj) => {
 
 //协议列表
 export const protocol_list = (data) => {
-    // console.log(data)
     return AxiosGet(`setting/manager/commonly-config`, data)
 }
 
@@ -704,22 +703,22 @@ export const top_product_add = (data) => {
 
 //   产品支取提示
 //产品所属银行
-export const productBank = (data)=> {
-    return AxiosGet(`/product/institution/page`,data)
+export const productBank = (data) => {
+    return AxiosGet(`/product/institution/page`, data)
 }
 //列表
-export const prompt_list = (data)=> {
-    return AxiosGet(`/product/prompt-message`,data)
+export const prompt_list = (data) => {
+    return AxiosGet(`/product/prompt-message`, data)
 }
 
 //根据机构id获取产品
-export const getProList = (id)=> {
+export const getProList = (id) => {
     return AxiosGet(`/product/institution/searchPro/${id}`)
 }
 
 //新增提示
-export const prompt_add = (data)=> {
-    return AxiosPost(`/product/prompt-message`,data)
+export const prompt_add = (data) => {
+    return AxiosPost(`/product/prompt-message`, data)
 }
 //修改提示
 export const prompt_upd = (data) => {
@@ -746,7 +745,7 @@ export const get_sms_list = (id) => {
 }
 // 新增短信
 export const add_sms_manage = (data) => {
-    return AxiosPost(`/message/sms-manage`,data)
+    return AxiosPost(`/message/sms-manage`, data)
 }
 // 获取短信详情
 export const get_sms_detail = (id) => {
@@ -758,7 +757,7 @@ export const download_template = () => {
 }
 
 // 短信上传模板
-export const upload_file = (data,type) => {
+export const upload_file = (data, type) => {
     return AxiosPost(`/admin/file/up/${type}`, data)
 }
 // 删除短信
@@ -771,7 +770,7 @@ export const delete_sms_manage = (id) => {
 
 // 推送信息列表
 export const push_message = (data) => {
-    return AxiosGet(`/message/push-message`,data)
+    return AxiosGet(`/message/push-message`, data)
 }
 // 获取推送信息详情
 export const get_message_detail = (id) => {
@@ -783,11 +782,11 @@ export const add_push_message = (data) => {
 }
 // 修改推送消息
 export const change_push_manage = (data) => {
-    return AxiosPut(`/message/push-message`,data)
+    return AxiosPut(`/message/push-message`, data)
 }
 // 删除推送信息
 export const delete_push_message = (data) => {
-    return AxiosPost(`/message/push-message/deletes`,data)
+    return AxiosPost(`/message/push-message/deletes`, data)
 }
 
 
@@ -795,15 +794,15 @@ export const delete_push_message = (data) => {
 
 // 分页查询父子集依赖
 export const get_relation_list = (data) => {
-    return AxiosGet(`/setting/manager/parent-tree`,data)
+    return AxiosGet(`/setting/manager/parent-tree`, data)
 }
 // 新增父子级依赖
 export const add_relation = (data) => {
-    return AxiosPost(`/setting/manager/parent-tree`,data)
+    return AxiosPost(`/setting/manager/parent-tree`, data)
 }
 // 修改父子集配置
 export const modify_relation = (data) => {
-    return AxiosPut(`/setting/manager/parent-tree`,data)
+    return AxiosPut(`/setting/manager/parent-tree`, data)
 }
 // 删除父子级配置
 export const delete_relation = (id) => {
@@ -819,7 +818,7 @@ export const relation_detail = (id) => {
 
 // 短信权限分页列表
 export const get_smsRule_list = (data) => {
-    return AxiosGet(`/message/manager/sms-rule`,data)
+    return AxiosGet(`/message/manager/sms-rule`, data)
 }
 // 获取短信权限详情
 export const smsRule_detail = (id) => {
@@ -827,11 +826,11 @@ export const smsRule_detail = (id) => {
 }
 // 新增短信规则
 export const add_smsRule = (data) => {
-    return AxiosPost(`/message/manager/sms-rule`,data)
+    return AxiosPost(`/message/manager/sms-rule`, data)
 }
 // 修改短信规则
 export const modify_smsRule = (data) => {
-    return AxiosPut(`/message/manager/sms-rule`,data)
+    return AxiosPut(`/message/manager/sms-rule`, data)
 }
 // 删除短信规则
 export const delete_smsRule = (id) => {
@@ -842,7 +841,7 @@ export const delete_smsRule = (id) => {
 
 // 短信模版分页列表
 export const get_templateRule_list = (data) => {
-    return AxiosGet(`/message/manager/sms-template`,data)
+    return AxiosGet(`/message/manager/sms-template`, data)
 }
 // 获取短信模版详情
 export const smsTemplate_detail = (id) => {
@@ -850,11 +849,11 @@ export const smsTemplate_detail = (id) => {
 }
 // 新增短信模版
 export const add_smsTemplate = (data) => {
-    return AxiosPost(`/message/manager/sms-template`,data)
+    return AxiosPost(`/message/manager/sms-template`, data)
 }
 // 修改短信模版
 export const modify_smsTemplate = (data) => {
-    return AxiosPut(`/message/manager/sms-template`,data)
+    return AxiosPut(`/message/manager/sms-template`, data)
 }
 // 删除短信模版
 export const delete_smsTemplate = (id) => {
@@ -862,36 +861,36 @@ export const delete_smsTemplate = (id) => {
 }
 // 获取短信渠道列表
 export const get_sms_channel = (data) => {
-    return AxiosGet(`/message/manager/sms-channel`,data)
+    return AxiosGet(`/message/manager/sms-channel`, data)
 }
 
 
 //新增建议
-export const add_proposal = (data)=> {
-    return AxiosPost(`setting/manager/proposal`,data)
+export const add_proposal = (data) => {
+    return AxiosPost(`setting/manager/proposal`, data)
 }
 
 //系统预警配置
 
 // 获取预警信息列表
 export const get_alarm_list = (data) => {
-    return AxiosPost(`/alarm/config/pageList`,data)
+    return AxiosPost(`/alarm/config/pageList`, data)
 }
 // 删除系统预警条目
-export const delete_alarm  = (id) => {
+export const delete_alarm = (id) => {
     return AxiosDelete(`/alarm/config/delete/${id}`)
 }
 // 系统预警条目详情
-export const detail_alarm  = (id) => {
+export const detail_alarm = (id) => {
     return AxiosGet(`/alarm/config/searchDetail/${id}`)
 }
 // 新增系统预警
-export const add_alarm = (data)=> {
-    return AxiosPost(`/alarm/config/add`,data)
+export const add_alarm = (data) => {
+    return AxiosPost(`/alarm/config/add`, data)
 }
 // 修改系统预警条目
 export const modify_alarm = (data) => {
-    return AxiosPut(`/alarm/config/update`,data)
+    return AxiosPut(`/alarm/config/update`, data)
 }
 
 
@@ -899,18 +898,18 @@ export const modify_alarm = (data) => {
 
 //列表
 export const problemInfo_list = (data) => {
-    return AxiosGet(`/setting/manager/question-info`,data)
+    return AxiosGet(`/setting/manager/question-info`, data)
 }
 
 //新增问题
 export const problemInfo_add = (data) => {
-    return AxiosPost(`/setting/manager/question-info`,data)
+    return AxiosPost(`/setting/manager/question-info`, data)
 }
 
 
 //修改问题
 export const problemInfo_update = (data) => {
-    return AxiosPut(`/setting/manager/question-info`,data)
+    return AxiosPut(`/setting/manager/question-info`, data)
 }
 
 //删除问题
@@ -924,13 +923,13 @@ export const problemInfo_delete = (id) => {
 
 //列表
 export const questionDispose_list = (data) => {
-    return AxiosGet(`/setting/manager/question-dispose`,data)
+    return AxiosGet(`/setting/manager/question-dispose`, data)
 }
 
 
 //新建
 export const questionDispose_add = (data) => {
-    return AxiosPost(`/setting/manager/question-dispose`,data)
+    return AxiosPost(`/setting/manager/question-dispose`, data)
 }
 
 //详情
@@ -939,12 +938,12 @@ export const questionDispose_detail = (id) => {
 }
 
 //修改置顶
-export const questionDispose_isTop = (data)=> {
-    return AxiosPut(`/setting/manager/question-dispose/istop`,data)
+export const questionDispose_isTop = (data) => {
+    return AxiosPut(`/setting/manager/question-dispose/istop`, data)
 }
 
 export const questionDispose_updata = (data) => {
-    return AxiosPut(`/setting/manager/question-dispose`,data)
+    return AxiosPut(`/setting/manager/question-dispose`, data)
 }
 
 export const questionDispose_delete = (id) => {

@@ -1011,8 +1011,8 @@ export default {
     ///////////////////////////////////////////////////////////
     // 右侧产品、银行表格里的操作
     tableEmitEdit(data, type) {
-      console.log(data);
-      console.log(type);
+      // console.log(data);
+      // console.log(type);
 
       let obj = {
         data: []
