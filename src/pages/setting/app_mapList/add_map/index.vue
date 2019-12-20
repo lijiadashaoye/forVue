@@ -55,7 +55,7 @@
         <el-form-item label="高亮字体颜色" prop="highlightColor">
           <el-color-picker v-model="ruleForm.highlightColor"></el-color-picker>
         </el-form-item>
-        <el-form-item label="显示系统"  prop="sysType">
+        <el-form-item label="显示系统" prop="sysType">
           <el-select v-model="ruleForm.sysType" clearable placeholder="请选择">
             <el-option
               size="mini"
@@ -66,7 +66,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="分辨率"  >
+        <el-form-item label="分辨率">
           <el-select v-model="ruleForm.resolvingPower" clearable placeholder="请选择">
             <el-option
               size="mini"
@@ -77,7 +77,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="图片类型"  prop="imageType">
+        <el-form-item label="图片类型" prop="imageType">
           <el-select v-model="ruleForm.imageType" clearable placeholder="请选择">
             <el-option
               size="mini"
@@ -210,7 +210,7 @@
   </div>
 </template>
 <script>
-import { sysTypeList, resolutionOpt,imageTypeList } from "@/constant.js";
+import { sysTypeList, resolutionOpt, imageTypeList } from "@/constant.js";
 import { upLoadImg } from "@/api/setting_use.js";
 import { mapActions } from "vuex";
 import { defaultChange } from "@/sets/changeLanguage.js";
@@ -239,8 +239,8 @@ export default {
       pageName: "",
       ruleForm: {
         bannerTitle: "", //广告图标题
-        imageType:"", //图片类型
-        resolvingPower:"", //分辨率
+        imageType: "", //图片类型
+        resolvingPower: "", //分辨率
         bannerType: "", //广告图类型
         positionNo: "", //广告图位置编号
         sysType: "", //显示系统
@@ -254,6 +254,9 @@ export default {
           {
             jumpOrder: 0, //跳转序号
             jumpType: 1,
+            productId:"",
+            jumpUrl: "",
+            jumpTitle: "",
             productType: "", //产品类型
             producInfos: {
               productArr: [], //关联数据
@@ -278,7 +281,8 @@ export default {
       rules: {
         bannerTitle: [{ required: true, message: "广告图标题不能为空" }],
         timeArr: [{ required: true, message: "时间不能为空" }],
-        imageType:[{ required: true, message: "图片类型不能为空" }]      }
+        imageType: [{ required: true, message: "图片类型不能为空" }]
+      }
     };
   },
   created() {
@@ -455,6 +459,9 @@ export default {
       let obj = {
         jumpOrder: this.ruleForm.bannerButtons.length, //跳转序号
         jumpType: 1,
+        productId:"",
+        jumpUrl: "",
+        jumpTitle: "",
         productType: "", //产品类型
         producInfos: {
           productArr: [], //关联数据
@@ -532,9 +539,22 @@ export default {
           ruleForm.beginTime = this.ruleForm.timeArr[0];
           ruleForm.endTime = this.ruleForm.timeArr[1];
           delete ruleForm.timeArr;
-          for (let i in ruleForm.bannerButtons) {
-            ruleForm.bannerButtons[i].jumpOrder = i;
-            delete ruleForm.bannerButtons[i]["producInfos"];
+          if (ruleForm.bannerButtons.length > 0) {
+            for (let i in ruleForm.bannerButtons) {
+              ruleForm.bannerButtons[i].jumpOrder = i;
+              delete ruleForm.bannerButtons[i]["producInfos"];
+              let item = this.productTypeArr.find(item => {
+                return (
+                  item.linkModel == ruleForm.bannerButtons[i]["productType"]
+                );
+              });
+              ruleForm.bannerButtons[i].jumpTitle = item.linkName;
+              if (item.linkUrl) {
+                ruleForm.bannerButtons[i].jumpUrl = item.linkUrl;
+              } else {
+                ruleForm.bannerButtons[i].jumpUrl = item.id;
+              }
+            }
           }
           if (this.$route.query.id) {
             this.activityMapUpd(ruleForm).then(() => {

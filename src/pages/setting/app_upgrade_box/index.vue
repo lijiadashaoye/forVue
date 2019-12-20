@@ -1,5 +1,5 @@
 <template>
-  <div class="componentWaper" style="overflow-y:auto;padding-bottom:20px">
+  <div class="componentWaper" style="background:white;">
     <div id="forHeader">
       <p class="isPageName">
         <span :class="env?'lineSpan1':'lineSpan'">|</span>
@@ -15,7 +15,7 @@
       v-if="infoStatus"
       label-width="100px"
       label-suffix=":"
-      style="padding:30px 30px 0"
+      style="padding:30px 30px 0;margin:0px auto;"
       label-position="left"
       :rules="rules"
     >
@@ -33,6 +33,7 @@
       label-suffix=":"
       labelWidth="120px"
       label-position="right"
+      style="margin:0px auto;"
     >
       <el-form-item label="位置编号" prop="positionNo">
         <el-input maxlength="30" v-model="ruleForm.positionNo" placeholder="请输入30个字符以内的编号"></el-input>
@@ -56,11 +57,14 @@
         <el-input v-model="ruleForm.remark" type="textarea" :rows="3" placeholder="请输入备注"></el-input>
       </el-form-item>
     </el-form>
-    <el-button
-      style="width:120px;margin:0px 250px;"
+    <div>
+      <el-button
+      style="margin:0px auto;display:block;"
+      size="mini"
       type="primary"
       @click="saveFn('ruleForm')"
     >{{infoStatus?'修改':'保存'}}</el-button>
+    </div>
   </div>
 </template>
 <script>

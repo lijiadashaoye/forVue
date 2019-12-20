@@ -123,6 +123,33 @@ export const deleteArticleType = (id)=> {
 
 
 //文章评论
+
+//列表
 export const articleCommentList = (data) => {
     return AxiosGet(`/information/manager/comment`,data)
+}
+
+//新增
+export const addArticleComment = (data) => {
+    return AxiosPost(`/information/manager/comment`,data)
+}
+
+//修改
+export const updateArticleComment = (data) => {
+    return AxiosPut(`/information/manager/comment`,data)
+}
+
+//删除
+export const deleteArticleComment = (id) => {
+    return AxiosDelete(`/information/manager/comment/${id}`)
+}
+
+//批量删除
+export const moreDeleteComment = (data) => {
+    return AxiosPost(`/information/manager/comment/delete-list`,data)
+}
+
+//修改评论状态
+export const updateCommentStatus = (data) => {
+    return AxiosPut(`/information/manager/comment/status`,data)
 }

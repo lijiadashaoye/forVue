@@ -4,7 +4,7 @@
     :rules="rules"
     ref="inData"
     :model="inData"
-    style="display:flex;padding-bottom:12px;"
+    style="display:flex;padding-bottom:12px;align-items:center;"
   >
     <el-form-item prop="type">
       <el-radio-group v-model="inData.type" @change="hasChange" style="width:160px;">
@@ -16,6 +16,7 @@
     <div v-if="inData.type==='日期'" style="width:100%;display:flex">
       <el-form-item prop="startTime" label-width="30px">
         <el-date-picker
+          :clearable="false"
           v-model="inData.startTime"
           size="mini"
           type="datetime"
@@ -26,6 +27,7 @@
       <span style="padding-right:10px;">至</span>
       <el-form-item prop="endTime" label-width="0">
         <el-date-picker
+          :clearable="false"
           value-format="yyyy-MM-dd HH:mm:ss"
           v-model="inData.endTime"
           size="mini"
@@ -46,15 +48,7 @@
         <el-option v-for="item in list" :key="item.value" :label="item.label" :value="item.value"></el-option>
       </el-select>
     </el-form-item>
-
-    <el-popover placement="top-end" width="160" v-model="visible">
-      <p>确定删除吗？</p>
-      <div style="text-align: right; margin: 0">
-        <el-button size="mini" type="text" @click="visible = false">取消</el-button>
-        <el-button type="primary" size="mini" @click="timeAction">确定</el-button>
-      </div>
-      <i class="el-icon-delete isI" slot="reference" title="删除"></i>
-    </el-popover>
+    <i class="el-icon-delete isI" title="删除" @click="timeAction"></i>
   </el-form>
 </template>  
 <script>
@@ -113,7 +107,6 @@ export default {
         endTime: { validator: check_endTime, trigger: "change" },
         zhouqi: { validator: check_zhouqi, trigger: "change" }
       },
-      visible: false,
       list: [
         {
           value: 1,
@@ -147,11 +140,17 @@ export default {
     };
   },
   methods: {
-    timeAction(obj) {
+    timeAction() {
       this.$emit("timeaction", { type: "delete", data: this.inData });
     },
     // 监听组件是否填入数据了
     hasChange() {
+      if (this.inData.type === "周期") {
+        this.inData.startTime = "";
+        this.inData.endTime = "";
+      } else {
+        this.inData.zhouqi = [];
+      }
       this.$emit("timeaction", { type: "change" });
     }
   }
@@ -159,6 +158,8 @@ export default {
 </script>
 <style scoped>
 .isI {
+  display: inline-block;
+  height: 25px;
   font-size: 22px;
   color: rgb(78, 75, 75);
   padding: 2px;

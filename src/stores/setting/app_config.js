@@ -12,7 +12,8 @@ import {
     activity_map_add,
     activity_map_del,
     activity_map_detail,
-    activity_map_upd
+    activity_map_upd,
+    change_location
 } from '../../api/setting_use'
 const state = {
 }
@@ -81,6 +82,16 @@ const actions = {
             if (res && res['success']) {
                 commit('powerTable/SETTABLEINFO', res, { root: true })
             }
+        })
+    },
+    // 广告图-拖拽
+    changeLocation({},data){
+        return new Promise((resolve)=>{
+            change_location(data).then((res)=>{
+                if(res && res['success']){
+                    resolve();
+                }
+            })
         })
     },
     // 广告图-添加

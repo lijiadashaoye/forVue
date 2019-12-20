@@ -23,7 +23,7 @@
         <div id="forTable">
             <isTable :inputData="tableInputData" @tableEmit="tableEmit"/>
         </div>
-         <el-dialog :title="updateFlag ? '修改文章标签' : '新增文章标签'" :visible.sync="dialogFormVisible" :close-on-click-modal='false' :before-close="closeDialog">
+         <el-dialog :title="updateFlag ? '修改文章栏目' : '新增文章栏目'" :visible.sync="dialogFormVisible" :close-on-click-modal='false' :before-close="closeDialog">
             <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="120px" label-position="left" class="demo-ruleForm">
                 <el-form-item label="栏目名称" prop="name">
                     <el-input v-model="ruleForm.name"></el-input>

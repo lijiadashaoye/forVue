@@ -35,6 +35,7 @@ export default {
             RESETTABLEINFO: "powerTable/RESETTABLEINFO",
             USERDO: "powerTable/USERDO",
             SETTITLELIST: "powerTable/SETTITLELIST",
+            SETDRAGABLE:"powerTable/SETDRAGABLE"
         }),
         // 删除单条条目
         deleteIndex(obj) {

@@ -84,9 +84,6 @@ export const position_map_del = (data) => {
 }
 // app-广告图位置-详情
 export const position_map_detail = (id) => {
-    // let obj = {
-    //     id:id
-    // }
     return AxiosGet(`configuration/bannerPosition/${id}`)
 }
 /**
@@ -95,6 +92,10 @@ export const position_map_detail = (id) => {
 // app-广告图-列表
 export const activity_map_list = (data) => {
     return AxiosPost(`configuration/banner/select`, data)
+}
+// app-广告图-拖拽
+export const change_location = (data) => {
+    return AxiosPost('configuration/banner/changeLocation',data)
 }
 // app-广告图-添加
 export const activity_map_add = (data) => {

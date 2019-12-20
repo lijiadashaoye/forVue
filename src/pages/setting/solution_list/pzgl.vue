@@ -72,12 +72,17 @@ export default {
       .then(res => {
         if (res) {
           this.searchList = res.data.list;
-          this.afterGetData({
-            total: 0,
-            pageSize: this.tableInputData.pageSize,
-            pageNum: this.tableInputData.pageNum,
-            list: []
-          });
+          if (this.$route.query["weizhi"]) {
+            this.actNO = this.$route.query["weizhi"];
+            this.getUserData();
+          } else {
+            this.afterGetData({
+              total: 0,
+              pageSize: this.tableInputData.pageSize,
+              pageNum: this.tableInputData.pageNum,
+              list: []
+            });
+          }
         }
       });
   },

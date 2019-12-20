@@ -37,7 +37,7 @@
               min="0"
               max="9999999999"
               size="mini"
-              @input="validAge"
+              @blur="validAge"
               type="number"
               style="width:15%;flex-shrink:0;"
               v-model="ruleForm.minAge"
@@ -67,7 +67,7 @@
               min="0"
               max="9999999999"
               size="mini"
-              @input="validAge"
+              @blur="validAge"
               type="number"
               style="width:15%;flex-shrink:0;"
               v-model="ruleForm.maxAge"
@@ -110,6 +110,7 @@
               ></el-option>
             </el-select>
             <el-date-picker
+              :clearable="false"
               :disabled="!ruleForm.statue"
               v-model="ruleForm.time1"
               size="mini"
@@ -144,6 +145,7 @@
               ></el-option>
             </el-select>
             <el-date-picker
+              :clearable="false"
               :disabled="!ruleForm.statue"
               v-model="ruleForm.time2"
               @change="validStatue"
@@ -213,7 +215,7 @@
                 min="0"
                 max="9999999999"
                 size="mini"
-                @input="validChiCang"
+                @blur="validChiCang"
                 type="number"
                 style="width:15%;flex-shrink:0;"
                 v-model="ruleForm.minChiCang"
@@ -252,7 +254,7 @@
                 min="0"
                 max="9999999999"
                 size="mini"
-                @input="validChiCang"
+                @blur="validChiCang"
                 type="number"
                 style="width:15%;flex-shrink:0;"
                 v-model="ruleForm.maxChiCang"
@@ -297,6 +299,7 @@
               ></el-option>
             </el-select>&nbsp;
             <el-date-picker
+              :clearable="false"
               :disabled="!ruleForm.bankStatue"
               v-model="ruleForm.bank1"
               size="mini"
@@ -331,6 +334,7 @@
               ></el-option>
             </el-select>&nbsp;
             <el-date-picker
+              :clearable="false"
               :disabled="!ruleForm.bankStatue"
               v-model="ruleForm.bank2"
               @change="validBankStatue"
@@ -387,7 +391,7 @@
                 min="0"
                 max="9999999999"
                 size="mini"
-                @input="validBankChiCang"
+                @blur="validBankChiCang"
                 type="number"
                 style="width:15%;flex-shrink:0;"
                 v-model="ruleForm.minBankChiCang"
@@ -429,7 +433,7 @@
                 min="0"
                 max="9999999999"
                 size="mini"
-                @input="validBankChiCang"
+                @blur="validBankChiCang"
                 type="number"
                 style="width:15%;flex-shrink:0;"
                 v-model="ruleForm.maxBankChiCang"
@@ -510,16 +514,14 @@
           </p>
 
           <div class="forSta">
-            <el-form-item :label="`${type==='bank'?'银行展示':'产品展示'}位置`" style="margin-bottom:0;">
+            <el-form-item v-if="type==='bank'" label="银行展示位置" style="margin-bottom:0;">
               <el-select
-                v-if="type==='bank'"
                 multiple
                 filterable
                 size="mini"
                 placeholder="限制条件"
-                v-model="ruleForm.side"
+                v-model="ruleForm.bank_side"
                 style="width:50%"
-                @change="timeAction({type:'new'})"
               >
                 <el-option
                   v-for="item in yingxiaoDatas.weizhi_bank"
@@ -528,16 +530,16 @@
                   :value="item.positionNo"
                 ></el-option>
               </el-select>
+            </el-form-item>
 
+            <el-form-item label="产品展示位置" style="margin-bottom:0;">
               <el-select
-                v-if="type==='bank_product'"
                 multiple
                 filterable
                 size="mini"
                 placeholder="限制条件"
-                v-model="ruleForm.side"
+                v-model="ruleForm.product_side"
                 style="width:50%"
-                @change="timeAction({type:'new'})"
               >
                 <el-option
                   v-for="item in yingxiaoDatas.weizhi_product"
@@ -740,7 +742,9 @@ export default {
         bankChiCang: "", //本银行持仓状态
         areaTJ: [], //地域限制条件
         // 营销管理配置
-        side: [], // 位置
+        // type==='bank' 时，要设置产品
+        bank_side: [], // 银行展示位置  type==='bank'
+        product_side: [], // 产品展示位置 type==='bank_product'
         time: [], // 时间数据
         ad_side: [], // 广告位
         active: [], // 活动
@@ -874,7 +878,6 @@ export default {
               bankChiCang: data.bankChiCang //本银行持仓状态
             }
           },
-
           {
             text: "限制地域",
             showDatas: [],
@@ -886,7 +889,8 @@ export default {
             text: "产品展示位置与时间", // 标题
             showDatas: [], // 用来展示的数据
             data: {
-              side: data.side, // 位置
+              bank_side: data.bank_side, // 银行展示位置
+              product_side: data.product_side, // 产品展示位置
               time: data.time // 时间数据
             }
           },
@@ -1057,17 +1061,32 @@ export default {
               break;
             case "广告位":
               if (data.ad_side.length > 0) {
-                item.showDatas.push(data.ad_side.join("、"));
+                item.showDatas.push(
+                  this.yingxiaoDatas.guangao
+                    .filter(tar => data.ad_side.includes(tar.positionNo))
+                    .map(t => t.positionTitle)
+                    .join("、")
+                );
               }
               break;
             case "活动":
               if (data.active.length > 0) {
-                item.showDatas.push(data.active.join("、"));
+                item.showDatas.push(
+                  this.yingxiaoDatas.huodong
+                    .filter(tar => data.active.includes(tar.positionNo))
+                    .map(t => t.positionTitle)
+                    .join("、")
+                );
               }
               break;
             case "内容":
               if (data.content.length > 0) {
-                item.showDatas.push(data.content.join("、"));
+                item.showDatas.push(
+                  this.yingxiaoDatas.neirong
+                    .filter(tar => data.content.includes(tar.positionNo))
+                    .map(t => t.positionTitle)
+                    .join("、")
+                );
               }
               break;
             case "创新层":
@@ -1083,35 +1102,87 @@ export default {
               }
               break;
             case "产品展示位置与时间":
-              if (data.side.length > 0) {
-                item.showDatas.push({
-                  side: data.side.join("、"),
-                  time: data.time
-                    .map(tar => {
-                      if (tar.type === "日期") {
-                        if (tar.endTime) {
-                          return `${tar.startTime} 至 ${tar.endTime}`;
-                        } else {
-                          return `${tar.startTime}`;
-                        }
-                      } else {
-                        let kk = this.$refs.sideTime[0].list.filter(d =>
-                            tar.zhouqi.includes(d.value)
-                          ),
-                          str = "";
-                        kk.forEach(tar => {
-                          if (kk.length > 1) {
-                            str += tar.label + ",";
+              if (this.type === "bank") {
+                // 配置银行
+                if (data.bank_side.length > 0 || data.product_side.length > 0) {
+                  item.showDatas.push({
+                    side: {
+                      bank_side: this.yingxiaoDatas.weizhi_bank
+                        .filter(tar => data.bank_side.includes(tar.positionNo))
+                        .map(i => i.positionTitle)
+                        .join("、"),
+                      product_side: this.yingxiaoDatas.weizhi_product
+                        .filter(tar =>
+                          data.product_side.includes(tar.positionNo)
+                        )
+                        .map(i => i.positionTitle)
+                        .join("、")
+                    },
+                    time: data.time
+                      .map(tar => {
+                        if (tar.type === "日期") {
+                          if (tar.endTime) {
+                            return `${tar.startTime} 至 ${tar.endTime}`;
                           } else {
-                            str = tar.label;
+                            return `${tar.startTime}`;
                           }
-                        });
+                        } else {
+                          let kk = this.$refs.sideTime[0].list.filter(d =>
+                              tar.zhouqi.includes(d.value)
+                            ),
+                            str = "";
+                          kk.forEach(tar => {
+                            if (kk.length > 1) {
+                              str += tar.label + " 00:00:00~24:00:00，";
+                            } else {
+                              str = tar.label;
+                            }
+                          });
+                          return str;
+                        }
+                      })
+                      .join(" 或 ")
+                  });
+                }
+              } else {
+                // 配置银行产品
+                if (data.product_side.length > 0) {
+                  item.showDatas.push({
+                    side: {
+                      product_side: this.yingxiaoDatas.weizhi_product
+                        .filter(tar =>
+                          data.product_side.includes(tar.positionNo)
+                        )
+                        .map(i => i.positionTitle)
+                        .join("、")
+                    },
+                    time: data.time
+                      .map(tar => {
+                        if (tar.type === "日期") {
+                          if (tar.endTime) {
+                            return `${tar.startTime} 至 ${tar.endTime}`;
+                          } else {
+                            return `${tar.startTime}`;
+                          }
+                        } else {
+                          let kk = this.$refs.sideTime[0].list.filter(d =>
+                              tar.zhouqi.includes(d.value)
+                            ),
+                            str = "";
+                          kk.forEach(tar => {
+                            if (kk.length > 1) {
+                              str += tar.label + " 00:00:00~24:00:00，";
+                            } else {
+                              str = tar.label;
+                            }
+                          });
 
-                        return str;
-                      }
-                    })
-                    .join(" 或 ")
-                });
+                          return str;
+                        }
+                      })
+                      .join(" 或 ")
+                  });
+                }
               }
               break;
           }
@@ -1183,7 +1254,6 @@ export default {
       for (let i = hasSelect.length; i--; ) {
         if (hasSelect[i].sheng.adcode) {
           let num = hasSelect[i].sheng.index;
-
           // 获取省对应的字典列表数据
           let shiList = china.splice(num, 1)[0],
             shi = hasSelect[i].shi.map(tar => tar.adcode); // 获取已经选择的市
@@ -1214,16 +1284,18 @@ export default {
         } else if (str !== "areaTJ" && data.length > 0) {
           isInput = true;
         } else if (str === "areaTJ") {
-          isInput = this.areaAction({ type: "checkareaTJ" });
+          this.areaAction({ type: "checkareaTJ" }).then(res => {
+            isInput = res;
+          });
         }
       });
-
       return isInput;
     },
     // 保存数据，营销管理配置属于必填项
     async save() {
       if (
-        this.ruleForm.side.length > 0 ||
+        this.ruleForm.bank_side.length > 0 ||
+        this.ruleForm.product_side.length > 0 ||
         this.ruleForm.time.length > 0 ||
         this.ruleForm.ad_side.length > 0 ||
         this.ruleForm.active.length > 0 ||
@@ -1234,7 +1306,6 @@ export default {
         if (checks.wrong) {
           let str = "",
             wap = "";
-
           checks.list.forEach(t => {
             str += `<li>${t}</li>`;
           });
@@ -1396,7 +1467,7 @@ export default {
         right_symbol = obj.right_symbol,
         errorObj = obj.errorObj;
       // 全部填入数据了
-      if (fuhao && left !== "" && left_symbol && right !== "" && right_symbol) {
+      if (fuhao && left && left_symbol && right && right_symbol) {
         if (fuhao === "且") {
           // 如果左边是小于或小于等于时
           if (left_symbol === "&lt" || left_symbol === "&le") {
@@ -1441,26 +1512,25 @@ export default {
         }
       } else {
         // 如果有一项已经填入数据
-        if (
-          fuhao ||
-          left !== "" ||
-          left_symbol ||
-          right !== "" ||
-          right_symbol
-        ) {
+        if (fuhao || left || left_symbol || right || right_symbol) {
           // 如果左边已经填写，右边未知时
-          if (left !== "" && left_symbol) {
+          if (left && left_symbol) {
             // 选择了且、或
             if (fuhao) {
-              if (right === "" || !right_symbol) {
+              if (!right || !right_symbol) {
+                // 右侧有空数据时
                 errorObj.content = "请将右侧设置数据填写完整！";
                 errorObj.act = true;
+              } else if (right && right_symbol) {
+                errorObj.content = "";
+                errorObj.act = false;
               }
             } else {
-              if (right !== "" || right_symbol) {
+              // 没有中间且、或时，如果右侧填入数据了
+              if (right || right_symbol) {
                 errorObj.content = "请确定左侧和右侧的关系！";
                 errorObj.act = true;
-              } else if (right === "" || !right_symbol) {
+              } else if (!right && !right_symbol) {
                 errorObj.content = "";
                 errorObj.act = false;
               }
@@ -1476,15 +1546,14 @@ export default {
       }
     },
     // 监听地域限制组件
-    areaAction(data) {
-      let isOk = true,
+    async areaAction(data) {
+      let awaitObj,
+        isOk = true,
         wrongs = {
           wrong: false,
           list: []
         }, // 记录最终保存时的验证错误
-        sheng = [],
-        shiData = [],
-        child = this.$refs.child.data; // 拿到子组件的数据
+        child = this.$refs.child; // 拿到子组件的数据
       switch (data.type) {
         case "delete": // 删除限制地域
           this.ruleForm.areaTJ = this.ruleForm.areaTJ.filter(
@@ -1493,40 +1562,26 @@ export default {
           this.toResetList();
           break;
         case "add": // 新增一条限制地域数据
-          if (child.sheng === "") {
+          if (child.data.sheng === "") {
             isOk = false;
             this.hasError.canDelete.content = "请选择地域限的省份！";
             this.hasError.canDelete.act = true;
-          } else if (child.tiaojian.length === 0) {
+          } else if (child.data.tiaojian.length === 0) {
             isOk = false;
             this.hasError.canDelete.content = "请将地域限的限制条件正确填写！";
             this.hasError.canDelete.act = true;
           }
           if (isOk) {
-            sheng = [...this.deepCopy(this.dictData.china)].filter(
-              tar => tar.adcode === child.sheng
-            )[0]; // 深拷贝一下字典数据
-            shiData = [];
-            if (child.shi.length) {
-              shiData = sheng.children.filter(tar =>
-                child.shi.includes(tar.adcode)
-              );
-            } else {
-              shiData = sheng.children;
-            }
+            awaitObj = await this.beforeAddArea(child.data);
             // 生成最终数据到ruleForm中
             this.ruleForm.areaTJ.push({
               num: ++this.num,
-              sheng: {
-                adcode: sheng.adcode,
-                name: sheng.name,
-                index: sheng.index
-              },
-              shi: shiData,
-              tiaojian: child.tiaojian
+              sheng: awaitObj.sheng,
+              shi: awaitObj.shiData,
+              tiaojian: child.data.tiaojian
             });
             // 重置子组件
-            this.$refs.child.data = {
+            child.data = {
               sheng: "",
               shi: [],
               tiaojian: []
@@ -1538,57 +1593,53 @@ export default {
           }
           break;
         case "checkareaTJ": // 离开前检查地域限制
-          if (child.sheng === "" && child.tiaojian.length === 0) {
+          if (child.data.sheng === "" && child.data.tiaojian.length === 0) {
             return false;
           } else {
             return true;
           }
           break;
         case "beforeLeave": // 离开页面前保存地域限制数据
-          if (child.sheng && child.tiaojian.length > 0) {
-            sheng = [...this.deepCopy(this.dictData.china)].filter(
-              tar => tar.adcode === child.sheng
-            )[0]; // 深拷贝一下字典数据
-            let shiData = [];
-            if (child.shi.length) {
-              shiData = sheng.children.filter(tar =>
-                child.shi.includes(tar.adcode)
-              );
-            } else {
-              shiData = sheng.children;
-            }
+          if (child.data.sheng && child.data.tiaojian.length > 0) {
+            awaitObj = await this.beforeAddArea(child.data);
             // 生成最终数据到ruleForm中
             this.ruleForm.areaTJ.push({
               num: ++this.num,
-              sheng: {
-                adcode: sheng.adcode,
-                name: sheng.name,
-                index: sheng.index
-              },
-              shi: shiData,
-              tiaojian: child.tiaojian
+              sheng: awaitObj.sheng,
+              shi: awaitObj.shiData,
+              tiaojian: child.data.tiaojian
             });
             return true;
           } else {
-            if (child.sheng || child.tiaojian.length > 0) {
+            if (child.data.sheng || child.data.tiaojian.length > 0) {
               wrongs.wrong = true;
               wrongs.list.push("限制地域数据输入不全，无法保存!");
-
               this.hasError.canDelete.content = "请同时输入数据！";
               this.hasError.canDelete.act = true;
             }
           }
+          this.ruleForm.time.forEach(item => {
+            if (
+              !item.type ||
+              (item.type === "周期" && item.zhouqi.length === 0) ||
+              (item.type === "日期" && !item.startTime)
+            ) {
+              wrongs.wrong = true;
+              wrongs.list.push("产品展示位置与时间数据输入有误，无法保存!");
+              this.hasError.sideTime.content =
+                "产品展示位置与时间数据输入有误！";
+              this.hasError.sideTime.act = true;
+            }
+          });
           if (
             this.ruleForm.statue &&
             (!this.ruleForm.time1 || !this.ruleForm.time1_symbol)
           ) {
             wrongs.wrong = true;
             wrongs.list.push("比财注册状态与时间数据输入不全，无法保存!");
-
             this.hasError.time.content = "请同时输入数据！";
             this.hasError.time.act = true;
           }
-
           if (
             this.ruleForm.bankStatue &&
             (!this.ruleForm.bank1 || !this.ruleForm.bank1_symbol)
@@ -1599,6 +1650,37 @@ export default {
             this.hasError.bank.content = "请同时输入数据！";
             this.hasError.bank.act = true;
           }
+          Object.keys(this.hasError).forEach(tar => {
+            if (this.hasError[tar].act) {
+              let str = "";
+              wrongs.wrong = true;
+              switch (tar) {
+                case "age":
+                  str = "年龄数据输入有误！";
+                  break;
+                case "time":
+                  str = "比财注册状态与时间数据输入有误！";
+                  break;
+                case "chicang":
+                  str = "比财持仓金额数据输入有误！";
+                  break;
+                case "bank":
+                  str = "本银行开户状态与时间数据输入有误！";
+                  break;
+                case "bankChiCang":
+                  str = "本银行持仓金额数据输入有误！";
+                  break;
+                case "canDelete":
+                  str = "限制地域的错误提示数据输入有误！";
+                  break;
+                case "sideTime":
+                  str = "产品展示位置与时间数据输入有误！";
+                  break;
+              }
+              wrongs.list.push(str);
+            }
+          });
+
           return wrongs;
           break;
         case "noError":
@@ -1609,23 +1691,58 @@ export default {
           this.isAdd = data.data;
           break;
         case "edit": // 编辑
-          let obj;
+          let obj; // 先从已暂存的数据中删除要编辑的
           this.ruleForm.areaTJ = this.ruleForm.areaTJ.filter(tar => {
             if (tar.num === data.data.num) {
               obj = { ...tar };
             }
             return tar.num != data.data.num;
           });
-
           this.toResetList();
-          this.$refs.child.data = {
+          child.data = {
             sheng: obj.sheng.adcode,
             shi: obj.shi.map(tar => tar.adcode),
             tiaojian: obj.tiaojian
           };
-          this.$refs.child.resetList();
+          child.resetList();
           break;
       }
+    },
+    // 封装添加限制地域的各种执行过程及验证
+    beforeAddArea(child) {
+      let shiData = [], // 暂存已挑选的市
+        // 深拷贝一下字典数据,  获取已经选择的省;
+        sheng = [...this.deepCopy(this.dictData.china)].filter(
+          tar => tar.adcode === child.sheng
+        )[0],
+        // 获取已经选择的省的市;
+        children = sheng.children;
+      if (child.shi.length) {
+        // 挑选里几个市的时候
+        shiData = children.filter(tar => child.shi.includes(tar.adcode));
+      } else {
+        // 只选了省，没有市数据的时候
+        // 因为是或的关系，还要检查一下是否选过同样的省
+        if (this.ruleForm.areaTJ.length > 0 && children.length > 0) {
+          this.ruleForm.areaTJ.forEach(tar => {
+            if (tar.sheng.adcode === child.sheng) {
+              let shiMap = tar.shi.map(k => k.adcode); // 将已经选择的市的adcode组成数组
+              // 选过同一个省的时候
+              children = children.filter(t => !shiMap.includes(t.adcode));
+            }
+          });
+        }
+        // 没有市的直辖市的时候
+        shiData = children;
+      }
+      return {
+        sheng: {
+          adcode: sheng.adcode,
+          name: sheng.name,
+          index: sheng.index
+        },
+        shiData: shiData
+      };
     },
     // 金额的单位格式化
     danwei(data) {
@@ -1673,21 +1790,50 @@ export default {
     },
     // 重置产品展示位置与时间
     resetSide() {
-      this.ruleForm.side = []; // 位置
+      this.ruleForm.bank_side = []; // 银行展示位置
+      this.ruleForm.product_side = []; // 产品展示位置
       this.ruleForm.time = []; // 时间
       this.hasError.sideTime.content = "";
       this.hasError.sideTime.act = false;
     },
     // 产品展示位置与时间,全选按钮
     selectAll() {
-      let kk;
-      if (this.type === "bank") {
-        kk = this.yingxiaoDatas.weizhi_bank;
-      } else {
-        kk = this.yingxiaoDatas.weizhi_product;
-      }
+      let kk1,
+        kk2,
+        date = new Date(),
+        year = date.getFullYear(),
+        month = date.getMonth() + 1,
+        day = date.getDate();
 
-      this.ruleForm.side = kk.map(tar => tar.positionNo);
+      if (this.type === "bank") {
+        kk1 = this.yingxiaoDatas.weizhi_bank;
+        kk2 = this.yingxiaoDatas.weizhi_product;
+        this.ruleForm.bank_side = kk1.map(tar => tar.positionNo);
+        this.ruleForm.product_side = kk2.map(tar => tar.positionNo);
+        if (kk1.length > 0 || kk2.length > 0) {
+          this.ruleForm.time = [
+            {
+              type: "日期",
+              startTime: `${year}-${month}-${day} 00:00:00`,
+              endTime: "",
+              zhouqi: []
+            }
+          ];
+        }
+      } else {
+        kk1 = this.yingxiaoDatas.weizhi_product;
+        this.ruleForm.product_side = kk1.map(tar => tar.positionNo);
+        if (kk1.length > 0) {
+          this.ruleForm.time = [
+            {
+              type: "日期",
+              startTime: `${year}-${month}-${day} 00:00:00`,
+              endTime: "",
+              zhouqi: []
+            }
+          ];
+        }
+      }
       this.ruleForm.ad_side = this.yingxiaoDatas.guangao.map(
         tar => tar.positionNo
       );
@@ -1698,35 +1844,47 @@ export default {
         tar => tar.positionNo
       );
       this.ruleForm.chuang = "组合购买";
-
-      let date = new Date(),
-        year = date.getFullYear(),
-        month = date.getMonth(),
-        day = date.getDate();
-
-      if (this.yingxiaoDatas.weizhi_bank.length > 0) {
-        this.ruleForm.time = [
-          {
-            type: "日期",
-            startTime: `${year}-${month}-${day} 00:00:00`,
-            endTime: "",
-            zhouqi: []
-          }
-        ];
-      }
     },
     // 新增限制位置时间
     timeAction(obj) {
+      let isOk = true; // 判断时间类型、时间数据是否已选好
       switch (obj.type) {
         case "change":
           this.timeChange = false;
           break;
-        case "new": // 选择好位置，但还未选时间
-          if (this.sideTimeBefore.length === 0) {
+        case "add": // 已选址位置、时间
+          if (this.type === "bank") {
             if (
-              this.ruleForm.side.length === 1 &&
-              this.ruleForm.time.length === 0
+              // 银行展示位置和产品展示位置必须至少有一个不为空
+              this.ruleForm.bank_side.length === 0 &&
+              this.ruleForm.product_side.length === 0
             ) {
+              this.hasError.sideTime.act = true;
+              this.hasError.sideTime.content = "请先选择位置！";
+              return;
+            }
+          } else {
+            if (this.ruleForm.product_side.length == 0) {
+              this.hasError.sideTime.act = true;
+              this.hasError.sideTime.content = "请先选择位置！";
+              return;
+            }
+          }
+          this.ruleForm.time.forEach(item => {
+            if (!item.type) {
+              isOk = false;
+            } else if (item.type === "周期" && item.zhouqi.length === 0) {
+              isOk = false;
+            } else if (item.type === "日期" && !item.startTime) {
+              isOk = false;
+            }
+          });
+          if (isOk) {
+            this.hasError.sideTime.act = false;
+            this.hasError.sideTime.content = "";
+
+            if (this.timeChange) {
+              // 新增
               this.ruleForm.time.push({
                 num: ++this.num,
                 type: "",
@@ -1735,68 +1893,16 @@ export default {
                 zhouqi: []
               });
             }
-            this.sideTimeBefore = this.ruleForm.side;
-            this.timeChange = false;
-          } else {
-            // 添加位置
-            if (this.sideTimeBefore.length < this.ruleForm.side.length) {
-              this.sideTimeBefore = this.ruleForm.side;
-            } else {
-              // 减少
-              if (this.ruleForm.side.length === 0) {
-                this.ruleForm.time = [];
-                this.timeChange = true;
-              }
-              this.sideTimeBefore = this.ruleForm.side;
-            }
-          }
-          break;
-        case "add": // 已选址位置、时间
-          if (this.ruleForm.side.length > 0) {
-            let isOk = true; // 判断时间类型、时间数据是否已选好
-            this.ruleForm.time.forEach(item => {
-              if (!item.type) {
-                isOk = false;
-              } else if (item.type === "周期" && item.zhouqi.length === 0) {
-                isOk = false;
-              } else if (item.type === "日期" && !item.startTime) {
-                isOk = false;
-              }
-            });
-
-            if (isOk) {
-              this.hasError.sideTime.act = false;
-              this.hasError.sideTime.content = "";
-
-              if (this.timeChange) {
-                // 新增
-                this.ruleForm.time.push({
-                  num: ++this.num,
-                  type: "",
-                  startTime: "",
-                  endTime: "",
-                  zhouqi: []
-                });
-              }
-              this.timeChange = true;
-            } else {
-              this.hasError.sideTime.act = true;
-              this.hasError.sideTime.content = "请先将当前数据输入完整！";
-            }
+            this.timeChange = true;
           } else {
             this.hasError.sideTime.act = true;
-            this.hasError.sideTime.content = "请先选择位置！";
+            this.hasError.sideTime.content = "请先将当前数据输入完整！";
           }
           break;
         case "delete":
-          if (this.ruleForm.time.length > 1) {
-            this.ruleForm.time = this.ruleForm.time.filter(
-              tar => tar.num != obj.data.num
-            );
-          } else {
-            this.hasError.sideTime.act = true;
-            this.hasError.sideTime.content = "请至少保留一个或者完全重置！";
-          }
+          this.ruleForm.time = this.ruleForm.time.filter(
+            tar => tar.num != obj.data.num
+          );
           break;
       }
     }

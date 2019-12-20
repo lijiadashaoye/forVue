@@ -45,6 +45,7 @@ const mutations = {
         let info = {
             checkBox: false, //是否开启多选
             show: false,
+            dragable:false, //是否可拖拽
             // 传给table子组件的数据
             pageSize: 10, // 分页相关
             pageNum: 1,
@@ -63,6 +64,10 @@ const mutations = {
     // 设置title头部的数据插入
     SETTITLELIST(state,data) {
         state.tableInfo.data.title = data;
+    },
+    // 设置是否可拖拽
+    SETDRAGABLE(state,data){
+        state.tableInfo.dragable = data;
     },
 
     // 储存单挑信息

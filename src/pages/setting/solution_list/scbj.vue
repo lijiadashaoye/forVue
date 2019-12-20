@@ -441,7 +441,7 @@ export default {
         this.$router.push({
           name: `pzgl`,
           query: {
-            weizhi: this.$route.query["weizhi"]
+            weizhi: this.leftForm.positionNo
           }
         });
       } else {
@@ -526,6 +526,7 @@ export default {
     // 获取素材列表
     getList() {
       let obj = {
+        positionNo: this.leftForm.positionNo,
         pageSize: this.tableInputData.pageSize,
         pageNum: this.tableInputData.pageNum
       };

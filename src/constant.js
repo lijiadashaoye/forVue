@@ -383,6 +383,10 @@ export const regionalTypeList = [
   {
     name:'内容',
     value:5
+  },
+  {
+    name:"按钮",
+    value:6
   }
 ]
 

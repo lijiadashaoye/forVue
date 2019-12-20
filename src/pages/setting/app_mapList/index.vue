@@ -49,7 +49,12 @@
         </el-form-item>
       </el-form>
       <div class="headerButton">
-        <el-button type="primary" v-if="userInfoArr.indexOf('banner_add')>-1" @click="addInfo" size="mini">新增</el-button>
+        <el-button
+          type="primary"
+          v-if="userInfoArr.indexOf('banner_add')>-1"
+          @click="addInfo"
+          size="mini"
+        >新增</el-button>
         <div>
           <el-button size="mini" type="warning" @click="getList">查询</el-button>
           <el-button size="mini" type="info" @click="searchDefault">重置</el-button>
@@ -152,6 +157,8 @@ export default {
     };
   },
   created() {
+    // 列表可拖拽
+    this.SETDRAGABLE(true);
     // 显示系统
     this.sysTypeList = sysTypeList;
     this.indexInfo = JSON.parse(getAdvertisement());
@@ -162,7 +169,8 @@ export default {
   methods: {
     ...mapActions({
       activityMapList: "appConfig/activityMapList",
-      activityMapDel: "appConfig/activityMapDel"
+      activityMapDel: "appConfig/activityMapDel",
+      changeLocation: "appConfig/changeLocation"
     }),
     // 删除事件
     startDelete(id) {
@@ -230,7 +238,21 @@ export default {
           break;
         case "upd": //修改
           let routePath = this.$route.path;
-          this.$router.push({ path: routePath + "/add?id=" + obj.data.id+"&type=upd" });
+          this.$router.push({
+            path: routePath + "/add?id=" + obj.data.id + "&type=upd"
+          });
+          break;
+        case "drag": //拖拽
+          let sendInfo = {
+            id: obj.data.moveObj.id,
+            oldId: obj.data.targetObj.id
+          };
+          this.changeLocation(sendInfo).then(() => {
+            this.$message({
+              type: "success",
+              message: "位置更改成功!"
+            });
+          });
           break;
       }
     }

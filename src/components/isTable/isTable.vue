@@ -338,21 +338,29 @@ export default {
       let that = this;
       let digui2 = () => {
         let kk = document.querySelectorAll(".el-table__row"),
-          tarH;
+          tarH,tarIndex;
         if (kk.length) {
           kk.forEach(tar => {
             tar.draggable = true;
             tar.addEventListener("dragstart", e => {
+              tarIndex = e.target.rowIndex; //挪动的tr索引
               tarH = e.target.offsetHeight; // 取得一个tr的高
               that.dragArr = [...that.linshiArr];
               that.dragTar = that.dragArr.splice(e.target.rowIndex, 1)[0];
             });
             tar.addEventListener("dragend", e => {
               let offsetY = Math.floor(e.layerY / tarH); // layerY 为鼠标举例当前父元素top的距离
-              if (offsetY >= 0 && offsetY <= that.linshiArr.length) {
+              if (offsetY >= 0 && offsetY < that.linshiArr.length && offsetY!=tarIndex) {  //offsetY!=tarIndex 位置没有移动
+                let obj = {
+                  moveObj:that.dragTar,
+                  targetObj:that.linshiArr[offsetY]
+                }
                 that.dragArr.splice(offsetY, 0, that.dragTar);
                 that.linshiArr = [...that.dragArr];
-                this.$emit("tableEmit", { type: "drag", data: that.dragTar });
+                
+                this.$emit("tableEmit", { type: "drag", data: obj });
+              }else{
+                console.log(offsetY,'nnn')
               }
             });
           });

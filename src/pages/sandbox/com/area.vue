@@ -17,7 +17,6 @@
           :value="item.adcode"
         ></el-option>
       </el-select>
-
       <el-select
         filterable
         size="mini"

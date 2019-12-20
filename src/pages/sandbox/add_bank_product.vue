@@ -21,7 +21,7 @@
             <el-option-group v-for="group in bankList" :key="group.label" :label="group.label">
               <el-option
                 v-for="item in group.options"
-                :key="item.id"
+                :key="item.name"
                 :label="item.name"
                 :value="item.id"
                 :disabled="item.use"
@@ -41,7 +41,7 @@
           >
             <el-option
               v-for="item in productList"
-              :key="item.id"
+              :key="item.name"
               :label="item.name"
               :value="item.id"
             ></el-option>
@@ -90,37 +90,50 @@
                   </div>
 
                   <div
-                    v-if="can.showDatas.length>0&&can.text!=='限制地域'&&can.text==='产品展示位置与时间'"
-                    class="showSheng3"
+                    v-if="can.showDatas.length>0&&can.text==='限制地域'&&can.text!=='产品展示位置与时间'"
+                    class="showSheng2"
                   >
+                    <p
+                      style="font-weight:bold;padding:4px 0 0 12px;font-size:14px;color:red;"
+                    >{{can.text+'：'}}</p>
                     <div v-for="t in can.showDatas" :key="t.num">
-                      <p>
-                        <span style="font-weight:bold;">位置：</span>
-                        <span>{{t.side}}</span>
-                      </p>
-                      <p>
-                        <span style="font-weight:bold;">时间：</span>
-                        <span>{{t.time}}</span>
-                      </p>
+                      <div>
+                        <p>
+                          <span style="font-weight:bold;">省名称：</span>
+                          <span>{{t.sheng.name}}</span>
+                        </p>
+                        <p>
+                          <span style="font-weight:bold;">市名称：</span>
+                          <span v-for="(shi,index) in t.shi" :key="shi+index">{{shi.name}}</span>
+                        </p>
+                        <p>
+                          <span style="font-weight:bold;">限制条件：</span>
+                          <span v-for="(j,index) in t.tiaojian" :key="j+index">{{j}}</span>
+                        </p>
+                      </div>
+                      <p>或</p>
                     </div>
                   </div>
 
                   <div
-                    v-if="can.showDatas.length>0&&can.text==='限制地域'&&can.text!=='产品展示位置与时间'"
-                    class="showSheng2"
+                    v-if="can.showDatas.length>0&&can.text!=='限制地域'&&can.text==='产品展示位置与时间'"
+                    class="showSheng3"
                   >
+                    <p
+                      style="font-weight:bold;font-size:14px;color:red;padding:2px 0;"
+                    >{{can.text+'：'}}</p>
                     <div v-for="t in can.showDatas" :key="t.num">
-                      <p>
-                        <span style="font-weight:bold;">省名称：</span>
-                        <span>{{t.sheng.name}}</span>
+                      <p v-if="t.side['bank_side']">
+                        <span style="font-weight:bold;">银行展示位置：</span>
+                        <span>{{t.side['bank_side']}}</span>
+                      </p>
+                      <p v-if="t.side['product_side']">
+                        <span style="font-weight:bold;">产品展示位置：</span>
+                        <span>{{t.side['product_side']}}</span>
                       </p>
                       <p>
-                        <span style="font-weight:bold;">市名称：</span>
-                        <span v-for="(shi,index) in t.shi" :key="shi+index">{{shi.name}}</span>
-                      </p>
-                      <p>
-                        <span style="font-weight:bold;">限制条件：</span>
-                        <span v-for="(j,index) in t.tiaojian" :key="j+index">{{j}}</span>
+                        <span style="font-weight:bold;">时间：</span>
+                        <span>{{t.time}}</span>
                       </p>
                     </div>
                   </div>
